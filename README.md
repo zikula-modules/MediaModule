@@ -30,6 +30,9 @@ Read all about the module [at it's website](http://cmfcmf.github.io/MediaModule)
 - The Flickr MediaType is currently disabled due to legal questions
 - Even though files are watermarked, they are still available non-watermarked. Users could try to guess
   the URL and access the un-watermarked files.
+- Permissions are currently only object-type based and not object-instance based. This means that you
+  cannot configure permissions per object, but only per object type. I.e. you cannot grant groups
+  access to collection A while not granting access to collection B.
 
 ## Talk to me!
 If you find a bug or have problems, please [create an issue](https://github.com/cmfcmf/MediaModule/issues/new)!
