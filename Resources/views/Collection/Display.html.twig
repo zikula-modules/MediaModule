@@ -1,0 +1,52 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block title %}
+    {% if renderRaw is not defined or not renderRaw %}
+        {% if collection is defined %}
+            {{ collection.title }}
+        {% else %}
+            {{ __('Root collections') }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    {% if collection is defined and collection.description is not empty %}
+        <div class="row">
+            <div class="col-xs-12">
+                {{ collection|cmfcmfmediamodule_getdescription }}
+            </div>
+        </div>
+    {% endif %}
+
+    {{ content|raw }}
+
+    {% if hook is defined %}
+        {{ hook|raw }}
+    {% endif %}
+
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-xs-12">
+            {% if cmfcmfmediamodule_hasPermission('collection', 'new') %}
+                <a href="{% if collection is defined and not collection.virtualRoot %}{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}{% else %}{{ path('cmfcmfmediamodule_collection_new') }}{% endif %}" class="btn btn-default">
+                    <i class="fa fa-plus"></i> {{ __('Create new collection') }}
+                </a>
+            {% endif %}
+            {% if cmfcmfmediamodule_hasPermission('media', 'new') %}
+                <a href="{% if collection is defined and not collection.virtualRoot %}{{ path('cmfcmfmediamodule_media_new', {parent: collection.slug}) }}{% else %}{{ path('cmfcmfmediamodule_media_new') }}{% endif %}" class="btn btn-default">
+                    <i class="fa fa-plus"></i> {{ __('Create new media') }}
+                </a>
+            {% endif %}
+            {% if collection is defined and not collection.virtualRoot %}
+                {% if cmfcmfmediamodule_hasPermission(collection, 'edit') %}
+                    <a href="{{ path('cmfcmfmediamodule_collection_edit', {slug: collection.slug}) }}" class="btn btn-default">
+                        <i class="fa fa-edit"></i> {{ __('Edit collection') }}
+                    </a>
+                {% endif %}
+                {% if cmfcmfmediamodule_hasPermission(collection, 'download') %}
+                    <a href="{{ path('cmfcmfmediamodule_collection_download', {slug: collection.slug}) }}" class="btn btn-default">
+                        <i class="fa fa-download"></i> {{ __('Download collection') }}
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

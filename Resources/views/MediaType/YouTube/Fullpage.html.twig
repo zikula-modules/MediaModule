@@ -1,0 +1,12 @@
+<div class="embed-responsive embed-responsive-16by9">
+    {% set url = '' %}
+    {% if entity.youTubeType == 'video' %}
+        {% set url = 'https://www.youtube-nocookie.com/embed/' ~ entity.youTubeId|url_encode ~ '?rel=0' %}
+    {% elseif entity.youTubeType == 'playlist' %}
+        {% set url = 'https://www.youtube-nocookie.com/embed/?list=' ~ entity.youTubeId|url_encode ~ '&rel=0' %}
+    {% elseif entity.youTubeType == 'channel' %}
+        {% set url = 'https://www.youtube-nocookie.com/embed/?listType=user_uploads&list=' ~ entity.author|url_encode ~ '&rel=0' %}
+    {% endif %}
+    <iframe class="embed-responsive-item" src="{{ url|e('html_attr') }}" frameborder="0" allowfullscreen></iframe>
+</div>
+

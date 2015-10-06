@@ -1,0 +1,39 @@
+{{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Finder/ChooseMethod.css')) }}
+<div class="row">
+    <div class="col-xs-12 col-sm-6">
+        <div class="list-group">
+            <a href="{{ path('cmfcmfmediamodule_media_new', {popup: true}) }}" class="list-group-item">
+                <i class="fa fa-upload fa-5x pull-left"></i>
+                <h4 class="list-group-item-heading">
+                    {{ __('Upload a file') }}
+                </h4>
+                <p class="list-group-item-text">{{ __('and embed it') }}</p>
+                <div class="clearfix"></div>
+            </a>
+            <a href="{{ path('cmfcmfmediamodule_media_new', {popup: true}) }}" class="list-group-item">
+                <i class="fa fa-globe fa-5x pull-left"></i>
+                <h4 class="list-group-item-heading">
+                    {{ __('Add medium from the Web') }}
+                </h4>
+                <p class="list-group-item-text">{{ __('and embed it') }}</p>
+                <div class="clearfix"></div>
+            </a>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-6">
+        <div class="list-group">
+            <a href="{{ path('cmfcmfmediamodule_finder_popupchoosemedia') }}" class="list-group-item">
+                <i class="fa fa-files-o fa-5x pull-left"></i>
+                <h4 class="list-group-item-heading">{{ __('Select uploaded medium') }}</h4>
+                <p class="list-group-item-text">{{ __('and embed it') }}</p>
+                <div class="clearfix"></div>
+            </a>
+            <a href="{{ path('cmfcmfmediamodule_finder_popupchoosecollections') }}" class="list-group-item">
+                <i class="fa fa-list fa-5x pull-left"></i>
+                <h4 class="list-group-item-heading">{{ __('Select uploaded collection') }}</h4>
+                <p class="list-group-item-text">{{ __('and embed it') }}</p>
+                <div class="clearfix"></div>
+            </a>
+        </div>
+    </div>
+</div>

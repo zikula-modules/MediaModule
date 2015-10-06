@@ -1,0 +1,35 @@
+{% extends 'CmfcmfMediaModule:CollectionTemplate:Cards.html.twig' %}
+
+{% block media %}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/slick/slick.min.js'), 98) }}
+    {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/slick/slick.css'), 98) }}
+    {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/slick/slick-theme.css'), 99) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/slider.js')) }}
+
+    <div id="cmfcmfmedia-display-slider">
+        {% for media in collection.media %}
+            <div>
+                {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
+                {% set bigThumbnail = mediaType.thumbnail(media, 800, 450, 'url', 'inset') %}
+                <a href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
+                    {% if bigThumbnail %}
+                        <img data-lazy="{{ bigThumbnail|e('html_attr') }}" />
+                    {% else %}
+                        <i class="fa fa-fw fa-5x {{ mediaType.icon }}"></i>
+                        {{ media|cmfcmfmediamodule_getdescription }}
+                    {% endif %}
+                </a>
+                {% if media.title is not empty %}
+                    <h4>
+                        {{ media.title }}
+                    </h4>
+                {% endif %}
+                {% if media.attribution is not empty %}
+                    <h5>
+                        {{ media.attribution|raw }}
+                    </h5>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

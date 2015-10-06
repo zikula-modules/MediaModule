@@ -1,0 +1,9 @@
+{% set code %}
+    <script src="//connect.soundcloud.com/sdk-2.0.0.js"></script>
+    <script type="text/javascript">
+        SC.initialize({
+            client_id: "{{ clientId }}"
+        });
+    </script>
+{%  endset %}
+{{ pageAddAsset('header', code) }}

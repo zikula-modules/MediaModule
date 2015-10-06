@@ -1,0 +1,23 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block title %}
+    {{ entity.title }}
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="alert alert-danger">
+                {{ __('Do you really want to delete this watermark?') }}
+            </div>
+            <div class="col-sm-offset-2 col-sm-10 col-xs-12">
+                <form action="{{ path('cmfcmfmediamodule_watermark_delete', {id: entity.id}) }}" method="post">
+                    <button type="submit" class="btn btn-danger">
+                        {{ __('Delete') }}
+                    </button>
+                    <a href="{{ path('cmfcmfmediamodule_watermark_index') }}" class="btn btn-default">
+                        {{ __('Cancel') }}
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

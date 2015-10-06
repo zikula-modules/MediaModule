@@ -1,0 +1,75 @@
+{% block header %}{% endblock %}
+
+{% if (renderRaw is not defined or not renderRaw) and breadcrumbs is defined %}
+    {% include 'CmfcmfMediaModule::Breadcrumbs.html.twig' with {breadcrumbs: breadcrumbs} %}
+{% endif %}
+
+{% block upgradeNotification %}
+    {% if (renderRaw is not defined or not renderRaw) and hasPermission('ZikulaExtensionsModule::', '::', 'ACCESS_ADMIN') and hasPermission('CmfcmfMediaModule:settings:', '::', 'ACCESS_ADMIN') and cmfcmfmediamodule_newversionavailable() %}
+        <div class="alert alert-warning">
+            <i class="fa fa-fw fa-download fa-2x pull-left"></i>
+            {{ __f('The %s version of the MediaModule is available for download. You can apply the automatic upgrade by clicking here:', {'%s': cmfcmfmediamodule_newversionavailable()}) }}
+            <a href="{{ path('cmfcmfmediamodule_settings_upgrade') }}" class="alert-link">{{ __('Upgrade now!') }}</a>
+            <div class="clearfix"></div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+<h1>{% block title %}{% endblock %}</h1>
+{{ pageSetVar('title', block('title')) }}
+
+{% if renderRaw is not defined or not renderRaw %}
+    {{ showflashes() }}
+{% endif %}
+
+{% block content %}{% endblock %}
+
+{% block footer %}
+    {% if renderRaw is not defined or not renderRaw %}
+        <hr />
+        <ul class="list-inline">
+            {% if cmfcmfmediamodule_hasPermission('collection', 'display') %}
+                <li>
+                    <a href="{{ path('cmfcmfmediamodule_collection_displayroot') }}">
+                        {{ __('Collections') }}
+                    </a>
+                </li>
+            {% endif %}
+            {% if cmfcmfmediamodule_hasPermission('media', 'moderate') %}
+                <li>
+                    <a href="{{ path('cmfcmfmediamodule_media_adminlist') }}">
+                        {{ __('Media') }}
+                    </a>
+                </li>
+            {% endif %}
+            {% if cmfcmfmediamodule_hasPermission('watermark', 'moderate') %}
+                <li>
+                    <a href="{{ path('cmfcmfmediamodule_watermark_index') }}">
+                        {{ __('Watermarks') }}
+                    </a>
+                </li>
+            {% endif %}
+            {% if cmfcmfmediamodule_hasPermission('license', 'moderate') %}
+                <li>
+                    <a href="{{ path('cmfcmfmediamodule_license_index') }}">
+                        {{ __('Licenses') }}
+                    </a>
+                </li>
+            {% endif %}
+            {% if cmfcmfmediamodule_hasPermission('settings', 'admin') %}
+                <li>
+                    <a href="{{ path('cmfcmfmediamodule_settings_settings') }}">
+                        {{ __('Settings') }}
+                    </a>
+                </li>
+            {% endif %}
+            {% if cmfcmfmediamodule_hasPermission('hooks', 'admin') %}
+                <li>
+                    <a href="{{ path('zikulaextensionsmodule_admin_hooks', {moduleName: 'CmfcmfMediaModule'}) }}">
+                        {{ __('Hooks') }}
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    {% endif %}
+{% endblock %}

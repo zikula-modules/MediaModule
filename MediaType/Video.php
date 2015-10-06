@@ -1,0 +1,194 @@
+<?php
+
+namespace Cmfcmf\Module\MediaModule\MediaType;
+
+use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
+use Cmfcmf\Module\MediaModule\Metadata\GenericMetadataReader;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+
+class Video extends AbstractFileMediaType implements UploadableMediaTypeInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function getDisplayName()
+    {
+        return $this->__('Video');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getIcon()
+    {
+        return 'fa-file-video-o';
+    }
+
+    public function renderFullpage(AbstractMediaEntity $entity)
+    {
+        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:Fullpage.html.twig', ['entity' => $entity, 'width' => '100%', 'height' => '400']);
+    }
+
+    public function getExtendedMetaInformation(AbstractMediaEntity $entity)
+    {
+        $meta = [];
+        $extraData = $entity->getExtraData();
+        if (isset($extraData['title'][0])) {
+            $meta[] = [
+                'title' => $this->__('Title'),
+                'value' => $extraData['title'][0]
+            ];
+        }
+        if (isset($extraData['creation_date'][0])) {
+            $meta[] = [
+                'title' => $this->__('Year'),
+                'value' => $extraData['creation_date'][0]
+            ];
+        }
+        if (isset($extraData['genre'][0])) {
+            $meta[] = [
+                'title' => $this->__('Genre'),
+                'value' => $extraData['genre'][0]
+            ];
+        }
+        if (isset($extraData['playtime_seconds'])) {
+            $meta[] = [
+                'title' => $this->__('Duration'),
+                'value' => $this->formatDuration($extraData['playtime_seconds'])
+            ];
+        }
+        if (isset($extraData['video'])) {
+            $video = $extraData['video'];
+
+            if (isset($video['resolution_x']) && isset($video['resolution_y'])) {
+                $meta[] = [
+                    'title' => $this->__('Resolution'),
+                    'value' => $video['resolution_x'] . " x " . $video['resolution_y']
+                ];
+            }
+            if (isset($video['frame_rate'])) {
+                $meta[] = [
+                    'title' => $this->__('Frame rate'),
+                    'value' => (int)$video['frame_rate']
+                ];
+            }
+            if (isset($video['bitrate'])) {
+                $meta[] = [
+                    'title' => $this->__('Video bit rate'),
+                    'value' => (int)$video['bitrate']
+                ];
+            }
+        }
+        if (isset($extraData['audio'])) {
+            $audio = $extraData['audio'];
+
+            if (isset($audio['channels'])) {
+                $meta[] = [
+                    'title' => $this->__('Audio channels'),
+                    'value' => $audio['channels']
+                ];
+            }
+            if (isset($audio['sample_rate'])) {
+                $meta[] = [
+                    'title' => $this->__('Audio sample rate'),
+                    'value' => $audio['sample_rate']
+                ];
+            }
+            if (isset($audio['bitrate'])) {
+                $meta[] = [
+                    'title' => $this->__('Audio bit rate'),
+                    'value' => $audio['bitrate']
+                ];
+            }
+        }
+
+        return $meta;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function canUpload(UploadedFile $file)
+    {
+        $mimeType = $file->getMimeType();
+        if (in_array($mimeType, $this->getSupportedMimeTypes())) {
+            return 5;
+        }
+        if ($file->getMimeType() == 'application/ogg') {
+            // This could be a video or audio file.
+            $meta = GenericMetadataReader::readMetadata($file->getPathname());
+            if (isset($meta['video']['dataformat'])) {
+                return 5;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @return array A list of supported mime types.
+     */
+    private function getSupportedMimeTypes()
+    {
+        return [
+            'video/mp4',
+            'video/webm',
+            'video/ogg',
+        ];
+    }
+
+    /**
+     * Whether or not this media type supports uploading the file represented by the file info array.
+     *
+     * @param array $file
+     *
+     * @return int 10 if it perfectly matches, 0 if it can't upload.
+     */
+    public function canUploadArr(array $file)
+    {
+        return in_array($file['mimeType'], $this->getSupportedMimeTypes()) ? 5 :0;
+    }
+
+    public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
+    {
+        return false;
+    }
+
+    public function getEmbedCode(AbstractMediaEntity $entity, $size = 'full')
+    {
+        switch ($size) {
+            case 'small':
+                $width = 200;
+                $height = (int)($width / 16 * 9);
+                break;
+            case 'medium':
+                $width = 500;
+                $height = (int)($width / 16 * 9);
+                break;
+            case 'full':
+            default:
+                $width = "100%";
+                $height = 400;
+        }
+        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:Fullpage.html.twig', ['entity' => $entity, 'width' => $width, 'height' => $height]);
+    }
+
+
+    private function formatDuration($seconds)
+    {
+        $seconds = (int)$seconds;
+        $minutes = (int)($seconds / 60);
+        $seconds -= $minutes * 60;
+        if ($seconds < 10) {
+            $seconds = "0" . $seconds;
+        }
+
+        $time = "$minutes:$seconds";
+
+        return $this->__f("%s min", [$time]);
+    }
+}

@@ -1,0 +1,14 @@
+<blockquote class="twitter-tweet">
+    <a href="https://twitter.com/jack/status/{{ entity.tweetId|e('html_attr') }}">
+        {% if placeholder is defined %}
+            {{ placeholder }}
+        {% else %}
+            {{ __('The tweet is loading.') }}
+        {% endif %}
+    </a>
+</blockquote>
+{% if usePageAddAsset %}
+    {{ pageAddAsset('footer', '<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>') }}
+{% else %}
+    <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+{% endif %}

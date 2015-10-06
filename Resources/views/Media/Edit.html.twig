@@ -1,0 +1,21 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block title __('Edit') ~ ' "' ~ entity.title ~ '"' %}
+{% block content %}
+    {% include 'CmfcmfMediaModule::util.html.twig' %}
+    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="col-sm-offset-2 col-sm-offset-10">
+            {{ hook|raw }}
+        </div>
+        <div class="col-sm-offset-2 col-sm-offset-10">
+            <button type="submit" class="btn btn-success">
+                <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
+            </button>
+            <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="btn btn-default">
+                <i class="fa fa-fw fa-ban"></i> {{ __('Cancel') }}
+            </a>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

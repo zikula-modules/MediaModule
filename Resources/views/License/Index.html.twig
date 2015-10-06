@@ -1,0 +1,82 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block title __('Licenses') %}
+{% block content %}
+    {{ parent() }}
+    {% if cmfcmfmediamodule_hasPermission('license', 'add') %}
+        <a href="{{ path('cmfcmfmediamodule_license_new') }}" class="btn btn-default">
+            <i class="fa fa-fw fa-plus"></i> {{ __('Create new license') }}
+        </a>
+        <br />
+        <br />
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-condensed table-striped">
+            <thead>
+            <tr>
+                <th>{{ __('ID') }}</th>
+                <th>{{ __('Title') }}</th>
+                <th>{{ __('Url') }}</th>
+                <th>{{ __('Icon') }}</th>
+                <th>{{ __('Outdated') }}</th>
+                <th>{{ __('Enabled for upload') }}</th>
+                <th>{{ __('Enabled for web embed') }}</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr{% if entity.outdated %} class="warning"{% endif %}>
+                    <td>{{ entity.id }}</td>
+                    <td>{{ entity.title }}</td>
+                    <td>
+                        {% if entity.url is not empty %}
+                            <a href="{{ entity.url }}">
+                                {{ entity.url }}
+                            </a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entity.imageUrl is not empty %}
+                            <img src="{{ entity.imageUrl}}" alt="{{ entity.imageUrl }}" style="max-width: 100px" />
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entity.outdated %}
+                            {{ __('yes') }}
+                        {% else %}
+                            {{ __('no') }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entity.enabledForUpload %}
+                            {{ __('yes') }}
+                        {% else %}
+                            {{ __('no') }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if entity.enabledForWeb %}
+                            {{ __('yes') }}
+                        {% else %}
+                            {{ __('no') }}
+                        {% endif %}
+                    </td>
+                    <td class="text-right">
+                        {% if cmfcmfmediamodule_hasPermission(entity, 'edit') %}
+                            <a href="{{ path('cmfcmfmediamodule_license_edit', {id: entity.id}) }}">
+                                <i class="fa fa-fw fa-edit"></i>
+                            </a>
+                        {% endif %}
+                        {% if cmfcmfmediamodule_hasPermission(entity, 'delete') %}
+                            <a href="{{ path('cmfcmfmediamodule_license_delete', {id: entity.id}) }}" class="text-danger">
+                                <i class="fa fa-fw fa-trash-o"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

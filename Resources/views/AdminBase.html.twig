@@ -1,0 +1,8 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block header %}
+    {{ render(controller('ZikulaAdminModule:Admin:adminheader')) }}
+    {{ parent() }}
+{% endblock %}
+{% block footer %}
+    {{ render(controller('ZikulaAdminModule:Admin:adminfooter')) }}
+{% endblock %}

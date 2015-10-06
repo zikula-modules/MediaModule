@@ -1,0 +1,38 @@
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/highlight.min.js'), 98) }}
+{{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/vendor/highlight.min.css'), 98) }}
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/MediaType/Markdown/Fullpage.js')) }}
+
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/Fullscreen.js')) }}
+{{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/Display/Fullscreen.css')) }}
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+        <a href="#rendered" aria-controls="home" role="tab" data-toggle="tab">
+            {{ __('Rendered') }}
+        </a>
+    </li>
+    <li role="presentation">
+        <a href="#raw" aria-controls="profile" role="tab" data-toggle="tab">
+            {{ __('Raw') }}
+        </a>
+    </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="rendered">
+        {{ rendered|raw }}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="raw">
+        <br />
+        <button type="button" class="cmfcmfmedia-fullscreen-btn btn btn-default" data-fullscreen-element="#cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}-raw">
+            <i class="fa fa-fw fa-arrows-alt"></i> {{ __('Fullscreen') }}
+        </button>
+        <br />
+        <br />
+
+        <pre id="cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}-raw"><i class="fa fa-fw fa-3x fa-times pull-right fullscreen-exit-btn hidden"></i><code class="cmfcmfmedia-markdown-highlight">{{ raw }}</code></pre>
+    </div>
+</div>
+

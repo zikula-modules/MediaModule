@@ -1,0 +1,84 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block title %}
+    {{ entity.title }}
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-12">
+            {{ mediaType.renderFullpage(entity)|raw }}
+
+            {% if entity.description is not empty %}
+                {{ entity|cmfcmfmediamodule_getdescription }}
+            {% endif %}
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <div class="well well-sm">
+                {% if entity.license %}
+                    <p>
+                        <strong>{{ __('License') }}</strong>: {{ entity.license.title }} <br />
+                        <a href="{{ entity.license.url }}">{{ entity.license.url }}</a>
+                    </p>
+                {% endif %}
+                {% if entity.authorAvatarUrl is not empty %}
+                    <img src="{{ entity.authorAvatarUrl }}" class="img img-rounded pull-right" alt="{{ __('Author avatar') }}" width="60" height="60" />
+                {% endif %}
+                {% if entity.attribution is not empty %}
+                    <p>
+                        {{ entity.attribution|raw }}
+                    </p>
+                {% endif %}
+                <div class="clearfix"></div>
+                <p>
+                    <strong>{{ __('Added by') }}</strong>: {{ entity.createdUserId|cmfcmfmediamodule_unamefromuid }}
+                    {{ __('at ') }} {{ entity.createdDate.format('d.m.Y H:i') }} <!-- @todo Internationalize -->
+                    <img src="{{ entity.createdUserId|cmfcmfmediamodule_avatarfromuid }}" class="img img-rounded pull-right" alt="" width="60" height="60" />
+                    <div class="clearfix"></div>
+                </p>
+            </div>
+            {% set extendedMetaInformation = mediaType.extendedMetaInformation(entity) %}
+            {% if extendedMetaInformation is not empty %}
+                <div class="well well-sm">
+                    {% for information in extendedMetaInformation %}
+                        <p>
+                            <strong>{{ information.title }}:</strong>
+                            {{ information.value }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="list-group">
+                {% if entity.downloadAllowed is defined and entity.downloadAllowed and cmfcmfmediamodule_hasPermission(entity, 'download') %}
+                    <a href="{{ path('cmfcmfmediamodule_media_download', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item">
+                        <i class="fa fa-fw fa-download"></i>
+                        {{ __('Download') }}
+                    </a>
+                {% endif %}
+                {% if cmfcmfmediamodule_hasPermission(entity.collection, 'display') %}
+                    <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: entity.collection.slug}) }}" class="list-group-item">
+                        <i class="fa fa-fw fa-picture-o"></i>
+                        {{ __('Back to the collection') }}
+                    </a>
+                {% endif %}
+                {% if cmfcmfmediamodule_hasPermission('media', 'admin') %}
+                    <a href="{{ path('cmfcmfmediamodule_media_adminlist') }}" class="list-group-item">
+                        <i class="fa fa-fw fa-arrow-left"></i>
+                        {{ __('Back to the list') }}
+                    </a>
+                {% endif %}
+                {% if cmfcmfmediamodule_hasPermission(entity, 'edit') %}
+                    <a href="{{ path('cmfcmfmediamodule_media_edit', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-warning">
+                        <i class="fa fa-fw fa-edit"></i>
+                        {{ __('Edit') }}
+                    </a>
+                {% endif %}
+                {% if cmfcmfmediamodule_hasPermission(entity, 'delete') %}
+                    <a href="{{ path('cmfcmfmediamodule_media_delete', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-danger">
+                        <i class="fa fa-fw fa-trash-o"></i>
+                        {{ __('Delete') }}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {{ hook|raw }}
+{% endblock %}

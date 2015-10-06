@@ -1,0 +1,192 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block title __('Create new media') %}
+{% block content %}
+    {% include 'CmfcmfMediaModule::util.html.twig' %}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/dropzone.js'), 98) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/New/paste.js'), 99) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/New/web.js'), 99) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/New/upload.js'), 99) }}
+    {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/New/upload.css'), 99) }}
+
+    <input type="hidden" id="cmfcmfmedia-is-popup" value="{{ isPopup|e('html_attr') }}" />
+    {% set modal %}
+        <div class="modal fade" id="cmfcmfmedia-upload-form-modal" tabindex="-1" role="dialog" aria-labelledby="cmfcmfmedia-form-modal-label">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('Close')|e('html_attr') }}"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="cmfcmfmedia-upload-form-modal-label">{{ __('Select collection') }}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <select id="cmfcmfmedia-upload-form-modal-collection-select" class="form-control" data-parent="{{ parentCollectionSlug|e('html_attr') }}">
+                            {% if not parentCollectionSlug %}
+                                <option value="-1">{{ __('Select collection') }}</option>
+                            {% endif %}
+                            {% for collection in collections %}
+                                <option value="{{ collection.id|e('html_attr') }}"{% if parentCollectionSlug and collection.slug == parentCollectionSlug %} selected{% endif %}>
+                                    {{ collection.indentedTitle }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="cmfcmfmedia-upload-form-modal-save-btn">{{ __('Start upload') }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endset %}
+    {{ pageAddAsset('footer', modal) }}
+
+    <div>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active">
+                <a href="#cmfcmfmedia-upload" aria-controls="cmfcmfmedia-upload" role="tab" data-toggle="tab">
+                    <i class="fa fa-fw fa-upload"></i> {{ __('File upload') }}
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#cmfcmfmedia-web" aria-controls="cmfcmfmedia-web" role="tab" data-toggle="tab">
+                    <i class="fa fa-fw fa-globe"></i> {{ __('Search the web') }}
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="#cmfcmfmedia-paste" aria-controls="cmfcmfmedia-paste" role="tab" data-toggle="tab">
+                    <i class="fa fa-fw fa-paste"></i> {{ __('Paste URL / Embed code') }}
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="{{ path('cmfcmfmediamodule_media_adminlist') }}" role="tab">
+                    <i class="fa fa-fw fa-table"></i> {{ __('Back to overview') }}
+                </a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content cmfcmfmedia-css-relative" id="cmfcmfmedia-tab-content">
+            <!-- File Upload -->
+            <div role="tabpanel" class="tab-pane fade in active" id="cmfcmfmedia-upload">
+                <div id="cmfcmfmedia-upload-actions" class="row">
+                    <div class="col-lg-7">
+                    <span class="btn btn-success" id="cmfcmfmedia-upload-fileinput-btn">
+                        <i class="fa fa-fw fa-plus"></i>
+                        <span>{{ __('Add files (try drag and drop as well!)') }}</span>
+                    </span>
+                        {% if not isPopup %}
+                            <button type="submit" class="btn btn-primary start" id="cmfcmfmedia-upload-start-fast-btn" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ __('If you use the fast upload, all media will be uploaded instantly and you will only be able to select the collection to upload the media too. If you would like to edit further settings, i.e. titles, descriptions or licenses, you can do so by either not using the fast upload and uploading the media one by one or by editing the media after you uploaded everything') }}">
+                                <i class="fa fa-fw fa-upload"></i>
+                                <span>{{ __('Fast upload') }}</span>
+                            </button>
+                        {% endif %}
+                        {#<button type="reset" class="btn btn-warning cancel">
+                            <i class="fa fa-fw fa-ban"></i>
+                            <span>{{ __('Cancel upload') }}</span>
+                        </button>#}
+                    </div>
+                    <div class="col-lg-5">
+                        <div id="cmfcmfmedia-upload-total-progress" class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                            <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="table table-striped files" id="cmfcmfmedia-upload-previews">
+                    <div id="cmfcmfmedia-upload-template" class="file-row">
+                        <!-- This is used as the file preview template -->
+                        <div>
+                            <span class="preview"><img data-dz-thumbnail /></span>
+                        </div>
+                        <div>
+                            <p class="name" data-dz-name></p>
+                            <strong class="error text-danger" data-dz-errormessage></strong>
+                        </div>
+                        <div>
+                            <p class="size" data-dz-size></p>
+                            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                                <div class="progress-bar progress-bar-success" style="width:0;" data-dz-uploadprogress></div>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary start">
+                                <i class="fa fa-fw fa-upload"></i>
+                                <span>{{ __('Start') }}</span>
+                            </button>
+                            <button data-dz-remove class="btn btn-warning cancel">
+                                <i class="fa fa-fw fa-ban"></i>
+                                <span>{{ __('Cancel') }}</span>
+                            </button>
+                            {#<button data-dz-remove class="btn btn-danger delete">
+                                <i class="fa fa-fw fa-trash"></i>
+                                <span>{{ __('Delete') }}</span>
+                            </button>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Web selection -->
+            <div role="tabpanel" class="tab-pane fade" id="cmfcmfmedia-web">
+                <div class="row">
+                    <!-- Available types -->
+                    <div class="col-sm-3 col-md-2">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li class="active">
+                                <a href="#cmfcmfmedia-web-provider-default" data-toggle="pill">
+                                    {{ __('Select a service below') }}
+                                </a>
+                            </li>
+                            {% for mediaType in webMediaTypes %}
+                                <li>
+                                    <a href="#cmfcmfmedia-web-provider-{{ mediaType.alias }}" data-toggle="pill">
+                                        <i class="fa fa-fw {{ mediaType.icon }}"></i> {{ mediaType.displayName }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="col-sm-9 col-md-10">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="cmfcmfmedia-web-provider-default">
+                                <!-- Nothing here -->
+                            </div>
+                            {% for mediaType in webMediaTypes %}
+                                <div class="tab-pane" id="cmfcmfmedia-web-provider-{{ mediaType.alias }}">
+                                    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/MediaType/' ~ mediaType.alias|capitalize ~ '/WebCreation.js')) }}
+                                    <form method="post" action="{{ path('cmfcmfmediamodule_media_create', {type: 'web', mediaType: mediaType.alias, popup: isPopup }) }}">
+                                        <input type="hidden" value="1" name="init" />
+                                        <input type="hidden" name="settings" id="cmfcmfmedia-web-mediatype-{{ mediaType.alias }}-settings" />
+
+                                        {{ mediaType.renderWebCreationTemplate|raw }}
+
+                                        <div class="table-responsive">
+                                            <table class="table table-striped table-condensed table-hover">
+                                                <thead></thead>
+                                                <tbody id="cmfcmfmedia-mediatype-{{ mediaType.alias }}-results"></tbody>
+                                            </table>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Pasting -->
+            <div role="tabpanel" class="tab-pane fade" id="cmfcmfmedia-paste">
+                <div class="alert alert-info">{{ __('Simply paste your URL or embed code here and we\'ll try to figure everything out.') }}</div>
+                <form method="post" action="">
+                    <input type="hidden" value="1" name="init" />
+                    <div class="cmfcmfmedia-css-relative">
+                        <textarea name="pastedText" class="form-control" rows="5" title="{{ __('Paste url or embed code') }}" id="cmfcmfmedia-paste-text"></textarea>
+                    </div>
+                    <br />
+                    <br />
+                    <button type="button" class="btn btn-primary" id="cmfcmfmedia-paste-btn-parse" autocomplete="off">
+                        <i class="fa fa-fw fa-cog"></i> {{ __('Parse') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

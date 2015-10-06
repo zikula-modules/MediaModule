@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit bootstrap="./../../../lib/bootstrap.php">
+    <php>
+        <server name="KERNEL_DIR" value="app" />
+    </php>
+    <testsuites>
+        <testsuite name="Cmfcmf Media Module">
+            <directory>./Tests</directory>
+            <exclude>./Tests/Controller</exclude>
+            <exclude>./Tests/Entity/*/Repository</exclude>
+        </testsuite>
+    </testsuites>
+</phpunit>

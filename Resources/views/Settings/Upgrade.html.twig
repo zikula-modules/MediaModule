@@ -1,0 +1,26 @@
+{% extends 'CmfcmfMediaModule::AdminBase.html.twig' %}
+
+{% block upgradeNotification %}{% endblock %}
+
+{% block title %}{{ __('Upgrade module') }}{% endblock %}
+
+{% block content %}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Settings/Upgrade.js')) }}
+    {% if not hasPermission %}
+        <div class="alert alert-danger">
+            {{ __('Sorry, you need to have admin permissions for the ZikulaExtensionsModule to run the upgrade!') }}
+        </div>
+    {% endif %}
+    <ul class="fa-ul" id="cmfcmfmedia-settings-upgrade-steps-list">
+        {% for id, step in steps %}
+            <li class="text-muted" data-step="{{ id|e('html_attr') }}">
+                <i class="fa fa-li fa-fw {{ step.icon|e('html_attr') }}"></i>
+                {{ step.text }}
+            </li>
+        {% endfor %}
+    </ul>
+    <button class="btn btn-primary btn-lg" id="cmfcmfmedia-settings-upgrade-start-btn" data-steps="{{ steps|length|e('html_attr') }}" autocomplete="off"{% if not hasPermission %} disabled{% endif %}>
+        <i class="fa fa-fw fa-cog fa-spin hidden"></i>
+        {{ __('Start upgrade') }}
+    </button>
+{% endblock %}

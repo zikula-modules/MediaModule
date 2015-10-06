@@ -1,0 +1,19 @@
+<h1>{{ __('Please select the size to embed.') }}</h1>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.full|e('html_attr') }}">{{ __('Full') }}</button>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.medium|e('html_attr') }}">{{ __('Medium') }}</button>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.small|e('html_attr') }}">{{ __('Small') }}</button>
+<script type="text/javascript">
+    (function ($) {
+        $('.cmfcmfmedia-btn-popup-embed').click(function () {
+            var html = $(this).data('embed-code');
+            switch (window.opener.CmfcmfMediaModule.currentEditor) {
+                case 'ckeditor':
+                    window.opener.CmfcmfMediaModule.currentEditorInstance.insertHtml(html);
+                    break;
+            }
+            window.opener.toastr['success']('The media object has been successfully inserted.', 'Media object inserted');
+            window.opener.focus();
+            window.close();
+        })
+    })(jQuery);
+</script>

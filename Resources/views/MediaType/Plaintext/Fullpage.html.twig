@@ -1,0 +1,13 @@
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/highlight.min.js'), 98) }}
+{{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/vendor/highlight.min.css'), 98) }}
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/MediaType/Plaintext/Fullpage.js')) }}
+
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/Fullscreen.js')) }}
+{{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/Display/Fullscreen.css')) }}
+<button type="button" class="cmfcmfmedia-fullscreen-btn btn btn-default" data-fullscreen-element="#cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}">
+    <i class="fa fa-fw fa-arrows-alt"></i> {{ __('Fullscreen') }}
+</button>
+<br />
+<br />
+
+<pre id="cmfcmfmedia-media-display-{{ entity.id }}"><i class="fa fa-fw fa-3x fa-times pull-right fullscreen-exit-btn hidden"></i><code class="cmfcmfmedia-plaintext-highlight">{{ content }}</code></pre>

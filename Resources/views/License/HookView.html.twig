@@ -1,0 +1,20 @@
+{% if licenses is not empty %}
+    <h3>{{ _n('License', 'Licenses', licenses|length) }}</h3>
+    {{ _n('This content is licensed under the following license', 'This content is licensed under the following licenses', licenses|length) }}:
+    <ul>
+        {% for license in licenses %}
+            <li>
+                {% if license.imageUrl is not empty %}
+                    <img src="{{ license.imageUrl|e('html_attr') }}" alt="" />
+                {% endif %}
+                {% if license.url is not empty %}
+                    <a href="{{ license.url|e('html_attr') }}">
+                {% endif %}
+                {{ license.title }}
+                {% if license.url is not empty %}
+                    </a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

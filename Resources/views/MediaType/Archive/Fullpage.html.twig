@@ -1,0 +1,21 @@
+{% if entity.numberOfFiles is sameas(false) %}
+    <div class="alert alert-warning">
+        {{ __('The contained files can not be displayed.') }}
+    </div>
+{% endif %}
+{% if entity.extraData.files %}
+    <ul class="list-unstyled">
+        {% set currentDir = '' %}
+        {% for file in entity.extraData.files %}
+            <li>
+                {% if file|slice(-1) == '/' %}
+                    {% set currentDir = '' %}
+                {% endif %}
+                {% for part in file|trim('/')|split('/')|slice(0, -1) %}
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                {% endfor %}
+                {{ file|slice(currentDir|length)|trim('/') }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

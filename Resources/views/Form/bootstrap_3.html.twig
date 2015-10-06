@@ -1,0 +1,26 @@
+{% extends 'bootstrap_3_horizontal_layout.html.twig' %}
+
+{% block form_help -%}
+    {% for attrname, attrvalue in attr %}
+        {% if attrname == 'help' %}
+            <span class="help-block">{{ attrvalue }}</span>
+        {% endif %}
+    {% endfor %}
+{%- endblock form_help %}
+
+{% block form_errors -%}
+    {{ parent() }}
+    {{- block('form_help') -}}
+{%- endblock form_errors %}
+
+{%- block widget_attributes -%}
+    {% set tmp = false %}
+    {% if attr.help is defined %}
+        {% set tmp = attr.help %}
+        {% set attr = attr|merge({help: false}) %}
+    {% endif %}
+    {{ parent() }}
+    {% if tmp != false %}
+        {% set attr = attr|merge({help: tmp}) %}
+    {% endif %}
+{%- endblock widget_attributes -%}

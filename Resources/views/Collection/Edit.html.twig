@@ -1,0 +1,19 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block title __('Create or edit collection') %}
+{% block content %}
+    {% include 'CmfcmfMediaModule::util.html.twig' %}
+    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ hook|raw }}
+    <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-success">
+            <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
+        </button>
+        <a href="{{ path('cmfcmfmediamodule_collection_displayroot') }}" class="btn btn-default">
+            <i class="fa fa-fw fa-ban"></i> {{  __('Cancel') }}
+        </a>
+    </div>
+    {{ form_end(form) }}
+{% endblock %}

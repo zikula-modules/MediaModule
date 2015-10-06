@@ -1,0 +1,62 @@
+{% extends 'CmfcmfMediaModule::Base.html.twig' %}
+{% block title %}
+    {{ __('Watermarks') }}
+{% endblock %}
+{% block content %}
+    {% if cmfcmfmediamodule_hasPermission('watermark', 'new') %}
+        <a href="{{ path('cmfcmfmediamodule_watermark_new', {type: 'image'}) }}" class="btn btn-default">
+            <i class="fa fa-fw fa-picture-o"></i>
+            {{ __('Create a new image-based watermark') }}
+        </a>
+        <a href="{{ path('cmfcmfmediamodule_watermark_new', {type: 'text'}) }}" class="btn btn-default">
+            <i class="fa fa-fw fa-font"></i>
+            {{ __('Create a new text-based watermark') }}
+        </a>
+        <br />
+        <br />
+    {% endif %}
+
+    <div class="table-responsive">
+        <table class="table table-condensed table-striped table-hover">
+            <thead>
+            <tr>
+                <th>{{ __('ID') }}</th>
+                <th>{{ __('Title') }}</th>
+                <th>{{ __('Content') }}</th>
+                <th>{{ __('Position') }}</th>
+                <th>{{ __('Image size') }}</th>
+                <th>{{ __('Relative size') }}</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.id }}</td>
+                    <td>{{ entity.title }}</td>
+                    <td>{{ entity.viewTableContent|raw }}</td>
+                    <td>{{ entity.positionX }} x {{ entity.positionY }}</td>
+                    <td>{{ entity.minSizeX }} x {{ entity.minSizeY }}</td>
+                    <td>
+                        {% if entity.relativeSize is not null %}
+                            {{ entity.relativeSize }} %
+                        {% endif %}
+                    </td>
+                    <td class="text-right">
+                        {% if cmfcmfmediamodule_hasPermission(entity, 'edit') %}
+                            <a href="{{ path('cmfcmfmediamodule_watermark_edit', {id: entity.id}) }}">
+                                <i class="fa fa-edit fa-fw"></i>
+                            </a>
+                        {% endif %}
+                        {% if cmfcmfmediamodule_hasPermission(entity, 'delete') %}
+                            <a href="{{ path('cmfcmfmediamodule_watermark_delete', {id: entity.id}) }}" class="text-danger">
+                                <i class="fa fa-trash-o fa-fw"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

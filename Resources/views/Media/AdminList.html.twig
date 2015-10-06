@@ -1,0 +1,79 @@
+{% extends 'CmfcmfMediaModule::AdminBase.html.twig' %}
+{% block title __('Media list') %}
+{% block content %}
+    <div class="table-responsive">
+        <table class="table table-condensed table-striped">
+            <thead>
+            <tr>
+                {#<th>{{ __('Position') }}</th>#}
+                <th>{{ __('Id') }}</th>
+                <th>{{ __('Thumbnail') }}</th>
+                <th>{{ __('Title') }}</th>
+                <th>{{ __('Collection') }}</th>
+                <th>{{ __('License') }}</th>
+                <th>{{ __('Actions') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in paginator %}
+                <tr>
+                    {#<td>{{ entity.position }}</td>#}
+                    <td>
+                        <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}">
+                            {{ entity.id }}
+                        </a>
+                    </td>
+                    <td>
+                        {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(entity) %}
+                        {% set thumbnail =  mediaType.thumbnail(entity, 200, 100, 'url') %}
+                        {% if thumbnail %}
+                            <img src="{{ thumbnail|e('html_attr') }}" alt="{{ entity.title|e('html_attr') }}" style="max-width: 200px; max-height: 100px" />
+                        {% else %}
+                            <i class="fa fa-fw fa-5x {{ mediaType.icon }}"></i>
+                        {% endif %}
+                    </td>
+                    <td>{{ entity.title }}</td>
+                    <td>{{ entity.collection.title }}</td>
+                    <td>{% if entity.license %}{{ entity.license.title }}{% else %}--{% endif %}</td>
+                    <td class="text-right">
+                        <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" title="{{ __('Show')|e('html_attr') }}">
+                            <i class="fa fa-fw fa-eye"></i>
+                        </a>
+                        <a href="{{ path('cmfcmfmediamodule_media_edit', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}">
+                            <i class="fa fa-fw fa-edit"></i>
+                        </a>
+                        <a href="{{ path('cmfcmfmediamodule_media_delete', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}">
+                            <i class="fa fa-fw fa-trash-o text-danger"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="text-center warning">
+                        {{ __('No media available yet!') }}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <nav>
+        <ul class="pager">
+            <li class="previous{% if page == 1 %} disabled{% endif %}">
+                <a href="{{ path('cmfcmfmediamodule_media_adminlist', {page: (page - 1)}) }}">
+                    <span aria-hidden="true">&larr;</span> {{ __('Previous') }}
+                </a>
+            </li>
+            <li class="next{% if page == maxPage %} disabled{% endif %}">
+                <a href="{{ path('cmfcmfmediamodule_media_adminlist', {page: (page + 1)}) }}">
+                    {{ __('Next') }} <span aria-hidden="true">&rarr;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    {% if cmfcmfmediamodule_hasPermission('media', 'new') %}
+        <a href="{{ path('cmfcmfmediamodule_media_new') }}" class="btn btn-default">
+            <i class="fa fa-fw fa-plus"></i> {{ __('Create new media') }}
+        </a>
+    {% endif %}
+{% endblock %}

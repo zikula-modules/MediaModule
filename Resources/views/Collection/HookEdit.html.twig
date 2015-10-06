@@ -1,0 +1,10 @@
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/jstree/jstree.min.js'), 98) }}
+{{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/jstree/themes/default/style.min.css'), 98) }}
+
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Collection/HookEdit.js')) }}
+
+<h3>{{ __('Media collections') }}</h3>
+
+<!-- <input type="text" class="form-control" id="cmfcmfmedia-hook-collection-tree-search" /> -->
+<input type="hidden" name="cmfcmfmediamodule[collections]" value="{{ selectedCollections|json_encode|e('html_attr') }}" />
+{% include 'CmfcmfMediaModule:Collection:TreeSelect.html.twig' with {'hookedObject': hookedObject} %}
