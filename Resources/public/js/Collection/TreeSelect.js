@@ -18,12 +18,22 @@
                     'data': function (node) {
                         return {'id': node.id};
                     }
-                }
+                },
+                'multiple': $tree.data('multiple')
             },
             'checkbox': {
                 'three_state': false
             }
         });
+
+        var inputName = $tree.data('input-name');
+        if (inputName) {
+            $('#cmfcmfmedia-hook-collection-tree').on('changed.enable_checkbox.jstree', function (e, data) {
+                $('input[name="' + inputName + '"]').val(JSON.stringify(data.selected));
+            }).on('changed.disable_checkbox.jstree', function (e, data) {
+                $('input[name="' + inputName + '"]').val(JSON.stringify(data.selected));
+            });
+        }
 
         //var to = false;
         //var $searchInput = $('#cmfcmfmedia-hook-collection-tree-search');
