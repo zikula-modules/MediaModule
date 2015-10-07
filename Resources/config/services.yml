@@ -33,7 +33,7 @@ services:
   # Link container
   cmfcmf_media_module.container.links:
     class: Cmfcmf\Module\MediaModule\Container\LinkContainer
-    arguments: [@router, @cmfcmf_media_module.security_manager]
+    arguments: [@router, @cmfcmf_media_module.security_manager, @translator]
     tags:
       - { name: zikula.link_container }
 

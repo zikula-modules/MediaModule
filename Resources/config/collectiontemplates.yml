@@ -1,7 +1,7 @@
 services:
   cmfcmf_media_module.collection_template.abstract_service:
     abstract: true
-    arguments: [@templating]
+    arguments: [@templating, @translator]
 
   cmfcmf_media_module.collection_template.cards:
     class: Cmfcmf\Module\MediaModule\CollectionTemplate\CardsTemplate

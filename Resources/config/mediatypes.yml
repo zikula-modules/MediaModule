@@ -1,7 +1,7 @@
 services:
   cmfcmf_media_module.media_type.abstract_media:
     abstract: true
-    arguments: [@templating]
+    arguments: [@templating, @translator]
 
   cmfcmf_media_module.media_type.abstract_file:
     parent: cmfcmf_media_module.media_type.abstract_media

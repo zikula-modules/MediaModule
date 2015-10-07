@@ -14,7 +14,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getDisplayName()
     {
-        return $this->__('Twitter');
+        return $this->translator->trans('Twitter', [], $this->domain);
     }
 
     public function isEnabled()
@@ -58,7 +58,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
         $entity
             ->setTweetId($tweetId)
-            ->setTitle($this->__('Tweet by: ') . $tweetInfo['user']['name'])
+            ->setTitle($this->translator->trans('Tweet by: ', [], $this->domain) . $tweetInfo['user']['name'])
             ->setAuthor($tweetInfo['user']['name'])
             ->setAuthorUrl('https://twitter.com/' . $tweetInfo['user']['screen_name'])
             ->setAuthorAvatarUrl($tweetInfo['user']['profile_image_url_https'])
@@ -104,7 +104,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         return '<div>' . $this->renderEngine->render('CmfcmfMediaModule:MediaType/Twitter:Fullpage.html.twig', [
             'entity' => $entity,
             'usePageAddAsset' => false,
-            'placeholder' => $this->__('This is where the Tweet will appear.')
+            'placeholder' => $this->translator->trans('This is where the Tweet will appear.', [], $this->domain)
         ]) . '</div><p></p>';
     }
 
@@ -155,15 +155,15 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
             $results['results'][] = [
                 [
                     'tweetId' => $status['id'],
-                    'title' => $this->__('Tweet by: ') . $status['user']['name'],
+                    'title' => $this->translator->trans('Tweet by: ', [], $this->domain) . $status['user']['name'],
                     'author' => $status['user']['name'],
                     'authorUrl' => 'https://twitter.com/' . $status['user']['screen_name'],
                     'authorAvatarUrl' => $status['user']['profile_image_url_https'],
                     'url' => 'https://twitter.com/' . $status['user']['screen_name'] . '/status/' . $status['id']
                 ],
                 $status['user']['profile_image_url_https'],
-                $status['user']['name'] . "\n" . $this->__('Followers: ') . $status['user']['followers_count'],
-                $this->__('Tweet'),
+                $status['user']['name'] . "\n" . $this->translator->trans('Followers: ', [], $this->domain) . $status['user']['followers_count'],
+                $this->translator->trans('Tweet', [], $this->domain),
                 $status['text']
             ];
         }
@@ -217,8 +217,8 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 //            $results['results'][] = [
 //                ['special stuff'],
 //                $user['profile_image_url_https'],
-//                $user['name'] . "\n" . $this->__('Followers: ') . $user['followers_count'],
-//                $this->__('Profile'),
+//                $user['name'] . "\n" . $this->translator->trans('Followers: ', [], $this->domain) . $user['followers_count'],
+//                $this->translator->trans('Profile', [], $this->domain),
 //                $user['description']
 //            ];
 //        }

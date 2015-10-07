@@ -13,7 +13,7 @@ class Flickr extends AbstractMediaType implements WebMediaTypeInterface
      */
     public function getDisplayName()
     {
-        return $this->__('Flickr');
+        return $this->translator->trans('Flickr', [], $this->domain);
     }
 
     public function isEnabled()

@@ -15,7 +15,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function getDisplayName()
     {
-        return $this->__('Image');
+        return $this->translator->trans('Image', [], $this->domain);
     }
 
     /**
@@ -40,7 +40,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         $meta = [];
         if (isset($data['resolution_x']) && isset($data['resolution_y'])) {
             $meta[] = [
-                'title' => $this->__('Resolution'),
+                'title' => $this->translator->trans('Resolution', [], $this->domain),
                 'value' => $data['resolution_x'] . ' x ' . $data['resolution_y']
             ];
         }
@@ -48,13 +48,13 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             if (isset($data['exif']['IFD0'])) {
                 if (isset($data['exif']['IFD0']['Model'])) {
                     $meta[] = [
-                        'title' => $this->__('Camera'),
+                        'title' => $this->translator->trans('Camera', [], $this->domain),
                         'value' => $data['exif']['IFD0']['Model']
                     ];
                 }/*
                 if (isset($data['exif']['IFD0']['Orientation'])) {
                     $meta[] = [
-                        'title' => $this->__('Orientation'),
+                        'title' => $this->translator->trans('Orientation', [], $this->domain),
                         'value' => $data['exif']['IFD0']['Orientation'] // @todo Convert to readable output
                     ];
                 }*/
@@ -62,37 +62,39 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             if (isset($data['exif']['EXIF'])) {
                 if (isset($data['exif']['EXIF']['FNumber'])) {
                     $meta[] = [
-                        'title' => $this->__('Aperture'),
+                        'title' => $this->translator->trans('Aperture', [], $this->domain),
                         'value' => "f/" . $data['exif']['EXIF']['FNumber']
                     ];
                 }
                 if (isset($data['exif']['EXIF']['ISOSpeedRatings'])) {
                     $meta[] = [
-                        'title' => $this->__('ISO value'),
+                        'title' => $this->translator->trans('ISO value', [], $this->domain),
                         'value' => $data['exif']['EXIF']['ISOSpeedRatings']
                     ];
                 }
                 if (isset($data['exif']['EXIF']['ShutterSpeedValue'])) {
                     $meta[] = [
-                        'title' => $this->__('Shutter speed'),
+                        'title' => $this->translator->trans('Shutter speed', [], $this->domain),
                         'value' => "f/" . $data['exif']['EXIF']['ShutterSpeedValue']
                     ];
                 }
                 if (isset($data['exif']['EXIF']['Flash'])) {
                     $meta[] = [
-                        'title' => $this->__('Flash'),
-                        'value' => $this->didFlashFire($data['exif']['EXIF']['Flash']) ? $this->__('on') : $this->__('off')
+                        'title' => $this->translator->trans('Flash', [], $this->domain),
+                        'value' => $this->didFlashFire($data['exif']['EXIF']['Flash'])
+                            ? $this->translator->trans('on', [], $this->domain)
+                            : $this->translator->trans('off', [], $this->domain)
                     ];
                 }
                 if (isset($data['exif']['EXIF']['FocalLength'])) {
                     $meta[] = [
-                        'title' => $this->__('Focal length'),
+                        'title' => $this->translator->trans('Focal length', [], $this->domain),
                         'value' => $data['exif']['EXIF']['FocalLength'] . " mm"
                     ];
                 }
                 if (isset($data['exif']['EXIF']['MeteringMode'])) {
                     $meta[] = [
-                        'title' => $this->__('Metering mode'),
+                        'title' => $this->translator->trans('Metering mode', [], $this->domain),
                         'value' => $this->convertMeteringMode($data['exif']['EXIF']['MeteringMode'])
                     ];
                 }
@@ -175,7 +177,6 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             $this->getPreset($entity, $entity->getPath(), $width, $height, $mode, $optimize)
         );
 
-        $path = $this->imagineManager->getThumb($entity->getPath(), $entity->getImagineId());
         $path = $this->imagineManager->getThumb($entity->getPath(), $entity->getImagineId());
 
         $url = \System::getBaseUri() . '/' . $path;

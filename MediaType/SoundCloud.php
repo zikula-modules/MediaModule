@@ -13,7 +13,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
      */
     public function getDisplayName()
     {
-        return $this->__('SoundCloud');
+        return $this->translator->trans('SoundCloud', [], $this->domain);
     }
 
     public function isEnabled()

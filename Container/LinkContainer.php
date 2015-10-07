@@ -5,6 +5,7 @@ namespace Cmfcmf\Module\MediaModule\Container;
 
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\Core\LinkContainer\LinkContainerInterface;
 
 class LinkContainer implements LinkContainerInterface
@@ -24,11 +25,17 @@ class LinkContainer implements LinkContainerInterface
      */
     private $domain;
 
-    public function __construct(RouterInterface $router, SecurityManager $securityManager)
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(RouterInterface $router, SecurityManager $securityManager, TranslatorInterface $translator)
     {
         $this->router = $router;
         $this->securityManager = $securityManager;
         $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
+        $this->translator = $translator;
     }
 
     /**
@@ -54,42 +61,42 @@ class LinkContainer implements LinkContainerInterface
         if ($this->securityManager->hasPermission('collection', 'view')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_collection_displayroot'),
-                'text' => __('Frontend', $this->domain),
+                'text' => $this->translator->trans('Frontend', [], $this->domain),
                 'icon' => 'home'
             ];
         }
         if ($this->securityManager->hasPermission('media', 'moderate')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_media_adminlist'),
-                'text' => __('Media list', $this->domain),
+                'text' => $this->translator->trans('Media list', [], $this->domain),
                 'icon' => 'picture-o'
             ];
         }
         if ($this->securityManager->hasPermission('watermark', 'moderate')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_watermark_index'),
-                'text' => __('Watermarks', $this->domain),
+                'text' => $this->translator->trans('Watermarks', [], $this->domain),
                 'icon' => 'map-marker'
             ];
         }
         if ($this->securityManager->hasPermission('license', 'moderate')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_license_index'),
-                'text' => __('Licenses', $this->domain),
+                'text' => $this->translator->trans('Licenses', [], $this->domain),
                 'icon' => 'copyright'
             ];
         }
         if ($this->securityManager->hasPermission('settings', 'admin')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_settings_settings'),
-                'text' => __('Settings', $this->domain),
+                'text' => $this->translator->trans('Settings', [], $this->domain),
                 'icon' => 'cog'
             ];
         }
         if ($this->securityManager->hasPermission('settings', 'admin')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_settings_upgrade'),
-                'text' => __('Upgrade', $this->domain),
+                'text' => $this->translator->trans('Upgrade', [], $this->domain),
                 'icon' => 'download'
             ];
         }

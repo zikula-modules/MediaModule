@@ -6,6 +6,6 @@ class SliderTemplate extends AbstractTemplate
 {
     public function getTitle()
     {
-        return $this->__('Big thumbnail slider');
+        return $this->translator->trans('Big thumbnail slider', [], $this->domain);
     }
 }

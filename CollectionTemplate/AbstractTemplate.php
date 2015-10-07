@@ -6,21 +6,31 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\Translation\TranslationTrait;
 use Symfony\Component\Templating\EngineInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\Common\I18n\TranslatableInterface;
 
-abstract class AbstractTemplate implements TemplateInterface, TranslatableInterface
+abstract class AbstractTemplate implements TemplateInterface
 {
-    use TranslationTrait;
-
     /**
      * @var EngineInterface
      */
     protected $renderEngine;
 
-    public function __construct(EngineInterface $renderEngine)
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    /**
+     * @var string
+     */
+    protected $domain;
+
+    public function __construct(EngineInterface $renderEngine, TranslatorInterface $translator)
     {
         $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
         $this->renderEngine = $renderEngine;
+        $this->translator = $translator;
     }
 
     public function getName()

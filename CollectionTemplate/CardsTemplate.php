@@ -6,6 +6,6 @@ class CardsTemplate extends AbstractTemplate
 {
     public function getTitle()
     {
-        return $this->__('Cards with thumbnails');
+        return $this->translator->trans('Cards with thumbnails', [], $this->domain);
     }
 }

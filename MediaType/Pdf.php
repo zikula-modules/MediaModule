@@ -15,7 +15,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
      */
     public function getDisplayName()
     {
-        return $this->__('PDF');
+        return $this->translator->trans('PDF', [], $this->domain);
     }
 
     /**

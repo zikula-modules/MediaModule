@@ -3,24 +3,27 @@
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Translation\TranslationTrait;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Zikula\Common\I18n\TranslatableInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
-abstract class AbstractMediaType implements MediaTypeInterface, TranslatableInterface
+abstract class AbstractMediaType implements MediaTypeInterface
 {
-    use TranslationTrait;
-
     /**
      * @var EngineInterface
      */
     protected $renderEngine;
 
-    public function __construct(EngineInterface $renderEngine)
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    public function __construct(EngineInterface $renderEngine, TranslatorInterface $translator)
     {
         $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
         $this->renderEngine = $renderEngine;
+        $this->translator = $translator;
     }
 
     public function isEnabled()

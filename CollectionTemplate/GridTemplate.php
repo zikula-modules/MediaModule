@@ -6,6 +6,6 @@ class GridTemplate extends AbstractTemplate
 {
     public function getTitle()
     {
-        return $this->__('Seamless and responsive grid');
+        return $this->translator->trans('Seamless and responsive grid', [], $this->domain);
     }
 }

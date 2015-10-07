@@ -17,7 +17,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function getDisplayName()
     {
-        return $this->__('Video');
+        return $this->translator->trans('Video', [], $this->domain);
     }
 
     /**
@@ -39,25 +39,25 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         $extraData = $entity->getExtraData();
         if (isset($extraData['title'][0])) {
             $meta[] = [
-                'title' => $this->__('Title'),
+                'title' => $this->translator->trans('Title', [], $this->domain),
                 'value' => $extraData['title'][0]
             ];
         }
         if (isset($extraData['creation_date'][0])) {
             $meta[] = [
-                'title' => $this->__('Year'),
+                'title' => $this->translator->trans('Year', [], $this->domain),
                 'value' => $extraData['creation_date'][0]
             ];
         }
         if (isset($extraData['genre'][0])) {
             $meta[] = [
-                'title' => $this->__('Genre'),
+                'title' => $this->translator->trans('Genre', [], $this->domain),
                 'value' => $extraData['genre'][0]
             ];
         }
         if (isset($extraData['playtime_seconds'])) {
             $meta[] = [
-                'title' => $this->__('Duration'),
+                'title' => $this->translator->trans('Duration', [], $this->domain),
                 'value' => $this->formatDuration($extraData['playtime_seconds'])
             ];
         }
@@ -66,19 +66,19 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
             if (isset($video['resolution_x']) && isset($video['resolution_y'])) {
                 $meta[] = [
-                    'title' => $this->__('Resolution'),
+                    'title' => $this->translator->trans('Resolution', [], $this->domain),
                     'value' => $video['resolution_x'] . " x " . $video['resolution_y']
                 ];
             }
             if (isset($video['frame_rate'])) {
                 $meta[] = [
-                    'title' => $this->__('Frame rate'),
+                    'title' => $this->translator->trans('Frame rate', [], $this->domain),
                     'value' => (int)$video['frame_rate']
                 ];
             }
             if (isset($video['bitrate'])) {
                 $meta[] = [
-                    'title' => $this->__('Video bit rate'),
+                    'title' => $this->translator->trans('Video bit rate', [], $this->domain),
                     'value' => (int)$video['bitrate']
                 ];
             }
@@ -88,19 +88,19 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
             if (isset($audio['channels'])) {
                 $meta[] = [
-                    'title' => $this->__('Audio channels'),
+                    'title' => $this->translator->trans('Audio channels', [], $this->domain),
                     'value' => $audio['channels']
                 ];
             }
             if (isset($audio['sample_rate'])) {
                 $meta[] = [
-                    'title' => $this->__('Audio sample rate'),
+                    'title' => $this->translator->trans('Audio sample rate', [], $this->domain),
                     'value' => $audio['sample_rate']
                 ];
             }
             if (isset($audio['bitrate'])) {
                 $meta[] = [
-                    'title' => $this->__('Audio bit rate'),
+                    'title' => $this->translator->trans('Audio bit rate', [], $this->domain),
                     'value' => $audio['bitrate']
                 ];
             }
@@ -189,6 +189,6 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
         $time = "$minutes:$seconds";
 
-        return $this->__f("%s min", [$time]);
+        return $this->translator->trans("%s min", ['%s' => $time], $this->domain);
     }
 }

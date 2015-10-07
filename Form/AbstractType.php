@@ -87,7 +87,7 @@ abstract class AbstractType extends BaseAbstractType implements TranslatableInte
      *
      * @param string $m1 Singular.
      * @param string $m2 Plural.
-     * @param integer $n Count.
+     * @param integer $n Count.g
      * @param string|array $param Format parameters.
      *
      * @return string

@@ -14,7 +14,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getDisplayName()
     {
-        return $this->__('YouTube');
+        return $this->translator->trans('YouTube', [], $this->domain);
     }
 
     public function isEnabled()
@@ -129,20 +129,20 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
             switch ($searchResult['id']['kind']) {
                 case 'youtube#video':
                     $type = 'video';
-                    $typeName = $this->__('Video');
+                    $typeName = $this->translator->trans('Video', [], $this->domain);
                     $id = $searchResult['id']['videoId'];
                     $url = 'https://youtube.com/watch?v=' . urlencode($id);
                     break;
                 case 'youtube#channel':
                     $type = 'channel';
-                    $typeName = $this->__('Channel');
+                    $typeName = $this->translator->trans('Channel', [], $this->domain);
                     $id = $searchResult['id']['channelId'];
                     $url = 'https://youtube.com/channel/' . urlencode($id);
                     $authorAvatarUrl = $searchResult['snippet']['thumbnails']['high']['url'];
                     break;
                 case 'youtube#playlist':
                     $type = 'playlist';
-                    $typeName = $this->__('Playlist');
+                    $typeName = $this->translator->trans('Playlist', [], $this->domain);
                     $id = $searchResult['id']['playlistId'];
                     $url = 'https://youtube.com/playlist/?list=' . urlencode($id);
                     break;
