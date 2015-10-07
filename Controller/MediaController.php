@@ -64,7 +64,7 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/edit/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"slug" = "slug"})
+     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template()
      *
      * @param Request $request
@@ -154,7 +154,7 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/delete/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"slug" = "slug"})
+     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template()
      *
      * @param Request $request
@@ -552,7 +552,7 @@ class MediaController extends AbstractController
     /**
      * @Route("/download/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
      * @Method("GET")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractFileEntity", options={"slug" = "slug"})
+     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractFileEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @param AbstractFileEntity $entity
      * @return BinaryFileResponse
      */
@@ -580,7 +580,7 @@ class MediaController extends AbstractController
     /**
      * @Route("/show/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"}, options={"expose" = true})
      * @Method("GET")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"slug" = "slug"})
+     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template()
      *
      * @param AbstractMediaEntity $entity
