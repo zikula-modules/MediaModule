@@ -1,0 +1,883 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zikula 1.x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2015-10-07 15:08+0100\n"
+"Last-Translator: Christian Flach <cmfcmf.flach@gmail.com>\n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.1\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "%s display hooks"
+msgstr "%s Display Hooks"
+
+msgid "%s hooks"
+msgstr "%s Hooks"
+
+msgid "%s min"
+msgstr "%s min"
+
+msgid "A title for you to recognize the watermark."
+msgstr "Ein Titel, sodass Sie das Wasserzeichen einfach wiedererkennen."
+
+msgid "Actions"
+msgstr "Aktionen"
+
+msgid "Add files (try drag and drop as well!)"
+msgstr "Dateien hinzufügen (probieren Sie auch Drag'n'Drop!)"
+
+msgid "Add medium from the Web"
+msgstr "Medium aus dem Internet hinzufügen"
+
+msgid "Added by"
+msgstr "Hinzugefügt von"
+
+msgid "Album"
+msgstr "Album"
+
+msgid "Allow download"
+msgstr "Download erlauben"
+
+msgid "Allow to use for uploads"
+msgstr "Für Uploads erlauben"
+
+msgid "Allow to use for web embeds"
+msgstr "Für Web Einbindung erlauben"
+
+msgid "Aperture"
+msgstr "Blende"
+
+msgid "As is - use with editors like Scribite"
+msgstr "Wie es ist - zum benutzen mit Editoren wie Scribite"
+
+msgid "Attributions"
+msgstr "Zuschreibungen"
+
+msgid "Audio"
+msgstr "Audio"
+
+msgid "Audio bit rate"
+msgstr "Audio Bit Rate"
+
+msgid "Audio channels"
+msgstr "Audio Kanäle"
+
+msgid "Audio sample rate"
+msgstr "Audio Sample Rate"
+
+msgid "Author"
+msgstr "Autor"
+
+msgid "Author Avatar URL"
+msgstr "Autor Avatar URL"
+
+msgid "Author URL"
+msgstr "Autor URL"
+
+msgid "Author avatar"
+msgstr "Autor Avatar"
+
+msgid "Back to overview"
+msgstr "Zurück zur Übersicht"
+
+msgid "Back to the collection"
+msgstr "Zurück zur Sammlung"
+
+msgid "Back to the list"
+msgstr "Zurück zur Medienliste"
+
+msgid "Band"
+msgstr "Band"
+
+msgid "Big thumbnail slider"
+msgstr "Großer Slider"
+
+msgid "Bit rate"
+msgstr "Bit Rate"
+
+msgid "Camera"
+msgstr "Kamera"
+
+msgid "Cancel"
+msgstr " Abbrechen"
+
+msgid "Cards with thumbnails"
+msgstr "Karten mit Vorschaubildern"
+
+msgid "Change file"
+msgstr "Datei ändern"
+
+msgid "Change settings"
+msgstr "Einstellungen ändern"
+
+msgid "Channel"
+msgstr "Kanal"
+
+msgid "Channels"
+msgstr "Kanäle"
+
+msgid "Checking file system permissions"
+msgstr "Überprüfe Dateisystem Zugriffsrechte"
+
+msgid "Checking installed and available versions"
+msgstr "Überprüfe installierte und verfügbare Versionen"
+
+msgid "Checking server requirements"
+msgstr "Überprüfe Server Vorraussetzungen"
+
+msgid "Choose collections to embed"
+msgstr "Wählen Sie die Sammlungen zum einbetten"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Cmfcmf MediaModule"
+msgstr "Cmfcmf MedienModul"
+
+msgid "Cmfcmf MediaModule description"
+msgstr "Alle Arten von Medien verwalten und hochladen"
+
+msgid "Collection"
+msgstr "Sammlung"
+
+msgid "Collection description escaping strategy"
+msgstr "Sammlungsbeschreibung Escaping Strategie"
+
+msgid "Collections"
+msgstr "Sammlungen"
+
+msgid "Contained files"
+msgstr "Beinhaltete Dateien"
+
+msgid "Content"
+msgstr "Inhalt"
+
+msgid "Cover"
+msgstr "Cover"
+
+msgid "Create a new image-based watermark"
+msgstr "Neues Bild-basiertes Wasserzeichen erstellen"
+
+msgid "Create a new text-based watermark"
+msgstr "Neues Text-basiertes Wasserzeichen erstellen"
+
+msgid "Create new collection"
+msgstr "Neue Sammlung erstellen"
+
+msgid "Create new license"
+msgstr "Neue Lizenz erstellen"
+
+msgid "Create new media"
+msgstr "Neues Medium erstellen"
+
+msgid "Create new watermark"
+msgstr "Neues Wasserzeichen erstellen"
+
+msgid "Create or edit collection"
+msgstr "Sammlung erstellen oder bearbeiten"
+
+msgid "Create or edit license"
+msgstr "Lizenz erstellen oder bearbeiten"
+
+msgid "Deezer"
+msgstr "Deezer"
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "Default collection template"
+msgstr "Standard Template für Sammlungen"
+
+msgid "Delete"
+msgstr " Löschen"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Do you really want to delete this license?"
+msgstr "Wollen Sie diese Lizenz wirklich löschen?"
+
+msgid "Do you really want to delete this media object?"
+msgstr "Wollen Sie dieses Medienobjekt wirklich löschen?"
+
+msgid "Do you really want to delete this watermark?"
+msgstr "Wollen Sie dieses Wasserzeichen wirklich löschen?"
+
+msgid "Download"
+msgstr " Download"
+
+msgid "Download collection"
+msgstr "Sammlung herunterladen"
+
+msgid "Downloading new version"
+msgstr "Herunterladen der neuen Version"
+
+msgid "Duration"
+msgstr "Dauer"
+
+msgid "Edit"
+msgstr " Bearbeiten"
+
+msgid "Edit collection"
+msgstr "Sammlung bearbeiten"
+
+msgid "Edit or delete this example collection"
+msgstr "Bearbeiten oder löschen Sie diese Beispielsammlung"
+
+msgid "Embed"
+msgstr "Einbetten"
+
+msgid "Enabled for upload"
+msgstr "Zum Hochladen erlauben"
+
+msgid "Enabled for web embed"
+msgstr "Zur Web Einbindung erlauben"
+
+msgid "Example collection"
+msgstr "Beispielsammlung"
+
+msgid "Extracting new version"
+msgstr "Extrahiere neue version"
+
+msgid "Fast upload"
+msgstr "Schnelles Hochladen"
+
+msgid "File archive"
+msgstr "Dateiarchiv"
+
+msgid "File type not supported!"
+msgstr "Dateityp wird nicht unterstützt!"
+
+msgid "File upload"
+msgstr "Datei hochladen"
+
+msgid "File uploaded!"
+msgstr "Datei hochgeladen!"
+
+msgid "Find media and collections"
+msgstr "Medien und Sammlungen suchen"
+
+msgid "Flash"
+msgstr "Blitz"
+
+msgid "Flickr"
+msgstr "Flickr"
+
+msgid "Focal length"
+msgstr "Brennweite"
+
+msgid "Followers: "
+msgstr "Follower:"
+
+msgid "Font size"
+msgstr "Schriftgröße"
+
+msgid "Frame rate"
+msgstr "Framerate"
+
+msgid "Full"
+msgstr "Voll"
+
+msgid "Fullscreen"
+msgstr "Vollbild"
+
+msgid "Genre"
+msgstr "Genre"
+
+msgid ""
+"Go to http://soundcloud.com/you/apps/new and create a new application. The "
+"name doesn't matter. In the next screen, enter the url of your Zikula "
+"installation at \"Website of your App\" and leave \"Redirect URI for "
+"Authentication\" empty. Then save and paste the \"Client ID\" here."
+msgstr ""
+"Gehen Sie auf http://soundcloud.com/you/apps/new und erstellen Sie eine neue "
+"Anwendung. Der Name ist egal. Im nächsten Fenster geben Sie die URL Ihrer "
+"Zikula Installation bei \"Webseite Ihrer App\" ein und lassen \"Redirect URI "
+"for Authentication\" frei. Dann speichern und die \"Client ID\" hier "
+"hereinkopieren."
+
+msgid ""
+"Go to https://apps.twitter.com/ and create a new application. The name "
+"doesn't matter and \"Callback URL\" should be empty. Then go to \"Keys and "
+"Access Tokens\". At the bottom, click at \"Create my access token\"."
+msgstr ""
+"Gehen Sie auf https://apps.twitter.com/ und erstellen eine neue Anwendung. "
+"Der Name ist egal und \"Callback URL\" sollte leer bleiben. Dann auf \"Keys "
+"and Access Tokens\" gehen und unten auf \"Create my access token\" klicken."
+
+msgid ""
+"Go to https://console.developers.google.com/project and create a new "
+"project. The name and id don't matter. Then go to \"APIs and Authentication -"
+"> APIs\" and enable the \"YouTube Data API v3\". Then go to \"APIs and "
+"Authentication -> Credentials\" and click \"Add credentials -> API-Key -> "
+"Server-Key\". Again, the name does't matter. Then paste the API key here."
+msgstr ""
+"Gehen Sie auf https://console.developers.google.com/project und erstellen "
+"ein neues Projekt. Name und ID sind egal. Dann gehen Sie auf \"APIs and "
+"Authentication -> APIs\" und aktivieren die \"YouTube Data API v3\". Dann "
+"gehen Sie zu \"APIs and Authentication -> Credentials\" und klicken \"Add "
+"credentials -> API-Key -> Server-Key\". Wieder ist der Name egal, dann den "
+"API Key hierher kopieren."
+
+msgid "Google API Developer Key"
+msgstr "Google API Developer Key"
+
+msgid "Hook validation failed!"
+msgstr "Hook Validierung fehlgeschlagen!"
+
+msgid "Hooks"
+msgstr "Hooks"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "ISO value"
+msgstr "ISO Wert"
+
+msgid "Icon"
+msgstr "Symbol"
+
+msgid "Id"
+msgstr "ID"
+
+msgid ""
+"If you check this box, you will be able to embed media from the web using "
+"this license."
+msgstr ""
+"Wenn Sie hier einen Haken setzen, wird das Einbetten von Medien aus dem Web "
+"unter dieser Lizenz aktiviert."
+
+msgid ""
+"If you check this box, you will be able to upload media and license it under "
+"this license."
+msgstr ""
+"Wenn Sie hier einen Haken setzen, wird das Hochladen von Medien unter dieser "
+"Lizenz aktiviert."
+
+msgid ""
+"If you use the fast upload, all media will be uploaded instantly and you "
+"will only be able to select the collection to upload the media too. If you "
+"would like to edit further settings, i.e. titles, descriptions or licenses, "
+"you can do so by either not using the fast upload and uploading the media "
+"one by one or by editing the media after you uploaded everything"
+msgstr ""
+"Wenn Sie den Schnellen Upload verwenden, werden alle Mediendateien "
+"gleichzeitig hochgeladen. In diesem Fall können Sie bloß die Sammlung "
+"auswählen, in die die Dateien hochgeladen werden sollen. Wenn Sie weitere "
+"Einstellungen, zum Beispiel Titel, Beschreibung oder Lizenzen bearbeiten "
+"wollen, dürfen Sie entweder den Schnellen Upload nicht verwenden und müssen "
+"die Medien nacheinander hochladen oder die Medien nach dem Hochladen einzeln "
+"bearbeiten"
+
+msgid "Image"
+msgstr "Bild"
+
+msgid "Image Url"
+msgstr "Bild URL"
+
+msgid "Image size"
+msgstr "Bildgröße"
+
+msgid "Image to be used as watermark."
+msgstr "Bild zur Benutzung als Wasserzeichen"
+
+msgid "Insert search text"
+msgstr "Suchtext eingeben"
+
+msgid "Invalid data, errors: "
+msgstr "Ungültige Daten, Fehler:"
+
+msgid "Invalid step received"
+msgstr "Ungültiger Schritt erhalten"
+
+msgid ""
+"It seems like the Scribite / CKEditor integration is working! Make sure you "
+"use a \"special\" or \"full\" toolbar."
+msgstr ""
+"Es scheint als würde die Scribite / CKEditor Integrierung funktionieren! "
+"Stellen Sie sicher, dass Sie die \"special\" oder \"full\" Tollbar benutzen."
+
+msgid "License"
+msgstr "Lizenz"
+
+msgid "License ID"
+msgstr "Lizenz ID"
+
+msgid "License deleted!"
+msgstr "Lizenz gelöscht!"
+
+msgid "Licenses"
+msgstr "Lizenzen"
+
+msgid "License|Licenses"
+msgstr "Lizenz|Lizenzen"
+
+msgid "MarkDown"
+msgstr "MarkDown"
+
+msgid "Markdown"
+msgstr "MarkDown"
+
+msgid "Marks a license as outdated to give a visual hint while uploading."
+msgstr ""
+"Markieren Sie eine Lizenz als veraltet, um den Benutzern bei der Auswahl "
+"einen Hinweis zu geben."
+
+msgid "Media"
+msgstr "Medien"
+
+msgid "Media Module - %s"
+msgstr "MedienModule - %s"
+
+msgid "Media collections"
+msgstr "Sammlungen"
+
+msgid "Media description escaping strategy"
+msgstr "Medienbeschreibung Escaping Strategie"
+
+msgid "Media list"
+msgstr "Medienliste"
+
+msgid "Medium"
+msgstr "Medium"
+
+msgid "Metering mode"
+msgstr "Messmodus"
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "No media attached yet!"
+msgstr "Bisher keine Medien angehangen!"
+
+msgid "No media available yet!"
+msgstr "Bisher keine Medien verfügbar!"
+
+msgid "No release to upgrade to available!"
+msgstr "Keine Version zum upgrade verfügbar!"
+
+msgid "No watermark"
+msgstr "Kein Wasserzeichen"
+
+msgid "Only plaintext allowed."
+msgstr "Nur Klartext erlaubt."
+
+msgid "Optional url of a small license icon."
+msgstr "Optionale URL zu einem kleinen Icon für die Lizenz."
+
+msgid "Outdated"
+msgstr "Veraltet"
+
+msgid "PDF"
+msgstr "PDF"
+
+msgid "Parent"
+msgstr "Elternsammlung"
+
+msgid "Parse"
+msgstr "Analysieren"
+
+msgid "Paste URL / Embed code"
+msgstr "URL oder Einbettungscode einfügen"
+
+msgid "Paste url or embed code"
+msgstr "URL oder Einbettungscode einfügen"
+
+msgid "Plaintext"
+msgstr "Klartext"
+
+msgid "Playlist"
+msgstr "Wiedergabeliste"
+
+msgid "Please select the size to embed."
+msgstr "Bitte wählen Sie die einzubettende Größe"
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Previous"
+msgstr "Zurück"
+
+msgid "Publisher"
+msgstr "Verleger"
+
+msgid "Raw"
+msgstr "Roh"
+
+msgid "Relative size"
+msgstr "Relative Größe"
+
+msgid "Rendered"
+msgstr "Gerendert"
+
+msgid "Resolution"
+msgstr "Auflösung"
+
+msgid "Root collections"
+msgstr "Wurzelsammlungen"
+
+msgid "Running upgrade"
+msgstr "Führe Upgrade aus"
+
+msgid "Safe - no HTML permitted, only plain text"
+msgstr "Sicher - kein HTML erlaubt, nur Klartext"
+
+msgid "Sample rate"
+msgstr "Sample Rate"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Scribite integration"
+msgstr "Scribite Integration"
+
+msgid "Scribite is not installed."
+msgstr "Scribite ist nicht installiert"
+
+msgid "Seamless and responsive grid"
+msgstr "Responsives Gitter"
+
+msgid "Search the web"
+msgstr "Internet durchsuchen"
+
+msgid "Select a service below"
+msgstr "Service wählen"
+
+msgid "Select collection"
+msgstr "Sammlung wählen"
+
+msgid "Select license"
+msgstr "Lizenz wählen"
+
+msgid "Select template"
+msgstr "Template wählen"
+
+msgid "Select uploaded collection"
+msgstr "Hochgeladene Sammlung wählen"
+
+msgid "Select uploaded medium"
+msgstr "Hochgeladenes Medium wählen"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Settings saved!"
+msgstr "Einstellungen gespeichert!"
+
+msgid "Show"
+msgstr "Anzeigen"
+
+msgid "Show playlist"
+msgstr "Wiedergabeliste anzeigen"
+
+msgid "Shutter speed"
+msgstr "Belichtungszeit"
+
+msgid ""
+"Simply paste your URL or embed code here and we'll try to figure everything "
+"out."
+msgstr ""
+"Fügen Sie einfach die URL oder den Einbettungscode hier ein und wir machen "
+"den Rest."
+
+msgid "Small"
+msgstr "Klein"
+
+msgid "Smaller images will not be watermarked."
+msgstr "Kleinere Bilder werden nicht mit Wasserzeichen versehen."
+
+msgid ""
+"Someone else edited the collection. Please either cancel editing or force "
+"reload the page."
+msgstr ""
+"Jemand anderes hat die Sammlung bearbeitet. Bitte brechen Sie die "
+"Bearbeitung ab oder erzwingen Sie ein erneutes Laden der Seite."
+
+msgid ""
+"Someone else edited the watermark. Please either cancel editing or force "
+"reload the page."
+msgstr ""
+"Jemand anderes hat das Wasserzeichen bearbeitet. Bitte brechen Sie die "
+"Bearbeitung ab oder erzwingen Sie ein erneutes Laden der Seite."
+
+msgid "Something went wrong. The release doesn't contain a ZIP asset."
+msgstr "Etwas ist schief gegangen. Die neue Version hat keine ZIP Datei."
+
+msgid ""
+"Sorry, the collection appears to be empty or does not have any downloadable "
+"files."
+msgstr ""
+"Entschuldigung, die Sammlung scheint leer zu sein oder keine "
+"herunterladbaren Dateien zu erhalten."
+
+msgid ""
+"Sorry, you need to have admin permissions for the ZikulaExtensionsModule to "
+"run the upgrade!"
+msgstr ""
+"Entschuldigung, Sie brauchen Admin Berechtigungen für das "
+"ZikulaExtensionsModul um die Aktualisierung durchführen zu können!"
+
+msgid "SoundCloud"
+msgstr "SoundCloud"
+
+msgid "SoundCloud \"Client ID\""
+msgstr "SoundCloud \"Client ID\""
+
+msgid "Start"
+msgstr "Starten"
+
+msgid "Start upgrade"
+msgstr "Aktualisierung starten"
+
+msgid "Start upload"
+msgstr "Upload beginnen"
+
+msgid "Template"
+msgstr "Template"
+
+msgid "Temporary Upload Collection"
+msgstr "Temporäre Hochlade-Sammlung"
+
+msgid "Text to be used as watermark."
+msgstr "Text, der als Wasserzeichen benutzt werden soll"
+
+msgid ""
+"The %s version of the MediaModule is available for download. You can apply "
+"the automatic upgrade by clicking here:"
+msgstr ""
+"Die %s Version des Medien Moduls ist zum Download bereit. Sie können die "
+"automatische Aktualisierung durchführen, indem Sie hier klicken:"
+
+msgid "The contained files can not be displayed."
+msgstr "Die beinhalteten Dateien können nicht angezeigt werden."
+
+msgid ""
+"The font size to use, reagardless of the image size. Either this or the "
+"\"Relative size\" option must be set."
+msgstr ""
+"Die zu benutzende Schriftgröße, unabhängig von der Bildgröße. Entweder diese "
+"Option oder \"Relative Größe\" muss gesetzt werden."
+
+msgid ""
+"The id of the generated \"temporary upload collection\" must be 1, but has a "
+"different value. This should not have happened. Please report this error."
+msgstr ""
+"Die ID der generierten \"Temporären Hochlade-Sammlung\" muss 1 sein, hat "
+"aber einen anderen Wert. Dies sollte nicht passieren. Bitte melden Sie "
+"diesen Fehler."
+
+msgid "The place where you can look up the license text."
+msgstr "Ein Link zu einer Seite, auf der man sich den Lizenztext ansehen kann."
+
+msgid ""
+"The size of the watermark in percent. If set, it will resize the watermark "
+"accordingly."
+msgstr ""
+"Die Größe des Wasserzeichens in Prozent. Wenn gesetzt, wird das "
+"Wasserzeichen dementsprechend angepasst."
+
+msgid "The title of the license to use for displaying it."
+msgstr "Der Titel der Lizenz"
+
+msgid "The tweet is loading."
+msgstr "Der Tweet lädt."
+
+msgid "The upload was corrupted. Please try again!"
+msgstr "Die hochgeladene Datei war kaputt. Bitte versuchen Sie es erneut!"
+
+msgid ""
+"The x position of the watermark inside the picture. Negative numbers will "
+"position it right aligned."
+msgstr ""
+"Die X Position des Wasserzeichen innerhalb des Bildes. Negative Zahlen "
+"positionieren es rechts ausgerichtet."
+
+msgid ""
+"The y position of the watermark inside the picture. Negative numbers will "
+"position it bottom aligned."
+msgstr ""
+"Die Y Position des Wasserzeichen innerhalb des Bildes. Negative Zahlen "
+"positionieren es unten ausgerichtet."
+
+msgid "This collection is currently empty!"
+msgstr "Diese Sammlung ist im Moment leer."
+
+msgid ""
+"This collection is needed as temporary storage for uploaded files. Do not "
+"edit or delete!"
+msgstr ""
+"Diese Sammlung wird benötigt als temporärer Ort für hochgeladene Dateien "
+"benutzt. Nicht löschen oder bearbeiten!"
+
+msgid ""
+"This content is licensed under the following license|This content is "
+"licensed under the following licenses"
+msgstr ""
+"Dieser Inhalt ist lizensiert unter der folgenden Lizenz|Dieser inhalt ist "
+"lizensiert unter den folgenden Lizenzen"
+
+msgid "This is where the Tweet will appear."
+msgstr "Hier wird der Tweet erscheinen."
+
+msgid "Thumbnail"
+msgstr "Vorschaubild"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Track number"
+msgstr "Titelnummer"
+
+msgid "Tweet"
+msgstr "Tweet"
+
+msgid "Tweet by: "
+msgstr "Tweet von:"
+
+msgid "Twitter"
+msgstr "Twitter"
+
+msgid "Twitter API Access Token"
+msgstr "Twitter API Access Token"
+
+msgid "Twitter API Access Token Secret"
+msgstr "Twitter API Access Token Secret"
+
+msgid "Twitter API Consumer Key"
+msgstr "Twitter API Consumer Key"
+
+msgid "Twitter API Secret"
+msgstr "Twitter API Secret"
+
+msgid "Type"
+msgstr " Typ"
+
+msgid "Unknown"
+msgstr "Unbekannt"
+
+msgid "Unknown collection"
+msgstr "Unbekannte Sammlung"
+
+msgid "Unknown license"
+msgstr "Unbekannte Lizenz"
+
+msgid "Unknown media"
+msgstr "Unbekanntes Medium"
+
+msgid "Upgrade module"
+msgstr "Modul aktualisieren"
+
+msgid "Upgrade now!"
+msgstr "Jetzt aktualisieren!"
+
+msgid "Upload a file"
+msgstr "Datei hochladen"
+
+msgid "Url"
+msgstr "URL"
+
+msgid "Use syntax highlighting"
+msgstr "Syntax Hervorhebung aktivieren"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "Video bit rate"
+msgstr "Video Bit Rate"
+
+msgid "View collection"
+msgstr "Sammlung ansehen"
+
+msgid "View media"
+msgstr "Medium ansehen"
+
+msgid "Watermark"
+msgstr "Wasserzeichen"
+
+msgid "Watermark deleted!"
+msgstr "Wasserzeichen gelöscht!"
+
+msgid "Watermarks"
+msgstr "Wasserzeichen"
+
+msgid "Year"
+msgstr "Jahr"
+
+msgid "You may use HTML."
+msgstr "Sie können HTML benutzen."
+
+msgid "You may use MarkDown."
+msgstr "Sie können MarkDown benutzen"
+
+msgid "You must upload a file of the same type."
+msgstr ""
+"Sie müssen eine Datei des selben Typs hochladen, wie die bereits "
+"hochgeladene Datei."
+
+msgid ""
+"You should set \"Collection description escaping strategy\" to \"As is\" for "
+"Scribite to work properly!"
+msgstr ""
+"Sie sollten die \"Sammlungsbeschreibung Escaping Strategie\" auf \"Wie es ist"
+"\" stellen, damit Scribite ordentlich funktioniert!"
+
+msgid ""
+"You should set \"Media description escaping strategy\" to \"As is\" for "
+"Scribite to work properly!"
+msgstr ""
+"Sie sollten die \"Medienbeschreibung Escaping Strategie\" auf \"Wie es ist\" "
+"stellen, damit Scribite ordentlich funktioniert!"
+
+msgid ""
+"You won't be able to change the ID after creation. It should be something "
+"like \"gplv3\" or similar."
+msgstr ""
+"Sie werden die ID nach der Erstellung nicht mehr ändern können. Benutzen Sie "
+"etwas wie \"GPLv3\", oder ähnliches."
+
+msgid "YouTube"
+msgstr "YouTube"
+
+msgid "Your GitHub API Rate limit is exceeded. Please try again later."
+msgstr ""
+"Ihr GitHub API Zugriffslimit ist erschöpft. Versuchen Sie es später erneut."
+
+msgid "Your browser does not support the audio element."
+msgstr "Ihr Browser unterstützt das Audio Element nicht."
+
+msgid "[No parent]"
+msgstr "[Keine Elternsammlung]"
+
+msgid "and embed it"
+msgstr "und einbetten"
+
+msgid "at "
+msgstr "am"
+
+msgid "collections"
+msgstr "Sammlungen"
+
+msgid "no"
+msgstr "nein"
+
+msgid "off"
+msgstr "aus"
+
+msgid "on"
+msgstr "an"
+
+msgid "yes"
+msgstr "ja"
+
+#~ msgid "Anonymous"
+#~ msgstr "Anonym"
