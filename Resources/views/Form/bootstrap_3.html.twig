@@ -24,3 +24,17 @@
         {% set attr = attr|merge({help: tmp}) %}
     {% endif %}
 {%- endblock widget_attributes -%}
+
+{%- block cmfcmfmediamodule_font_choice_widget -%}
+    {{ pageAddAsset('stylesheet', fontUrl) }}
+    {{ block('choice_widget') }}
+    <script type="text/javascript">
+        // Using JavaScript here is extremely ugly. Oh well..
+        (function ($) {
+            $('#{{ id|e('js') }}').find('.radio label').each(function () {
+                var font = $(this).text();
+                $(this).css({'font-family': font});
+            });
+        })(jQuery);
+    </script>
+{%- endblock -%}

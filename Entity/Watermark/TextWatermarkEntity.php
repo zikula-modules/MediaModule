@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 
+use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Imagine\Image\ImagineInterface;
@@ -56,9 +57,9 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         return $this;
     }
 
-    public function getImagineImage(ImagineInterface $imagine, $width, $height)
+    public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height)
     {
-        $fontPath = __DIR__ . '/../../Resources/fonts/' . $this->font;
+        $fontPath = $fontCollection->getFontById($this->font)->getPath();
         if ($this->getAbsoluteSize() !== null) {
             $fontSize = $this->getAbsoluteSize();
         } else if ($this->getRelativeSize() !== null) {

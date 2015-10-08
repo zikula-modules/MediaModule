@@ -4,6 +4,7 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
+use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -29,11 +30,17 @@ abstract class AbstractFileMediaType extends AbstractMediaType
      */
     protected $imagineManager;
 
-    public function injectThings(ContainerInterface $container, FileLocatorInterface $fileLocator, $kernelRootDir)
+    /**
+     * @var FontCollection
+     */
+    private $fontCollection;
+
+    public function injectThings(ContainerInterface $container, FileLocatorInterface $fileLocator, FontCollection $fontCollection, $kernelRootDir)
     {
         $this->container = $container;
 
         $this->fileLocator = $fileLocator;
+        $this->fontCollection = $fontCollection;
         $this->zikulaRoot = realpath($kernelRootDir . '/..');
 
         /** @var \SystemPlugin_Imagine_Manager $imagineManager */
@@ -89,7 +96,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
         if ($optimize) {
             // Optimize for web and rotate the images (after thumbnail creation).
             $transformation
-                ->add(new \Imagine\Filter\Basic\Autorotate(), 1)
+                ->add(new \Imagine\Filter\Basic\Autorotate(), 101)
                 ->add(new \Imagine\Filter\Basic\WebOptimization(), 2)
             ;
         }
@@ -127,7 +134,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
         } else {
             throw new \LogicException();
         }
-        $watermarkImage = $watermark->getImagineImage($imagine, $wWidth, $wHeight);
+        $watermarkImage = $watermark->getImagineImage($imagine, $this->fontCollection, $wWidth, $wHeight);
         $watermarkSize = $watermarkImage->getSize();
 
         // Calculate watermark position. If the position is negative, handle

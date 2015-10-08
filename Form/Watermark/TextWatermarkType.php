@@ -22,28 +22,10 @@ class TextWatermarkType extends AbstractWatermarkType
                     'help' => $this->__('The font size to use, reagardless of the image size. Either this or the "Relative size" option must be set.')
                 ]
             ])
-            ->add('font', 'choice', [
-                'choices' => $this->getFonts(),
-                'expanded' => true
+            ->add('font', 'cmfcmfmediamodule_font_choice', [
+                'label' => $this->__('Font')
             ])
         ;
         parent::buildForm($builder, $options);
-    }
-
-    private function getFonts()
-    {
-        $fonts = [];
-        $finder = \Symfony\Component\Finder\Finder::create()
-            ->files()
-            ->name('*.ttf')
-            ->in(__DIR__ . '/../../Resources/fonts')
-        ;
-        /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($finder as $file) {
-            $fontName = pathinfo($file->getFilename(), PATHINFO_FILENAME);
-            $fonts[$file->getFilename()] = $fontName;
-        }
-
-        return $fonts;
     }
 }

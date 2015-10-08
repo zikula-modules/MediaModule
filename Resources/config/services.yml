@@ -17,6 +17,13 @@ services:
     arguments: [%kernel.cache_dir%]
 
 
+  # Form types
+  cmfcmf_media_module.form.type.font:
+    class: Cmfcmf\Module\MediaModule\Form\Type\FontType
+    arguments: [@cmfcmf_media_module.font_collection]
+    tags:
+      - { name: form.type, alias: cmfcmfmediamodule_font_choice }
+
   # Listeners
   cmfcmf_media_module.listener.module:
     class: Cmfcmf\Module\MediaModule\Listener\ModuleListener
@@ -56,7 +63,7 @@ services:
     arguments: [@markdown_extra_parser, @hook_dispatcher, @cmfcmf_media_module.security_manager, @cmfcmf_media_module.upgrade.version_checker]
     public: false
     tags:
-        - { name: twig.extension }
+      - { name: twig.extension }
 
 
   # Hook handlers
@@ -79,4 +86,13 @@ services:
     parent: cmfcmf_media_module.hook_handler.base
     calls:
       - [setMediaTypeCollection, [@cmfcmf_media_module.media_type_collection]]
+      
 
+  # Fonts
+  cmfcmf_media_module.font.font_loader:
+    class: Cmfcmf\Module\MediaModule\Font\FontLoader
+    tags:
+        - { name: cmfcmf_media_module.font }
+        
+  cmfcmf_media_module.font_collection:
+    class: Cmfcmf\Module\MediaModule\Font\FontCollection

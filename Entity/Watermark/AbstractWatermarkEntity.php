@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 
+use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Imagine\Image\ImagineInterface;
@@ -131,11 +132,12 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param ImagineInterface $imagine
+     * @param FontCollection $fontCollection
      * @param $width
      * @param $height
      * @return \Imagine\Image\ImageInterface
      */
-    abstract public function getImagineImage(ImagineInterface $imagine, $width, $height);
+    abstract public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height);
 
     /**
      * @return int

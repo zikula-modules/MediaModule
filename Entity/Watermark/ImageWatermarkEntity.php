@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 
+use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Uploadable\Uploadable;
@@ -35,7 +36,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
      */
     protected $fileSize;
 
-    public function getImagineImage(ImagineInterface $imagine, $width, $height)
+    public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height)
     {
         $watermarkImage = $imagine->open($this->getPath());
         if ($this->getRelativeSize() !== null) {
