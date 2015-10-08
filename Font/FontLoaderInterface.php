@@ -5,7 +5,7 @@ namespace Cmfcmf\Module\MediaModule\Font;
 interface FontLoaderInterface
 {
     /**
-     * @return Font[]
+     * @return FontInterface[]
      */
     public function loadFonts();
 }

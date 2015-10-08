@@ -7,6 +7,7 @@ services:
   cmfcmf_media_module.security_manager:
     class: Cmfcmf\Module\MediaModule\Security\SecurityManager
 
+
   # Module upgrader and version checker
   cmfcmf_media_module.upgrade.module_upgrader:
     class: Cmfcmf\Module\MediaModule\Upgrade\ModuleUpgrader
@@ -24,6 +25,7 @@ services:
     tags:
       - { name: form.type, alias: cmfcmfmediamodule_font_choice }
 
+
   # Listeners
   cmfcmf_media_module.listener.module:
     class: Cmfcmf\Module\MediaModule\Listener\ModuleListener
@@ -36,6 +38,7 @@ services:
     arguments: [%kernel.root_dir%]
     tags:
       - { name: kernel.event_subscriber }
+
 
   # Link container
   cmfcmf_media_module.container.links:
