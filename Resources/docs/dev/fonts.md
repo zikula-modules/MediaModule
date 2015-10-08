@@ -1,9 +1,9 @@
 # Providing other fonts for text-based watermarks
 
-If you feel the provided fonts don't fit your needs, you have two options:
+If you feel the provided fonts don't fit your needs, you have two options to add other `*.ttf` fonts.
 
 1. Add a custom font loader from within your bundle (preferred).
-2. Copy *.ttf files into the `Resources/fonts` folder (not preferred, as it's going to be overridden by the next 
+2. Copy `*.ttf` files into the `Resources/fonts` folder (not preferred, as it's going to be overridden by the next 
 module upgrade). 
 
 ## Adding a custom font loader
@@ -22,7 +22,7 @@ Inside your module, add a new service and tag it with `cmfcmf_media_module.font`
     public function loadFonts();
 ```
 
-The interface contains only one method. The method is called once, when fonts are requested and must return
+The interface contains only one method. The method is called once when fonts are requested and must return
 an array of classes implementing the `\Cmfcmf\Module\MediaModule\Font\FontInterface`. The interface itself
 is pretty straight forward:
 ```php
@@ -58,7 +58,7 @@ is pretty straight forward:
 - The **id** must be unique across all bundles and font loaders. It's recommended to prepend your bundle's name,
   for example: `myfoobundle:foo_font`. 
 - The **path** represents the full path to the `*.ttf` file.
-- The optional *googleFontName* should be returned if the font is also hosted at 
+- The optional **googleFontName** should be returned if the font is also hosted at 
   [Google Fonts](https://google.com/fonts). It must correspond to the name used in the `<link>` tag to include 
   the font. You can see the `<link>` tag at the "Use" page of Google Fonts.
   If provided, the Google font will be included on the text-based watermark creation page so that the user can
