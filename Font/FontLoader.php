@@ -9,6 +9,8 @@ class FontLoader implements FontLoaderInterface
 {
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function loadFonts()
     {

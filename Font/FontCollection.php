@@ -46,6 +46,22 @@ class FontCollection
     }
 
     /**
+     * Returns an array of forms to use with Symfony forms.
+     *
+     * @return array
+     */
+    public function getFontsForForm()
+    {
+        if (!$this->loaded) {
+            $this->load();
+        }
+
+        return array_map(function (FontInterface $font) {
+            return $font->getTitle();
+        }, $this->getFonts());
+    }
+
+    /**
      * Returns a font by id.
      *
      * @param string $id The font id.
@@ -56,6 +72,9 @@ class FontCollection
     {
         if (!$this->loaded) {
             $this->load();
+        }
+        if (!isset($this->fonts[$id])) {
+            throw new \InvalidArgumentException('The font with the requested ID does not exist.');
         }
 
         return $this->fonts[$id];
@@ -68,6 +87,10 @@ class FontCollection
      */
     public function getFontUrl()
     {
+        if (!$this->loaded) {
+            $this->load();
+        }
+
         $fontUrl = 'https://fonts.googleapis.com/css?family=';
         foreach ($this->getFonts() as $font) {
             if ($font->getGoogleFontName() !== null) {
@@ -88,17 +111,7 @@ class FontCollection
                 $this->fonts[$font->getId()] = $font;
             }
         }
-    }
 
-    /**
-     * Returns an array of forms to use with Symfony forms.
-     *
-     * @return array
-     */
-    public function getFontsForForm()
-    {
-        return array_map(function (FontInterface $font) {
-            return $font->getTitle();
-        }, $this->getFonts());
+        $this->loaded = true;
     }
 }
