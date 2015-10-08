@@ -39,8 +39,10 @@ class MediaController extends AbstractController
      *
      * @param int $page
      * @return array
+     *
+     * @todo Rename this + template to admin*L*istAction once the Routing PR is in the Core.
      */
-    public function adminListAction($page = 1)
+    public function adminlistAction($page = 1)
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'moderate')) {
             throw new AccessDeniedException();
