@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Tests\Listener;
 
-
 use Cmfcmf\Module\MediaModule\Listener\ModuleListener;
 use Zikula\Core\Event\ModuleStateEvent;
 

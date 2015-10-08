@@ -36,7 +36,7 @@ abstract class AbstractWatermarkEntity
      * @ORM\Column(type="integer")
      * @ORM\Version
      *
-     * @var integer
+     * @var int
      */
     private $version;
 
@@ -92,28 +92,32 @@ abstract class AbstractWatermarkEntity
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
-     * @var integer $createdUserId.
+     *
+     * @var int.
      */
     protected $createdUserId;
 
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="update")
-     * @var integer $updatedUserId.
+     *
+     * @var int.
      */
     protected $updatedUserId;
 
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @var \DateTime $createdDate.
+     *
+     * @var \DateTime.
      */
     protected $createdDate;
 
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
-     * @var \DateTime $updatedDate.
+     *
+     * @var \DateTime.
      */
     protected $updatedDate;
 
@@ -132,9 +136,10 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param ImagineInterface $imagine
-     * @param FontCollection $fontCollection
+     * @param FontCollection   $fontCollection
      * @param $width
      * @param $height
+     *
      * @return \Imagine\Image\ImageInterface
      */
     abstract public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height);
@@ -149,11 +154,13 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param int $id
+     *
      * @return AbstractWatermarkEntity
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -167,11 +174,13 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param string $title
+     *
      * @return AbstractWatermarkEntity
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -185,11 +194,13 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param int $positionX
+     *
      * @return AbstractWatermarkEntity
      */
     public function setPositionX($positionX)
     {
         $this->positionX = $positionX;
+
         return $this;
     }
 
@@ -203,11 +214,13 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param int $positionY
+     *
      * @return AbstractWatermarkEntity
      */
     public function setPositionY($positionY)
     {
         $this->positionY = $positionY;
+
         return $this;
     }
 
@@ -221,14 +234,15 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param int $relativeSize
+     *
      * @return AbstractWatermarkEntity
      */
     public function setRelativeSize($relativeSize)
     {
         $this->relativeSize = $relativeSize;
+
         return $this;
     }
-
 
     /**
      * @return int
@@ -240,11 +254,13 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param int $createdUserId
+     *
      * @return AbstractWatermarkEntity
      */
     public function setCreatedUserId($createdUserId)
     {
         $this->createdUserId = $createdUserId;
+
         return $this;
     }
 
@@ -258,11 +274,13 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param int $updatedUserId
+     *
      * @return AbstractWatermarkEntity
      */
     public function setUpdatedUserId($updatedUserId)
     {
         $this->updatedUserId = $updatedUserId;
+
         return $this;
     }
 
@@ -276,11 +294,13 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param \DateTime $createdDate
+     *
      * @return AbstractWatermarkEntity
      */
     public function setCreatedDate($createdDate)
     {
         $this->createdDate = $createdDate;
+
         return $this;
     }
 
@@ -294,16 +314,18 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param \DateTime $updatedDate
+     *
      * @return AbstractWatermarkEntity
      */
     public function setUpdatedDate($updatedDate)
     {
         $this->updatedDate = $updatedDate;
+
         return $this;
     }
 
     /**
-     * Get the value of Min Size
+     * Get the value of Min Size.
      *
      * @return int
      */
@@ -313,7 +335,7 @@ abstract class AbstractWatermarkEntity
     }
 
     /**
-     * Set the value of Min Size
+     * Set the value of Min Size.
      *
      * @param int minSizeX
      *
@@ -327,7 +349,7 @@ abstract class AbstractWatermarkEntity
     }
 
     /**
-     * Get the value of Min Size
+     * Get the value of Min Size.
      *
      * @return int
      */
@@ -337,7 +359,7 @@ abstract class AbstractWatermarkEntity
     }
 
     /**
-     * Set the value of Min Size
+     * Set the value of Min Size.
      *
      * @param int minSizeY
      *
@@ -352,11 +374,13 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @param int $version
+     *
      * @return AbstractWatermarkEntity
      */
     public function setVersion($version)
     {
         $this->version = $version;
+
         return $this;
     }
 
@@ -367,5 +391,4 @@ abstract class AbstractWatermarkEntity
     {
         return $this->version;
     }
-
 }

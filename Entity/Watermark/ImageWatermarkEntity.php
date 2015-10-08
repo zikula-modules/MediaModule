@@ -7,8 +7,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Uploadable\Uploadable;
 use Imagine\Image\ImagineInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 
 /**
  * @ORM\Entity

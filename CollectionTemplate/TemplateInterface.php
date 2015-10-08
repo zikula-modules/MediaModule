@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 interface TemplateInterface
 {
     /**
-     * @param CollectionEntity $collectionEntity
+     * @param CollectionEntity    $collectionEntity
      * @param MediaTypeCollection $mediaTypeCollection
      * @param $showChildCollections
      *

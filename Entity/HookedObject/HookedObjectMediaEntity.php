@@ -22,12 +22,14 @@ class HookedObjectMediaEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity", inversedBy="hookedObjectMedia")
+     *
      * @var HookedObjectEntity
      */
     private $hookedObject;
 
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity", inversedBy="hookedObjectMedia")
+     *
      * @var AbstractMediaEntity
      */
     private $media;
@@ -42,11 +44,13 @@ class HookedObjectMediaEntity
 
     /**
      * @param int $id
+     *
      * @return HookedObjectMediaEntity
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -60,11 +64,13 @@ class HookedObjectMediaEntity
 
     /**
      * @param HookedObjectEntity $hookedObject
+     *
      * @return HookedObjectMediaEntity
      */
     public function setHookedObject($hookedObject)
     {
         $this->hookedObject = $hookedObject;
+
         return $this;
     }
 
@@ -78,11 +84,13 @@ class HookedObjectMediaEntity
 
     /**
      * @param AbstractMediaEntity $media
+     *
      * @return HookedObjectMediaEntity
      */
     public function setMedia($media)
     {
         $this->media = $media;
+
         return $this;
     }
 }

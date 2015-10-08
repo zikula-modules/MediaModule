@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Font;
 
-
 class FontCollection
 {
     /**

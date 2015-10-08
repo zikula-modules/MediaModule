@@ -85,7 +85,7 @@ class CollectionType extends AbstractType
                 'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
                 'required' => false,
                 'label' => $this->__('Parent'),
-                'query_builder' => function(EntityRepository $er) use ($theCollection) {
+                'query_builder' => function (EntityRepository $er) use ($theCollection) {
                     $qb = $er->createQueryBuilder('c');
                     $qb
                         ->orderBy('c.root', 'ASC')

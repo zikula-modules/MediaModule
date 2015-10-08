@@ -7,7 +7,7 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 interface MediaTypeInterface
 {
     public function getAlias();
-    
+
     public function getEntityClass();
 
     public function getFormTypeClass();

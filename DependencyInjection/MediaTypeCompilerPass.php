@@ -1,4 +1,5 @@
 <?php
+
 namespace Cmfcmf\Module\MediaModule\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;

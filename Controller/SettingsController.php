@@ -4,7 +4,6 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\SettingsType;
 use Cmfcmf\Module\MediaModule\MediaModuleInstaller;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,9 +54,9 @@ class SettingsController extends AbstractController
         $descriptionEscapingStrategyForMediaOk = true;
 
         if ($scribiteInstalled) {
-            $mediaBinding =$this->get('hook_dispatcher')->getBindingBetweenAreas(
+            $mediaBinding = $this->get('hook_dispatcher')->getBindingBetweenAreas(
                 "subscriber.cmfcmfmediamodule.ui_hooks.media", "provider.scribite.ui_hooks.editor");
-            $collectionBinding =$this->get('hook_dispatcher')->getBindingBetweenAreas(
+            $collectionBinding = $this->get('hook_dispatcher')->getBindingBetweenAreas(
                 "subscriber.cmfcmfmediamodule.ui_hooks.collection", "provider.scribite.ui_hooks.editor");
 
             $descriptionEscapingStrategyForCollectionOk =  !is_object($collectionBinding)
@@ -69,11 +68,10 @@ class SettingsController extends AbstractController
         return [
             'form' => $form->createView(),
             'scribiteInstalled' => $scribiteInstalled,
-            'descriptionEscapingStrategyForCollectionOk' =>$descriptionEscapingStrategyForCollectionOk,
+            'descriptionEscapingStrategyForCollectionOk' => $descriptionEscapingStrategyForCollectionOk,
             'descriptionEscapingStrategyForMediaOk' => $descriptionEscapingStrategyForMediaOk
         ];
     }
-
 
     /**
      * @Route("/settings/upgrade")

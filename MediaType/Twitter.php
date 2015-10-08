@@ -3,7 +3,6 @@
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\SoundCloudEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\TwitterEntity;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -80,11 +79,12 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     /**
      * @param AbstractMediaEntity $entity
+     *
      * @return string
      */
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /** @var TwitterEntity $entity */
+        /* @var TwitterEntity $entity */
 
         return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Twitter:Fullpage.html.twig', [
             'entity' => $entity,
@@ -99,7 +99,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     public function getEmbedCode(AbstractMediaEntity $entity, $size = 'full')
     {
-        /** @var TwitterEntity $entity */
+        /* @var TwitterEntity $entity */
 
         return '<div>' . $this->renderEngine->render('CmfcmfMediaModule:MediaType/Twitter:Fullpage.html.twig', [
             'entity' => $entity,
@@ -112,7 +112,6 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     {
         $q = str_replace('&', '', $q);
         $q = str_replace('?', '', $q);
-
 
         $tweetResults = [
             'results' => [],
@@ -144,12 +143,11 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
             ->performRequest()
         ;
 
-        $response = json_decode($response, true, 512,  JSON_BIGINT_AS_STRING);
+        $response = json_decode($response, true, 512, JSON_BIGINT_AS_STRING);
 
         $results = [];
         $results['more'] = isset($response['search_metadata']['next_results']) ? true : 0;
         $results['results'] = [];
-
 
         foreach ($response['statuses'] as $status) {
             $results['results'][] = [
@@ -179,7 +177,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
             ->performRequest()
         ;
 
-        return json_decode($response, true, 512,  JSON_BIGINT_AS_STRING);
+        return json_decode($response, true, 512, JSON_BIGINT_AS_STRING);
     }
 
     /**
@@ -195,6 +193,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
             'consumer_key' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiKey'),
             'consumer_secret' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiSecret')
         ]);
+
         return $api;
     }
 

@@ -6,7 +6,7 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
 {
     public function getMetaData()
     {
-        $meta = array();
+        $meta = [];
         $meta["displayname"]    = $this->__("Cmfcmf MediaModule");
         $meta["description"]    = $this->__("Cmfcmf MediaModule description");
         $meta["url"]            = $this->__("collections");
@@ -40,6 +40,7 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
     // Subscriber hooks for media entities.
     // This allows other modules to hook to the media display pages,
     // for example the Tag module could be hooked.
+
     private function createSubscriberUIHook($name, $title)
     {
         $bundle = new \Zikula_HookManager_SubscriberBundle($this->name, "subscriber.cmfcmfmediamodule.ui_hooks.$name", "ui_hooks", $this->__f("%s hooks", [$title]));
@@ -58,6 +59,7 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
 
     // Subscriber hooks for media entites.
     // This allows other modules to filter the media description.
+
     private function createSubscriberFilterHook($name, $title)
     {
         $bundle = new \Zikula_HookManager_SubscriberBundle($this->name, "subscriber.cmfcmfmediamodule.filter_hooks.$name", "filter_hooks", $this->__f("%s display hooks", [$title]));

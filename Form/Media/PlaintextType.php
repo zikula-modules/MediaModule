@@ -17,5 +17,4 @@ class PlaintextType extends AbstractFileType
             ])
         ;
     }
-
 }

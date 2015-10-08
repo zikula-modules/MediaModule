@@ -4,11 +4,9 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Form\Collection\CollectionType;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Doctrine\ORM\OptimisticLockException;
-use Github\HttpClient\Message\ResponseMediator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -17,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -30,7 +27,7 @@ class CollectionController extends AbstractController
      * @Template(template="CmfcmfMediaModule:Collection:Edit.html.twig")
      * @ParamConverter("parent", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
-     * @param Request $request
+     * @param Request          $request
      * @param CollectionEntity $parent
      *
      * @return array|RedirectResponse
@@ -73,7 +70,7 @@ class CollectionController extends AbstractController
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template()
      *
-     * @param Request $request
+     * @param Request          $request
      * @param CollectionEntity $entity
      *
      * @return array
@@ -110,7 +107,6 @@ class CollectionController extends AbstractController
 
         return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
 
-
         edit_error:
 
         return [
@@ -128,7 +124,7 @@ class CollectionController extends AbstractController
      * @Route("/download/{slug}.zip", requirements={"slug"=".+"})
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
-     * @param Request $request
+     * @param Request          $request
      * @param CollectionEntity $entity
      *
      * @return array
@@ -189,7 +185,6 @@ class CollectionController extends AbstractController
      */
     public function displayRootAction(Request $request)
     {
-
         $em = $this->getDoctrine()->getManager();
         $rootCollections = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNodes();
         $rootCollections = array_filter($rootCollections, function (CollectionEntity $entity) {
@@ -228,7 +223,7 @@ class CollectionController extends AbstractController
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template()
      *
-     * @param Request $request
+     * @param Request          $request
      * @param CollectionEntity $entity
      *
      * @return array

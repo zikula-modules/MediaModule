@@ -2,10 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
-use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
 use Cmfcmf\Module\MediaModule\Metadata\GenericMetadataReader;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -158,7 +155,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
     {
-        /** @var PlaintextEntity $entity */
+        /* @var PlaintextEntity $entity */
         return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize);
     }
 

@@ -2,9 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Upgrade;
 
-
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class ModuleUpgrader
@@ -51,12 +49,13 @@ class ModuleUpgrader
         if (class_exists('ZipArchive') && extension_loaded('curl')) {
             return true;
         }
+
         return $this->translator->trans('Please enable the ZIP and CURL PHP extensions', [], $this->domain);
     }
 
     public function checkPermissions()
     {
-        if (is_writeable($this->moduleDir)) {
+        if (is_writable($this->moduleDir)) {
             return true;
         }
 

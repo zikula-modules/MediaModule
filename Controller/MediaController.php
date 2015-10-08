@@ -11,7 +11,6 @@ use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\WebMediaTypeInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Github\HttpClient\Message\ResponseMediator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -38,6 +37,7 @@ class MediaController extends AbstractController
      * @Theme("admin")
      *
      * @param int $page
+     *
      * @return array
      *
      * @todo Rename this + template to admin*L*istAction once the Routing PR is in the Core.
@@ -52,16 +52,16 @@ class MediaController extends AbstractController
 
         $perPage = 30;
 
-        /** @var Paginator|AbstractMediaEntity[] $entities */
+        /* @var Paginator|AbstractMediaEntity[] $entities */
         $paginator = $em->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')->getPaginated($page - 1, $perPage);
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
-        return array(
+        return [
             'paginator' => $paginator,
             'mediaTypeCollection' => $mediaTypeCollection,
             'page' => $page,
             'maxPage' => ceil($paginator->count() / $perPage)
-        );
+        ];
     }
 
     /**
@@ -69,7 +69,7 @@ class MediaController extends AbstractController
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template()
      *
-     * @param Request $request
+     * @param Request             $request
      * @param AbstractMediaEntity $entity
      *
      * @return array
@@ -138,7 +138,6 @@ class MediaController extends AbstractController
 
         return $this->redirectToRoute('cmfcmfmediamodule_media_display', ['slug' => $entity->getSlug(), 'collectionSlug' => $entity->getCollection()->getSlug()]);
 
-
         edit_error:
 
         return [
@@ -159,7 +158,7 @@ class MediaController extends AbstractController
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template()
      *
-     * @param Request $request
+     * @param Request             $request
      * @param AbstractMediaEntity $entity
      *
      * @return array
@@ -210,7 +209,9 @@ class MediaController extends AbstractController
      * @Route("/media/new")
      * @Method("GET")
      * @Template()
+     *
      * @param Request $request
+     *
      * @return array
      */
     public function newAction(Request $request)
@@ -306,6 +307,7 @@ class MediaController extends AbstractController
      * @Method("POST")
      *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function matchesPasteAction(Request $request)
@@ -340,6 +342,7 @@ class MediaController extends AbstractController
      * @Route("/media/ajax/reorder", options={"expose" = true})
      *
      * @param Request $request
+     *
      * @return PlainResponse
      */
     public function reorderAction(Request $request)
@@ -442,7 +445,6 @@ class MediaController extends AbstractController
             }
         }
 
-
         return new JsonResponse([
             'result' => $result,
             'multiple' => $multiple,
@@ -457,6 +459,7 @@ class MediaController extends AbstractController
      * @Method("POST")
      *
      * @param Request $request
+     *
      * @return JsonResponse|Response
      */
     public function uploadAction(Request $request)
@@ -499,7 +502,7 @@ class MediaController extends AbstractController
 
             /** @var AbstractFileEntity $entity */
             $entity = $selectedMediaType->getEntityClass();
-            $entity = new $entity;
+            $entity = new $entity();
 
             $form = $selectedMediaType->getFormTypeClass();
             $form = $this->createForm(new $form(true, null, true), $entity, ['csrf_protection' => false]);
@@ -534,6 +537,7 @@ class MediaController extends AbstractController
      * @Method("GET")
      *
      * @param AbstractMediaEntity $entity
+     *
      * @return array
      */
     public function popupEmbedAction(AbstractMediaEntity $entity)
@@ -555,7 +559,9 @@ class MediaController extends AbstractController
      * @Route("/download/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
      * @Method("GET")
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractFileEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
+     *
      * @param AbstractFileEntity $entity
+     *
      * @return BinaryFileResponse
      */
     public function downloadAction(AbstractFileEntity $entity)
@@ -621,7 +627,7 @@ class MediaController extends AbstractController
         switch ($type) {
             case 'web':
                 try {
-                    /** @var MediaTypeInterface|WebMediaTypeInterface $mediaType */
+                    /* @var MediaTypeInterface|WebMediaTypeInterface $mediaType */
                     $entity = $mediaType->getEntityFromWeb($request);
                 } catch (\Exception $e) {
                     throw new NotFoundHttpException();
@@ -632,7 +638,7 @@ class MediaController extends AbstractController
                 if (empty($pastedText)) {
                     throw new NotFoundHttpException();
                 }
-                /** @var MediaTypeInterface|PasteMediaTypeInterface $mediaType */
+                /* @var MediaTypeInterface|PasteMediaTypeInterface $mediaType */
                 $entity = $mediaType->getEntityFromPaste($pastedText);
                 break;
             default:

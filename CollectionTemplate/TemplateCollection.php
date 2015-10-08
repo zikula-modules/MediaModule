@@ -13,7 +13,7 @@ class TemplateCollection
     {
         $this->templates = [];
     }
-    
+
     public function addCollectionTemplate(TemplateInterface $template)
     {
         $this->templates[$template->getName()] = $template;

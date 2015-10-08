@@ -31,7 +31,7 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @var integer
+     * @var int
      */
     protected $id;
 
@@ -39,7 +39,7 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Column(type="integer")
      * @ORM\Version
      *
-     * @var integer
+     * @var int
      */
     private $version;
 
@@ -151,28 +151,32 @@ class CollectionEntity implements Node, Sluggable
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
-     * @var integer $createdUserId.
+     *
+     * @var int.
      */
     protected $createdUserId;
 
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="update")
-     * @var integer $updatedUserId.
+     *
+     * @var int.
      */
     protected $updatedUserId;
 
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @var \DateTime $createdDate.
+     *
+     * @var \DateTime.
      */
     protected $createdDate;
 
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
-     * @var \DateTime $updatedDate.
+     *
+     * @var \DateTime.
      */
     protected $updatedDate;
 
@@ -245,12 +249,14 @@ class CollectionEntity implements Node, Sluggable
         if ($this->media->count() > 0) {
             return $this->media->first();
         }
+
         return null;
     }
 
     /**
      * @param RouterInterface $router
-     * @param bool $selfIsClickable Whether or not this collection is clickable.
+     * @param bool            $selfIsClickable Whether or not this collection is clickable.
+     *
      * @return array
      */
     public function getBreadcrumbs(RouterInterface $router, $selfIsClickable = false)
@@ -299,9 +305,9 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -309,9 +315,10 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * Set title
+     * Set title.
      *
      * @param string $title
+     *
      * @return CollectionEntity
      */
     public function setTitle($title)
@@ -331,16 +338,18 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param mixed $slug
+     *
      * @return CollectionEntity
      */
     public function setSlug($slug)
     {
         $this->slug = $slug;
+
         return $this;
     }
 
     /**
-     * Get title
+     * Get title.
      *
      * @return string
      */
@@ -349,11 +358,11 @@ class CollectionEntity implements Node, Sluggable
         return $this->title;
     }
 
-
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
+     *
      * @return CollectionEntity
      */
     public function setDescription($description)
@@ -364,7 +373,7 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * Get description
+     * Get description.
      *
      * @return string
      */
@@ -383,11 +392,13 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param int $createdUserId
+     *
      * @return CollectionEntity
      */
     public function setCreatedUserId($createdUserId)
     {
         $this->createdUserId = $createdUserId;
+
         return $this;
     }
 
@@ -401,11 +412,13 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param int $updatedUserId
+     *
      * @return CollectionEntity
      */
     public function setUpdatedUserId($updatedUserId)
     {
         $this->updatedUserId = $updatedUserId;
+
         return $this;
     }
 
@@ -419,11 +432,13 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param \DateTime $createdDate
+     *
      * @return CollectionEntity
      */
     public function setCreatedDate($createdDate)
     {
         $this->createdDate = $createdDate;
+
         return $this;
     }
 
@@ -437,11 +452,13 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param \DateTime $updatedDate
+     *
      * @return CollectionEntity
      */
     public function setUpdatedDate($updatedDate)
     {
         $this->updatedDate = $updatedDate;
+
         return $this;
     }
 
@@ -460,11 +477,13 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param AbstractWatermarkEntity|null $watermark
+     *
      * @return CollectionEntity
      */
     public function setWatermark($watermark)
     {
         $this->watermark = $watermark;
+
         return $this;
     }
 
@@ -478,11 +497,13 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param \Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity[]|ArrayCollection $media
+     *
      * @return CollectionEntity
      */
     public function setMedia($media)
     {
         $this->media = $media;
+
         return $this;
     }
 
@@ -504,21 +525,25 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param CollectionEntity[]|ArrayCollection $children
+     *
      * @return CollectionEntity
      */
     public function setChildren($children)
     {
         $this->children = $children;
+
         return $this;
     }
 
     /**
      * @param HookedObjectCollectionEntity[]|ArrayCollection $hookedObjectCollections
+     *
      * @return CollectionEntity
      */
     public function setHookedObjectCollections($hookedObjectCollections)
     {
         $this->hookedObjectCollections = $hookedObjectCollections;
+
         return $this;
     }
 
@@ -532,11 +557,13 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param int $version
+     *
      * @return CollectionEntity
      */
     public function setVersion($version)
     {
         $this->version = $version;
+
         return $this;
     }
 
@@ -550,6 +577,7 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param bool $virtualRoot
+     *
      * @return CollectionEntity
      */
     public function setVirtualRoot($virtualRoot)
@@ -567,11 +595,13 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param string $defaultTemplate
+     *
      * @return CollectionEntity
      */
     public function setDefaultTemplate($defaultTemplate)
     {
         $this->defaultTemplate = $defaultTemplate;
+
         return $this;
     }
 

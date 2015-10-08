@@ -1,7 +1,7 @@
 <?php
+
 namespace Cmfcmf\Module\MediaModule\HookHandler;
 
-use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Zikula\Core\Hook\DisplayHook;
 use Zikula\Core\Hook\ProcessHook;

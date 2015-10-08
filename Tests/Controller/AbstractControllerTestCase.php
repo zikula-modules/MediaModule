@@ -14,7 +14,7 @@ class AbstractControllerTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    protected static function createClient(array $options = array(), array $server = array())
+    protected static function createClient(array $options = [], array $server = [])
     {
         $server = array_merge($server, [
             'DOCUMENT_ROOT' => getcwd(),

@@ -1,7 +1,7 @@
 <?php
+
 namespace Cmfcmf\Module\MediaModule\HookHandler;
 
-use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;

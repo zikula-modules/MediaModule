@@ -6,7 +6,7 @@ use Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository\HookedObjectReposit
 
 class HookedObjectRepositoryTest extends \PHPUnit_Framework_TestCase
 {
-//    /**
+    //    /**
 //     * @var HookedObjectRepository
 //     */
 //    private $repository;

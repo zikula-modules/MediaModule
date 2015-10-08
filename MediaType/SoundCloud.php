@@ -84,6 +84,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
 
     /**
      * @param SoundCloudEntity $entity
+     *
      * @return string
      */
     public function renderFullpage(AbstractMediaEntity $entity)
@@ -95,6 +96,7 @@ EOD;
         $code = <<<EOD
 <iframe scrolling="no" frameborder="0" allowTransparency="true" src="$url" width="100%" height="166"></iframe>
 EOD;
+
         return $code;
     }
 

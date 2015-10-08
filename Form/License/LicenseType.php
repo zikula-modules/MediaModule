@@ -3,7 +3,6 @@
 namespace Cmfcmf\Module\MediaModule\Form\License;
 
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class LicenseType extends AbstractType

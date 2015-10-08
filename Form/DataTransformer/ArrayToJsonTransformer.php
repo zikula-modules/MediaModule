@@ -10,6 +10,7 @@ class ArrayToJsonTransformer implements DataTransformerInterface
     {
         return json_encode($value);
     }
+
     public function reverseTransform($value)
     {
         return json_decode($value, true);

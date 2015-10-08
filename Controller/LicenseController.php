@@ -5,7 +5,6 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Form\License\LicenseType;
 use Doctrine\ORM\OptimisticLockException;
-use Github\HttpClient\Message\ResponseMediator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -38,9 +37,9 @@ class LicenseController extends AbstractController
         /** @var LicenseEntity[] $entities */
         $entities = $em->getRepository('CmfcmfMediaModule:License\LicenseEntity')->findBy([], ['id' => 'ASC']);
 
-        return array(
+        return [
             'entities' => $entities,
-        );
+        ];
     }
 
     /**
@@ -48,6 +47,7 @@ class LicenseController extends AbstractController
      * @Template(template="CmfcmfMediaModule:License:Edit.html.twig")
      *
      * @param Request $request
+     *
      * @return array|RedirectResponse
      */
     public function newAction(Request $request)
@@ -80,7 +80,7 @@ class LicenseController extends AbstractController
      * @ParamConverter("entity", class="CmfcmfMediaModule:License\LicenseEntity")
      * @Template()
      *
-     * @param Request $request
+     * @param Request       $request
      * @param LicenseEntity $entity
      *
      * @return array
@@ -116,7 +116,7 @@ class LicenseController extends AbstractController
      * @ParamConverter("entity", class="CmfcmfMediaModule:License\LicenseEntity")
      * @Template()
      *
-     * @param Request $request
+     * @param Request       $request
      * @param LicenseEntity $entity
      *
      * @return array|RedirectResponse

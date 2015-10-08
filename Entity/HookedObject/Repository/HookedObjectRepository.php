@@ -10,6 +10,7 @@ class HookedObjectRepository extends EntityRepository
 {
     /**
      * @param Hook $hook
+     *
      * @return HookedObjectEntity
      */
     public function getByHookOrCreate(Hook $hook)

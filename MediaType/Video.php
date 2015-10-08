@@ -2,11 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
-use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
 use Cmfcmf\Module\MediaModule\Metadata\GenericMetadataReader;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -150,7 +146,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function canUploadArr(array $file)
     {
-        return in_array($file['mimeType'], $this->getSupportedMimeTypes()) ? 5 :0;
+        return in_array($file['mimeType'], $this->getSupportedMimeTypes()) ? 5 : 0;
     }
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
@@ -174,9 +170,9 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
                 $width = "100%";
                 $height = 400;
         }
+
         return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:Fullpage.html.twig', ['entity' => $entity, 'width' => $width, 'height' => $height]);
     }
-
 
     private function formatDuration($seconds)
     {

@@ -57,6 +57,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                 ->getQuery()
                 ->execute()
             ;
+
             return true;
         }
 
@@ -167,6 +168,5 @@ allow from all
 </FilesMatch>
 TXT;
         file_put_contents($uploadDirectory . '/.htaccess', $htaccess);
-
     }
 }
