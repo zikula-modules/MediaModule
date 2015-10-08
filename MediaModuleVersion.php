@@ -10,7 +10,7 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
         $meta["displayname"]    = $this->__("Cmfcmf MediaModule");
         $meta["description"]    = $this->__("Cmfcmf MediaModule description");
         $meta["url"]            = $this->__("collections");
-        $meta["version"]        = "1.0.0";
+        $meta["version"]        = "1.0.1";
         $meta["core_min"]       = "1.4.0";
         $meta["securityschema"] = ["CmfcmfMediaModule::" => "::"];
         $meta['capabilities'] = [
