@@ -33,7 +33,8 @@
         (function ($) {
             $('#{{ id|e('js') }}').find('.radio label').each(function () {
                 var font = $(this).text();
-                $(this).css({'font-family': font});
+                console.log(font);
+                $(this).css({'font-family': "'" + font + "'"});
             });
         })(jQuery);
     </script>
