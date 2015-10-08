@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Christian
- * Date: 22.09.2015
- * Time: 15:13
- */
 
 namespace Cmfcmf\Module\MediaModule\Entity\Collection\Repository;
 

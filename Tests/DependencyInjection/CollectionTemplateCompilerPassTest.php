@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Christian
- * Date: 19.09.2015
- * Time: 20:33
- */
 
 namespace Cmfcmf\Module\MediaModule\Tests\DependencyInjection;
 

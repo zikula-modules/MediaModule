@@ -1,0 +1,14 @@
+preset: symfony
+
+disabled:
+  - multiline_array_trailing_comma
+  - pre_increment
+  - single_quote
+  - concat_without_spaces
+  - empty_return
+  - spaces_cast 
+  - unalign_equals
+  - unalign_double_arrow
+  
+enabled:
+  - short_array_syntax

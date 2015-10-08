@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Christian
- * Date: 19.09.2015
- * Time: 13:48
- */
 
 namespace Cmfcmf\Module\MediaModule\Tests\Listener;
 
