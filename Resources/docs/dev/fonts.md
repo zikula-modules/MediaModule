@@ -59,7 +59,7 @@ is pretty straight forward:
   for example: `myfoobundle:foo_font`. 
 - The **path** represents the full path to the `*.ttf` file.
 - The optional **googleFontName** should be returned if the font is also hosted at 
-  [Google Fonts](https://google.com/fonts). It must correspond to the name used in the `<link>` tag to include 
+  [Google Fonts](https://www.google.com/fonts). It must correspond to the name used in the `<link>` tag to include 
   the font. You can see the `<link>` tag at the "Use" page of Google Fonts.
   If provided, the Google font will be included on the text-based watermark creation page so that the user can
   preview the font.
