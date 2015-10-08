@@ -158,7 +158,10 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
     private function createUploadDir()
     {
         $uploadDirectory = \FileUtil::getDataDirectory() . '/cmfcmf-media-module/media';
-        mkdir($uploadDirectory, 0777, true);
+
+        if (!is_dir($uploadDirectory)) {
+            mkdir($uploadDirectory, 0777, true);
+        }
 
         $htaccess = <<<TXT
 deny from all
