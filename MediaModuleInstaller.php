@@ -52,7 +52,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
     {
         if ($oldversion == '1.0.0') {
             $qb = $this->entityManager->createQueryBuilder();
-            $qb->update('CmfcmfMediaModule:Watermark\TextWatermarkEntity', 'w')
+            $qb->update('Cmfcmf\\Module\\MediaModule\\Entity\\Watermark\\TextWatermarkEntity', 'w')
                 ->set('w.font', $qb->expr()->literal('cmfcmfmediamodule:Indie_Flower'))
                 ->getQuery()
                 ->execute()
