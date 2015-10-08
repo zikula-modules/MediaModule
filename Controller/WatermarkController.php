@@ -142,8 +142,6 @@ class WatermarkController extends AbstractController
             }
         }
 
-        // @todo Locking!!
-
         try {
             $em->merge($entity);
             $em->flush();
