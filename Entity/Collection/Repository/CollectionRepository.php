@@ -2,14 +2,13 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\Collection\Repository;
 
-
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 
 class CollectionRepository extends NestedTreeRepository
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRootNodesQueryBuilder($sortByField = null, $direction = 'asc')
     {
@@ -38,6 +37,7 @@ class CollectionRepository extends NestedTreeRepository
 
     /**
      * @param int $parentId
+     *
      * @return CollectionEntity[]
      */
     public function findVisibleByParentId($parentId)
@@ -56,5 +56,4 @@ class CollectionRepository extends NestedTreeRepository
             ->execute()
         ;
     }
-
 }

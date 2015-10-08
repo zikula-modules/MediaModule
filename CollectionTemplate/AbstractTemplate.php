@@ -4,10 +4,8 @@ namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
-use Cmfcmf\Module\MediaModule\Translation\TranslationTrait;
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\Translation\TranslatorInterface;
-use Zikula\Common\I18n\TranslatableInterface;
 
 abstract class AbstractTemplate implements TemplateInterface
 {

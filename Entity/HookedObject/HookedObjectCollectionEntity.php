@@ -22,12 +22,14 @@ class HookedObjectCollectionEntity
 
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity", inversedBy="hookedObjectCollections")
+     *
      * @var HookedObjectEntity
      */
     private $hookedObject;
 
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", inversedBy="hookedObjectCollections")
+     *
      * @var CollectionEntity
      */
     private $collection;
@@ -70,11 +72,13 @@ class HookedObjectCollectionEntity
 
     /**
      * @param int $id
+     *
      * @return HookedObjectCollectionEntity
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -88,11 +92,13 @@ class HookedObjectCollectionEntity
 
     /**
      * @param HookedObjectEntity $hookedObject
+     *
      * @return HookedObjectCollectionEntity
      */
     public function setHookedObject($hookedObject)
     {
         $this->hookedObject = $hookedObject;
+
         return $this;
     }
 
@@ -106,11 +112,13 @@ class HookedObjectCollectionEntity
 
     /**
      * @param CollectionEntity $collection
+     *
      * @return HookedObjectCollectionEntity
      */
     public function setCollection($collection)
     {
         $this->collection = $collection;
+
         return $this;
     }
 
@@ -124,16 +132,18 @@ class HookedObjectCollectionEntity
 
     /**
      * @param string $template
+     *
      * @return HookedObjectCollectionEntity
      */
     public function setTemplate($template)
     {
         $this->template = $template;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isShowParentCollections()
     {
@@ -141,17 +151,19 @@ class HookedObjectCollectionEntity
     }
 
     /**
-     * @param boolean $showParentCollections
+     * @param bool $showParentCollections
+     *
      * @return HookedObjectCollectionEntity
      */
     public function setShowParentCollections($showParentCollections)
     {
         $this->showParentCollections = $showParentCollections;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isShowChildCollections()
     {
@@ -159,12 +171,14 @@ class HookedObjectCollectionEntity
     }
 
     /**
-     * @param boolean $showChildCollections
+     * @param bool $showChildCollections
+     *
      * @return HookedObjectCollectionEntity
      */
     public function setShowChildCollections($showChildCollections)
     {
         $this->showChildCollections = $showChildCollections;
+
         return $this;
     }
 }

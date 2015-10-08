@@ -1,4 +1,5 @@
 <?php
+
 namespace Cmfcmf\Module\MediaModule\Twig;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
@@ -6,7 +7,6 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
 use Michelf\MarkdownExtra;
-use Zikula\Common\Translator\Translator;
 
 class TwigExtension extends \Twig_Extension
 {
@@ -78,6 +78,7 @@ class TwigExtension extends \Twig_Extension
 
     /**
      * @param CollectionEntity|AbstractMediaEntity $entity
+     *
      * @return string
      */
     public function escapeDescription($entity)
@@ -89,7 +90,7 @@ class TwigExtension extends \Twig_Extension
         if ($entity instanceof CollectionEntity) {
             $strategy = \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection');
             $hookName = 'collections';
-        } else if ($entity instanceof AbstractMediaEntity) {
+        } elseif ($entity instanceof AbstractMediaEntity) {
             $strategy = \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForMedia');
             $hookName = 'media';
         } else {

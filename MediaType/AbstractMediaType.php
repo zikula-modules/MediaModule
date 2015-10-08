@@ -105,6 +105,7 @@ abstract class AbstractMediaType implements MediaTypeInterface
         if (!is_array($result)) {
             throw new \RuntimeException();
         }
+
         return $result;
     }
 

@@ -5,7 +5,6 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Doctrine\ORM\QueryBuilder;
-use Github\HttpClient\Message\ResponseMediator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -66,6 +65,7 @@ class FinderController extends AbstractController
      * @Route("/ajax/find", options={"expose" = true})
      *
      * @param Request $request
+     *
      * @return JsonResponse
      */
     public function ajaxFindAction(Request $request)

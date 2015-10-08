@@ -2,9 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Tests\DependencyInjection;
 
-
 use Cmfcmf\Module\MediaModule\DependencyInjection\CollectionTemplateCompilerPass;
-use Cmfcmf\Module\MediaModule\DependencyInjection\MediaTypeCompilerPass;
 use Symfony\Component\DependencyInjection\Reference;
 
 class CollectionTemplateCompilerPassTest extends \PHPUnit_Framework_TestCase

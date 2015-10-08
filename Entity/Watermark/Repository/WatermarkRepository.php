@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\Watermark\Repository;
 
-
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Doctrine\ORM\EntityRepository;

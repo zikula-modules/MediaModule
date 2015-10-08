@@ -41,12 +41,13 @@ class MediaTypeCollection
 
     /**
      * @param bool $onlyEnabled
+     *
      * @return array|MediaTypeInterface[]|WebMediaTypeInterface[]
      */
     public function getWebMediaTypes($onlyEnabled = false)
     {
         return array_filter($this->mediaTypes, function (MediaTypeInterface $mediaType) use ($onlyEnabled) {
-            return (!$onlyEnabled ||$mediaType->isEnabled()) && $mediaType instanceof WebMediaTypeInterface;
+            return (!$onlyEnabled || $mediaType->isEnabled()) && $mediaType instanceof WebMediaTypeInterface;
         });
     }
 
@@ -65,11 +66,13 @@ class MediaTypeCollection
         if (!isset($this->mediaTypes[$mediaType])) {
             throw new \InvalidArgumentException(sprintf('Media type %s does not exist!', $mediaType));
         }
+
         return $this->mediaTypes[$mediaType];
     }
 
     /**
      * @param AbstractMediaEntity $entity
+     *
      * @return MediaTypeInterface
      */
     public function getMediaTypeFromEntity(AbstractMediaEntity $entity)

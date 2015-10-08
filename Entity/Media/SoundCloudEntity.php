@@ -3,7 +3,6 @@
 namespace Cmfcmf\Module\MediaModule\Entity\Media;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -20,11 +19,13 @@ class SoundCloudEntity extends WebEntity
 
     /**
      * @param string $musicId
+     *
      * @return DeezerEntity
      */
     public function setMusicId($musicId)
     {
         $this->extraData['musicId'] = $musicId;
+
         return $this;
     }
 
@@ -38,11 +39,13 @@ class SoundCloudEntity extends WebEntity
 
     /**
      * @param int $musicType
+     *
      * @return SoundCloudEntity
      */
     public function setMusicType($musicType)
     {
         $this->extraData['musicType'] = $musicType;
+
         return $this;
     }
 }

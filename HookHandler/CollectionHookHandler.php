@@ -1,9 +1,9 @@
 <?php
+
 namespace Cmfcmf\Module\MediaModule\HookHandler;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity;
-use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Zikula\Core\Hook\DisplayHook;
 use Zikula\Core\Hook\ProcessHook;
@@ -45,7 +45,7 @@ class CollectionHookHandler extends AbstractHookHandler
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
         $hookedObject = $repository->getByHookOrCreate($hook);
 
-        $selectedCollections = array_map(function (HookedObjectCollectionEntity $hookedObjectCollectionEntity)  {
+        $selectedCollections = array_map(function (HookedObjectCollectionEntity $hookedObjectCollectionEntity) {
             return $hookedObjectCollectionEntity->getCollection()->getId();
         }, $hookedObject->getHookedObjectCollections()->getValues());
 

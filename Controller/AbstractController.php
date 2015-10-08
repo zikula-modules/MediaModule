@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Controller;
 
-use Github\HttpClient\Message\ResponseMediator;
 use Symfony\Component\Form\FormError;
 use Zikula\Core\Controller\AbstractController as BaseAbstractController;
 use Zikula\Core\UrlInterface;
@@ -35,7 +34,7 @@ abstract class AbstractController extends BaseAbstractController
 
     protected function applyProcessHook($name, $event, $id, UrlInterface $url = null)
     {
-        /** @noinspection PhpParamsInspection */
+        /* @noinspection PhpParamsInspection */
         $this->notifyHooks(new \Zikula_ProcessHook(
             "cmfcmfmediamodule.ui_hooks.$name.$event",
             $id,
@@ -45,13 +44,14 @@ abstract class AbstractController extends BaseAbstractController
 
     protected function hookValidates($name, $event)
     {
-        /** @noinspection PhpParamsInspection */
+        /* @noinspection PhpParamsInspection */
         $validationHook = new \Zikula_ValidationHook(
             "cmfcmfmediamodule.ui_hooks.$name.$event",
             new \Zikula_Hook_ValidationProviders()
         );
         /** @var \Zikula\Core\Hook\ValidationProviders $hookvalidators */
         $hookvalidators = $this->notifyHooks($validationHook)->getValidators();
+
         return !$hookvalidators->hasErrors();
     }
 

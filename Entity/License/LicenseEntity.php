@@ -5,9 +5,7 @@ namespace Cmfcmf\Module\MediaModule\Entity\License;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 
 /**
  * @ORM\Entity()
@@ -20,7 +18,7 @@ class LicenseEntity
      * @ORM\Column(type="string")
      * @ORM\Id
      *
-     * @var integer
+     * @var int
      */
     protected $id;
 
@@ -28,7 +26,7 @@ class LicenseEntity
      * @ORM\Column(type="integer")
      * @ORM\Version
      *
-     * @var integer
+     * @var int
      */
     private $version;
 
@@ -117,11 +115,13 @@ class LicenseEntity
 
     /**
      * @param int $id
+     *
      * @return $this
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -135,11 +135,13 @@ class LicenseEntity
 
     /**
      * @param string $title
+     *
      * @return $this
      */
     public function setTitle($title)
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -153,21 +155,25 @@ class LicenseEntity
 
     /**
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl($url)
     {
         $this->url = $url;
+
         return $this;
     }
 
     /**
      * @param string $imageUrl
+     *
      * @return LicenseEntity
      */
     public function setImageUrl($imageUrl)
     {
         $this->imageUrl = $imageUrl;
+
         return $this;
     }
 
@@ -180,7 +186,7 @@ class LicenseEntity
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isEnabledForUpload()
     {
@@ -188,17 +194,19 @@ class LicenseEntity
     }
 
     /**
-     * @param boolean $enabledForUpload
+     * @param bool $enabledForUpload
+     *
      * @return LicenseEntity
      */
     public function setEnabledForUpload($enabledForUpload)
     {
         $this->enabledForUpload = $enabledForUpload;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isEnabledForWeb()
     {
@@ -206,27 +214,31 @@ class LicenseEntity
     }
 
     /**
-     * @param boolean $enabledForWeb
+     * @param bool $enabledForWeb
+     *
      * @return LicenseEntity
      */
     public function setEnabledForWeb($enabledForWeb)
     {
         $this->enabledForWeb = $enabledForWeb;
+
         return $this;
     }
 
     /**
-     * @param boolean $outdated
+     * @param bool $outdated
+     *
      * @return LicenseEntity
      */
     public function setOutdated($outdated)
     {
         $this->outdated = $outdated;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isOutdated()
     {
@@ -235,11 +247,13 @@ class LicenseEntity
 
     /**
      * @param HookedObjectEntity[]|ArrayCollection $hookedObjects
+     *
      * @return LicenseEntity
      */
     public function setHookedObjects($hookedObjects)
     {
         $this->hookedObjects = $hookedObjects;
+
         return $this;
     }
 
@@ -253,11 +267,13 @@ class LicenseEntity
 
     /**
      * @param int $version
+     *
      * @return LicenseEntity
      */
     public function setVersion($version)
     {
         $this->version = $version;
+
         return $this;
     }
 

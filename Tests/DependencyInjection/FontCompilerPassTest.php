@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Tests\DependencyInjection;
 
-
 use Cmfcmf\Module\MediaModule\DependencyInjection\FontCompilerPass;
 use Symfony\Component\DependencyInjection\Reference;
 

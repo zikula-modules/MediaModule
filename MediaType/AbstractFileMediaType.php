@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
-
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Symfony\Component\Config\FileLocatorInterface;
@@ -122,7 +121,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
         if ($mode == 'outbound') {
             $wWidth = $width;
             $wHeight = $height;
-        } else if ($mode == 'inset') {
+        } elseif ($mode == 'inset') {
             $imageSize = getimagesize($file);
 
             $ratios = [

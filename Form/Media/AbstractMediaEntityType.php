@@ -64,7 +64,7 @@ abstract class AbstractMediaEntityType extends AbstractType implements Translata
             'required' => true,
             'label' => $this->__('Collection'),
             'class' => 'CmfcmfMediaModule:Collection\CollectionEntity',
-            'query_builder' => function(EntityRepository $er) use ($allowTemporaryUploadCollection) {
+            'query_builder' => function (EntityRepository $er) use ($allowTemporaryUploadCollection) {
                 $qb = $er->createQueryBuilder('c');
                 $qb
                     ->orderBy('c.root', 'ASC')
@@ -73,7 +73,6 @@ abstract class AbstractMediaEntityType extends AbstractType implements Translata
                 if (!$allowTemporaryUploadCollection) {
                     $qb->where($qb->expr()->not($qb->expr()->eq('c.id', ':uploadCollectionId')))
                         ->setParameter('uploadCollectionId', CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID);
-                    ;
                 }
 
                 return $qb;

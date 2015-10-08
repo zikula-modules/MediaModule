@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
-
 use Gedmo\Sluggable\Sluggable;
 use Gedmo\Sortable\Sortable;
 
@@ -47,7 +46,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
-     * @var integer
+     * @var int
      */
     protected $id;
 
@@ -55,7 +54,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
      * @ORM\Column(type="integer")
      * @ORM\Version
      *
-     * @var integer
+     * @var int
      */
     private $version;
 
@@ -145,28 +144,32 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
-     * @var integer $createdUserId.
+     *
+     * @var int.
      */
     protected $createdUserId;
 
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="update")
-     * @var integer $updatedUserId.
+     *
+     * @var int.
      */
     protected $updatedUserId;
 
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @var \DateTime $createdDate.
+     *
+     * @var \DateTime.
      */
     protected $createdDate;
 
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
-     * @var \DateTime $updatedDate.
+     *
+     * @var \DateTime.
      */
     protected $updatedDate;
 
@@ -201,6 +204,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         } else {
             $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->author) . '</a>';
         }
+
         return __f('Content of %s', [$author], $dom);
     }
 
@@ -220,13 +224,14 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     public function setCollection($collection)
     {
         $this->collection = $collection;
+
         return $this;
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer 
+     * @return int
      */
     public function getId()
     {
@@ -234,9 +239,10 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * Set title
+     * Set title.
      *
      * @param string $title
+     *
      * @return $this
      */
     public function setTitle($title)
@@ -256,18 +262,20 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param mixed $slug
+     *
      * @return $this
      */
     public function setSlug($slug)
     {
         $this->slug = $slug;
+
         return $this;
     }
-    
+
     /**
-     * Get title
+     * Get title.
      *
-     * @return string 
+     * @return string
      */
     public function getTitle()
     {
@@ -275,9 +283,10 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
+     *
      * @return $this
      */
     public function setDescription($description)
@@ -288,9 +297,9 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * Get description
+     * Get description.
      *
-     * @return string 
+     * @return string
      */
     public function getDescription()
     {
@@ -298,9 +307,10 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * Set license
+     * Set license.
      *
      * @param LicenseEntity $license
+     *
      * @return $this
      */
     public function setLicense($license)
@@ -311,7 +321,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * Get license
+     * Get license.
      *
      * @return LicenseEntity|null
      */
@@ -330,11 +340,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param int $createdUserId
+     *
      * @return $this
      */
     public function setCreatedUserId($createdUserId)
     {
         $this->createdUserId = $createdUserId;
+
         return $this;
     }
 
@@ -348,11 +360,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param int $updatedUserId
+     *
      * @return $this
      */
     public function setUpdatedUserId($updatedUserId)
     {
         $this->updatedUserId = $updatedUserId;
+
         return $this;
     }
 
@@ -366,11 +380,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param \DateTime $createdDate
+     *
      * @return $this
      */
     public function setCreatedDate($createdDate)
     {
         $this->createdDate = $createdDate;
+
         return $this;
     }
 
@@ -384,11 +400,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param \DateTime $updatedDate
+     *
      * @return $this
      */
     public function setUpdatedDate($updatedDate)
     {
         $this->updatedDate = $updatedDate;
+
         return $this;
     }
 
@@ -402,11 +420,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param mixed $position
+     *
      * @return $this
      */
     public function setPosition($position)
     {
         $this->position = $position;
+
         return $this;
     }
 
@@ -420,11 +440,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param string $author
+     *
      * @return $this
      */
     public function setAuthor($author)
     {
         $this->author = $author;
+
         return $this;
     }
 
@@ -438,31 +460,37 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param string $authorAvatarUrl
+     *
      * @return $this
      */
     public function setAuthorAvatarUrl($authorAvatarUrl)
     {
         $this->authorAvatarUrl = $authorAvatarUrl;
+
         return $this;
     }
 
     /**
      * @param array $extraData
+     *
      * @return $this
      */
     public function setExtraData($extraData)
     {
         $this->extraData = $extraData;
+
         return $this;
     }
 
     /**
      * @param array $extraData
+     *
      * @return $this
      */
     public function addExtraData($extraData)
     {
         $this->extraData = array_merge($this->extraData, $extraData);
+
         return $this;
     }
 
@@ -501,11 +529,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param HookedObjectEntity[]|ArrayCollection $hookedObjectMedia
+     *
      * @return AbstractMediaEntity
      */
     public function setHookedObjectMedia($hookedObjectMedia)
     {
         $this->hookedObjectMedia = $hookedObjectMedia;
+
         return $this;
     }
 
@@ -519,11 +549,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param string $authorUrl
+     *
      * @return $this
      */
     public function setAuthorUrl($authorUrl)
     {
         $this->authorUrl = $authorUrl;
+
         return $this;
     }
 
@@ -537,11 +569,13 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * @param int $version
+     *
      * @return AbstractMediaEntity
      */
     public function setVersion($version)
     {
         $this->version = $version;
+
         return $this;
     }
 

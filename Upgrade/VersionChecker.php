@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Upgrade;
 
-
 use Github\Client as GitHubClient;
 use Github\HttpClient\CachedHttpClient as GitHubCachedHttpClient;
 use Github\HttpClient\Message\ResponseMediator as GitHubResponseMediator;
@@ -30,6 +29,7 @@ class VersionChecker
 
     /**
      * @param $currentVersion
+     *
      * @return array|bool
      */
     public function getReleaseToUpgradeTo($currentVersion)
@@ -82,6 +82,7 @@ class VersionChecker
     /**
      * @param version $currentVersion
      * @param $releases
+     *
      * @return bool|array
      */
     private function getHighestPatchRelease(version $currentVersion, $releases)
@@ -102,6 +103,7 @@ class VersionChecker
     /**
      * @param version $currentVersion
      * @param $releases
+     *
      * @return bool|array
      */
     private function getHighestPatchReleaseOfNextMinorVersion(version $currentVersion, $releases)
@@ -121,6 +123,7 @@ class VersionChecker
 
     /**
      * @param $releases
+     *
      * @return array
      */
     private function filterPreReleasesAndDrafts($releases)
@@ -132,6 +135,7 @@ class VersionChecker
 
     /**
      * @param $releases
+     *
      * @return array
      */
     private function filterReleasesWithoutZipAsset($releases)
@@ -182,6 +186,7 @@ class VersionChecker
 
     /**
      * @param array $release
+     *
      * @return version
      */
     private function getVersionFromRelease($release)

@@ -11,6 +11,7 @@ interface PasteMediaTypeInterface
      * and 10.
      *
      * @param $pastedText
+     *
      * @return int
      */
     public function matchesPaste($pastedText);

@@ -19,7 +19,7 @@ class AudioEntity extends AbstractFileEntity
 
         if (isset($this->extraData['artist'][0])) {
             $this->author = $this->extraData['artist'][0];
-        } else if (isset($this->extraData['band'][0])) {
+        } elseif (isset($this->extraData['band'][0])) {
             $this->author = $this->extraData['band'][0];
         }
         if (isset($this->extraData['title'][0])) {
@@ -33,7 +33,6 @@ class AudioEntity extends AbstractFileEntity
 
     private function getInformationToKeep($meta, $mimeType)
     {
-
         $data = [];
         switch ($mimeType) {
             case 'audio/mpeg':

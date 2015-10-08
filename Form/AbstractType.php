@@ -60,7 +60,7 @@ abstract class AbstractType extends BaseAbstractType implements TranslatableInte
      *
      * @param string $m1 Singular.
      * @param string $m2 Plural.
-     * @param integer $n Count.
+     * @param int    $n  Count.
      *
      * @return string
      */
@@ -72,7 +72,7 @@ abstract class AbstractType extends BaseAbstractType implements TranslatableInte
     /**
      * Format translations for modules.
      *
-     * @param string $msg Message.
+     * @param string       $msg   Message.
      * @param string|array $param Format parameters.
      *
      * @return string
@@ -85,9 +85,9 @@ abstract class AbstractType extends BaseAbstractType implements TranslatableInte
     /**
      * Format pural translations for modules.
      *
-     * @param string $m1 Singular.
-     * @param string $m2 Plural.
-     * @param integer $n Count.
+     * @param string       $m1    Singular.
+     * @param string       $m2    Plural.
+     * @param int          $n     Count.
      * @param string|array $param Format parameters.
      *
      * @return string

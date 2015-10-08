@@ -101,11 +101,13 @@ class HookedObjectEntity
 
     /**
      * @param int $id
+     *
      * @return HookedObjectEntity
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -119,11 +121,13 @@ class HookedObjectEntity
 
     /**
      * @param LicenseEntity[]|ArrayCollection $licenses
+     *
      * @return HookedObjectEntity
      */
     public function setLicenses($licenses)
     {
         $this->licenses = $licenses;
+
         return $this;
     }
 
@@ -137,11 +141,13 @@ class HookedObjectEntity
 
     /**
      * @param HookedObjectCollectionEntity[]|ArrayCollection $hookedObjectCollections
+     *
      * @return HookedObjectEntity
      */
     public function setHookedObjectCollections($hookedObjectCollections)
     {
         $this->hookedObjectCollections = $hookedObjectCollections;
+
         return $this;
     }
 
@@ -155,11 +161,13 @@ class HookedObjectEntity
 
     /**
      * @param HookedObjectMediaEntity[]|ArrayCollection $hookedObjectMedia
+     *
      * @return HookedObjectEntity
      */
     public function setHookedObjectMedia($hookedObjectMedia)
     {
         $this->hookedObjectMedia = $hookedObjectMedia;
+
         return $this;
     }
 
@@ -173,11 +181,13 @@ class HookedObjectEntity
 
     /**
      * @param string $module
+     *
      * @return HookedObjectEntity
      */
     public function setModule($module)
     {
         $this->module = $module;
+
         return $this;
     }
 
@@ -191,11 +201,13 @@ class HookedObjectEntity
 
     /**
      * @param int $areaId
+     *
      * @return HookedObjectEntity
      */
     public function setAreaId($areaId)
     {
         $this->areaId = $areaId;
+
         return $this;
     }
 
@@ -209,11 +221,13 @@ class HookedObjectEntity
 
     /**
      * @param int $objectId
+     *
      * @return HookedObjectEntity
      */
     public function setObjectId($objectId)
     {
         $this->objectId = $objectId;
+
         return $this;
     }
 
@@ -227,11 +241,13 @@ class HookedObjectEntity
 
     /**
      * @param UrlInterface $urlObject
+     *
      * @return HookedObjectEntity
      */
     public function setUrlObject($urlObject)
     {
         $this->urlObject = $urlObject;
+
         return $this;
     }
 

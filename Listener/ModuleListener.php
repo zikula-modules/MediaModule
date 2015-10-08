@@ -21,9 +21,9 @@ class ModuleListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             CoreEvents::MODULE_REMOVE => 'moduleRemoved',
-        );
+        ];
     }
 
     public function moduleRemoved(ModuleStateEvent $event)

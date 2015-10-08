@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Tests\DependencyInjection;
 
-
 use Cmfcmf\Module\MediaModule\DependencyInjection\MediaTypeCompilerPass;
 use Symfony\Component\DependencyInjection\Reference;
 

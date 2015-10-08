@@ -10,7 +10,6 @@ use Cmfcmf\Module\MediaModule\Form\Watermark\ImageWatermarkType;
 use Cmfcmf\Module\MediaModule\Form\Watermark\TextWatermarkType;
 use Doctrine\ORM\OptimisticLockException;
 use Gedmo\Uploadable\Uploadable;
-use Github\HttpClient\Message\ResponseMediator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -54,6 +53,7 @@ class WatermarkController extends AbstractController
      *
      * @param Request $request
      * @param $type
+     *
      * @return array|RedirectResponse
      */
     public function newAction(Request $request, $type)
@@ -68,7 +68,7 @@ class WatermarkController extends AbstractController
         if ($type == 'image') {
             $entity = new ImageWatermarkEntity();
             $form = new ImageWatermarkType();
-        } else if ($type == 'text') {
+        } elseif ($type == 'text') {
             $entity = new TextWatermarkEntity();
             $form = new TextWatermarkType();
         } else {
@@ -83,7 +83,7 @@ class WatermarkController extends AbstractController
 
             if ($entity instanceof Uploadable) {
                 /** @var UploadedFile $file */
-                $file = $form->get('file') ->getData();
+                $file = $form->get('file')->getData();
                 $manager = $this->get('stof_doctrine_extensions.uploadable.manager');
                 $manager->markEntityToUpload($entity, $file);
             }
@@ -104,7 +104,7 @@ class WatermarkController extends AbstractController
      * @ParamConverter("entity", class="CmfcmfMediaModule:Watermark\AbstractWatermarkEntity")
      * @Template()
      *
-     * @param Request $request
+     * @param Request                 $request
      * @param AbstractWatermarkEntity $entity
      *
      * @return array
@@ -117,7 +117,7 @@ class WatermarkController extends AbstractController
 
         if ($entity instanceof ImageWatermarkEntity) {
             $form = new ImageWatermarkType($entity);
-        } else if ($entity instanceof TextWatermarkEntity) {
+        } elseif ($entity instanceof TextWatermarkEntity) {
             $form = new TextWatermarkType();
         } else {
             throw new \LogicException();
@@ -133,7 +133,7 @@ class WatermarkController extends AbstractController
 
         if ($entity instanceof Uploadable) {
             /** @var UploadedFile $file */
-            $file = $form->get('file') ->getData();
+            $file = $form->get('file')->getData();
             if ($file !== null && $file->isValid()) {
                 // If the file is invalid, it means that no new file has been selected
                 // to replace the already uploaded file.
@@ -173,7 +173,7 @@ class WatermarkController extends AbstractController
      * @ParamConverter("entity", class="CmfcmfMediaModule:Watermark\AbstractWatermarkEntity")
      * @Template()
      *
-     * @param Request $request
+     * @param Request                 $request
      * @param AbstractWatermarkEntity $entity
      *
      * @return array|RedirectResponse

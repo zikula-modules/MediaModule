@@ -2,13 +2,9 @@
 
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
-use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\MarkdownEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
-use Cmfcmf\Module\MediaModule\Metadata\GenericMetadataReader;
 use Michelf\MarkdownExtra;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -42,7 +38,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /** @var MarkdownEntity $entity */
+        /* @var MarkdownEntity $entity */
         $raw = file_get_contents($entity->getPath());
         $rendered = $this->markdownExtraParser->transform($raw);
 
@@ -66,6 +62,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
         if ($file->getMimeType() == 'text/plain' && $file->getClientOriginalExtension() == 'md') {
             return 5;
         }
+
         return 0;
     }
 
@@ -81,12 +78,13 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
         if ($file['mimeType'] == 'text/plain' && pathinfo($file['name'], PATHINFO_EXTENSION) == 'md') {
             return 5;
         }
+
         return 0;
     }
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
     {
-        /** @var PlaintextEntity $entity */
+        /* @var PlaintextEntity $entity */
         return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize, 'txt');
     }
 

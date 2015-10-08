@@ -38,6 +38,7 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
 
     /**
      * @ORM\Column(type="boolean")
+     *
      * @var bool
      */
     protected $downloadAllowed;
@@ -70,7 +71,6 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
     {
         // Found at http://stackoverflow.com/a/2021729
         // written by Seab Vieira http://stackoverflow.com/users/135978/sean-vieira
-
 
         // Remove anything which isn't a word, whitespace, number
         // or any of the following caracters -_~,;:[]().
@@ -108,11 +108,13 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
 
     /**
      * @param mixed $fileName
+     *
      * @return AbstractFileEntity
      */
     public function setFileName($fileName)
     {
         $this->fileName = $fileName;
+
         return $this;
     }
 
@@ -126,11 +128,13 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
 
     /**
      * @param mixed $mimeType
+     *
      * @return AbstractFileEntity
      */
     public function setMimeType($mimeType)
     {
         $this->mimeType = $mimeType;
+
         return $this;
     }
 
@@ -144,26 +148,30 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
 
     /**
      * @param mixed $fileSize
+     *
      * @return AbstractFileEntity
      */
     public function setFileSize($fileSize)
     {
         $this->fileSize = $fileSize;
+
         return $this;
     }
 
     /**
-     * @param boolean $downloadAllowed
+     * @param bool $downloadAllowed
+     *
      * @return AbstractFileEntity
      */
     public function setDownloadAllowed($downloadAllowed)
     {
         $this->downloadAllowed = $downloadAllowed;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isDownloadAllowed()
     {

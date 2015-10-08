@@ -4,10 +4,8 @@ namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Imagine\Image\ImagineInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 
 /**
  * @ORM\Entity
@@ -35,6 +33,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
      * @Assert\Length(max="40")
      *
      * @todo Assert valid choice.
+     *
      * @var string
      */
     protected $font;
@@ -49,11 +48,13 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
 
     /**
      * @param string $text
+     *
      * @return TextWatermarkEntity
      */
     public function setText($text)
     {
         $this->text = $text;
+
         return $this;
     }
 
@@ -62,7 +63,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         $fontPath = $fontCollection->getFontById($this->font)->getPath();
         if ($this->getAbsoluteSize() !== null) {
             $fontSize = $this->getAbsoluteSize();
-        } else if ($this->getRelativeSize() !== null) {
+        } elseif ($this->getRelativeSize() !== null) {
             $fontSize = (int) $this->getRelativeSize() / 100 * $height;
         } else {
             throw new \LogicException('Either relative or absolute watermark size must be set!');
@@ -88,7 +89,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
             $draw->setFillColor('#fff');
 
             $textOnly = new \Imagick();
-            $textOnly->newImage(1400,400, "transparent");  //transparent canvas
+            $textOnly->newImage(1400, 400, "transparent");  //transparent canvas
             $textOnly->annotateImage($draw, 0, 0, 0, $this->text);
 
             //Create stroke
@@ -97,7 +98,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
             $draw->setStrokeWidth(8);
 
             $strokeImage = new \Imagick();
-            $strokeImage->newImage(1400,400, "transparent");
+            $strokeImage->newImage(1400, 400, "transparent");
             $strokeImage->annotateImage($draw, 0, 0, 0, $this->text);
 
             //Composite text over stroke
@@ -107,7 +108,6 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
             $watermarkImage = $imagine->load($strokeImage->getImageBlob());
             //$strokeImage->resizeImage(300,0, \Imagick::FILTER_CATROM, 0.9, false); //resize to final size
         }
-
 
         return $watermarkImage;
     }
@@ -136,7 +136,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
     }
 
     /**
-     * Get the value of Absolute Size
+     * Get the value of Absolute Size.
      *
      * @return int
      */
@@ -146,7 +146,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
     }
 
     /**
-     * Set the value of Absolute Size
+     * Set the value of Absolute Size.
      *
      * @param int $absoluteSize
      *
@@ -159,9 +159,8 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         return $this;
     }
 
-
     /**
-     * Get the value of Font
+     * Get the value of Font.
      *
      * @return string
      */
@@ -171,7 +170,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
     }
 
     /**
-     * Set the value of Font
+     * Set the value of Font.
      *
      * @param string $font
      *

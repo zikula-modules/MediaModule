@@ -3,7 +3,6 @@
 namespace Cmfcmf\Module\MediaModule\Entity\Media;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -48,11 +47,13 @@ class FlickrEntity extends WebEntity
 
     /**
      * @param string $flickrFarm
+     *
      * @return FlickrEntity
      */
     public function setFlickrFarm($flickrFarm)
     {
         $this->extraData['flickrFarm'] = $flickrFarm;
+
         return $this;
     }
 
@@ -66,11 +67,13 @@ class FlickrEntity extends WebEntity
 
     /**
      * @param string $flickrServer
+     *
      * @return FlickrEntity
      */
     public function setFlickrServer($flickrServer)
     {
         $this->extraData['flickrServer'] = $flickrServer;
+
         return $this;
     }
 
@@ -84,11 +87,13 @@ class FlickrEntity extends WebEntity
 
     /**
      * @param string $flickrSecret
+     *
      * @return FlickrEntity
      */
     public function setFlickrSecret($flickrSecret)
     {
         $this->extraData['flickrSecret'] = $flickrSecret;
+
         return $this;
     }
 
@@ -102,11 +107,13 @@ class FlickrEntity extends WebEntity
 
     /**
      * @param string $flickrId
+     *
      * @return FlickrEntity
      */
     public function setFlickrId($flickrId)
     {
         $this->extraData['flickrId'] = $flickrId;
+
         return $this;
     }
 }

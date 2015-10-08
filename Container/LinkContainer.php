@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Container;
 
-
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -48,6 +47,7 @@ class LinkContainer implements LinkContainerInterface
 
     /**
      * @param string $type
+     *
      * @return array
      */
     public function getLinks($type = self::TYPE_ADMIN)
