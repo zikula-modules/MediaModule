@@ -2,12 +2,11 @@
 
 <phpunit bootstrap="./../../../lib/bootstrap.php">
     <php>
-        <server name="KERNEL_DIR" value="app" />
+        <server name="KERNEL_DIR" value="Tests/Controller/App" />
     </php>
     <testsuites>
         <testsuite name="Cmfcmf Media Module">
             <directory>./Tests</directory>
-            <exclude>./Tests/Controller</exclude>
             <exclude>./Tests/Entity/*/Repository</exclude>
         </testsuite>
     </testsuites>
