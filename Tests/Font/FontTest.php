@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Tests\Font;
 
-
 use Cmfcmf\Module\MediaModule\Font\Font;
 
 class FontTest extends \PHPUnit_Framework_TestCase
@@ -16,6 +15,7 @@ class FontTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('thePath', $font->getPath());
         $this->assertEquals('theGoogleThing', $font->getGoogleFontName());
     }
+
     public function testWithoutGoogleFontName()
     {
         $font = new Font('theID', 'theTitle', 'thePath', null);
