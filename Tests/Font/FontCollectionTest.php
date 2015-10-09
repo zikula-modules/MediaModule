@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Tests\Font;
 
-
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
 
 class FontCollectionTest extends \PHPUnit_Framework_TestCase
