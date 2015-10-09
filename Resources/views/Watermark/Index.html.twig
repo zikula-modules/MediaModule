@@ -26,7 +26,7 @@
                 <th>{{ __('Position') }}</th>
                 <th>{{ __('Image size') }}</th>
                 <th>{{ __('Relative size') }}</th>
-                <th>Actions</th>
+                <th>{{ __('Actions') }}</th>
             </tr>
             </thead>
             <tbody>
@@ -53,6 +53,12 @@
                                 <i class="fa fa-trash-o fa-fw"></i>
                             </a>
                         {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center">
+                        {{ __('No watermarks created yet.') }}
                     </td>
                 </tr>
             {% endfor %}
