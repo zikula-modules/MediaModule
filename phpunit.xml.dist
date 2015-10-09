@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit bootstrap="./../../../lib/bootstrap.php">
-    <php>
-        <server name="KERNEL_DIR" value="Tests/Controller/App" />
-    </php>
     <testsuites>
         <testsuite name="Cmfcmf Media Module">
             <directory>./Tests</directory>
