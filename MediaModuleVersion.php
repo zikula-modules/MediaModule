@@ -11,7 +11,7 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
         $meta["description"]    = $this->__("Cmfcmf MediaModule description");
         $meta["url"]            = $this->__("collections");
         $meta["version"]        = "1.0.1";
-        $meta["core_min"]       = "1.4.0";
+        $meta["core_min"]       = "1.4.1";
         $meta["securityschema"] = ["CmfcmfMediaModule::" => "::"];
         $meta['capabilities'] = [
             \HookUtil::SUBSCRIBER_CAPABLE => ['enabled' => true],
