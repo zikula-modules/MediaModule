@@ -27,7 +27,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Audio:Fullpage.html.twig', ['entity' => $entity]);
+        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Audio:fullpage.html.twig', ['entity' => $entity]);
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)

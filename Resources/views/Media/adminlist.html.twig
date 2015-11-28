@@ -1,4 +1,4 @@
-{% extends 'CmfcmfMediaModule::AdminBase.html.twig' %}
+{% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
 {% block title __('Media list') %}
 {% block content %}
     <div class="table-responsive">
@@ -60,11 +60,11 @@
     <nav>
         <ul class="pager">
             <li class="previous{% if page == 1 %} disabled{% endif %}">
-                <a href="{{ path('cmfcmfmediamodule_media_adminlist', {page: (page - 1)}) }}">
+                <a href="{% if page == 1 %}#{% else %}{{ path('cmfcmfmediamodule_media_adminlist', {page: (page - 1)}) }}{% endif %}">
                     <span aria-hidden="true">&larr;</span> {{ __('Previous') }}
                 </a>
             </li>
-            <li class="next{% if page == maxPage %} disabled{% endif %}">
+            <li class="next{% if page == maxPage %} disabled{% endif %}"{% if page == maxPage %} disabled{% endif %}>
                 <a href="{{ path('cmfcmfmediamodule_media_adminlist', {page: (page + 1)}) }}">
                     {{ __('Next') }} <span aria-hidden="true">&rarr;</span>
                 </a>

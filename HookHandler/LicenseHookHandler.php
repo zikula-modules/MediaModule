@@ -20,7 +20,7 @@ class LicenseHookHandler extends AbstractHookHandler
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
         $hookedObject = $repository->getByHookOrCreate($hook);
 
-        $content = $this->renderEngine->render('CmfcmfMediaModule:License:HookView.html.twig', [
+        $content = $this->renderEngine->render('CmfcmfMediaModule:License:hookView.html.twig', [
             'licenses' => $hookedObject->getLicenses()
         ]);
         $this->uiResponse($hook, $content);
@@ -38,7 +38,7 @@ class LicenseHookHandler extends AbstractHookHandler
             return $licenseEntity->getId();
         }, $hookedObject->getLicenses()->getValues());
 
-        $content = $this->renderEngine->render('CmfcmfMediaModule:License:HookEdit.html.twig', [
+        $content = $this->renderEngine->render('CmfcmfMediaModule:License:hookEdit.html.twig', [
             'selectedLicenses' => $selectedIds,
             'preferredLicenses' => $preferredLicenses,
             'outdatedLicenses' => $outdatedLicenses

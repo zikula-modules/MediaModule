@@ -7,7 +7,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Uploadable\Uploadable;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository")
  * @Gedmo\Uploadable(pathMethod="getPathToUploadTo", callback="onNewFile", filenameGenerator="SHA1", appendNumber=true)
  */
 abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploadable

@@ -29,7 +29,7 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
     public function renderFullpage(AbstractMediaEntity $entity)
     {
         /* @var ArchiveEntity $entity */
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Archive:Fullpage.html.twig', ['entity' => $entity]);
+        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Archive:fullpage.html.twig', ['entity' => $entity]);
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)

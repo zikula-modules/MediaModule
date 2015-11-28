@@ -1,7 +1,7 @@
 {% block header %}{% endblock %}
 
 {% if (renderRaw is not defined or not renderRaw) and breadcrumbs is defined %}
-    {% include 'CmfcmfMediaModule::Breadcrumbs.html.twig' with {breadcrumbs: breadcrumbs} %}
+    {% include 'CmfcmfMediaModule::breadcrumbs.html.twig' with {breadcrumbs: breadcrumbs} %}
 {% endif %}
 
 {% block upgradeNotification %}

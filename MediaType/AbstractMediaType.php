@@ -44,7 +44,7 @@ abstract class AbstractMediaType implements MediaTypeInterface
     public function renderWebCreationTemplate()
     {
         return $this->renderEngine->render(
-            'CmfcmfMediaModule:MediaType:' . ucfirst($this->getAlias()) . '/WebCreation.html.twig',
+            'CmfcmfMediaModule:MediaType:' . ucfirst($this->getAlias()) . '/webCreation.html.twig',
             $this->getWebCreationTemplateArguments()
         );
     }

@@ -32,7 +32,7 @@ class CollectionHookHandler extends AbstractHookHandler
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
         $hookedObject = $repository->getByHookOrCreate($hook);
 
-        $content = $this->renderEngine->render('CmfcmfMediaModule:Collection:HookView.html.twig', [
+        $content = $this->renderEngine->render('CmfcmfMediaModule:Collection:hookView.html.twig', [
             'hookedObjectCollections' => $hookedObject->getHookedObjectCollections(),
             'mediaTypeCollection' => $this->mediaTypeCollection
         ]);
@@ -49,7 +49,7 @@ class CollectionHookHandler extends AbstractHookHandler
             return $hookedObjectCollectionEntity->getCollection()->getId();
         }, $hookedObject->getHookedObjectCollections()->getValues());
 
-        $content = $this->renderEngine->render('CmfcmfMediaModule:Collection:HookEdit.html.twig', [
+        $content = $this->renderEngine->render('CmfcmfMediaModule:Collection:hookEdit.html.twig', [
             'selectedCollections' => $selectedCollections,
             'hookedObject' => $hookedObject
         ]);

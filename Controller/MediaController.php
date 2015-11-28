@@ -47,6 +47,9 @@ class MediaController extends AbstractController
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'moderate')) {
             throw new AccessDeniedException();
         }
+        if ($page < 1) {
+            throw new NotFoundHttpException();
+        }
 
         $em = $this->getDoctrine()->getManager();
 

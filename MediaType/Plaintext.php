@@ -33,7 +33,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
         fclose($file);
         // @todo check if EOF.
 
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Plaintext:Fullpage.html.twig', ['entity' => $entity, 'content' => $content]);
+        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Plaintext:fullpage.html.twig', ['entity' => $entity, 'content' => $content]);
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)

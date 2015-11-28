@@ -26,7 +26,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:Fullpage.html.twig', ['entity' => $entity, 'width' => '100%', 'height' => '400']);
+        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:fullpage.html.twig', ['entity' => $entity, 'width' => '100%', 'height' => '400']);
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)
@@ -171,7 +171,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
                 $height = 400;
         }
 
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:Fullpage.html.twig', ['entity' => $entity, 'width' => $width, 'height' => $height]);
+        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:fullpage.html.twig', ['entity' => $entity, 'width' => $width, 'height' => $height]);
     }
 
     private function formatDuration($seconds)

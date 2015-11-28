@@ -49,7 +49,7 @@ class WatermarkController extends AbstractController
 
     /**
      * @Route("/new/{type}")
-     * @Template(template="CmfcmfMediaModule:Watermark:Edit.html.twig")
+     * @Template(template="CmfcmfMediaModule:Watermark:edit.html.twig")
      *
      * @param Request $request
      * @param $type

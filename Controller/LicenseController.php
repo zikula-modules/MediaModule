@@ -44,7 +44,7 @@ class LicenseController extends AbstractController
 
     /**
      * @Route("/new")
-     * @Template(template="CmfcmfMediaModule:License:Edit.html.twig")
+     * @Template(template="CmfcmfMediaModule:License:edit.html.twig")
      *
      * @param Request $request
      *

@@ -45,7 +45,7 @@ abstract class AbstractTemplate implements TemplateInterface
 
     protected function getTemplate()
     {
-        return "CmfcmfMediaModule:CollectionTemplate:{$this->getType()}.html.twig";
+        return "CmfcmfMediaModule:CollectionTemplate:" . lcfirst($this->getType()) . ".html.twig";
     }
 
     public function render(CollectionEntity $collectionEntity, MediaTypeCollection $mediaTypeCollection, $showChildCollections)

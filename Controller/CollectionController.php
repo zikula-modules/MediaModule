@@ -24,7 +24,7 @@ class CollectionController extends AbstractController
 {
     /**
      * @Route("/new/{slug}", requirements={"slug" = ".+"}, defaults={"slug" = null})
-     * @Template(template="CmfcmfMediaModule:Collection:Edit.html.twig")
+     * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      * @ParamConverter("parent", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
      * @param Request          $request
@@ -267,6 +267,6 @@ class CollectionController extends AbstractController
             !$isHook
         );
 
-        return $this->render('CmfcmfMediaModule:Collection:Display.html.twig', $templateVars);
+        return $this->render('CmfcmfMediaModule:Collection:display.html.twig', $templateVars);
     }
 }

@@ -32,7 +32,7 @@ class MediaHookHandler extends AbstractHookHandler
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
         $hookedObject = $repository->getByHookOrCreate($hook);
 
-        $content = $this->renderEngine->render('CmfcmfMediaModule:Media:HookView.html.twig', [
+        $content = $this->renderEngine->render('CmfcmfMediaModule:Media:hookView.html.twig', [
             'hookedObjectMedia' => $hookedObject->getHookedObjectMedia(),
             'mediaTypeCollection' => $this->mediaTypeCollection
         ]);
@@ -50,7 +50,7 @@ class MediaHookHandler extends AbstractHookHandler
             return $hookedObjectMediaEntity->getMedia()->toArrayForFinder($mediaTypeCollection);
         }, $hookedObject->getHookedObjectMedia()->getValues());
 
-        $content = $this->renderEngine->render('CmfcmfMediaModule:Media:HookEdit.html.twig', [
+        $content = $this->renderEngine->render('CmfcmfMediaModule:Media:hookEdit.html.twig', [
             'selectedMedia' => $selectedMedia,
         ]);
         $this->uiResponse($hook, $content);
