@@ -39,6 +39,7 @@ class ModuleUpgrader
 
         $zikulaDir = realpath($kernelRootDir . '/..');
         $this->moduleDir = $this->fs->makePathRelative(realpath(__DIR__ . '/..'), $zikulaDir);
+        $this->moduleDir = rtrim($this->moduleDir, '/\\');
 
         $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
         $this->translator = $translator;
