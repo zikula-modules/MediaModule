@@ -218,7 +218,7 @@ class CollectionController extends AbstractController
     }
 
     /**
-     * @Route("/show/{slug}", requirements={"slug"=".+"}, options={"expose" = true})
+     * @Route("/show/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
      * @Method("GET")
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template()
