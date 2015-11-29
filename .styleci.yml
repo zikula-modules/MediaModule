@@ -9,6 +9,7 @@ disabled:
   - spaces_cast 
   - unalign_equals
   - unalign_double_arrow
+  - phpdoc_to_comment
   
 enabled:
   - short_array_syntax
