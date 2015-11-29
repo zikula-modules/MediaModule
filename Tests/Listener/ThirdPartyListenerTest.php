@@ -13,6 +13,11 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if (!class_exists('Scribite_EditorHelper')) {
+            $this->markTestSkipped(
+                'The Scribite module is not installed.'
+            );
+        }
         $this->listener = new ThirdPartyListener(__DIR__ . '/../../../..');
         \ModUtil::registerAutoloaders();
     }
