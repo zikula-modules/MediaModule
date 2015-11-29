@@ -48,6 +48,6 @@ install:
     - mysql -e "INSERT INTO zk_test.modules (id, name, type, displayname, url, description, directory, version, capabilities, state, securityschema, core_min, core_max) VALUES (NULL, 'CmfcmfMediaModule', '3', 'Media Module', 'collections', '...', 'cmfcmf/media-module', '1.0.2', 'N;', '3', 'N;', '1.4.1', '1.4.99');"
 
 script:
-    - php app/console lint:yaml @CmfcmfMediaModule
-    - php app/console lint:twig modules/cmfcmf/media-module
+    - php app/console lint:yaml modules/cmfcmf/media-module/Resources
+    - php app/console lint:twig @CmfcmfMediaModule
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist
