@@ -77,7 +77,7 @@
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
             {{ macro.box(media.title, supportText, buttons, mediaType.thumbnail(media, 200, 150, 'url'), media.id, mediaType.icon, mediaType.displayName) }}
         {% else %}
-            {% if not collection.virtualRoot  %}
+            {% if collection.children is empty %}
                 <div class="col-xs-12">
                     <div class="alert alert-info">
                         {{ __('This collection is currently empty!') }}
