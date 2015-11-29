@@ -30,12 +30,19 @@ before_install:
 
 install:
     - composer install
+    - zip -qr MediaModule.zip .
     - wget https://github.com/zikula/core/releases/download/1.4.1/Zikula_Core-1.4.1.build128.tar.gz
     - tar -xpzf Zikula_Core-1.4.1.build128.tar.gz
+    - rm Zikula_Core-1.4.1.build128.tar.gz
     - cd Zikula_Core-1.4.1
     - php app/console zikula:install:start -n --database_user=root --database_name=zk_test --password=12345678 --email=admin@example.com --router:request_context:host=localhost
     - php app/console zikula:install:finish
-    - cd ..
+    - cd modules
+    - mkdir cmfcmf
+    - cd cmfcmf
+    - mkdir media-module
+    - cd media-module
+    - unzip -q ../../../../MediaModule
     - ls -lisa
 
 script:
