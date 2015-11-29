@@ -35,8 +35,6 @@ install:
     - tar -xpzf Zikula_Core-1.4.1.build128.tar.gz
     - rm Zikula_Core-1.4.1.build128.tar.gz
     - cd Zikula_Core-1.4.1
-    - php app/console zikula:install:start -n --database_user=root --database_name=zk_test --password=12345678 --email=admin@example.com --router:request_context:host=localhost
-    - php app/console zikula:install:finish
     - cd modules
     - mkdir cmfcmf
     - cd cmfcmf
@@ -44,9 +42,9 @@ install:
     - cd media-module
     - unzip -q ../../../../MediaModule
     - cd  ../../..
+    - php app/console zikula:install:start -n --database_user=root --database_name=zk_test --password=12345678 --email=admin@example.com --router:request_context:host=localhost
+    - php app/console zikula:install:finish
 
 script:
-    - pwd
-    - ls -lisa
     - php app/console lint:twig modules/cmfcmf/media-module
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist
