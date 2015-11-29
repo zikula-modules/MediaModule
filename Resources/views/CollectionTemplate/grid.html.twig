@@ -1,7 +1,7 @@
 {% extends 'CmfcmfMediaModule:CollectionTemplate:cards.html.twig' %}
 
 {% block media %}
-    {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/Display/grid.css')) }}
+    {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/Display/Grid.css')) }}
     {% set attributions = {} %}
     <div class="cmfcmfmedia-display-grid">
         {% for media in collection.media %}
