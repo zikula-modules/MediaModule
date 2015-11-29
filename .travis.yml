@@ -47,4 +47,5 @@ install:
 
 script:
     - php app/console lint:twig modules/cmfcmf/media-module
+    - php app/console lint:yaml @CmfcmfMediaModule
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist
