@@ -43,8 +43,10 @@ install:
     - mkdir media-module
     - cd media-module
     - unzip -q ../../../../MediaModule
-    - ls -lisa
+    - cd  ../../..
 
 script:
-     - echo "Nothing to do.. yet!"
-#    - wget -dO - localhost/src
+    - pwd
+    - ls -lisa
+    - php app/console lint:twig modules/cmfcmf/media-module
+    - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist
