@@ -32,7 +32,7 @@
         // Using JavaScript here is extremely ugly. Oh well..
         (function ($) {
             $('#{{ id|e('js') }}').find('.radio label').each(function () {
-                var font = $(this).text();
+                var font = $(this).text().trim();
                 console.log(font);
                 $(this).css({'font-family': "'" + font + "'"});
             });
