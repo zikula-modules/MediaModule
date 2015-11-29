@@ -92,13 +92,13 @@ class SettingsController extends AbstractController
                 'text' => $this->__('Checking server requirements'),
                 'icon' => 'fa-server'
             ],
-            'version-check' => [
-                'text' => $this->__('Checking installed and available versions'),
-                'icon' => 'fa-github'
-            ],
             'permission-check' => [
                 'text' => $this->__('Checking file system permissions'),
                 'icon' => 'fa-files-o'
+            ],
+            'version-check' => [
+                'text' => $this->__('Checking installed and available versions'),
+                'icon' => 'fa-github'
             ],
             'download' => [
                 'text' => $this->__('Downloading new version'),
@@ -141,6 +141,9 @@ class SettingsController extends AbstractController
             case 'php-check':
                 $proceed = $upgrader->checkRequirements();
                 break;
+            case 'permission-check':
+                $proceed = $upgrader->checkPermissions();
+                break;
             case 'version-check':
                 if (!$versionChecker->checkRateLimit()) {
                     $proceed = $this->__('Your GitHub API Rate limit is exceeded. Please try again later.');
@@ -153,9 +156,6 @@ class SettingsController extends AbstractController
                 } else {
                     $proceed = true;
                 }
-                break;
-            case 'permission-check':
-                $proceed = $upgrader->checkPermissions();
                 break;
             case 'download':
                 if (!$versionChecker->checkRateLimit()) {

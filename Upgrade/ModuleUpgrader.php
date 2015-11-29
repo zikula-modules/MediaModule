@@ -56,11 +56,14 @@ class ModuleUpgrader
 
     public function checkPermissions()
     {
-        if (is_writable($this->moduleDir)) {
-            return true;
+        if (!is_writable($this->moduleDir)) {
+            return $this->translator->trans('Please make %s writable.', ['%s' => $this->moduleDir], $this->domain);
+        }
+        if (!is_writable($this->moduleDir . '/Controller/MediaController.php')) {
+            return $this->translator->trans('%s is writable but it\'s content is not. Please make sure to make it recursively writable.', ['%s' => $this->moduleDir], $this->domain);
         }
 
-        return $this->translator->trans('Please make %s writable.', ['%s' => $this->moduleDir], $this->domain);
+        return true;
     }
 
     public function downloadNewVersion($url)
