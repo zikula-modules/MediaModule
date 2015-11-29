@@ -60,6 +60,8 @@ class CollectionEntity implements Node, Sluggable
      *      })
      * })
      * @ORM\Column(length=128, unique=true)
+     * 
+     * @var string
      */
     protected $slug;
 
@@ -152,7 +154,7 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
      *
-     * @var int.
+     * @var int
      */
     protected $createdUserId;
 
@@ -160,7 +162,7 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="update")
      *
-     * @var int.
+     * @var int
      */
     protected $updatedUserId;
 
@@ -168,7 +170,7 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      *
-     * @var \DateTime.
+     * @var \DateTime
      */
     protected $createdDate;
 
@@ -176,7 +178,7 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
      *
-     * @var \DateTime.
+     * @var \DateTime
      */
     protected $updatedDate;
 
