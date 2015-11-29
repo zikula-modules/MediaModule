@@ -45,8 +45,9 @@ install:
     - unzip -q ../../../../MediaModule
     - cd  ../../..
     - php app/console bootstrap:bundles
+    - php app/console cache:clear --env=prod
 
 script:
-    - php app/console lint:twig modules/cmfcmf/media-module
     - php app/console lint:yaml @CmfcmfMediaModule
+    - php app/console lint:twig modules/cmfcmf/media-module
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist
