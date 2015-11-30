@@ -61,6 +61,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                 ;
             case '1.0.1':
             case '1.0.2':
+            case '1.0.3':
                 return true;
             default:
                 return false;
