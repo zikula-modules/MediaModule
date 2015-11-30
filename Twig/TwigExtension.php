@@ -6,6 +6,7 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
+use Github\Exception\RuntimeException;
 use Michelf\MarkdownExtra;
 
 class TwigExtension extends \Twig_Extension
@@ -58,13 +59,21 @@ class TwigExtension extends \Twig_Extension
     public function newVersionAvailable()
     {
         $lastNewVersionCheck = \ModUtil::getVar('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
-        if (time() - 24 * 60 * 60 > $lastNewVersionCheck && $this->versionChecker->checkRateLimit()) {
+        if (time() - 24 * 60 * 60 > $lastNewVersionCheck) {
+            // Last version check older than a day.
             \ModUtil::setVar('CmfcmfMediaModule', 'lastNewVersionCheck', time());
-            $info = \ModUtil::getInfoFromName('CmfcmfMediaModule');
-            if (($release = $this->versionChecker->getReleaseToUpgradeTo($info['version'])) !== false) {
-                \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', $release['tag_name']);
+            try {
+                if ($this->versionChecker->checkRateLimit()) {
+                    // The remaining rate limit is high enough.
+                    $info = \ModUtil::getInfoFromName('CmfcmfMediaModule');
+                    if (($release = $this->versionChecker->getReleaseToUpgradeTo($info['version'])) !== false) {
+                        \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', $release['tag_name']);
 
-                return $release['tag_name'];
+                        return $release['tag_name'];
+                    }
+                }
+            } catch (RuntimeException $e) {
+                // Something went wrong with the GitHub API. Fail silently.
             }
         }
 

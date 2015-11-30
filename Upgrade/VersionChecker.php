@@ -3,6 +3,7 @@
 namespace Cmfcmf\Module\MediaModule\Upgrade;
 
 use Github\Client as GitHubClient;
+use Github\Exception\RuntimeException;
 use Github\HttpClient\CachedHttpClient as GitHubCachedHttpClient;
 use Github\HttpClient\Message\ResponseMediator as GitHubResponseMediator;
 use Github\ResultPager as GitHubResultPager;
@@ -165,6 +166,13 @@ class VersionChecker
         return $paginator->fetchAll($client->repo()->releases(), 'all', [self::GITHUB_USER, self::GITHUB_REPO]);
     }
 
+    /**
+     * Checks whether or not the remaining rate limit is high enough.
+     *
+     * @return bool
+     *
+     * @throws RuntimeException if something goes wrong with the API call.
+     */
     public function checkRateLimit()
     {
         $response = $this->getClient()->getHttpClient()->get('rate_limit');

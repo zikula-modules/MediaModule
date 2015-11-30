@@ -4,6 +4,7 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\SettingsType;
 use Cmfcmf\Module\MediaModule\MediaModuleInstaller;
+use Github\Exception\RuntimeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -142,16 +143,21 @@ class SettingsController extends AbstractController
                 $proceed = $upgrader->checkRequirements();
                 break;
             case 'version-check':
-                if (!$versionChecker->checkRateLimit()) {
-                    $proceed = $this->__('Your GitHub API Rate limit is exceeded. Please try again later.');
-                    break;
-                }
-                $info = \ModUtil::getInfoFromName('CmfcmfMediaModule');
-                $release = $versionChecker->getReleaseToUpgradeTo($info['version']);
-                if ($release === false) {
-                    $proceed = $this->__('No release to upgrade to available!');
-                } else {
-                    $proceed = true;
+                try {
+                    if (!$versionChecker->checkRateLimit()) {
+                        $proceed = $this->__('Your GitHub API Rate limit is exceeded. Please try again later.');
+                        break;
+                    }
+                    $info = \ModUtil::getInfoFromName('CmfcmfMediaModule');
+                    $release = $versionChecker->getReleaseToUpgradeTo($info['version']);
+                    if ($release === false) {
+                        $proceed = $this->__('No release to upgrade to available!');
+                    } else {
+                        $proceed = true;
+                    }
+                } catch (RuntimeException $e) {
+                    // Something went wrong with the GitHub API.
+                    $proceed = $this->__('Could not connect to GitHub.');
                 }
                 break;
             case 'permission-check':
