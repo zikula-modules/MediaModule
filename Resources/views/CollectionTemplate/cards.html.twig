@@ -2,6 +2,9 @@
 
 {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/vendor/cards.css'), 98) }}
 
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/Sortable.min.js'), 98) }}
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Collection/sort.js')) }}
+
 {% import _self as macro %}
 {% macro box(title, supportText, buttons, thumbnail, sortableId, icon, mediaTypeTitle) %}
     <div class="col-xs-12 col-sm-6 col-sm-4 col-md-3{% if sortableId %} sortable{% endif %}" style="padding: 10px"{% if sortableId %} data-id="{{ sortableId|e('html_attr') }}"{% endif %}>
@@ -38,7 +41,7 @@
 {% set hasParentOrChildCollection = false %}
 {% block collections %}
     {% if showChildCollections %}
-        <div class="row">
+        <div class="row" id="cmfcmfmedia-collection-sortable-container">
             {% for child in collection.children %}
                 {% set hasParentOrChildCollection = true %}
                 {% set buttons = [{url: path('cmfcmfmediamodule_collection_display', {slug: child.slug}), text: __('View collection')}] %}
@@ -51,7 +54,7 @@
                     {% endif %}
                 {% endif %}
                 {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
-                {{ macro.box(child.title, supportText, buttons, thumbnail, false, 'fa-list', false) }}
+                {{ macro.box(child.title, supportText, buttons, thumbnail, child.id, 'fa-list', false) }}
             {% endfor %}
         </div>
     {% endif %}
@@ -62,8 +65,6 @@
 {% endif %}
 
 {% block media %}
-    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/Sortable.min.js'), 98) }}
-    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Collection/sort.js')) }}
     <div class="row" id="cmfcmfmedia-media-sortable-container">
         {% for media in collection.media %}
             {% set supportText = '' %}

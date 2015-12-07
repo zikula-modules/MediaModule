@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Zikula\Core\Response\PlainResponse;
 use Zikula\Core\RouteUrl;
 
 class CollectionController extends AbstractController
@@ -172,6 +173,43 @@ class CollectionController extends AbstractController
         $response->deleteFileAfterSend(true);
 
         return $response;
+    }
+
+    /**
+     * @Route("/ajax/reorder", options={"expose" = true})
+     *
+     * @param Request $request
+     *
+     * @return PlainResponse
+     */
+    public function reorderAction(Request $request)
+    {
+        $id = $request->query->get('id');
+        $oldPosition = $request->query->get('old-position');
+        $newPosition = $request->query->get('new-position');
+        $diff = $newPosition - $oldPosition;
+
+        $repository = $this->getDoctrine()->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
+        $entity = $repository->find($id);
+
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, 'edit')) {
+            throw new AccessDeniedException();
+        }
+
+        if ($entity->getParent() === null) {
+            throw new \InvalidArgumentException('Sorting root nodes is not (yet) supported!');
+        }
+
+        if ($diff > 0) {
+            $result = $repository->moveDown($entity, $diff);
+        } else {
+            $result = $repository->moveUp($entity, $diff * -1);
+        }
+        if (!$result) {
+            throw new \RuntimeException();
+        }
+
+        return new PlainResponse();
     }
 
     /**
