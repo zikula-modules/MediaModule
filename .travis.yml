@@ -55,6 +55,9 @@ script:
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist --coverage-text --coverage-clover=coverage.clover
 
 after_script:
+    - pwd
+    - ls -lisa
+    - cat coverage.clover
     - wget https://scrutinizer-ci.com/ocular.phar
     - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
