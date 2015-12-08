@@ -26,6 +26,7 @@ before_install:
     # - if [[ "$TRAVIS_PHP_VERSION" != "nightly" ]] && [[ "$TRAVIS_PHP_VERSION" != "hhvm" ]]; then php -i; fi;
     # Set the COMPOSER_ROOT_VERSION to the right version according to the branch being built
     - if [ "$TRAVIS_BRANCH" = "master" ]; then export COMPOSER_ROOT_VERSION=dev-master; else export COMPOSER_ROOT_VERSION="$TRAVIS_BRANCH".x-dev; fi;
+    - if [ -n "$GH_TOKEN" ]; then composer config github-oauth.github.com ${GH_TOKEN}; fi;
     - mysql -e 'create database zk_test;'
 
 install:
@@ -66,7 +67,7 @@ before_deploy:
 deploy:
   provider: releases
   api_key:
-    secure: RPMBTvwkOnQUvJRd9MG9WgTtmJzJrScWQb9+d3shhjrh85XswSSbUMViJr7xYr8WHj1lNekd2E1maPDppdtHPltmdGDbKTar2xOf+7931UgYSkOzrOEJA7CEeO0GIt/n8Ay4nD8rWcx0UvEsl29vzlfitq0xzldyMInolIA1Pl/O+xxLJ0Gq1HLAOFrQuaANfrVF+oDhf87C1pcBq30nqiW9GxIAiBHIKkmJUJybnh8gB7hFVKQfU0G5SAkg2q9xXy6T89FTYPl4A7B79IC0uIoq9kgQrlBdJsLhv1iS0MJIsFnDTgterwdlhz+9hHFWoHfarJMbSz//L/3lwnAc5+0GI+WRAm2my7Q59cT+DPyJx9LUnq/ShNdP5xdKnzVo+mvwJNIbUKjw39jdRXpoPfWnWBRtn8qA3sxMhk+JEmgeRlAiskKESOlybIcKQZw06prJtsxLUy02Dt4mrNp8XguqiZ+QqjYgpQeNX89l9+LtVAYjcUEfRuovixrpCMRUZMnePZo/vcO6E6JaapDNHPi3dzb488WKVNE4sqUYalLok2ZLXN+kVfzDS8lyo/tp77Mu2ta2cWNtMYGKIcynrygG1dfmZvPAIJIT4kHMZsqc18h+FP+fyo2R+CEB+O8cO7BCInaFYQi0k2u8HTsFYIgKPlOvpHmTqhE/JVY3AHg=
+    secure: "TGMNRRxSJ0fivBRVW8IySmJNkxSc2G/84TVOvKKN6KMnv8TaaaQSYSzfB/CaTwALjG18PTrrw8AW12jlfc3dES+9Cwz5/2M7a59/jDdJdJXYCuE/B3h03u1t1abR6ygJBU2gThSk+jZtzE1tycuDF6xT1qS3hxVgMGNMjYa2oglBp/m/77RU66vkMg22JTtGTPfJxBmxJiIMjlJNgziJ5naJi1jKvcuFt/AW0C5uymwxUrhBTbnxoY4hhXkpzHZpG5XbSy3DyzkGc0VZ/0RgmwNITnS2xqc3xQKyFePNzY8PdmcjrZf1ADf4/yHyGmUKpogGKeXvHDoJDZGTmD3mfVrbmWVt8HdHdKhwQW+WKcyYpTZhNF2PvVp7lABAzxXPrx0bxGBo3PmbiJoCsb0pbAUgb9PWtHxLuxy7u4SeGXzoXB/hDfQc5xgZp10IUXlBs5gkL9A0Kiuq5+k7cp0qYKlIlmcF0JDi42MHGwvvJx8HH6bMSx6QHUlg+nUB2Ci5lMYE1+lwVpsCI9OeowBJWLc4JHXG+2qIL0JBW4RmxRR260AV484oscFpH2ndmsV1IgUjyh7boLa9BwK0AOxdfo5JfL8St8uPurvQXv99DprTS1uRY7+Bm92nw3waAilES5aqfQf3ger9VJqveYxYJ4g7J15r0LThfQs3Ol/FD4I="
   file: MediaModule.zip
   on:
     tags: true
