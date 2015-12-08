@@ -4,6 +4,7 @@ Zikula 1.4.1+ MediaModule by @cmfcmf
 [![StyleCI](https://styleci.io/repos/43518681/shield)](https://styleci.io/repos/43518681) 
 [![Build Status](https://travis-ci.org/cmfcmf/MediaModule.svg?branch=master)](https://travis-ci.org/cmfcmf/MediaModule) 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/?branch=master)
 [![MIT License](https://img.shields.io/github/license/cmfcmf/MediaModule.svg)]()
 
 The module supports many media types natively (images, plaintext, MarkDown, videos, audio, pdf, …)
