@@ -1,0 +1,16 @@
+checks:
+    php:
+        duplication: true
+        switch_fallthrough_commented: false
+        catch_class_exists: false
+
+filter: {  }
+coding_style:
+    php:
+        spaces:
+            other:
+                after_type_cast: false
+tools:
+    external_code_coverage:
+        enabled: true
+        timeout: 600
