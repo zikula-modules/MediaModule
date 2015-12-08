@@ -29,6 +29,7 @@ before_install:
     - mysql -e 'create database zk_test;'
 
 install:
+    - composer self-update
     - composer install
     - zip -qr MediaModule.zip .
     - wget https://github.com/zikula/core/releases/download/1.4.1/Zikula_Core-1.4.1.build128.tar.gz
@@ -53,11 +54,13 @@ script:
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist
 
 before_deploy:
-    - pwd
-    - ls -lisa
-    - composer install --no-dev
-    - zip -qr MediaModule.zip .
+    - cd ..
+    - mkdir release
+    - cd release
+    - unzip -q ../MediaModule.zip
+    - composer install --no-dev --prefer-dist
     - rm -R .git
+    - zip -qr MediaModule.zip .
 
 deploy:
   provider: releases
