@@ -15,19 +15,21 @@
             }
         });
         var collectionContainer = document.getElementById('cmfcmfmedia-collection-sortable-container');
-        Sortable.create(collectionContainer, {
-            animation: 150,
-            handle: ".fa-sort",
-            draggable: ".sortable",
-            onUpdate: function (evt) {
-                $.get(Routing.generate('cmfcmfmediamodule_collection_reorder'), {
-                    id: $(evt.item).data('id'),
-                    'new-position': evt.newIndex,
-                    'old-position': evt.oldIndex
-                }).success(function () {
-                    window.toastr['success']('', 'Saved new position.');
-                }).fail(window.CmfcmfMediaModule.Util.Ajax.fail);
-            }
-        });
+        if (collectionContainer != null) {
+            Sortable.create(collectionContainer, {
+                animation: 150,
+                handle: ".fa-sort",
+                draggable: ".sortable",
+                onUpdate: function (evt) {
+                    $.get(Routing.generate('cmfcmfmediamodule_collection_reorder'), {
+                        id: $(evt.item).data('id'),
+                        'new-position': evt.newIndex,
+                        'old-position': evt.oldIndex
+                    }).success(function () {
+                        window.toastr['success']('', 'Saved new position.');
+                    }).fail(window.CmfcmfMediaModule.Util.Ajax.fail);
+                }
+            });
+        }
     });
 })(jQuery);
