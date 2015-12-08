@@ -112,6 +112,11 @@ class LinkContainer implements LinkContainerInterface
                 'text' => $this->translator->trans('Settings', [], 'cmfcmfmediamodule'),
                 'icon' => 'cog'
             ];
+            $links[] = [
+                'url' => $this->router->generate('cmfcmfmediamodule_import_select'),
+                'text' => $this->translator->trans('Import', [], $this->domain),
+                'icon' => 'cloud-download'
+            ];
         }
 
         return $links;

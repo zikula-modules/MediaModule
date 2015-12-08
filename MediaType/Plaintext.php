@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInterface
@@ -53,7 +54,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
     /**
      * {@inheritdoc}
      */
-    public function canUpload(UploadedFile $file)
+    public function canUpload(File $file)
     {
         $mimeType = $file->getMimeType();
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {

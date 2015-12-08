@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
 use Cmfcmf\Module\MediaModule\Metadata\GenericMetadataReader;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterface
@@ -118,7 +119,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     /**
      * {@inheritdoc}
      */
-    public function canUpload(UploadedFile $file)
+    public function canUpload(File $file)
     {
         $mimeType = $file->getMimeType();
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {

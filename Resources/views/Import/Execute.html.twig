@@ -1,0 +1,11 @@
+{% extends 'CmfcmfMediaModule::AdminBase.html.twig' %}
+{% block title %}
+    {{ __f('Import from %s', {'%s': importer.title}) }}
+{% endblock %}
+{% block content %}
+    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+{% endblock %}
