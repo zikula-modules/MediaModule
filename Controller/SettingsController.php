@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use vierbergenlars\SemVer\version;
 use Zikula\Core\Theme\Annotation\Theme;
 
 class SettingsController extends AbstractController
