@@ -25,3 +25,7 @@ cmfcmfmediamodule_controller_settings:
 cmfcmfmediamodule_controller_watermark:
   resource: "@CmfcmfMediaModule/Controller/WatermarkController.php"
   type:     annotation
+
+cmfcmfmediamodule_controller_import:
+  resource: "@CmfcmfMediaModule/Controller/ImportController.php"
+  type:     annotation

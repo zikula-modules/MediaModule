@@ -1,6 +1,7 @@
 imports:
   - { resource: 'mediatypes.yml' }
   - { resource: 'collectiontemplates.yml' }
+  - { resource: 'importers.yml' }
 
 services:
   # Security management
@@ -29,7 +30,7 @@ services:
   # Listeners
   cmfcmf_media_module.listener.module:
     class: Cmfcmf\Module\MediaModule\Listener\ModuleListener
-    arguments: [@doctrine.entitymanager]
+    arguments: [@doctrine.orm.default_entity_manager]
     tags:
       - { name: kernel.event_subscriber }
 
@@ -72,7 +73,7 @@ services:
   # Hook handlers
   cmfcmf_media_module.hook_handler.base:
     abstract: true
-    arguments: [@doctrine.entitymanager, @request_stack, @templating]
+    arguments: [@doctrine.orm.default_entity_manager, @request_stack, @templating]
 
   cmfcmf_media_module.hook_handler.license:
     class: Cmfcmf\Module\MediaModule\HookHandler\LicenseHookHandler

@@ -93,6 +93,13 @@ class LinkContainer implements LinkContainerInterface
                 'icon' => 'cog'
             ];
         }
+        if ($this->securityManager->hasPermission('import', 'admin')) {
+            $links[] = [
+                'url' => $this->router->generate('cmfcmfmediamodule_import_select'),
+                'text' => $this->translator->trans('Import', [], $this->domain),
+                'icon' => 'cloud-download'
+            ];
+        }
         if ($this->securityManager->hasPermission('settings', 'admin')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_settings_upgrade'),

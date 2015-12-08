@@ -1,0 +1,15 @@
+services:
+  cmfcmf_media_module.importer_collection:
+    class: Cmfcmf\Module\MediaModule\Importer\ImporterCollection
+
+  cmfcmf_media_module.importer.abstract_service:
+    abstract: true
+    arguments: [@translator, @form.factory, @cmfcmf_media_module.media_type_collection, @doctrine, "@=service('kernel').getModule('CmfcmfMediaModule').getTranslationDomain()"]
+
+  cmfcmf_media_module.importer.server_directory:
+    parent: cmfcmf_media_module.importer.abstract_service
+    class: Cmfcmf\Module\MediaModule\Importer\ServerDirectoryImporter
+    calls:
+      - [setUploadManager, [@stof_doctrine_extensions.uploadable.manager]]
+    tags:
+      - { name: 'cmfcmf_media_module.importer' }

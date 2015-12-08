@@ -6,6 +6,7 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\ArchiveEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterface
@@ -49,7 +50,7 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
     /**
      * {@inheritdoc}
      */
-    public function canUpload(UploadedFile $file)
+    public function canUpload(File $file)
     {
         return in_array($file->getMimeType(), $this->getSupportedMimeTypes()) ? 5 : 0;
     }
