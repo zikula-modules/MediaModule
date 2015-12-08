@@ -58,8 +58,9 @@ before_deploy:
     - mkdir release
     - cd release
     - unzip -q ../MediaModule.zip
+    - rm -Rf vendor
+    - rm -Rf .git
     - composer install --no-dev --prefer-dist
-    - rm -R .git
     - zip -qr MediaModule.zip .
 
 deploy:
