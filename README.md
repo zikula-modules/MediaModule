@@ -7,6 +7,15 @@ Zikula 1.4.1+ MediaModule by @cmfcmf
 [![Code Coverage](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/?branch=master)
 [![MIT License](https://img.shields.io/github/license/cmfcmf/MediaModule.svg)]()
 
+## Installation 
+1. **Download the module from https://github.com/cmfcmf/MediaModule/releases/latest.**
+2. Install to `modules/cmfcmf/media-module` (but other locations should work aswell!).
+
+**Downloading directly from master would require you to execute `composer install --no-dev`.**
+
+## Information
+Read all about the module [at it's website](http://cmfcmf.github.io/MediaModule).
+
 The module supports many media types natively (images, plaintext, MarkDown, videos, audio, pdf, …)
 and further types can be added with ease! 
 
@@ -20,19 +29,10 @@ The original images are preserved.
 Rendered MarkDown files? Syntax-highlighted source code? Automatic updates?
 Thumbnail generation? Works on mobile? YES. All of this. Read on or download the module already! 
 
-**Download the module from https://github.com/cmfcmf/MediaModule/releases/latest 
-(requires Zikula 1.4.1+, which is not yet released. Until then, you could use 
-[a preview build](http://zikula.org/library/releases) to test it)!**
-
-Install to `modules/cmfcmf/media-module` (but other locations should work aswell!).
-
-Read all about the module [at it's website](http://cmfcmf.github.io/MediaModule).
-
-> **Downloading directly from master would require you to execute `composer install --no-dev`.**
 
 ## Known issues
 - **You MAY NOT allow untrusted users to upload files. It is currently NOT SAFE to do so.**
-- you must not create collections with any of the following tittles: *f*, *media*, *settings*, *admin*, *hooks*, *licenses*, *watermarks*. If you do so, it's going to break URLs.
+- You must not create collections with any of the following tittles: *f*, *media*, *settings*, *admin*, *hooks*, *licenses*, *watermarks*. If you do so, it's going to break URLs.
 - The Flickr MediaType is currently disabled due to legal questions
 - Even though files are watermarked, they are still available non-watermarked. Users could try to guess
   the URL and access the un-watermarked files.
