@@ -1,6 +1,6 @@
 checks:
     php:
-        duplication: true
+        duplication: false
         switch_fallthrough_commented: false
         catch_class_exists: false
 
