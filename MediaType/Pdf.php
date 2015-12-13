@@ -27,7 +27,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var PdfEntity $entity */
+        /** @var PdfEntity $entity */
         return '<embed src="' . $entity->getUrl() . '" width="100%" height="600" type="application/pdf">';
     }
 
@@ -69,7 +69,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
     {
-        /* @var ImageEntity $entity */
+        /** @var ImageEntity $entity */
         //if (!class_exists('Imagick')) {
             return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize, 'pdf');
         //} else {

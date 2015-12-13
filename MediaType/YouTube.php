@@ -81,7 +81,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var YouTubeEntity $entity */
+        /** @var YouTubeEntity $entity */
         return $this->renderEngine->render('CmfcmfMediaModule:MediaType/YouTube:fullpage.html.twig', [
             'entity' => $entity
         ]);
@@ -89,7 +89,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound')
     {
-        /* @var YouTubeEntity $entity */
+        /** @var YouTubeEntity $entity */
 
         $url = $entity->getYouTubeThumbnailUrl();
         switch ($format) {
@@ -103,7 +103,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     public function getEmbedCode(AbstractMediaEntity $entity, $size = 'full')
     {
-        /* @var YouTubeEntity $entity */
+        /** @var YouTubeEntity $entity */
 
         return $this->renderEngine->render('CmfcmfMediaModule:MediaType/YouTube:fullpage.html.twig', [
             'entity' => $entity

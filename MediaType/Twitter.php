@@ -84,7 +84,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var TwitterEntity $entity */
+        /** @var TwitterEntity $entity */
 
         return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Twitter:fullpage.html.twig', [
             'entity' => $entity,
@@ -99,7 +99,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     public function getEmbedCode(AbstractMediaEntity $entity, $size = 'full')
     {
-        /* @var TwitterEntity $entity */
+        /** @var TwitterEntity $entity */
 
         return '<div>' . $this->renderEngine->render('CmfcmfMediaModule:MediaType/Twitter:fullpage.html.twig', [
             'entity' => $entity,

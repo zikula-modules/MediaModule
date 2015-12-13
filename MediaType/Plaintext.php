@@ -27,7 +27,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var PdfEntity $entity */
+        /** @var PdfEntity $entity */
         $file = fopen($entity->getPath(), 'r');
         $content = fread($file, 500000);
         fclose($file);
@@ -84,7 +84,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
     {
-        /* @var PlaintextEntity $entity */
+        /** @var PlaintextEntity $entity */
         return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize);
     }
 

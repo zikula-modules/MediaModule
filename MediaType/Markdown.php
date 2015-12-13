@@ -38,7 +38,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var MarkdownEntity $entity */
+        /** @var MarkdownEntity $entity */
         $raw = file_get_contents($entity->getPath());
         $rendered = $this->markdownExtraParser->transform($raw);
 
@@ -84,7 +84,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
     {
-        /* @var PlaintextEntity $entity */
+        /** @var PlaintextEntity $entity */
         return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize, 'txt');
     }
 

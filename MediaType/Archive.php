@@ -28,13 +28,13 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var ArchiveEntity $entity */
+        /** @var ArchiveEntity $entity */
         return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Archive:fullpage.html.twig', ['entity' => $entity]);
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)
     {
-        /* @var ArchiveEntity $entity */
+        /** @var ArchiveEntity $entity */
         $meta = [];
         if ($entity->getNumberOfFiles() !== false) {
             $meta[] = [
@@ -83,12 +83,12 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
     {
-        /* @var AbstractFileEntity $entity */
+        /** @var AbstractFileEntity $entity */
         $extension = false;
         if (in_array($entity->getMimeType(), ['application/x-gzip', 'application/x-tar', 'application/x-gtar'])) {
             $extension = 'tgz';
         }
-        /* @var PlaintextEntity $entity */
+        /** @var PlaintextEntity $entity */
         return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize, $extension);
     }
 

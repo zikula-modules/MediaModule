@@ -155,7 +155,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
     {
-        /* @var PlaintextEntity $entity */
+        /** @var PlaintextEntity $entity */
         return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize);
     }
 

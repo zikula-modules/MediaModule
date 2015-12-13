@@ -27,7 +27,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var ImageEntity $entity */
+        /** @var ImageEntity $entity */
         $url = $this->getOriginalWithWatermark($entity, 'url', true);
         $url = htmlentities($url);
 
@@ -168,7 +168,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
     {
-        /* @var ImageEntity $entity */
+        /** @var ImageEntity $entity */
         if (!in_array($mode, ['inset', 'outbound'])) {
             throw new \InvalidArgumentException('Invalid mode requested.');
         }
@@ -193,7 +193,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function getEmbedCode(AbstractMediaEntity $entity, $size = 'full')
     {
-        /* @var ImageEntity $entity */
+        /** @var ImageEntity $entity */
         switch ($size) {
             default:
             case 'full':
