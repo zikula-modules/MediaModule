@@ -90,7 +90,6 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound')
     {
         /** @var YouTubeEntity $entity */
-
         $url = $entity->getYouTubeThumbnailUrl();
         switch ($format) {
             case 'url':
