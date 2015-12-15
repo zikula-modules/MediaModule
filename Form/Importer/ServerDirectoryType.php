@@ -8,7 +8,6 @@ class ServerDirectoryType extends AbstractImporterType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         $builder
             ->add('serverDirectory', 'text', [
                 'required' => true

@@ -5,7 +5,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Metadata\GenericMetadataReader;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Video extends AbstractFileMediaType implements UploadableMediaTypeInterface
 {

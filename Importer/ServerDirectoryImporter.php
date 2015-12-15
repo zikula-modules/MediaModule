@@ -48,7 +48,6 @@ class ServerDirectoryImporter extends AbstractImporter
         /** @var CollectionEntity $rootCollection */
         $rootCollection = $formData['collection'];
 
-
         $finder = Finder::create()
             ->in($serverDirectory)
             ->depth($formData['importSettings']['includeSubDirectories'] ? '>0' : '==1')

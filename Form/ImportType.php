@@ -5,7 +5,6 @@ namespace Cmfcmf\Module\MediaModule\Form;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType as SymfonyAbstractType;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\Translation\TranslatorInterface;
