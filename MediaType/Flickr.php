@@ -31,7 +31,7 @@ class Flickr extends AbstractMediaType implements WebMediaTypeInterface
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var FlickrEntity $entity */
+        /** @var FlickrEntity $entity */
         $title = htmlentities($entity->getTitle());
         $url = 'https://farm' . $entity->getFlickrFarm() . '.staticflickr.com/' . $entity->getFlickrServer() . '/' . $entity->getFlickrId() . '_' . $entity->getFlickrSecret() . '_b.jpg';
         $url = htmlentities($url);

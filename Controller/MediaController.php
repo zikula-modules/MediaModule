@@ -55,7 +55,7 @@ class MediaController extends AbstractController
 
         $perPage = 30;
 
-        /* @var Paginator|AbstractMediaEntity[] $entities */
+        /** @var Paginator|AbstractMediaEntity[] $entities */
         $paginator = $em->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')->getPaginated($page - 1, $perPage);
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
@@ -630,7 +630,7 @@ class MediaController extends AbstractController
         switch ($type) {
             case 'web':
                 try {
-                    /* @var MediaTypeInterface|WebMediaTypeInterface $mediaType */
+                    /** @var MediaTypeInterface|WebMediaTypeInterface $mediaType */
                     $entity = $mediaType->getEntityFromWeb($request);
                 } catch (\Exception $e) {
                     throw new NotFoundHttpException();
@@ -641,7 +641,7 @@ class MediaController extends AbstractController
                 if (empty($pastedText)) {
                     throw new NotFoundHttpException();
                 }
-                /* @var MediaTypeInterface|PasteMediaTypeInterface $mediaType */
+                /** @var MediaTypeInterface|PasteMediaTypeInterface $mediaType */
                 $entity = $mediaType->getEntityFromPaste($pastedText);
                 break;
             default:

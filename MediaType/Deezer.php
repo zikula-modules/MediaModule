@@ -101,7 +101,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        /* @var DeezerEntity $entity */
+        /** @var DeezerEntity $entity */
         $playlist = $entity->isShowPlaylist() ? 'true' : 'false';
         $height = $entity->isShowPlaylist() ? 290 : 92;
         $color = '1990DB';
@@ -131,8 +131,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound')
     {
-        /* @var DeezerEntity $entity */
-
+        /** @var DeezerEntity $entity */
         $type = $entity->getMusicType();
         $id = $entity->getMusicId();
         if ($type == 'track') {

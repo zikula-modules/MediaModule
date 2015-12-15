@@ -62,6 +62,9 @@ class ModuleUpgrader
         if (!is_writable($this->moduleDir . '/Controller/MediaController.php')) {
             return $this->translator->trans('%s is writable but it\'s content is not. Please make sure to make it recursively writable.', ['%s' => $this->moduleDir], $this->domain);
         }
+        if (!is_writable($this->moduleDir . '/.gitignore')) {
+            return $this->translator->trans('%s is writable but some files are not. Please make sure to make it recursively writable. If you already tried, please try "chmod 777 -R media-module" from within the cmfcmf folder.', ['%s' => $this->moduleDir], $this->domain);
+        }
 
         return true;
     }
@@ -75,6 +78,9 @@ class ModuleUpgrader
 
     public function extractNewVersion()
     {
+        // First check if the module dir really is writable.
+        $this->fs->touch($this->moduleDir . '/.gitignore');
+
         // Delete all the existing files first.
         $this->fs->remove(glob($this->moduleDir . '/*'));
 
