@@ -2,7 +2,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Security;
 
-
 class SecurityLevel
 {
     /**
@@ -32,6 +31,7 @@ class SecurityLevel
 
     /**
      * SecurityLevel constructor.
+     *
      * @param $id
      * @param $title
      * @param $description
