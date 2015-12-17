@@ -132,7 +132,6 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound')
     {
         /** @var DeezerEntity $entity */
-
         $type = $entity->getMusicType();
         $id = $entity->getMusicId();
         if ($type == 'track') {
