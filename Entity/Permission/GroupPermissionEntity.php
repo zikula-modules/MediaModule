@@ -3,7 +3,6 @@
 namespace Cmfcmf\Module\MediaModule\Entity\Permission;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -28,6 +27,7 @@ class GroupPermissionEntity extends AbstractPermissionEntity
 
     /**
      * @param \int[] $groupIds
+     *
      * @return GroupPermissionEntity
      */
     public function setGroupIds($groupIds)
