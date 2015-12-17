@@ -109,11 +109,13 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @param string $description
+     *
      * @return AbstractPermissionEntity
      */
     public function setDescription($description)
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -127,11 +129,13 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @param int $permissionLevel
+     *
      * @return AbstractPermissionEntity
      */
     public function setPermissionLevel($permissionLevel)
     {
         $this->permissionLevel = $permissionLevel;
+
         return $this;
     }
 

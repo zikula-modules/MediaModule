@@ -74,6 +74,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                     'Cmfcmf\Module\MediaModule\Entity\Permission\CollectionPermissionEntity',
                     'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity'
                 ]);
+
                 return true;
             default:
                 return false;

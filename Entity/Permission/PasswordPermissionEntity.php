@@ -38,6 +38,7 @@ class PasswordPermissionEntity extends AbstractPermissionEntity
 
     /**
      * @param string $password
+     *
      * @return PasswordPermissionEntity
      */
     public function setPassword($password)
