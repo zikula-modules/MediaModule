@@ -18,7 +18,7 @@ class LicenseEntity
      * @ORM\Column(type="string")
      * @ORM\Id
      *
-     * @var int
+     * @var string
      */
     protected $id;
 
@@ -106,7 +106,7 @@ class LicenseEntity
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getId()
     {
@@ -114,7 +114,7 @@ class LicenseEntity
     }
 
     /**
-     * @param int $id
+     * @param string $id
      *
      * @return $this
      */
