@@ -35,4 +35,9 @@ class SecurityManager
     {
         return \SecurityUtil::checkPermission($component, $instance, $level);
     }
+
+    public function getCollectionSecurityLevels()
+    {
+        $levels = [];
+    }
 }
