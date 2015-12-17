@@ -5,6 +5,7 @@ namespace Cmfcmf\Module\MediaModule\Entity\Collection;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Entity\Permission\CollectionPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -149,6 +150,13 @@ class CollectionEntity implements Node, Sluggable
      * @var AbstractWatermarkEntity|null
      **/
     private $watermark;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Permission\CollectionPermissionEntity", mappedBy="collection")
+     *
+     * @var CollectionPermissionEntity[]|ArrayCollection
+     */
+    protected $permissionMappings;
 
     /**
      * @ORM\Column(type="integer")

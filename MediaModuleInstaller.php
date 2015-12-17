@@ -64,6 +64,17 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             case '1.0.3':
             case '1.0.4':
             case '1.0.5':
+            case '1.0.6':
+                \DoctrineHelper::createSchema($this->entityManager, [
+                    'Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Permission\GroupPermissionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Permission\UserPermissionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Permission\PasswordPermissionEntity'
+                ]);
+                \DoctrineHelper::updateSchema($this->entityManager, [
+                    'Cmfcmf\Module\MediaModule\Entity\Permission\CollectionPermissionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity'
+                ]);
                 return true;
             default:
                 return false;
@@ -89,6 +100,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         $mediaPrefix = $prefix . 'Media\\';
         $watermarkPrefix = $prefix . 'Watermark\\';
         $hookObjectPrefix = $prefix . 'HookedObject\\';
+        $permissionPrefix = $prefix . 'Permission\\';
 
         return [
             $hookObjectPrefix . 'HookedObjectEntity',
@@ -98,6 +110,12 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             $prefix . 'Collection\\CollectionEntity',
 
             $prefix . 'License\\LicenseEntity',
+
+            $permissionPrefix . 'AbstractPermissionEntity',
+            $permissionPrefix . 'UserPermissionEntity',
+            $permissionPrefix . 'GroupPermissionEntity',
+            $permissionPrefix . 'PasswordPermissionEntity',
+            $permissionPrefix . 'CollectionPermissionEntity',
 
             $mediaPrefix . 'AbstractMediaEntity',
             $mediaPrefix . 'AbstractFileEntity',
