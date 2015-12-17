@@ -5,7 +5,6 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection;
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
-use Cmfcmf\Module\MediaModule\Form\Permission\AbstractPermissionType;
 use Cmfcmf\Module\MediaModule\Form\Permission\GroupPermissionType;
 use Cmfcmf\Module\MediaModule\Form\Permission\PasswordPermissionType;
 use Cmfcmf\Module\MediaModule\Form\Permission\UserPermissionType;

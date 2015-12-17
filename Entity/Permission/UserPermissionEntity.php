@@ -30,11 +30,13 @@ class UserPermissionEntity extends AbstractPermissionEntity
 
     /**
      * @param \int[] $userIds
+     *
      * @return UserPermissionEntity
      */
     public function setUserIds($userIds)
     {
         $this->userIds = $userIds;
+
         return $this;
     }
 
