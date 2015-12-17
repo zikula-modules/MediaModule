@@ -5,6 +5,10 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection;
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
+use Cmfcmf\Module\MediaModule\Form\Permission\AbstractPermissionType;
+use Cmfcmf\Module\MediaModule\Form\Permission\GroupPermissionType;
+use Cmfcmf\Module\MediaModule\Form\Permission\PasswordPermissionType;
+use Cmfcmf\Module\MediaModule\Form\Permission\UserPermissionType;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -116,6 +120,24 @@ class CollectionType extends AbstractType
                     (isset($this->parent) ? $this->parent->getWatermark() : null),
                 'placeholder' => $this->__('No watermark'),
                 'property' => 'title',
+            ])
+            ->add('userPermissions', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+                'mapped' => false,
+                'entry_type' => UserPermissionType::class,
+                'allow_add' => true,
+                'allow_delete' => true
+            ])
+            ->add('groupPermissions', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+                'mapped' => false,
+                'entry_type' => GroupPermissionType::class,
+                'allow_add' => true,
+                'allow_delete' => true
+            ])
+            ->add('passwordPermissions', \Symfony\Component\Form\Extension\Core\Type\CollectionType::class, [
+                'mapped' => false,
+                'entry_type' => PasswordPermissionType::class,
+                'allow_add' => true,
+                'allow_delete' => true
             ])
         ;
     }
