@@ -6,7 +6,6 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 
 /**
  * @ORM\Entity()
@@ -71,11 +70,13 @@ class CollectionPermissionEntity
 
     /**
      * @param int $id
+     *
      * @return CollectionPermissionEntity
      */
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -89,11 +90,13 @@ class CollectionPermissionEntity
 
     /**
      * @param CollectionEntity $collection
+     *
      * @return CollectionPermissionEntity
      */
     public function setCollection($collection)
     {
         $this->collection = $collection;
+
         return $this;
     }
 
@@ -107,11 +110,13 @@ class CollectionPermissionEntity
 
     /**
      * @param AbstractPermissionEntity $permission
+     *
      * @return CollectionPermissionEntity
      */
     public function setPermission($permission)
     {
         $this->permission = $permission;
+
         return $this;
     }
 
@@ -125,26 +130,30 @@ class CollectionPermissionEntity
 
     /**
      * @param int $position
+     *
      * @return CollectionPermissionEntity
      */
     public function setPosition($position)
     {
         $this->position = $position;
+
         return $this;
     }
 
     /**
-     * @param boolean $isInherited
+     * @param bool $isInherited
+     *
      * @return CollectionPermissionEntity
      */
     public function setIsInherited($isInherited)
     {
         $this->isInherited = $isInherited;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isIsInherited()
     {
