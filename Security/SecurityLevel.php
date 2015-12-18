@@ -30,20 +30,27 @@ class SecurityLevel
     private $requiredSecurityLevels;
 
     /**
+     * @var SecurityLevel[]
+     */
+    private $disallowedSecurityLevels;
+
+    /**
      * SecurityLevel constructor.
      *
-     * @param $id
-     * @param $title
-     * @param $description
-     * @param $category
-     * @param $requiredSecurityLevels
+     * @param int $id
+     * @param string $title
+     * @param string $description
+     * @param string $category
+     * @param SecurityLevel[] $requiredSecurityLevels
+     * @param SecurityLevel[] $disallowedSecurityLevels
      */
-    public function __construct($id, $title, $description, $category, $requiredSecurityLevels = [])
+    public function __construct($id, $title, $description, $category, $requiredSecurityLevels, $disallowedSecurityLevels)
     {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
         $this->category = $category;
         $this->requiredSecurityLevels = $requiredSecurityLevels;
+        $this->disallowedSecurityLevels = $disallowedSecurityLevels;
     }
 }
