@@ -10,13 +10,15 @@ class UserPermissionType extends AbstractPermissionType
     {
         parent::buildForm($builder, $options);
 
+        $users = \UserUtil::getAll();
+        $choices = array_map(function ($user) {
+            return $user['uname'];
+        }, $users);
+
         $builder->add('userIds', 'choice', [
             'label' => $this->__('Users'),
             'multiple' => true,
-            'choices' => [
-                '1' => 'Bob',
-                '2' => 'Alice'
-            ]
+            'choices' => $choices
         ]);
     }
 }
