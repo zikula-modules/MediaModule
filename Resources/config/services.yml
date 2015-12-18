@@ -6,6 +6,7 @@ services:
   # Security management
   cmfcmf_media_module.security_manager:
     class: Cmfcmf\Module\MediaModule\Security\SecurityManager
+    arguments: [@translator, @zikula_permissions_module.api.permission]
 
 
   # Module upgrader and version checker
