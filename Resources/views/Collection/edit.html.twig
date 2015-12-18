@@ -20,15 +20,26 @@
         (function ($) {
             var $collectionHolder;
 
-            // setup an "add a tag" link
-            var $addTagLink = $('<a href="#" class="btn btn-default btn-sm">Add new permission</a>');
-            var $newLinkLi = $('<li></li>').append($addTagLink);
-
             $(document).ready(function() {
-                // Get the ul that holds the collection of tags
-                $collectionHolder = $('#cmfcmfmediamodule_collection_collectiontype_userPermissions');
+                var permissionTypes = [
+                    'user',
+                    'group',
+                    'password'
+                ];
+                for (var i = 0; i < permissionTypes.length; i++) {
+                    initializePermissionList($collectionHolder, permissionTypes[i]);
+                }
+            });
 
-                $collectionHolder.find('li').each(function() {
+            function initializePermissionList($collectionHolder, permissionType) {
+                // setup an "add a tag" link
+                var $addTagLink = $('<a href="#" class="btn btn-default btn-sm">Add new permission</a>');
+                var $newLinkLi = $('<li></li>').append($addTagLink);
+
+                // Get the ul that holds the collection of tags
+                $collectionHolder = $('#cmfcmfmediamodule_collection_collectiontype_' + permissionType + 'Permissions');
+
+                $collectionHolder.find('li').each(function () {
                     addTagFormDeleteLink($(this));
                 });
 
@@ -39,14 +50,14 @@
                 // index when inserting a new item (e.g. 2)
                 $collectionHolder.data('index', $collectionHolder.find(':input').length);
 
-                $addTagLink.on('click', function(e) {
+                $addTagLink.on('click', function (e) {
                     // prevent the link from creating a "#" on the URL
                     e.preventDefault();
 
                     // add a new tag form (see next code block)
                     addTagForm($collectionHolder, $newLinkLi);
                 });
-            });
+            }
 
             function addTagForm($collectionHolder, $newLinkLi) {
                 // Get the data-prototype explained earlier

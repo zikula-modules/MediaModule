@@ -5,7 +5,6 @@ namespace Cmfcmf\Module\MediaModule\Entity\Collection;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Permission\CollectionPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,6 +15,7 @@ use Gedmo\Tree\Node;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
+use Zikula\PermissionsModule\Entity\PermissionEntity;
 
 /**
  * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository")
@@ -152,11 +152,11 @@ class CollectionEntity implements Node, Sluggable
     private $watermark;
 
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Permission\CollectionPermissionEntity", mappedBy="collection")
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity", mappedBy="collection")
      *
-     * @var CollectionPermissionEntity[]|ArrayCollection
+     * @var PermissionEntity[]|ArrayCollection
      */
-    protected $permissionMappings;
+    protected $permissions;
 
     /**
      * @ORM\Column(type="integer")

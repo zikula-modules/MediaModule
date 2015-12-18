@@ -71,7 +71,6 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                     'Cmfcmf\Module\MediaModule\Entity\Permission\PasswordPermissionEntity'
                 ]);
                 \DoctrineHelper::updateSchema($this->entityManager, [
-                    'Cmfcmf\Module\MediaModule\Entity\Permission\CollectionPermissionEntity',
                     'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity'
                 ]);
 
@@ -115,7 +114,6 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             $permissionPrefix . 'UserPermissionEntity',
             $permissionPrefix . 'GroupPermissionEntity',
             $permissionPrefix . 'PasswordPermissionEntity',
-            $permissionPrefix . 'CollectionPermissionEntity',
 
             $mediaPrefix . 'AbstractMediaEntity',
             $mediaPrefix . 'AbstractFileEntity',

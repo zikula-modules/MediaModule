@@ -2,10 +2,10 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\Permission;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Sortable\Sortable;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity()
@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  "password" = "PasswordPermissionEntity"
  * })
  */
-abstract class AbstractPermissionEntity implements Sortable
+abstract class AbstractPermissionEntity
 {
     /**
      * @ORM\Column(type="integer")
@@ -36,7 +36,14 @@ abstract class AbstractPermissionEntity implements Sortable
      *
      * @var int
      */
-    private $version;
+    protected $version;
+
+    /**
+     * @ORM\Column(type="integer")
+     *
+     * @var int
+     */
+    protected $position;
 
     /**
      * @ORM\Column(type="string", length=511)
@@ -55,11 +62,11 @@ abstract class AbstractPermissionEntity implements Sortable
     protected $permissionLevel;
 
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Permission\CollectionPermissionEntity", mappedBy="permission", orphanRemoval=true)
+     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", inversedBy="permissions")
      *
-     * @var CollectionPermissionEntity[]|ArrayCollection
+     * @var CollectionEntity
      */
-    protected $collectionMappings;
+    protected $collection;
 
     public function __construct()
     {
