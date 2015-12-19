@@ -26,6 +26,13 @@ services:
     tags:
       - { name: form.type, alias: cmfcmfmediamodule_font_choice }
 
+  cmfcmf_media_module.form.type.permission_level:
+      class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
+      arguments:
+          - @cmfcmf_media_module.security_manager
+      tags:
+          - { name: form.type }
+
 
   # Listeners
   cmfcmf_media_module.listener.module:
