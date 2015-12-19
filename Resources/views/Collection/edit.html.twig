@@ -79,6 +79,8 @@
 
                 // add a delete link to the new form
                 addTagFormDeleteLink($newFormLi);
+
+                window.CmfcmfMediaModule.Permission.initLevels($newFormLi)
             }
 
             function addTagFormDeleteLink($tagFormLi) {

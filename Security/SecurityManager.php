@@ -22,6 +22,11 @@ class SecurityManager
      */
     private $domain;
 
+    /**
+     * @var SecurityTree
+     */
+    private $collectionSecurityTree;
+
     public function __construct(TranslatorInterface $translator, PermissionApi $permissionApi)
     {
         $this->translator = $translator;
@@ -63,55 +68,23 @@ class SecurityManager
         return $this->permissionApi->hasPermission($component, $instance, $level);
     }
 
+    /**
+     * @return SecurityLevel[]
+     */
     public function getCollectionSecurityLevels()
     {
-        $levels = [];
+        return $this->getCollectionSecurityTree()->getLevels();
+    }
 
-        $levels[0] = new SecurityLevel(
-            0,
-            $this->translator->trans('No access', [], $this->domain),
-            $this->translator->trans('Doesn\', [], $this->domaint grant any kind of access.'),
-            $this->translator->trans('No access', [], $this->domain),
-            [],
-            []
-        );
+    /**
+     * @return SecurityTree
+     */
+    public function getCollectionSecurityTree()
+    {
+        if (!$this->collectionSecurityTree) {
+            $this->collectionSecurityTree = new SecurityTree($this->translator, $this->domain);
+        }
 
-        $levels[1] = new SecurityLevel(
-            1,
-            $this->translator->trans('Subcollection and media overview', [], $this->domain),
-            $this->translator->trans('Grants access to view the collection\', [], $this->domains media and subcollections.'),
-            $this->translator->trans('View', [], $this->domain),
-            [],
-            [$levels[0]]
-        );
-
-        $levels[2] = new SecurityLevel(
-            2,
-            $this->translator->trans('Download all media', [], $this->domain),
-            $this->translator->trans('Grants access to download the whole collection at once.', [], $this->domain),
-            $this->translator->trans('View', [], $this->domain),
-            [$levels[1]],
-            [$levels[0]]
-        );
-
-        $levels[3] = new SecurityLevel(
-            3,
-            $this->translator->trans('Display media details', [], $this->domain),
-            $this->translator->trans('Grants access to the media details page.', [], $this->domain),
-            $this->translator->trans('View', [], $this->domain),
-            [$levels[1]],
-            [$levels[0]]
-        );
-
-        $levels[4] = new SecurityLevel(
-            4,
-            $this->translator->trans('Download single media', [], $this->domain),
-            $this->translator->trans('Grants access to download a single medium.', [], $this->domain),
-            $this->translator->trans('View', [], $this->domain),
-            [$levels[2], $levels[3]],
-            [$levels[0]]
-        );
-
-        return $levels;
+        return $this->collectionSecurityTree;
     }
 }
