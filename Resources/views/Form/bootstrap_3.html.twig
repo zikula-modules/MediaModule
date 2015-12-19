@@ -39,3 +39,36 @@
         })(jQuery);
     </script>
 {%- endblock -%}
+
+{% block cmfcmfmediamodule_permission_level_widget %}
+    {{ pageAddAsset('javascript',  zasset('@CmfcmfMediaModule:js/PermissionLevel.js')) }}
+    <div class="table-responsive">
+        <table class="table table-condensed table-striped">
+            <thead>
+            <tr>
+                {% for category in securityTree.categories %}
+                    <th class="text-center">{{ category.title }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                {% for category in securityTree.categories %}
+                    <td>
+                        {% for level in category.levels %}
+                            <label>
+                                <input type="checkbox" class="cmfcmfmedia-security-level"
+                                       data-level-id="{{ level.id|e('html_attr') }}"
+                                       data-required-levels="{{ level.requiredLevelIds|json_encode|e('html_attr') }}"
+                                       data-disallowed-levels="{{ level.disallowedLevelIds|json_encode|e('html_attr') }}">
+                                {{ level.title }}
+                            </label>
+                            <br/>
+                        {% endfor %}
+                    </td>
+                {% endfor %}
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

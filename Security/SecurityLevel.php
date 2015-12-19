@@ -27,12 +27,12 @@ class SecurityLevel
     /**
      * @var SecurityLevel[]
      */
-    private $requiredSecurityLevels;
+    private $requiredLevels;
 
     /**
      * @var SecurityLevel[]
      */
-    private $disallowedSecurityLevels;
+    private $disallowedLevels;
 
     /**
      * SecurityLevel constructor.
@@ -50,7 +50,79 @@ class SecurityLevel
         $this->title = $title;
         $this->description = $description;
         $this->category = $category;
-        $this->requiredSecurityLevels = $requiredSecurityLevels;
-        $this->disallowedSecurityLevels = $disallowedSecurityLevels;
+        $this->requiredLevels = $requiredSecurityLevels;
+        $this->disallowedLevels = $disallowedSecurityLevels;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @return SecurityLevel[]
+     */
+    public function getRequiredLevels()
+    {
+        return $this->requiredLevels;
+    }
+
+    /**
+     * @return SecurityLevel[]
+     */
+    public function getDisallowedLevels()
+    {
+        return $this->disallowedLevels;
+    }
+
+    /**
+     * Returns the ids of all required security levels.
+     *
+     * @return int[]
+     */
+    public function getRequiredLevelIds()
+    {
+        return array_map(function (SecurityLevel $level) {
+            return $level->getId();
+        }, $this->requiredLevels);
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Returns the ids of all disallowed security levels.
+     *
+     * @return int[]
+     */
+    public function getDisallowedLevelIds()
+    {
+        return array_map(function (SecurityLevel $level) {
+            return $level->getId();
+        }, $this->disallowedLevels);
     }
 }
