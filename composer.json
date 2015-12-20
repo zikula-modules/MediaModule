@@ -28,5 +28,10 @@
         "zikula": {
             "class": "Cmfcmf\\Module\\MediaModule\\CmfcmfMediaModule"
         }
+    },
+    "config": {
+        "platform": {
+            "php": "5.4.2"
+        }
     }
 }
