@@ -37,10 +37,10 @@ class SecurityLevel
     /**
      * SecurityLevel constructor.
      *
-     * @param int $id
-     * @param string $title
-     * @param string $description
-     * @param string $category
+     * @param int             $id
+     * @param string          $title
+     * @param string          $description
+     * @param string          $category
      * @param SecurityLevel[] $requiredSecurityLevels
      * @param SecurityLevel[] $disallowedSecurityLevels
      */
