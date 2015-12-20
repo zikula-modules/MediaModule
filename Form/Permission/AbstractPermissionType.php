@@ -3,7 +3,6 @@
 namespace Cmfcmf\Module\MediaModule\Form\Permission;
 
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
-use Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 abstract class AbstractPermissionType extends AbstractType

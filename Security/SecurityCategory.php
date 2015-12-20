@@ -28,6 +28,7 @@ class SecurityCategory
 
     /**
      * Add a new security level to this category.
+     *
      * @param SecurityLevel $level
      */
     public function addLevel(SecurityLevel $level)
