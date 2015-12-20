@@ -4,7 +4,6 @@ namespace Cmfcmf\Module\MediaModule\Form\Type;
 
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
@@ -36,6 +35,11 @@ class PermissionLevelType extends AbstractType
 
     public function getParent()
     {
-        return FormType::class;
+        return 'Symfony\Component\Form\Extension\Core\Type\FormType';
+    }
+
+    public function getName()
+    {
+        return get_class($this);
     }
 }

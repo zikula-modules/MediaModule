@@ -4,8 +4,6 @@ namespace Cmfcmf\Module\MediaModule\Form\Permission;
 
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 abstract class AbstractPermissionType extends AbstractType
@@ -14,12 +12,12 @@ abstract class AbstractPermissionType extends AbstractType
     {
         parent::buildForm($builder, $options);
 
-        $builder->add('description', TextareaType::class, [
+        $builder->add('position', 'number', [
+            'label' => $this->__('Position')
+        ])->add('description', 'textarea', [
             'label' => $this->__('Description'),
             'required' => false
-        ])->add('position', NumberType::class, [
-            'label' => $this->__('Position')
-        ])->add('permissionLevel', PermissionLevelType::class, [
+        ])->add('permissionLevel', 'Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType', [
             'label' => $this->__('Permission level')
         ]);
     }
