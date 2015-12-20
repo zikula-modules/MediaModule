@@ -34,7 +34,7 @@ class SecurityManager
         $this->permissionApi = $permissionApi;
         $this->domain = 'cmfcmfmediamodule';
     }
-    
+
     public function hasPermission($objectOrType, $action)
     {
         if (is_object($objectOrType)) {
@@ -59,7 +59,6 @@ class SecurityManager
             'delete'    => ACCESS_DELETE,
             'admin'     => ACCESS_ADMIN
         ];
-
 
         return $this->permissionApi->hasPermission("CmfcmfMediaModule:$type:", "$id::", $levels[$action]);
     }

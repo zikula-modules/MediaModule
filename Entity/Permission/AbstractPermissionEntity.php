@@ -5,7 +5,6 @@ namespace Cmfcmf\Module\MediaModule\Entity\Permission;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity()
@@ -95,6 +94,14 @@ abstract class AbstractPermissionEntity
     }
 
     /**
+     * @return int
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
      * @param int $version
      *
      * @return $this
@@ -107,11 +114,11 @@ abstract class AbstractPermissionEntity
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getVersion()
+    public function getDescription()
     {
-        return $this->version;
+        return $this->description;
     }
 
     /**
@@ -127,11 +134,11 @@ abstract class AbstractPermissionEntity
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getDescription()
+    public function getPermissionLevel()
     {
-        return $this->description;
+        return $this->permissionLevel;
     }
 
     /**
@@ -144,13 +151,5 @@ abstract class AbstractPermissionEntity
         $this->permissionLevel = $permissionLevel;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPermissionLevel()
-    {
-        return $this->permissionLevel;
     }
 }
