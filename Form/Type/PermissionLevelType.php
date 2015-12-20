@@ -25,7 +25,8 @@ class PermissionLevelType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['securityTree'] = $this->securityManager->getCollectionSecurityTree();
+        $view->vars['securityGraph'] = $this->securityManager->getCollectionSecurityGraph();
+        $view->vars['securityCategories'] = $this->securityManager->getCollectionSecurityCategories();
     }
 
     public function getBlockPrefix()

@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Security;
 
+use Fhaculty\Graph\Graph;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\PermissionsModule\Api\PermissionApi;
 
@@ -25,13 +26,13 @@ class SecurityManager
     /**
      * @var SecurityTree
      */
-    private $collectionSecurityTree;
+    private $collectionSecurityGraph;
 
     public function __construct(TranslatorInterface $translator, PermissionApi $permissionApi)
     {
         $this->translator = $translator;
         $this->permissionApi = $permissionApi;
-        $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
+        $this->domain = 'cmfcmfmediamodule';
     }
     
     public function hasPermission($objectOrType, $action)
@@ -69,22 +70,22 @@ class SecurityManager
     }
 
     /**
-     * @return SecurityLevel[]
+     * @return Graph
      */
-    public function getCollectionSecurityLevels()
+    public function getCollectionSecurityGraph()
     {
-        return $this->getCollectionSecurityTree()->getLevels();
+        if (!$this->collectionSecurityGraph) {
+            $this->collectionSecurityGraph = SecurityTree::createGraph($this->translator, $this->domain);
+        }
+
+        return $this->collectionSecurityGraph;
     }
 
     /**
-     * @return SecurityTree
+     * @return SecurityCategory[]
      */
-    public function getCollectionSecurityTree()
+    public function getCollectionSecurityCategories()
     {
-        if (!$this->collectionSecurityTree) {
-            $this->collectionSecurityTree = new SecurityTree($this->translator, $this->domain);
-        }
-
-        return $this->collectionSecurityTree;
+        return SecurityTree::getCategories($this->translator, $this->domain);
     }
 }
