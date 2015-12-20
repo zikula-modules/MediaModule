@@ -2,217 +2,138 @@
 
 namespace Cmfcmf\Module\MediaModule\Security;
 
+use Fhaculty\Graph\Graph;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class SecurityTree
 {
     /**
-     * @var SecurityLevel[]
+     * @param TranslatorInterface $translator
+     * @param $domain
+     * @return Graph
      */
-    private $levels;
+    public static function createGraph(TranslatorInterface $translator, $domain)
+    {
+        $categories = self::getCategories($translator, $domain);
 
-    /**
-     * @var SecurityCategory[]
-     */
-    private $categories;
+        require_once(__DIR__ . '/../vendor/autoload.php');
 
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+        $graph = new SecurityGraph();
 
-    /**
-     * Translation domain.
-     *
-     * @var string
-     */
-    private $domain;
+        // VIEW
+        $vertices['overview'] = $graph->createVertex('overview');
+        $vertices['overview']->setAttribute('title', $translator->trans('Subcollection and media overview', [], $domain));
+        $vertices['overview']->setAttribute('description', $translator->trans('Grants access to view the collection\'s media and subcollections.', [], $domain));
+        $vertices['overview']->setAttribute('category', $categories['view']);
+        $vertices['overview']->setGroup($categories['view']->getId());
+
+        $vertices['download-collection'] = $graph->createVertex('download-collection');
+        $vertices['download-collection']->setAttribute('title', $translator->trans('Download whole collection', [], $domain));
+        $vertices['download-collection']->setAttribute('description', $translator->trans('Grants access to download the whole collection.', [], $domain));
+        $vertices['download-collection']->setAttribute('category', $categories['view']);
+        $vertices['download-collection']->setGroup($categories['view']->getId());
+        $vertices['download-collection']->createEdgeTo($vertices['overview']);
+
+        $vertices['media-details'] = $graph->createVertex('media-details');
+        $vertices['media-details']->setAttribute('title', $translator->trans('Display media details', [], $domain));
+        $vertices['media-details']->setAttribute('description', $translator->trans('Grants access to the media details page.', [], $domain));
+        $vertices['media-details']->setAttribute('category', $categories['view']);
+        $vertices['media-details']->setGroup($categories['view']->getId());
+        $vertices['media-details']->createEdgeTo($vertices['overview']);
+
+        $vertices['download-single-media'] = $graph->createVertex('download-single-media');
+        $vertices['download-single-media']->setAttribute('title', $translator->trans('Download single media', [], $domain));
+        $vertices['download-single-media']->setAttribute('description', $translator->trans('Grants access to download a single medium.', [], $domain));
+        $vertices['download-single-media']->setAttribute('category', $categories['view']);
+        $vertices['download-single-media']->setGroup($categories['view']->getId());
+        $vertices['download-single-media']->createEdgeTo($vertices['media-details']);
+        $vertices['download-single-media']->createEdgeTo($vertices['download-collection']);
+
+        // ADD
+        $vertices['add-media'] = $graph->createVertex('add-media');
+        $vertices['add-media']->setAttribute('title', $translator->trans('Add new media', [], $domain));
+        $vertices['add-media']->setAttribute('description', $translator->trans('Grants access to create new media.', [], $domain));
+        $vertices['add-media']->setAttribute('category', $categories['add']);
+        $vertices['add-media']->setGroup($categories['add']->getId());
+
+        $vertices['add-sub-collections'] = $graph->createVertex('add-sub-collections');
+        $vertices['add-sub-collections']->setAttribute('title', $translator->trans('Add new sub-collections', [], $domain));
+        $vertices['add-sub-collections']->setAttribute('description', $translator->trans('Grants access to create new collections.', [], $domain));
+        $vertices['add-sub-collections']->setAttribute('category', $categories['add']);
+        $vertices['add-sub-collections']->setGroup($categories['add']->getId());
+
+        // EDIT
+        $vertices['edit-media'] = $graph->createVertex('edit-media');
+        $vertices['edit-media']->setAttribute('title', $translator->trans('Edit media', [], $domain));
+        $vertices['edit-media']->setAttribute('description', $translator->trans('Grants access to edit media.', [], $domain));
+        $vertices['edit-media']->setAttribute('category', $categories['edit']);
+        $vertices['edit-media']->setGroup($categories['edit']->getId());
+        $vertices['edit-media']->createEdgeTo($vertices['download-single-media']);
+        $vertices['edit-media']->createEdgeTo($vertices['add-media']);
+
+        $vertices['edit-collection'] = $graph->createVertex('edit-collection');
+        $vertices['edit-collection']->setAttribute('title', $translator->trans('Edit collection', [], $domain));
+        $vertices['edit-collection']->setAttribute('description', $translator->trans('Grants access to edit the collection.', [], $domain));
+        $vertices['edit-collection']->setAttribute('category', $categories['edit']);
+        $vertices['edit-collection']->setGroup($categories['edit']->getId());
+        $vertices['edit-collection']->createEdgeTo($vertices['download-collection']);
+
+        $vertices['edit-sub-collections'] = $graph->createVertex('edit-sub-collections');
+        $vertices['edit-sub-collections']->setAttribute('title', $translator->trans('Edit sub-collections', [], $domain));
+        $vertices['edit-sub-collections']->setAttribute('description', $translator->trans('Grants access to edit sub-collection.', [], $domain));
+        $vertices['edit-sub-collections']->setAttribute('category', $categories['edit']);
+        $vertices['edit-sub-collections']->setGroup($categories['edit']->getId());
+        $vertices['edit-sub-collections']->createEdgeTo($vertices['add-sub-collections']);
+        $vertices['edit-sub-collections']->createEdgeTo($vertices['download-collection']);
+
+        // DELETE
+        $vertices['delete-media'] = $graph->createVertex('delete-media');
+        $vertices['delete-media']->setAttribute('title', $translator->trans('Delete media', [], $domain));
+        $vertices['delete-media']->setAttribute('description', $translator->trans('Grants access to delete media.', [], $domain));
+        $vertices['delete-media']->setAttribute('category', $categories['delete']);
+        $vertices['delete-media']->setGroup($categories['delete']->getId());
+        $vertices['delete-media']->createEdgeTo($vertices['edit-media']);
+
+        $vertices['delete-sub-collections'] = $graph->createVertex('delete-sub-collections');
+        $vertices['delete-sub-collections']->setAttribute('title', $translator->trans('Delete sub-collections', [], $domain));
+        $vertices['delete-sub-collections']->setAttribute('description', $translator->trans('Grants access to delete sub-collections.', [], $domain));
+        $vertices['delete-sub-collections']->setAttribute('category', $categories['delete']);
+        $vertices['delete-sub-collections']->setGroup($categories['delete']->getId());
+        $vertices['delete-sub-collections']->createEdgeTo($vertices['edit-sub-collections']);
+
+        $vertices['delete-collection'] = $graph->createVertex('delete-collection');
+        $vertices['delete-collection']->setAttribute('title', $translator->trans('Delete collection', [], $domain));
+        $vertices['delete-collection']->setAttribute('description', $translator->trans('Grants access to delete the collection.', [], $domain));
+        $vertices['delete-collection']->setAttribute('category', $categories['delete']);
+        $vertices['delete-collection']->setGroup($categories['delete']->getId());
+        $vertices['delete-collection']->createEdgeTo($vertices['delete-media']);
+        $vertices['delete-collection']->createEdgeTo($vertices['delete-sub-collections']);
+        $vertices['delete-collection']->createEdgeTo($vertices['edit-collection']);
+
+        // PERMISSIONS
+        $vertices['widen-permissions'] = $graph->createVertex('widen-permissions');
+        $vertices['widen-permissions']->setAttribute('title', $translator->trans('Widen permissions', [], $domain));
+        $vertices['widen-permissions']->setAttribute('description', $translator->trans('Allows to widen the permissions.', [], $domain));
+        $vertices['widen-permissions']->setAttribute('category', $categories['permission']);
+        $vertices['widen-permissions']->setGroup($categories['permission']->getId());
+        $vertices['widen-permissions']->createEdgeTo($vertices['delete-collection']);
+
+        return $graph;
+    }
 
     /**
      * @param TranslatorInterface $translator
      * @param $domain
-     */
-    public function __construct(TranslatorInterface $translator, $domain)
-    {
-        $this->translator = $translator;
-        $this->domain = $domain;
-
-        $this->initCategories();
-        $this->initLevels();
-    }
-
-    private function initCategories()
-    {
-        $this->categories = $categories = [
-            'no-access' => new SecurityCategory(0, $this->translator->trans('No access', [], $this->domain)),
-            'view' => new SecurityCategory(1, $this->translator->trans('View', [], $this->domain)),
-            'add' => new SecurityCategory(2, $this->translator->trans('Add', [], $this->domain)),
-            'edit' => new SecurityCategory(3, $this->translator->trans('Edit', [], $this->domain)),
-            'delete' => new SecurityCategory(4, $this->translator->trans('Delete', [], $this->domain)),
-            'permission' => new SecurityCategory(5, $this->translator->trans('Permissions', [], $this->domain)),
-        ];
-    }
-
-    private function initLevels()
-    {
-        $levels = [];
-
-        $levels[0] = new SecurityLevel(
-            0,
-            $this->translator->trans('No access', [], $this->domain),
-            $this->translator->trans('Doesn\'t grant any kind of access.', [], $this->domain),
-            $this->categories['no-access'],
-            [],
-            []
-        );
-        $this->categories['no-access']->addLevel($levels[0]);
-
-        $levels[1] = new SecurityLevel(
-            1,
-            $this->translator->trans('Subcollection and media overview', [], $this->domain),
-            $this->translator->trans('Grants access to view the collection\'s media and subcollections.', [], $this->domain),
-            $this->categories['view'],
-            [],
-            [$levels[0]]
-        );
-        $this->categories['view']->addLevel($levels[1]);
-
-        $levels[2] = new SecurityLevel(
-            2,
-            $this->translator->trans('Download all media', [], $this->domain),
-            $this->translator->trans('Grants access to download the whole collection at once.', [], $this->domain),
-            $this->categories['view'],
-            [$levels[1]],
-            [$levels[0]]
-        );
-        $this->categories['view']->addLevel($levels[2]);
-
-        $levels[3] = new SecurityLevel(
-            3,
-            $this->translator->trans('Display media details', [], $this->domain),
-            $this->translator->trans('Grants access to the media details page.', [], $this->domain),
-            $this->categories['view'],
-            [$levels[1]],
-            [$levels[0]]
-        );
-        $this->categories['view']->addLevel($levels[3]);
-
-        $levels[4] = new SecurityLevel(
-            4,
-            $this->translator->trans('Download single media', [], $this->domain),
-            $this->translator->trans('Grants access to download a single medium.', [], $this->domain),
-            $this->categories['view'],
-            [$levels[2], $levels[3]],
-            [$levels[0]]
-        );
-        $this->categories['view']->addLevel($levels[4]);
-
-        $levels[5] = new SecurityLevel(
-            5,
-            $this->translator->trans('Add new media', [], $this->domain),
-            $this->translator->trans('Grants access to create new media.', [], $this->domain),
-            $this->categories['add'],
-            [],
-            [$levels[0]]
-        );
-        $this->categories['add']->addLevel($levels[5]);
-
-        $levels[6] = new SecurityLevel(
-            6,
-            $this->translator->trans('Add new collections', [], $this->domain),
-            $this->translator->trans('Grants access to create new collections.', [], $this->domain),
-            $this->categories['add'],
-            [$levels[5]],
-            [$levels[0]]
-        );
-        $this->categories['add']->addLevel($levels[6]);
-
-        $levels[7] = new SecurityLevel(
-            7,
-            $this->translator->trans('Edit media', [], $this->domain),
-            $this->translator->trans('Grants access to edit media.', [], $this->domain),
-            $this->categories['edit'],
-            [$levels[4], $levels[5]],
-            [$levels[0]]
-        );
-        $this->categories['edit']->addLevel($levels[7]);
-
-        $levels[8] = new SecurityLevel(
-            8,
-            $this->translator->trans('Edit collection', [], $this->domain),
-            $this->translator->trans('Grants access to edit the collection.', [], $this->domain),
-            $this->categories['edit'],
-            [$levels[4], $levels[6]],
-            [$levels[0]]
-        );
-        $this->categories['edit']->addLevel($levels[8]);
-
-        $levels[9] = new SecurityLevel(
-            9,
-            $this->translator->trans('Edit sub-collections', [], $this->domain),
-            $this->translator->trans('Grants access to edit sub-collection.', [], $this->domain),
-            $this->translator->trans('Edit', [], $this->domain),
-            [$levels[4], $levels[6]],
-            [$levels[0]]
-        );
-        $this->categories['edit']->addLevel($levels[9]);
-
-        $levels[10] = new SecurityLevel(
-            10,
-            $this->translator->trans('Delete media', [], $this->domain),
-            $this->translator->trans('Grants access to delete media.', [], $this->domain),
-            $this->categories['delete'],
-            [$levels[7]],
-            [$levels[0]]
-        );
-        $this->categories['delete']->addLevel($levels[10]);
-
-        $levels[11] = new SecurityLevel(
-            11,
-            $this->translator->trans('Delete sub-collections', [], $this->domain),
-            $this->translator->trans('Grants access to delete sub-collections.', [], $this->domain),
-            $this->categories['delete'],
-            [$levels[8]],
-            [$levels[0]]
-        );
-        $this->categories['delete']->addLevel($levels[11]);
-
-        $levels[12] = new SecurityLevel(
-            12,
-            $this->translator->trans('Delete collection', [], $this->domain),
-            $this->translator->trans('Grants access to delete the collection.', [], $this->domain),
-            $this->categories['delete'],
-            [$levels[11]],
-            [$levels[0]]
-        );
-        $this->categories['delete']->addLevel($levels[12]);
-
-        $levels[13] = new SecurityLevel(
-            13,
-            $this->translator->trans('Widen permissions', [], $this->domain),
-            $this->translator->trans('Allows to widen the permissions.', [], $this->domain),
-            $this->categories['permission'],
-            [$levels[12], $levels[7]],
-            [$levels[0]]
-        );
-        $this->categories['permission']->addLevel($levels[13]);
-
-        $this->levels = $levels;
-    }
-
-    /**
      * @return SecurityCategory[]
      */
-    public function getCategories()
+    public static function getCategories(TranslatorInterface $translator, $domain)
     {
-        return $this->categories;
-    }
-
-    /**
-     * @return SecurityLevel[]
-     */
-    public function getLevels()
-    {
-        return $this->levels;
+        return [
+            'view' => new SecurityCategory(1, $translator->trans('View', [], $domain)),
+            'add' => new SecurityCategory(2, $translator->trans('Add', [], $domain)),
+            'edit' => new SecurityCategory(3, $translator->trans('Edit', [], $domain)),
+            'delete' => new SecurityCategory(4, $translator->trans('Delete', [], $domain)),
+            'permission' => new SecurityCategory(5, $translator->trans('Permissions', [], $domain)),
+        ];
     }
 }

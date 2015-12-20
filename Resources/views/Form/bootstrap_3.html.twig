@@ -46,22 +46,27 @@
         <table class="table table-condensed table-striped">
             <thead>
             <tr>
-                {% for category in securityTree.categories %}
+                <th class="text-center">{{ __('No access') }}</th>
+                {% for category in securityCategories %}
                     <th class="text-center">{{ category.title }}</th>
                 {% endfor %}
             </tr>
             </thead>
             <tbody>
             <tr>
-                {% for category in securityTree.categories %}
+                <td>
+                    <label>
+                        <input type="checkbox" id="cmfcmfmedia-security-level-no-access"> {{ __('No access') }}
+                    </label>
+                </td>
+                {% for category in securityCategories %}
                     <td>
-                        {% for level in category.levels %}
+                        {% for vertex in securityGraph.verticesByCategory(category) %}
                             <label>
                                 <input type="checkbox" class="cmfcmfmedia-security-level"
-                                       data-level-id="{{ level.id|e('html_attr') }}"
-                                       data-required-levels="{{ level.requiredLevelIds|json_encode|e('html_attr') }}"
-                                       data-disallowed-levels="{{ level.disallowedLevelIds|json_encode|e('html_attr') }}">
-                                {{ level.title }}
+                                       data-vertex-id="{{ vertex.id|e('html_attr') }}"
+                                       data-children-vertices="{{ securityGraph.childrenOfVertex(vertex).ids|json_encode|e('html_attr') }}">
+                                {{ vertex.attribute('title') }}
                             </label>
                             <br/>
                         {% endfor %}

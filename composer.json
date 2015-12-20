@@ -18,7 +18,8 @@
         "james-heinrich/getid3": "~1.9.9",
         "knplabs/github-api": "~1.5",
         "j7mbo/twitter-api-php": "~1.0.5",
-        "google/apiclient": "~1.1.5"
+        "google/apiclient": "~1.1.5",
+        "clue/graph": "0.9.*"
     },
     "require-dev": {
         "nelmio/alice": "^2.1"
