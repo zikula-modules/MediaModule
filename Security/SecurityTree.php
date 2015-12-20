@@ -10,13 +10,14 @@ class SecurityTree
     /**
      * @param TranslatorInterface $translator
      * @param $domain
+     *
      * @return Graph
      */
     public static function createGraph(TranslatorInterface $translator, $domain)
     {
         $categories = self::getCategories($translator, $domain);
 
-        require_once(__DIR__ . '/../vendor/autoload.php');
+        require_once __DIR__ . '/../vendor/autoload.php';
 
         $graph = new SecurityGraph();
 
@@ -124,6 +125,7 @@ class SecurityTree
     /**
      * @param TranslatorInterface $translator
      * @param $domain
+     *
      * @return SecurityCategory[]
      */
     public static function getCategories(TranslatorInterface $translator, $domain)
