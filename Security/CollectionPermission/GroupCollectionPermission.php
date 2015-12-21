@@ -26,8 +26,8 @@ class GroupCollectionPermission extends AbstractCollectionPermission
         $qb->leftJoin($this->getEntityClass(), 'gp', Expr\Join::WITH, 'p.id = gp.id');
 
         $or = $qb->expr()->orX();
-        foreach ($groupIds as $groupId) {
-            $or->add($this->whereInSimpleArray($qb, 'gp', 'group', $groupId, 'groupIds'));
+        foreach ($groupIds as $c => $groupId) {
+            $or->add($this->whereInSimpleArray($qb, 'gp', "group$c", $groupId, 'groupIds'));
         }
 
         return $or;

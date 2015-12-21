@@ -2,6 +2,8 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 
 abstract class AbstractCollectionPermission implements CollectionPermissionInterface
@@ -44,5 +46,15 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
             $qb->expr()->like("$entity.$field", ':' . $type . '3'),
             $qb->expr()->like("$entity.$field", ':' . $type . '4')
         );
+    }
+
+    public function onNoPermission(CollectionEntity $collection)
+    {
+        return false;
+    }
+
+    public function acquirePermission(CollectionEntity $collection)
+    {
+        return false;
     }
 }

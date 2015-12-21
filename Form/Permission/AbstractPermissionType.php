@@ -26,6 +26,9 @@ abstract class AbstractPermissionType extends AbstractType
             'label' => $this->__('Valid until'),
             'widget' => 'choice',
             'required' => false
+        ])->add('goOn', 'checkbox', [
+            'label' => $this->__('Go on if permission not sufficient'),
+            'required' => false
         ]);
     }
 }

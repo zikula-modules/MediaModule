@@ -138,7 +138,7 @@ class SecurityManager
         $permission = $qb->getQuery()->getSingleResult();
         $securityGraph = $this->getCollectionSecurityGraph();
         foreach ($permission->getPermissionLevels() as $permissionLevel) {
-            if ($securityGraph->getChildrenOfVertex($securityGraph->getVertex($permissionLevel))->hasVertexId($permLevel)) {
+            if ($securityGraph->getChildrenOfVertex($securityGraph->getVertex($permissionLevel), SecurityTree::EDGE_TYPE_INCLUDED_PERMISSIONS)->hasVertexId($permLevel)) {
                 return true;
             }
         }
