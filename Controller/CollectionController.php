@@ -6,15 +6,16 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Form\Collection\CollectionType;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
+use Cmfcmf\Module\MediaModule\Security\SecurityTree;
 use Doctrine\ORM\OptimisticLockException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
@@ -78,7 +79,9 @@ class CollectionController extends AbstractController
      */
     public function editAction(Request $request, CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, 'edit')) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity,
+            SecurityTree::PERM_LEVEL_EDIT_COLLECTION)
+        ) {
             throw new AccessDeniedException();
         }
 
@@ -132,7 +135,9 @@ class CollectionController extends AbstractController
      */
     public function downloadAction(CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, 'download')) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity,
+            SecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)
+        ) {
             throw new AccessDeniedException();
         }
 
@@ -192,7 +197,9 @@ class CollectionController extends AbstractController
         $repository = $this->getDoctrine()->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
         $entity = $repository->find($id);
 
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, 'edit')) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity,
+            SecurityTree::PERM_LEVEL_EDIT_COLLECTION)
+        ) {
             throw new AccessDeniedException();
         }
 
@@ -241,21 +248,6 @@ class CollectionController extends AbstractController
     }
 
     /**
-     * @Route("/show-by-id/{id}", options={"expose" = true})
-     *
-     * @param CollectionEntity $entity
-     *
-     * @return RedirectResponse
-     */
-    public function displayByIdAction(CollectionEntity $entity)
-    {
-        return $this->redirectToRoute(
-            'cmfcmfmediamodule_collection_display',
-            ['slug' => $entity->getSlug()]
-        );
-    }
-
-    /**
      * @Route("/show/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
      * @Method("GET")
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
@@ -268,14 +260,18 @@ class CollectionController extends AbstractController
      */
     public function displayAction(Request $request, CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity !== null ? $entity : 'collection', 'display')) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity !== null ? $entity : 'collection',
+            'display')
+        ) {
             throw new AccessDeniedException();
         }
         if ($entity->getId() == CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
             throw new NotFoundHttpException();
         }
 
-        $template = $request->query->get('template', $entity->getDefaultTemplate() != null ? $entity->getDefaultTemplate() : \ModUtil::getVar('CmfcmfMediaModule', 'defaultCollectionTemplate'));
+        $template = $request->query->get('template',
+            $entity->getDefaultTemplate() != null ? $entity->getDefaultTemplate() : \ModUtil::getVar('CmfcmfMediaModule',
+                'defaultCollectionTemplate'));
         $collectionTemplateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
         if (!$collectionTemplateCollection->hasTemplate($template)) {
             throw new NotFoundHttpException();
@@ -306,5 +302,20 @@ class CollectionController extends AbstractController
         );
 
         return $this->render('CmfcmfMediaModule:Collection:display.html.twig', $templateVars);
+    }
+
+    /**
+     * @Route("/show-by-id/{id}", options={"expose" = true})
+     *
+     * @param CollectionEntity $entity
+     *
+     * @return RedirectResponse
+     */
+    public function displayByIdAction(CollectionEntity $entity)
+    {
+        return $this->redirectToRoute(
+            'cmfcmfmediamodule_collection_display',
+            ['slug' => $entity->getSlug()]
+        );
     }
 }

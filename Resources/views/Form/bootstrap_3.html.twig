@@ -64,8 +64,12 @@
                         {% for vertex in securityGraph.verticesByCategory(category) %}
                             <label>
                                 <input type="checkbox" class="cmfcmfmedia-security-level"
+                                       value="{{ vertex.id|e('html_attr') }}"
+                                       name="{{ full_name }}[]"
                                        data-vertex-id="{{ vertex.id|e('html_attr') }}"
-                                       data-children-vertices="{{ securityGraph.childrenOfVertex(vertex).ids|json_encode|e('html_attr') }}">
+                                       data-children-vertices="{{ securityGraph.childrenOfVertex(vertex).ids|json_encode|e('html_attr') }}"
+                                        {% if vertex.id in value %} checked="checked" {% endif %}
+                                >
                                 {{ vertex.attribute('title') }}
                             </label>
                             <br/>
