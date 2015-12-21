@@ -16,8 +16,16 @@ abstract class AbstractPermissionType extends AbstractType
         ])->add('description', 'textarea', [
             'label' => $this->__('Description'),
             'required' => false
-        ])->add('permissionLevel', 'Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType', [
+        ])->add('permissionLevels', 'Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType', [
             'label' => $this->__('Permission level')
+        ])->add('validAfter', 'datetime', [
+            'label' => $this->__('Valid after'),
+            'widget' => 'choice',
+            'required' => false
+        ])->add('validUntil', 'datetime', [
+            'label' => $this->__('Valid until'),
+            'widget' => 'choice',
+            'required' => false
         ]);
     }
 }

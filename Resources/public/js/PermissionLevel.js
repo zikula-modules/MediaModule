@@ -38,6 +38,10 @@
             $otherLevel
                 .attr('disabled', false);
         }
+        fixCheckboxes($selector);
+    }
+
+    function fixCheckboxes($selector) {
         $selector.find('.cmfcmfmedia-security-level').each(function () {
             if ($(this).prop('checked')) {
                 setRequiredLevels($(this), $selector);

@@ -1,12 +1,13 @@
 imports:
   - { resource: 'mediatypes.yml' }
   - { resource: 'collectiontemplates.yml' }
+  - { resource: 'collectionpermissions.yml' }
 
 services:
   # Security management
   cmfcmf_media_module.security_manager:
     class: Cmfcmf\Module\MediaModule\Security\SecurityManager
-    arguments: [@translator, @zikula_permissions_module.api.permission]
+    arguments: [@translator, @zikula_permissions_module.api.permission, @doctrine.orm.default_entity_manager, @cmfcmf_media_module.collection_permission.container]
 
 
   # Module upgrader and version checker

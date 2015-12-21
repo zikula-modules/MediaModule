@@ -5,17 +5,20 @@ namespace Cmfcmf\Module\MediaModule\Entity\Collection;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Permission\GroupPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Permission\PasswordPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Permission\UserPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Sluggable\Sluggable;
 use Gedmo\Tree\Node;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
-use Zikula\PermissionsModule\Entity\PermissionEntity;
 
 /**
  * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository")
@@ -35,15 +38,6 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     protected $id;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Version
-     *
-     * @var int
-     */
-    private $version;
-
     /**
      * @ORM\Column(name="title", type="string", length=255)
      * @Assert\NotBlank()
@@ -52,34 +46,30 @@ class CollectionEntity implements Node, Sluggable
      * @var string
      */
     protected $title;
-
     /**
-     * @Gedmo\Slug(fields={"title"}, handlers={
+     * @Gedmo\Slug(fields={"title"}, unique=true, handlers={
      *      @Gedmo\SlugHandler(class="Gedmo\Sluggable\Handler\TreeSlugHandler", options={
      *          @Gedmo\SlugHandlerOption(name="parentRelationField", value="parent"),
      *          @Gedmo\SlugHandlerOption(name="separator", value="/")
      *      })
      * })
      * @ORM\Column(length=128, unique=true)
-     * 
+     *
      * @var string
      */
     protected $slug;
-
     /**
      * @ORM\Column(type="text", nullable=true)
      *
      * @var string
      */
     protected $description;
-
     /**
      * @ORM\Column(type="string", nullable=true)
      *
      * @var string|null
      */
     protected $defaultTemplate;
-
     /**
      * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity", mappedBy="collection", fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"position" = "ASC"})
@@ -87,14 +77,54 @@ class CollectionEntity implements Node, Sluggable
      * @var AbstractMediaEntity[]|ArrayCollection
      **/
     protected $media;
-
     /**
      * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity", mappedBy="collection", fetch="EXTRA_LAZY", cascade={"persist"})
      *
      * @var HookedObjectCollectionEntity[]|ArrayCollection
      */
     protected $hookedObjectCollections;
-
+    /**
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity", mappedBy="collection", fetch="EAGER", orphanRemoval=true, cascade={"persist"})
+     * @ORM\OrderBy({"position"="ASC"})
+     *
+     * @var AbstractPermissionEntity[]|ArrayCollection
+     */
+    protected $permissions;
+    /**
+     * @ORM\Column(type="integer")
+     * @ZK\StandardFields(type="userid", on="create")
+     *
+     * @var int
+     */
+    protected $createdUserId;
+    /**
+     * @ORM\Column(type="integer")
+     * @ZK\StandardFields(type="userid", on="update")
+     *
+     * @var int
+     */
+    protected $updatedUserId;
+    /**
+     * @ORM\Column(type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     *
+     * @var \DateTime
+     */
+    protected $createdDate;
+    /**
+     * @ORM\Column(type="datetime")
+     * @Gedmo\Timestampable(on="update")
+     *
+     * @var \DateTime
+     */
+    protected $updatedDate;
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Version
+     *
+     * @var int
+     */
+    private $version;
     /**
      * @Gedmo\TreeLeft
      * @ORM\Column(name="lft", type="integer")
@@ -102,7 +132,6 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $lft;
-
     /**
      * @Gedmo\TreeLevel
      * @ORM\Column(name="lvl", type="integer")
@@ -110,7 +139,6 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $lvl;
-
     /**
      * @Gedmo\TreeRight
      * @ORM\Column(name="rgt", type="integer")
@@ -118,7 +146,6 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $rgt;
-
     /**
      * @Gedmo\TreeRoot
      * @ORM\Column(name="root", type="integer", nullable=true)
@@ -126,7 +153,6 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $root;
-
     /**
      * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="CollectionEntity", inversedBy="children")
@@ -135,7 +161,6 @@ class CollectionEntity implements Node, Sluggable
      * @var CollectionEntity|null
      */
     private $parent;
-
     /**
      * @ORM\OneToMany(targetEntity="CollectionEntity", mappedBy="parent")
      * @ORM\OrderBy({"lft" = "ASC"})
@@ -143,53 +168,12 @@ class CollectionEntity implements Node, Sluggable
      * @var CollectionEntity[]|ArrayCollection
      */
     private $children;
-
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity")
      *
      * @var AbstractWatermarkEntity|null
      **/
     private $watermark;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity", mappedBy="collection")
-     *
-     * @var PermissionEntity[]|ArrayCollection
-     */
-    protected $permissions;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @ZK\StandardFields(type="userid", on="create")
-     *
-     * @var int
-     */
-    protected $createdUserId;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @ZK\StandardFields(type="userid", on="update")
-     *
-     * @var int
-     */
-    protected $updatedUserId;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
-     *
-     * @var \DateTime
-     */
-    protected $createdDate;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="update")
-     *
-     * @var \DateTime
-     */
-    protected $updatedDate;
-
     /**
      * Whether or not this is the virtual root collection.
      *
@@ -203,18 +187,7 @@ class CollectionEntity implements Node, Sluggable
         $this->children = new ArrayCollection();
         $this->hookedObjectCollections = new ArrayCollection();
         $this->defaultTemplate = null;
-    }
-
-    public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection)
-    {
-        $thumbnail = $this->getMediaForThumbnail();
-
-        return [
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'mediaCount' => $this->media->count(),
-            'thumbnail' => $thumbnail && $mediaTypeCollection ? $thumbnail->toArrayForFinder($mediaTypeCollection, false) : null
-        ];
+        $this->permissions = new ArrayCollection();
     }
 
     public function toArrayForJsTree(MediaTypeCollection $mediaTypeCollection, HookedObjectEntity $hookedObjectEntity = null, $includeChildren)
@@ -248,6 +221,53 @@ class CollectionEntity implements Node, Sluggable
                 'selected' => $isSelected
             ],
             'cmfcmfmediamodule' => $this->toArrayForFinder($mediaTypeCollection)
+        ];
+    }
+
+    /**
+     * Get id.
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Get title.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * Set title.
+     *
+     * @param string $title
+     *
+     * @return CollectionEntity
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection)
+    {
+        $thumbnail = $this->getMediaForThumbnail();
+
+        return [
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'mediaCount' => $this->media->count(),
+            'thumbnail' => $thumbnail && $mediaTypeCollection ? $thumbnail->toArrayForFinder($mediaTypeCollection,
+                false) : null
         ];
     }
 
@@ -300,42 +320,17 @@ class CollectionEntity implements Node, Sluggable
         return $breadcrumbs;
     }
 
-    public function getIndentedTitle()
-    {
-        $indented = '';
-        if ($this->lvl > 0) {
-            $indented .= '|-';
-            if ($this->lvl > 1) {
-                $indented .= str_repeat("--", --$this->lvl);
-            }
-            $indented .= ' ';
-        }
-
-        return $indented . $this->title;
-    }
-
     /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set title.
-     *
-     * @param string $title
-     *
      * @return CollectionEntity
      */
-    public function setTitle($title)
+    public function getParent()
     {
-        $this->title = $title;
+        return $this->parent;
+    }
 
-        return $this;
+    public function setParent(CollectionEntity $parent = null)
+    {
+        $this->parent = $parent;
     }
 
     /**
@@ -358,14 +353,28 @@ class CollectionEntity implements Node, Sluggable
         return $this;
     }
 
+    public function getIndentedTitle()
+    {
+        $indented = '';
+        if ($this->lvl > 0) {
+            $indented .= '|-';
+            if ($this->lvl > 1) {
+                $indented .= str_repeat("--", --$this->lvl);
+            }
+            $indented .= ' ';
+        }
+
+        return $indented . $this->title;
+    }
+
     /**
-     * Get title.
+     * Get description.
      *
      * @return string
      */
-    public function getTitle()
+    public function getDescription()
     {
-        return $this->title;
+        return $this->description;
     }
 
     /**
@@ -380,16 +389,6 @@ class CollectionEntity implements Node, Sluggable
         $this->description = $description;
 
         return $this;
-    }
-
-    /**
-     * Get description.
-     *
-     * @return string
-     */
-    public function getDescription()
-    {
-        return $this->description;
     }
 
     /**
@@ -472,17 +471,12 @@ class CollectionEntity implements Node, Sluggable
         return $this;
     }
 
-    public function setParent(CollectionEntity $parent = null)
-    {
-        $this->parent = $parent;
-    }
-
     /**
-     * @return CollectionEntity
+     * @return AbstractWatermarkEntity|null
      */
-    public function getParent()
+    public function getWatermark()
     {
-        return $this->parent;
+        return $this->watermark;
     }
 
     /**
@@ -498,11 +492,11 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return AbstractWatermarkEntity|null
+     * @return \Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity[]|ArrayCollection
      */
-    public function getWatermark()
+    public function getMedia()
     {
-        return $this->watermark;
+        return $this->media;
     }
 
     /**
@@ -515,14 +509,6 @@ class CollectionEntity implements Node, Sluggable
         $this->media = $media;
 
         return $this;
-    }
-
-    /**
-     * @return \Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity[]|ArrayCollection
-     */
-    public function getMedia()
-    {
-        return $this->media;
     }
 
     /**
@@ -546,6 +532,14 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
+     * @return HookedObjectCollectionEntity[]|ArrayCollection
+     */
+    public function getHookedObjectCollections()
+    {
+        return $this->hookedObjectCollections;
+    }
+
+    /**
      * @param HookedObjectCollectionEntity[]|ArrayCollection $hookedObjectCollections
      *
      * @return CollectionEntity
@@ -558,11 +552,11 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return HookedObjectCollectionEntity[]|ArrayCollection
+     * @return int
      */
-    public function getHookedObjectCollections()
+    public function getVersion()
     {
-        return $this->hookedObjectCollections;
+        return $this->version;
     }
 
     /**
@@ -578,11 +572,11 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return int
+     * @return bool
      */
-    public function getVersion()
+    public function isVirtualRoot()
     {
-        return $this->version;
+        return $this->virtualRoot;
     }
 
     /**
@@ -596,11 +590,11 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isVirtualRoot()
+    public function getDefaultTemplate()
     {
-        return $this->virtualRoot;
+        return $this->defaultTemplate;
     }
 
     /**
@@ -616,10 +610,105 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return string
+     * @return ArrayCollection|AbstractPermissionEntity[]
      */
-    public function getDefaultTemplate()
+    public function getPermissions()
     {
-        return $this->defaultTemplate;
+        return $this->permissions;
+    }
+
+    /**
+     * @return ArrayCollection|UserPermissionEntity[]
+     */
+    public function getUserPermissions()
+    {
+        return $this->permissions->filter(function (AbstractPermissionEntity $permission) {
+            return $permission instanceof UserPermissionEntity;
+        });
+    }
+
+    /**
+     * @return ArrayCollection|GroupPermissionEntity[]
+     */
+    public function getGroupPermissions()
+    {
+        return $this->permissions->filter(function (AbstractPermissionEntity $permission) {
+            return $permission instanceof GroupPermissionEntity;
+        });
+    }
+
+    /**
+     * @return ArrayCollection|PasswordPermissionEntity[]
+     */
+    public function getPasswordPermissions()
+    {
+        return $this->permissions->filter(function (AbstractPermissionEntity $permission) {
+            return $permission instanceof PasswordPermissionEntity;
+        });
+    }
+
+    /**
+     * @param UserPermissionEntity $permission
+     */
+    public function addUserPermission(UserPermissionEntity $permission)
+    {
+        $this->addPermission($permission);
+    }
+
+    /**
+     * @param AbstractPermissionEntity $permission
+     */
+    public function addPermission(AbstractPermissionEntity $permission)
+    {
+        $permission->setCollection($this);
+        $this->permissions->add($permission);
+    }
+
+    /**
+     * @param GroupPermissionEntity $permission
+     */
+    public function addGroupPermission(GroupPermissionEntity $permission)
+    {
+        $this->addPermission($permission);
+    }
+
+    /**
+     * @param PasswordPermissionEntity $permission
+     */
+    public function addPasswordPermission(PasswordPermissionEntity $permission)
+    {
+        $this->addPermission($permission);
+    }
+
+    /**
+     * @param UserPermissionEntity $permission
+     */
+    public function removeUserPermission(UserPermissionEntity $permission)
+    {
+        $this->removePermission($permission);
+    }
+
+    /**
+     * @param AbstractPermissionEntity $permission
+     */
+    public function removePermission(AbstractPermissionEntity $permission)
+    {
+        $this->permissions->removeElement($permission);
+    }
+
+    /**
+     * @param GroupPermissionEntity $permission
+     */
+    public function removeGroupPermission(GroupPermissionEntity $permission)
+    {
+        $this->removePermission($permission);
+    }
+
+    /**
+     * @param PasswordPermissionEntity $permission
+     */
+    public function removePasswordPermission(PasswordPermissionEntity $permission)
+    {
+        $this->removePermission($permission);
     }
 }
