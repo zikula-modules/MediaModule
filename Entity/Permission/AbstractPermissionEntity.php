@@ -24,6 +24,7 @@ abstract class AbstractPermissionEntity
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      *
      * @var int
      */
@@ -45,8 +46,7 @@ abstract class AbstractPermissionEntity
     protected $position;
 
     /**
-     * @ORM\Column(type="string", length=511)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="string", length=511, nullable=true)
      * @Assert\Length(max="511")
      *
      * @var string
@@ -54,11 +54,11 @@ abstract class AbstractPermissionEntity
     protected $description;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="simple_array", name="permissionLevel")
      *
-     * @var int
+     * @var string[]
      */
-    protected $permissionLevel;
+    protected $permissionLevels;
 
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", inversedBy="permissions")
@@ -66,6 +66,24 @@ abstract class AbstractPermissionEntity
      * @var CollectionEntity
      */
     protected $collection;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     *
+     * @Assert\DateTime()
+     *
+     * @var \DateTime|null
+     */
+    protected $validAfter;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     *
+     * @Assert\DateTime()
+     *
+     * @var \DateTime|null
+     */
+    protected $validUntil;
 
     public function __construct()
     {
@@ -134,22 +152,97 @@ abstract class AbstractPermissionEntity
     }
 
     /**
-     * @return int
+     * @return string[]
      */
-    public function getPermissionLevel()
+    public function getPermissionLevels()
     {
-        return $this->permissionLevel;
+        return $this->permissionLevels;
     }
 
     /**
-     * @param int $permissionLevel
+     * @param string[] $permissionLevels
      *
      * @return AbstractPermissionEntity
      */
-    public function setPermissionLevel($permissionLevel)
+    public function setPermissionLevels($permissionLevels)
     {
-        $this->permissionLevel = $permissionLevel;
+        $this->permissionLevels = $permissionLevels;
 
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param int $position
+     * @return AbstractPermissionEntity
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * @return CollectionEntity
+     */
+    public function getCollection()
+    {
+        return $this->collection;
+    }
+
+    /**
+     * @param CollectionEntity $collection
+     * @return AbstractPermissionEntity
+     */
+    public function setCollection($collection)
+    {
+        $this->collection = $collection;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getValidAfter()
+    {
+        return $this->validAfter;
+    }
+
+    /**
+     * @param \DateTime|null $validAfter
+     * @return AbstractPermissionEntity
+     */
+    public function setValidAfter($validAfter)
+    {
+        $this->validAfter = $validAfter;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getValidUntil()
+    {
+        return $this->validUntil;
+    }
+
+    /**
+     * @param \DateTime|null $validUntil
+     * @return AbstractPermissionEntity
+     */
+    public function setValidUntil($validUntil)
+    {
+        $this->validUntil = $validUntil;
         return $this;
     }
 }

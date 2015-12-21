@@ -118,22 +118,22 @@ class CollectionType extends AbstractType
                 'property' => 'title',
             ])
             ->add('userPermissions', 'collection', [
-                'mapped' => false,
                 'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Permission\UserPermissionType',
                 'allow_add' => true,
-                'allow_delete' => true
+                'allow_delete' => true,
+                'by_reference' => false
             ])
             ->add('groupPermissions', 'collection', [
-                'mapped' => false,
                 'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Permission\GroupPermissionType',
                 'allow_add' => true,
-                'allow_delete' => true
+                'allow_delete' => true,
+                'by_reference' => false
             ])
             ->add('passwordPermissions', 'collection', [
-                'mapped' => false,
                 'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Permission\PasswordPermissionType',
                 'allow_add' => true,
-                'allow_delete' => true
+                'allow_delete' => true,
+                'by_reference' => false
             ])
         ;
     }
