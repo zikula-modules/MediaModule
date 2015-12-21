@@ -85,10 +85,17 @@ abstract class AbstractPermissionEntity
      */
     protected $validUntil;
 
+    /**
+     * @ORM\Column(type="boolean")
+     *
+     * @var bool
+     */
+    protected $goOn;
+
     public function __construct()
     {
-        $this->permissionLevel = 0;
         $this->description = "";
+        $this->goOn = false;
     }
 
     /**
@@ -243,6 +250,25 @@ abstract class AbstractPermissionEntity
     public function setValidUntil($validUntil)
     {
         $this->validUntil = $validUntil;
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isGoOn()
+    {
+        return $this->goOn;
+    }
+
+    /**
+     * @param boolean $goOn
+     * @return AbstractPermissionEntity
+     */
+    public function setGoOn($goOn)
+    {
+        $this->goOn = $goOn;
+
         return $this;
     }
 }
