@@ -2,13 +2,13 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\Collection;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\PasswordPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Permission\GroupPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Permission\PasswordPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Permission\UserPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -38,6 +38,7 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     protected $id;
+
     /**
      * @ORM\Column(name="title", type="string", length=255)
      * @Assert\NotBlank()
@@ -46,6 +47,7 @@ class CollectionEntity implements Node, Sluggable
      * @var string
      */
     protected $title;
+
     /**
      * @Gedmo\Slug(fields={"title"}, unique=true, handlers={
      *      @Gedmo\SlugHandler(class="Gedmo\Sluggable\Handler\TreeSlugHandler", options={
@@ -58,38 +60,47 @@ class CollectionEntity implements Node, Sluggable
      * @var string
      */
     protected $slug;
+
     /**
      * @ORM\Column(type="text", nullable=true)
      *
      * @var string
      */
     protected $description;
+
     /**
      * @ORM\Column(type="string", nullable=true)
      *
      * @var string|null
      */
     protected $defaultTemplate;
+
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity", mappedBy="collection", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity", mappedBy="collection",
+     *     fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"position" = "ASC"})
      *
      * @var AbstractMediaEntity[]|ArrayCollection
      **/
     protected $media;
+
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity", mappedBy="collection", fetch="EXTRA_LAZY", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity", mappedBy="collection",
+     *     fetch="EXTRA_LAZY", cascade={"persist"})
      *
      * @var HookedObjectCollectionEntity[]|ArrayCollection
      */
     protected $hookedObjectCollections;
+
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity", mappedBy="collection", fetch="EAGER", orphanRemoval=true, cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity", mappedBy="collection",
+     *     fetch="EAGER", orphanRemoval=true, cascade={"persist"})
      * @ORM\OrderBy({"position"="ASC"})
      *
      * @var AbstractPermissionEntity[]|ArrayCollection
      */
     protected $permissions;
+
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
@@ -97,6 +108,7 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     protected $createdUserId;
+
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="update")
@@ -104,6 +116,7 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     protected $updatedUserId;
+
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
@@ -111,6 +124,7 @@ class CollectionEntity implements Node, Sluggable
      * @var \DateTime
      */
     protected $createdDate;
+
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
@@ -118,6 +132,7 @@ class CollectionEntity implements Node, Sluggable
      * @var \DateTime
      */
     protected $updatedDate;
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Version
@@ -125,6 +140,7 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $version;
+
     /**
      * @Gedmo\TreeLeft
      * @ORM\Column(name="lft", type="integer")
@@ -132,6 +148,7 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $lft;
+
     /**
      * @Gedmo\TreeLevel
      * @ORM\Column(name="lvl", type="integer")
@@ -139,6 +156,7 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $lvl;
+
     /**
      * @Gedmo\TreeRight
      * @ORM\Column(name="rgt", type="integer")
@@ -146,6 +164,7 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $rgt;
+
     /**
      * @Gedmo\TreeRoot
      * @ORM\Column(name="root", type="integer", nullable=true)
@@ -153,6 +172,7 @@ class CollectionEntity implements Node, Sluggable
      * @var int
      */
     private $root;
+
     /**
      * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="CollectionEntity", inversedBy="children")
@@ -161,6 +181,7 @@ class CollectionEntity implements Node, Sluggable
      * @var CollectionEntity|null
      */
     private $parent;
+
     /**
      * @ORM\OneToMany(targetEntity="CollectionEntity", mappedBy="parent")
      * @ORM\OrderBy({"lft" = "ASC"})
@@ -168,12 +189,14 @@ class CollectionEntity implements Node, Sluggable
      * @var CollectionEntity[]|ArrayCollection
      */
     private $children;
+
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity")
      *
      * @var AbstractWatermarkEntity|null
      **/
     private $watermark;
+
     /**
      * Whether or not this is the virtual root collection.
      *
@@ -190,8 +213,11 @@ class CollectionEntity implements Node, Sluggable
         $this->permissions = new ArrayCollection();
     }
 
-    public function toArrayForJsTree(MediaTypeCollection $mediaTypeCollection, HookedObjectEntity $hookedObjectEntity = null, $includeChildren)
-    {
+    public function toArrayForJsTree(
+        MediaTypeCollection $mediaTypeCollection,
+        HookedObjectEntity $hookedObjectEntity = null,
+        $includeChildren
+    ) {
         $children = true;
         if ($includeChildren) {
             $children = [];
