@@ -16,17 +16,27 @@ class SecurityGraph extends Graph
         });
     }
 
-    public function getChildrenOfVertex(Vertex $vertex, $edgeType)
+    public function getChildrenOfVertex(Vertex $vertex)
     {
         $children = new VerticesMap();
         /** @var Directed $edge */
         foreach ($vertex->getEdgesOut() as $edge) {
-            if ($edge->getAttribute('edgeType') == $edgeType) {
-                $end = $edge->getVertexEnd();
-                $children = VerticesMap::factory($children->getMap() + [$end] + $this->getChildrenOfVertex($end, $edgeType)->getMap());
-            }
+            $end = $edge->getVertexEnd();
+            $children = VerticesMap::factory($children->getMap() + [$end] + $this->getChildrenOfVertex($end)->getMap());
         }
 
         return VerticesMap::factory($children);
+    }
+
+    public function getParentsOfVertex(Vertex $vertex)
+    {
+        $parents = new VerticesMap();
+        /** @var Directed $edge */
+        foreach ($vertex->getEdgesIn() as $edge) {
+            $start = $edge->getVertexStart();
+            $parents = VerticesMap::factory($parents->getMap() + [$start] + $this->getParentsOfVertex($start)->getMap());
+        }
+
+        return VerticesMap::factory($parents);
     }
 }

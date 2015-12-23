@@ -4,6 +4,7 @@ namespace Cmfcmf\Module\MediaModule\Entity\Collection;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\PasswordPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity;
@@ -28,7 +29,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CollectionEntity implements Node, Sluggable
 {
-    const TEMPORARY_UPLOAD_COLLECTION_ID = 1;
+    const TEMPORARY_UPLOAD_COLLECTION_ID = 2;
 
     /**
      * @ORM\Column(name="id", type="integer")
@@ -197,13 +198,6 @@ class CollectionEntity implements Node, Sluggable
      **/
     private $watermark;
 
-    /**
-     * Whether or not this is the virtual root collection.
-     *
-     * @var bool
-     */
-    private $virtualRoot;
-
     public function __construct()
     {
         $this->media = new ArrayCollection();
@@ -329,13 +323,6 @@ class CollectionEntity implements Node, Sluggable
             $child = $parent;
         }
 
-        if (!$this->virtualRoot) {
-            $breadcrumbs[] = [
-                'url' => $router->generate('cmfcmfmediamodule_collection_displayroot'),
-                'title' => 'Root collections'
-            ];
-        }
-
         $breadcrumbs = array_reverse($breadcrumbs, false);
 
         $breadcrumbs[] = [
@@ -344,6 +331,11 @@ class CollectionEntity implements Node, Sluggable
         ];
 
         return $breadcrumbs;
+    }
+
+    public function isRoot()
+    {
+        return $this->parent === null;
     }
 
     /**
@@ -598,24 +590,6 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return bool
-     */
-    public function isVirtualRoot()
-    {
-        return $this->virtualRoot;
-    }
-
-    /**
-     * @param bool $virtualRoot
-     *
-     * @return CollectionEntity
-     */
-    public function setVirtualRoot($virtualRoot)
-    {
-        $this->virtualRoot = $virtualRoot;
-    }
-
-    /**
      * @return string
      */
     public function getDefaultTemplate()
@@ -664,12 +638,12 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return ArrayCollection|PasswordPermissionEntity[]
+     * @return ArrayCollection|OwnerPermissionEntity[]
      */
-    public function getPasswordPermissions()
+    public function getOwnerPermissions()
     {
         return $this->permissions->filter(function (AbstractPermissionEntity $permission) {
-            return $permission instanceof PasswordPermissionEntity;
+            return $permission instanceof OwnerPermissionEntity;
         });
     }
 
@@ -699,9 +673,9 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @param PasswordPermissionEntity $permission
+     * @param OwnerPermissionEntity $permission
      */
-    public function addPasswordPermission(PasswordPermissionEntity $permission)
+    public function addOwnerPermission(OwnerPermissionEntity $permission)
     {
         $this->addPermission($permission);
     }
@@ -731,9 +705,9 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @param PasswordPermissionEntity $permission
+     * @param OwnerPermissionEntity $permission
      */
-    public function removePasswordPermission(PasswordPermissionEntity $permission)
+    public function removeOwnerPermission(OwnerPermissionEntity $permission)
     {
         $this->removePermission($permission);
     }

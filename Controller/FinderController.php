@@ -5,10 +5,10 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -102,9 +102,7 @@ class FinderController extends AbstractController
 
         $collectionResults = $qb
             ->where($qb->expr()->like('c.title', ':q'))
-            ->andWhere($qb->expr()->not($qb->expr()->eq('c.id', ':hiddenCollection')))
             ->setParameter('q', "%$q%")
-            ->setParameter('hiddenCollection', CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID)
             ->getQuery()
             ->execute()
         ;

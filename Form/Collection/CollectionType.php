@@ -20,7 +20,7 @@ class CollectionType extends AbstractType
      */
     private $templateCollection;
 
-    public function __construct(TemplateCollection $templateCollection, CollectionEntity $parent = null)
+    public function __construct(TemplateCollection $templateCollection, CollectionEntity $parent)
     {
         parent::__construct();
 
@@ -83,17 +83,15 @@ class CollectionType extends AbstractType
             ])
             ->add('parent', 'entity', [
                 'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
-                'required' => false,
+                'required' => true,
                 'label' => $this->__('Parent'),
                 'query_builder' => function (EntityRepository $er) use ($theCollection) {
                     $qb = $er->createQueryBuilder('c');
                     $qb
                         ->orderBy('c.root', 'ASC')
                         ->addOrderBy('c.lft', 'ASC')
-                        ->where($qb->expr()->not($qb->expr()->eq('c.id', ':uploadCollectionId')))
-                        ->setParameter('uploadCollectionId', CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID)
                     ;
-
+                    // @todo Permissions!!
                     if ($theCollection->getId() != null) {
                         // The collection is currently edited.
                         $qb
@@ -105,7 +103,6 @@ class CollectionType extends AbstractType
                     return $qb;
                 },
                 'data' => $this->parent,
-                'placeholder' => $this->__('[No parent]'),
                 'property' => 'indentedTitle',
             ])
             ->add('watermark', 'entity', [
@@ -118,19 +115,19 @@ class CollectionType extends AbstractType
                 'property' => 'title',
             ])
             ->add('userPermissions', 'collection', [
-                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Permission\UserPermissionType',
+                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\UserPermissionType',
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false
             ])
             ->add('groupPermissions', 'collection', [
-                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Permission\GroupPermissionType',
+                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\GroupPermissionType',
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false
             ])
-            ->add('passwordPermissions', 'collection', [
-                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Permission\PasswordPermissionType',
+            ->add('ownerPermissions', 'collection', [
+                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\OwnerPermissionType',
                 'allow_add' => true,
                 'allow_delete' => true,
                 'by_reference' => false

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmfcmf\Module\MediaModule\Entity\Permission;
+namespace Cmfcmf\Module\MediaModule\Entity\Collection\Permission;
 
 use Doctrine\ORM\Mapping as ORM;
 

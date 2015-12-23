@@ -14,20 +14,17 @@ class GroupCollectionPermission extends AbstractCollectionPermission
     public function getApplicablePermissionsExpression(QueryBuilder &$qb)
     {
         if (php_sapi_name() === 'cli') {
-            $groupIds = null;
+            return null;
         } else {
             $groupIds = explode(',', \UserUtil::getGroupListForUser());
         }
-
-        if ($groupIds === null) {
-            return $qb->expr()->eq(0, 1);
-        }
+        $groupIds[] = -1;
 
         $qb->leftJoin($this->getEntityClass(), 'gp', Expr\Join::WITH, 'p.id = gp.id');
 
         $or = $qb->expr()->orX();
         foreach ($groupIds as $c => $groupId) {
-            $or->add($this->whereInSimpleArray($qb, 'gp', "group$c", $groupId, 'groupIds'));
+            $or->add(self::whereInSimpleArray($qb, 'gp', "group$c", $groupId, 'groupIds'));
         }
 
         return $or;

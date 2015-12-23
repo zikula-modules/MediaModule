@@ -1,25 +1,28 @@
 <?php
 
-namespace Cmfcmf\Module\MediaModule\Entity\Permission;
+namespace Cmfcmf\Module\MediaModule\Entity\Collection\Permission;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Sortable\Sortable;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
  * @ORM\Table(name="cmfcmfmedia_permission")
- * @ORM\HasLifecycleCallbacks()
  *
  * @ORM\InheritanceType(value="SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr")
  * @ORM\DiscriminatorMap({
- *  "group"    = "GroupPermissionEntity",
- *  "user"     = "UserPermissionEntity",
- *  "password" = "PasswordPermissionEntity"
+ *  "group" = "GroupPermissionEntity",
+ *  "user"  = "UserPermissionEntity",
+ *  "owner" = "OwnerPermissionEntity"
  * })
  */
-abstract class AbstractPermissionEntity
+abstract class AbstractPermissionEntity implements Sortable
 {
     /**
      * @ORM\Column(type="integer")
@@ -40,6 +43,7 @@ abstract class AbstractPermissionEntity
 
     /**
      * @ORM\Column(type="integer")
+     * @Gedmo\SortablePosition()
      *
      * @var int
      */
@@ -47,6 +51,7 @@ abstract class AbstractPermissionEntity
 
     /**
      * @ORM\Column(type="string", length=511, nullable=true)
+     *
      * @Assert\Length(max="511")
      *
      * @var string
@@ -61,11 +66,25 @@ abstract class AbstractPermissionEntity
     protected $permissionLevels;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", inversedBy="permissions")
+     * @ORM\Column(type="boolean")
      *
-     * @var CollectionEntity
+     * @var bool
      */
-    protected $collection;
+    protected $appliedToSelf;
+
+    /**
+     * @ORM\Column(type="boolean")
+     *
+     * @var bool
+     */
+    protected $appliedToSubCollections;
+
+    /**
+     * @ORM\Column(type="boolean")
+     *
+     * @var bool
+     */
+    protected $goOn;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -90,12 +109,32 @@ abstract class AbstractPermissionEntity
      *
      * @var bool
      */
-    protected $goOn;
+    protected $locked;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", inversedBy="permissions")
+     *
+     * @var CollectionEntity
+     */
+    protected $collection;
+
+    /**
+     * @ORM\ManyToMany(
+     *     targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity",
+     *     inversedBy="permissions", fetch="EAGER", cascade={"persist"})
+     *
+     * @var AbstractPermissionRestrictionEntity[]|ArrayCollection
+     */
+    protected $restrictions;
 
     public function __construct()
     {
         $this->description = "";
         $this->goOn = false;
+        $this->appliedToSubCollections = true;
+        $this->appliedToSelf = true;
+        $this->restrictions = new ArrayCollection();
+        $this->locked = false;
     }
 
     /**
@@ -149,7 +188,7 @@ abstract class AbstractPermissionEntity
     /**
      * @param string $description
      *
-     * @return AbstractPermissionEntity
+     * @return $this
      */
     public function setDescription($description)
     {
@@ -169,7 +208,7 @@ abstract class AbstractPermissionEntity
     /**
      * @param string[] $permissionLevels
      *
-     * @return AbstractPermissionEntity
+     * @return $this
      */
     public function setPermissionLevels($permissionLevels)
     {
@@ -188,7 +227,7 @@ abstract class AbstractPermissionEntity
 
     /**
      * @param int $position
-     * @return AbstractPermissionEntity
+     * @return $this
      */
     public function setPosition($position)
     {
@@ -207,7 +246,7 @@ abstract class AbstractPermissionEntity
 
     /**
      * @param CollectionEntity $collection
-     * @return AbstractPermissionEntity
+     * @return $this
      */
     public function setCollection($collection)
     {
@@ -226,7 +265,7 @@ abstract class AbstractPermissionEntity
 
     /**
      * @param \DateTime|null $validAfter
-     * @return AbstractPermissionEntity
+     * @return $this
      */
     public function setValidAfter($validAfter)
     {
@@ -245,7 +284,7 @@ abstract class AbstractPermissionEntity
 
     /**
      * @param \DateTime|null $validUntil
-     * @return AbstractPermissionEntity
+     * @return $this
      */
     public function setValidUntil($validUntil)
     {
@@ -263,12 +302,58 @@ abstract class AbstractPermissionEntity
 
     /**
      * @param boolean $goOn
-     * @return AbstractPermissionEntity
+     * @return $this
      */
     public function setGoOn($goOn)
     {
         $this->goOn = $goOn;
 
         return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isAppliedToSelf()
+    {
+        return $this->appliedToSelf;
+    }
+
+    /**
+     * @param boolean $appliedToSelf
+     * @return $this
+     */
+    public function setAppliedToSelf($appliedToSelf)
+    {
+        $this->appliedToSelf = $appliedToSelf;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isAppliedToSubCollections()
+    {
+        return $this->appliedToSubCollections;
+    }
+
+    /**
+     * @param boolean $appliedToSubCollections
+     * @return $this
+     */
+    public function setAppliedToSubCollections($appliedToSubCollections)
+    {
+        $this->appliedToSubCollections = $appliedToSubCollections;
+
+        return $this;
+    }
+
+    /**
+     * @return Restriction\AbstractPermissionRestrictionEntity[]|ArrayCollection
+     */
+    public function getRestrictions()
+    {
+        return $this->restrictions;
     }
 }

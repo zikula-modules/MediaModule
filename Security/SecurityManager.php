@@ -3,10 +3,11 @@
 namespace Cmfcmf\Module\MediaModule\Security;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Expr;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\PermissionsModule\Api\PermissionApi;
 
@@ -97,36 +98,56 @@ class SecurityManager
 
     private function hasCollectionPermission(CollectionEntity $collection, $permLevel)
     {
+        $securityGraph = $this->getCollectionSecurityGraph();
         $collectionRepository = $this->em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
-
-        // @todo Check if it's the user's own collection.
 
         $qb = $this->em->createQueryBuilder();
         $qb->select('p')
-            ->from('CmfcmfMediaModule:Permission\AbstractPermissionEntity', 'p')
+            ->from('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity', 'p')
             ->leftJoin('p.collection', 'c')
             ->where(
+                // Get all permissions of the collection itself + all it's parent collections.
                 $qb->expr()->in(
                     'c.id',
+                    // Retrieve the ids of all parent collections + the collection itself.
                     $collectionRepository->getPathQueryBuilder($collection)->getDQL()
                 )
             )
             ->andWhere(
+                // Make sure the permission is valid already.
                 $qb->expr()->orX(
                     $qb->expr()->isNull('p.validAfter'),
                     $qb->expr()->lte('p.validAfter', ':now')
                 )
             )
             ->andWhere(
+                // Make sure the permission isn't invalid already.
                 $qb->expr()->orX(
                     $qb->expr()->isNull('p.validUntil'),
                     $qb->expr()->lt(':now', 'p.validUntil')
                 )
             )
+            ->andWhere(
+                // Make sure the permission applies.
+                $qb->expr()->orX(
+                    $qb->expr()->andX(
+                        // For permissions of the collection itself, the "appliesToSelf" flag must be set.
+                        $qb->expr()->eq('c.id', ':collectionId'),
+                        $qb->expr()->eq('p.appliedToSelf', true)
+                    ),
+                    $qb->expr()->andX(
+                        // For parent collections' permissions, the "appliedToSubCollections" flag must be set.
+                        $qb->expr()->neq('c.id', ':collectionId'),
+                        $qb->expr()->eq('p.appliedToSubCollections', true)
+                    )
+                )
+            )
             ->orderBy('p.position', 'ASC')
             ->setParameter('now', new \DateTime())
-            ->setMaxResults(1);
+            ->setParameter('collectionId', $collection->getId())
+        ;
 
+        // Now filter all permissions which actually belong to the current user.
         $or = $qb->expr()->orX();
         $collectionPermissions = $this->collectionPermissionContainer->getCollectionPermissions();
         foreach ($collectionPermissions as $collectionPermission) {
@@ -134,14 +155,38 @@ class SecurityManager
         }
         $qb->andWhere($or);
 
-        /** @var AbstractPermissionEntity $permission */
-        $permission = $qb->getQuery()->getSingleResult();
-        $securityGraph = $this->getCollectionSecurityGraph();
-        foreach ($permission->getPermissionLevels() as $permissionLevel) {
-            if ($securityGraph->getChildrenOfVertex($securityGraph->getVertex($permissionLevel), SecurityTree::EDGE_TYPE_INCLUDED_PERMISSIONS)->hasVertexId($permLevel)) {
-                return true;
+        /** @var AbstractPermissionEntity[] $permissionEntities */
+        $permissionEntities = $qb->getQuery()->execute();
+
+        //$wouldHaveAccess = false;
+        foreach ($permissionEntities as $permissionEntity) {
+            foreach ($permissionEntity->getPermissionLevels() as $permissionLevel) {
+                if ($securityGraph->getChildrenOfVertex($securityGraph->getVertex($permissionLevel))->hasVertexId($permLevel)) {
+                    // The permissionlevel is sufficient. Now check for permission restrictions.
+                    //$restrictionsOk = true;
+                    // @todo Implement these.
+                    //foreach ($permissionEntity->getRestrictions() as $restriction) {
+                    //    if (!$restriction->ok()) {
+                    //        $restrictionsOk = false;
+                    //        break;
+                    //    }
+                    //}
+                    //if ($restrictionsOk) {
+                        return true;
+                    //} else {
+                    //    $wouldHaveAccess = true;
+                    //}
+                }
+            }
+            // If we reach this point, no level of the currently inspected permission matched the required level.
+            if (!$permissionEntity->isGoOn()) {
+                break;
             }
         }
+
+        //if ($wouldHaveAccess) {
+        //    // Hey user, please enter your password!
+        //}
 
         return false;
     }

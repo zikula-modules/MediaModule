@@ -21,10 +21,11 @@
             var $collectionHolder;
 
             $(document).ready(function() {
+                // @todo this should be automated.
                 var permissionTypes = [
                     'user',
                     'group',
-                    'password'
+                    'owner'
                 ];
                 for (var i = 0; i < permissionTypes.length; i++) {
                     initializePermissionList($collectionHolder, permissionTypes[i]);
