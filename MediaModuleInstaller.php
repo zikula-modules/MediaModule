@@ -3,7 +3,9 @@
 namespace Cmfcmf\Module\MediaModule;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
+use Cmfcmf\Module\MediaModule\Security\SecurityTree;
 
 class MediaModuleInstaller extends \Zikula_AbstractInstaller
 {
@@ -13,10 +15,18 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
 
         $this->createLicenses();
 
+        $rootCollection = new CollectionEntity();
+        $rootCollection
+            ->setTitle($this->__('Root collection'))
+            ->setDescription('The very top of the collection tree.')
+        ;
+        $this->entityManager->persist($rootCollection);
+
         $temporaryUploadCollection = new CollectionEntity();
         $temporaryUploadCollection
-            ->setTitle($this->__('Temporary Upload Collection'))
+            ->setTitle($this->__('Temporary upload collection'))
             ->setDescription($this->__('This collection is needed as temporary storage for uploaded files. Do not edit or delete!'))
+            ->setParent($rootCollection)
         ;
         $this->entityManager->persist($temporaryUploadCollection);
 
@@ -24,8 +34,45 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         $exampleCollection
             ->setTitle($this->__('Example collection'))
             ->setDescription($this->__('Edit or delete this example collection'))
+            ->setParent($rootCollection)
         ;
         $this->entityManager->persist($exampleCollection);
+
+        $temporaryUploadCollectionPermission = new GroupPermissionEntity();
+        $temporaryUploadCollectionPermission->setCollection($temporaryUploadCollection)
+            ->setDescription($this->__('Disallow access to the temporary upload collection.'))
+            ->setAppliedToSelf(true)
+            ->setAppliedToSubCollections(true)
+            ->setGoOn(false)
+            ->setPermissionLevels([SecurityTree::PERM_LEVEL_NONE])
+            ->setPosition(1)
+            ->setGroupIds([-1])
+        ;
+        $this->entityManager->persist($temporaryUploadCollectionPermission);
+
+        $adminPermission = new GroupPermissionEntity();
+        $adminPermission->setCollection($rootCollection)
+            ->setDescription($this->__('Global admin permission'))
+            ->setAppliedToSelf(true)
+            ->setAppliedToSubCollections(true)
+            ->setGoOn(false)
+            ->setPermissionLevels([SecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS])
+            ->setPosition(2)
+            ->setGroupIds([2])
+        ;
+        $this->entityManager->persist($adminPermission);
+
+        $userPermission = new GroupPermissionEntity();
+        $userPermission->setCollection($rootCollection)
+            ->setDescription($this->__('Allow view and download for everyone.'))
+            ->setAppliedToSelf(true)
+            ->setAppliedToSubCollections(true)
+            ->setGoOn(false)
+            ->setPermissionLevels([SecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM])
+            ->setPosition(3)
+            ->setGroupIds([-1])
+        ;
+        $this->entityManager->persist($userPermission);
 
         $this->entityManager->flush();
 
@@ -65,10 +112,13 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             case '1.0.4':
             case '1.0.5':
                 \DoctrineHelper::createSchema($this->entityManager, [
-                    'Cmfcmf\Module\MediaModule\Entity\Permission\AbstractPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Permission\GroupPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Permission\UserPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Permission\PasswordPermissionEntity'
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity',
+
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\PasswordPermissionRestrictionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity',
                 ]);
                 \DoctrineHelper::updateSchema($this->entityManager, [
                     'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity'
@@ -99,7 +149,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         $mediaPrefix = $prefix . 'Media\\';
         $watermarkPrefix = $prefix . 'Watermark\\';
         $hookObjectPrefix = $prefix . 'HookedObject\\';
-        $permissionPrefix = $prefix . 'Permission\\';
+        $permissionPrefix = $prefix . 'Collection\\Permission\\';
 
         return [
             $hookObjectPrefix . 'HookedObjectEntity',
@@ -113,7 +163,10 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             $permissionPrefix . 'AbstractPermissionEntity',
             $permissionPrefix . 'UserPermissionEntity',
             $permissionPrefix . 'GroupPermissionEntity',
-            $permissionPrefix . 'PasswordPermissionEntity',
+            $permissionPrefix . 'OwnerPermissionEntity',
+
+            $permissionPrefix . 'Restriction\AbstractRestrictionEntity',
+            $permissionPrefix . 'Restriction\PasswordPermissionRestrictionEntity',
 
             $mediaPrefix . 'AbstractMediaEntity',
             $mediaPrefix . 'AbstractFileEntity',

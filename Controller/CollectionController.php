@@ -34,9 +34,9 @@ class CollectionController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(Request $request, CollectionEntity $parent = null)
+    public function newAction(Request $request, CollectionEntity $parent)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'new')) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($parent, SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
             throw new AccessDeniedException();
         }
 
@@ -47,6 +47,9 @@ class CollectionController extends AbstractController
 
         if ($form->isValid()) {
             if ($this->hookValidates('collection', 'validate_edit')) {
+                if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity->getParent(), SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
+                    throw new AccessDeniedException($this->__('You don\'t have permission to add a sub-collection to the selected parent collection.'));
+                }
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($entity);
                 $em->flush();
@@ -79,9 +82,7 @@ class CollectionController extends AbstractController
      */
     public function editAction(Request $request, CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity,
-            SecurityTree::PERM_LEVEL_EDIT_COLLECTION)
-        ) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_EDIT_COLLECTION)) {
             throw new AccessDeniedException();
         }
 
@@ -128,16 +129,13 @@ class CollectionController extends AbstractController
      * @Route("/download/{slug}.zip", requirements={"slug"=".+"})
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
-     * @param Request          $request
      * @param CollectionEntity $entity
      *
      * @return array
      */
     public function downloadAction(CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity,
-            SecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)
-        ) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)) {
             throw new AccessDeniedException();
         }
 
@@ -197,9 +195,7 @@ class CollectionController extends AbstractController
         $repository = $this->getDoctrine()->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
         $entity = $repository->find($id);
 
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity,
-            SecurityTree::PERM_LEVEL_EDIT_COLLECTION)
-        ) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_EDIT_COLLECTION)) {
             throw new AccessDeniedException();
         }
 
@@ -224,31 +220,23 @@ class CollectionController extends AbstractController
      * @Method("GET")
      * @Template()
      *
-     * @param Request $request
-     *
      * @return array
      */
-    public function displayRootAction(Request $request)
+    public function displayRootAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $rootCollections = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNodes();
-        $rootCollections = array_filter($rootCollections, function (CollectionEntity $entity) {
-            return $entity->getId() != CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID;
-        });
+        /** @var CollectionEntity $rootCollection */
+        $rootCollection = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNodes()[0];
 
-        // Build fake root entity.
-        $entity = new CollectionEntity();
-        $entity
-            ->setTitle($this->__('Root collections'))
-            ->setChildren($rootCollections)
-            ->setVirtualRoot(true)
-        ;
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($rootCollection, SecurityTree::PERM_LEVEL_OVERVIEW)) {
+            throw new AccessDeniedException();
+        }
 
-        return $this->displayAction($request, $entity);
+        return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $rootCollection->getSlug()]);
     }
 
     /**
-     * @Route("/show/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
+     * @Route("/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
      * @Method("GET")
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template()
@@ -260,18 +248,17 @@ class CollectionController extends AbstractController
      */
     public function displayAction(Request $request, CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity !== null ? $entity : 'collection',
-            'display')
-        ) {
-            throw new AccessDeniedException();
-        }
-        if ($entity->getId() == CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
-            throw new NotFoundHttpException();
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_OVERVIEW)) {
+                throw new AccessDeniedException();
         }
 
-        $template = $request->query->get('template',
-            $entity->getDefaultTemplate() != null ? $entity->getDefaultTemplate() : \ModUtil::getVar('CmfcmfMediaModule',
-                'defaultCollectionTemplate'));
+        if ($entity->getDefaultTemplate() != null) {
+            $defaultTemplate = $entity->getDefaultTemplate();
+        } else {
+            $defaultTemplate = \ModUtil::getVar('CmfcmfMediaModule', 'defaultCollectionTemplate');
+        }
+
+        $template = $request->query->get('template', $defaultTemplate);
         $collectionTemplateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
         if (!$collectionTemplateCollection->hasTemplate($template)) {
             throw new NotFoundHttpException();
@@ -282,11 +269,7 @@ class CollectionController extends AbstractController
             'breadcrumbs' => $entity->getBreadcrumbs($this->get('router'))
         ];
 
-        if ($entity->isVirtualRoot()) {
-            $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_displayroot');
-        } else {
-            $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
-        }
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
         $templateVars['hook'] = $this->getDisplayHookContent(
             'collection',
             'display_view',
@@ -313,6 +296,10 @@ class CollectionController extends AbstractController
      */
     public function displayByIdAction(CollectionEntity $entity)
     {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_OVERVIEW)) {
+            throw new AccessDeniedException();
+        }
+
         return $this->redirectToRoute(
             'cmfcmfmediamodule_collection_display',
             ['slug' => $entity->getSlug()]

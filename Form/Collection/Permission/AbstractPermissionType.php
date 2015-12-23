@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmfcmf\Module\MediaModule\Form\Permission;
+namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

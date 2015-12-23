@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmfcmf\Module\MediaModule\Form\Permission;
+namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
 use Symfony\Component\Form\FormBuilderInterface;
 use Zikula\GroupsModule\Entity\GroupEntity;

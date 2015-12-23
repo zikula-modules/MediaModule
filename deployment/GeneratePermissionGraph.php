@@ -15,13 +15,8 @@ foreach ($graph->getVertices() as $vertex) {
 }
 
 foreach ($graph->getEdges() as $edge) {
-    if ($edge->getAttribute('edgeType') == SecurityTree::EDGE_TYPE_INCLUDED_PERMISSIONS) {
-        $edge->setAttribute('graphviz.label',  '<includes>');
-        $edge->setAttribute('graphviz.color',  'blue');
-    } else if ($edge->getAttribute('edgeType') == SecurityTree::EDGE_TYPE_PERMISSIONS_IF_DEFINED_IN_PARENT) {
-        $edge->setAttribute('graphviz.label',  "<substitutes if\ndefined in parent>");
-        $edge->setAttribute('graphviz.color',  'green');
-    }
+    $edge->setAttribute('graphviz.label',  '<includes>');
+    $edge->setAttribute('graphviz.color',  'blue');
 }
 
 $graphviz = new \Graphp\GraphViz\GraphViz();
