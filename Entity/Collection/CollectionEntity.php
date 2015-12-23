@@ -95,7 +95,7 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity", mappedBy="collection",
-     *     fetch="EAGER", orphanRemoval=true, cascade={"persist"})
+     *     fetch="LAZY", orphanRemoval=true, cascade={"persist"})
      * @ORM\OrderBy({"position"="ASC"})
      *
      * @var AbstractPermissionEntity[]|ArrayCollection

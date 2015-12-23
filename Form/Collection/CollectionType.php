@@ -5,6 +5,8 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection;
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Cmfcmf\Module\MediaModule\Security\SecurityTree;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -20,12 +22,18 @@ class CollectionType extends AbstractType
      */
     private $templateCollection;
 
-    public function __construct(TemplateCollection $templateCollection, CollectionEntity $parent)
+    /**
+     * @var SecurityManager
+     */
+    private $securityManager;
+
+    public function __construct(TemplateCollection $templateCollection, CollectionEntity $parent, SecurityManager $securityManager)
     {
         parent::__construct();
 
         $this->parent = $parent;
         $this->templateCollection = $templateCollection;
+        $this->securityManager = $securityManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -67,6 +75,8 @@ class CollectionType extends AbstractType
         //        ])
         //    ;
         //}
+        $securityManager = $this->securityManager;
+
         $builder
             ->add('description', 'textarea', [
                 'label' => $this->__('Description'),
@@ -85,8 +95,10 @@ class CollectionType extends AbstractType
                 'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
                 'required' => true,
                 'label' => $this->__('Parent'),
-                'query_builder' => function (EntityRepository $er) use ($theCollection) {
-                    $qb = $er->createQueryBuilder('c');
+                'query_builder' => function (EntityRepository $er) use ($theCollection, $securityManager) {
+                    $qb = $securityManager->getVisibleCollectionsQueryBuilder(
+                        $theCollection->getId() != null ? SecurityTree::PERM_LEVEL_EDIT_COLLECTION : SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
+                    );
                     $qb
                         ->orderBy('c.root', 'ASC')
                         ->addOrderBy('c.lft', 'ASC')
