@@ -43,18 +43,20 @@
     {% if showChildCollections %}
         <div class="row" id="cmfcmfmedia-collection-sortable-container">
             {% for child in collection.children %}
-                {% set hasParentOrChildCollection = true %}
-                {% set buttons = [{url: path('cmfcmfmediamodule_collection_display', {slug: child.slug}), text: __('View collection')}] %}
-                {% set thumbnail = false %}
-                {% set supportText = '' %}
-                {% if child.mediaForThumbnail is not null %}
-                    {% set thumbnail = mediaTypeCollection.mediaTypeFromEntity(child.mediaForThumbnail).thumbnail(child.mediaForThumbnail, 200, 150, 'url') %}
-                    {% if child.mediaForThumbnail.attribution is not empty %}
-                        {% set supportText = __('Cover') ~ ' ' ~ child.mediaForThumbnail.attribution %}
+                {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_OVERVIEW')) %}
+                    {% set hasParentOrChildCollection = true %}
+                    {% set buttons = [{url: path('cmfcmfmediamodule_collection_display', {slug: child.slug}), text: __('View collection')}] %}
+                    {% set thumbnail = false %}
+                    {% set supportText = '' %}
+                    {% if child.mediaForThumbnail is not null %}
+                        {% set thumbnail = mediaTypeCollection.mediaTypeFromEntity(child.mediaForThumbnail).thumbnail(child.mediaForThumbnail, 200, 150, 'url') %}
+                        {% if child.mediaForThumbnail.attribution is not empty %}
+                            {% set supportText = __('Cover') ~ ' ' ~ child.mediaForThumbnail.attribution %}
+                        {% endif %}
                     {% endif %}
+                    {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
+                    {{ macro.box(child.title, supportText, buttons, thumbnail, child.id, 'fa-list', false) }}
                 {% endif %}
-                {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
-                {{ macro.box(child.title, supportText, buttons, thumbnail, child.id, 'fa-list', false) }}
             {% endfor %}
         </div>
     {% endif %}

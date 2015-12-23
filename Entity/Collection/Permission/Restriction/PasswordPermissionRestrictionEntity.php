@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmfcmf\Module\MediaModule\Entity\Permission;
+namespace Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * This allows to set a password.
  */
-class PasswordPermissionEntity extends AbstractPermissionEntity
+class PasswordPermissionRestrictionEntity extends AbstractPermissionRestrictionEntity
 {
     /**
      * @ORM\Column(type="string", length=255)
@@ -20,13 +20,6 @@ class PasswordPermissionEntity extends AbstractPermissionEntity
      * @var string
      */
     protected $password;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->password = "";
-    }
 
     /**
      * @return string
@@ -39,7 +32,7 @@ class PasswordPermissionEntity extends AbstractPermissionEntity
     /**
      * @param string $password
      *
-     * @return PasswordPermissionEntity
+     * @return $this
      */
     public function setPassword($password)
     {

@@ -15,7 +15,7 @@ class UserCollectionPermission extends AbstractCollectionPermission
     public function getApplicablePermissionsExpression(QueryBuilder &$qb)
     {
         if (php_sapi_name() === 'cli') {
-            $userId = null;
+            return null;
         } else {
             if (\UserUtil::isLoggedIn()) {
                 $userId = (int)\UserUtil::getVar('uid');
@@ -24,13 +24,9 @@ class UserCollectionPermission extends AbstractCollectionPermission
             }
         }
 
-        if ($userId === null) {
-            return $qb->expr()->eq(0, 1);
-        }
-
         $qb->leftJoin($this->getEntityClass(), 'up', Expr\Join::WITH, 'p.id = up.id');
 
-        return $this->whereInSimpleArray($qb, 'up', 'user', $userId, 'userIds');
+        return self::whereInSimpleArray($qb, 'up', 'user', $userId, 'userIds');
     }
 
 }

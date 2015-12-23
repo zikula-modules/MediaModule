@@ -10,7 +10,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
 {
     public function getFormClass()
     {
-        return 'Cmfcmf\Module\MediaModule\Form\Permission\\' . $this->getType() . 'PermissionType';
+        return 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\\' . $this->getType() . 'PermissionType';
     }
 
     protected function getType()
@@ -22,7 +22,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
 
     public function getEntityClass()
     {
-        return 'Cmfcmf\Module\MediaModule\Entity\Permission\\' . $this->getType() . 'PermissionEntity';
+        return 'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\\' . $this->getType() . 'PermissionEntity';
     }
 
     /**
@@ -33,7 +33,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
      * @param              $field
      * @return \Doctrine\ORM\Query\Expr\Composite
      */
-    protected function whereInSimpleArray(QueryBuilder &$qb, $entity, $type, $value, $field)
+    public static function whereInSimpleArray(QueryBuilder &$qb, $entity, $type, $value, $field)
     {
         $qb->setParameter($type . '1', $value);
         $qb->setParameter($type . '2', "%," . $value);

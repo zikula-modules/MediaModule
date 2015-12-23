@@ -20,7 +20,7 @@ interface CollectionPermissionInterface
 
     /**
      * @param QueryBuilder &$qb
-     * @return Expr
+     * @return Expr|null
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb);
 
