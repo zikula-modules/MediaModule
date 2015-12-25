@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Sortable\Sortable;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity()
@@ -60,6 +61,8 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @ORM\Column(type="simple_array", name="permissionLevel")
+     *
+     * @Assert\Count(min=1, minMessage="You need to grant at least one permission level.")
      *
      * @var string[]
      */
@@ -135,6 +138,24 @@ abstract class AbstractPermissionEntity implements Sortable
         $this->appliedToSelf = true;
         $this->restrictions = new ArrayCollection();
         $this->locked = false;
+    }
+
+    /**
+     * @Assert\Callback
+     * @param ExecutionContextInterface $context
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        if (!$this->appliedToSelf && !$this->appliedToSubCollections) {
+            $context->buildViolation('The permissions must apply to either itself, it\'s sub-collections or both.')
+                ->atPath('appliedToSelf')
+                ->addViolation()
+            ;
+            $context->buildViolation('The permissions must apply to either itself, it\'s sub-collections or both.')
+                ->atPath('appliedToSubCollections')
+                ->addViolation()
+            ;
+        }
     }
 
     /**
@@ -355,5 +376,24 @@ abstract class AbstractPermissionEntity implements Sortable
     public function getRestrictions()
     {
         return $this->restrictions;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isLocked()
+    {
+        return $this->locked;
+    }
+
+    /**
+     * @param boolean $locked
+     * @return AbstractPermissionEntity
+     */
+    public function setLocked($locked)
+    {
+        $this->locked = $locked;
+
+        return $this;
     }
 }

@@ -2,12 +2,21 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
-use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 
 interface CollectionPermissionInterface
 {
+    /**
+     * @return string
+     */
+    public function getId();
+
+    /**
+     * @return string
+     */
+    public function getTitle();
+
     /**
      * @return string
      */
@@ -20,19 +29,8 @@ interface CollectionPermissionInterface
 
     /**
      * @param QueryBuilder &$qb
+     * @param              $permissionAlias
      * @return Expr|null
      */
-    public function getApplicablePermissionsExpression(QueryBuilder &$qb);
-
-    /**
-     * @param CollectionEntity $collection
-     * @return mixed
-     */
-    public function onNoPermission(CollectionEntity $collection);
-
-    /**
-     * @param CollectionEntity $collection
-     * @return mixed
-     */
-    public function acquirePermission(CollectionEntity $collection);
+    public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias);
 }

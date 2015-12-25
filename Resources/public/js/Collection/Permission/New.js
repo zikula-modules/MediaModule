@@ -3,21 +3,24 @@
     window.CmfcmfMediaModule.Permission = window.CmfcmfMediaModule.Permission || {};
 
     window.CmfcmfMediaModule.Permission.initLevels = function ($selector) {
-        $selector.find('.cmfcmfmedia-security-level').each(function () {
+        var $accessNoneBox = $selector.find('.cmfcmfmedia-security-level[data-vertex-id="none"]');
+        $selector.find('.cmfcmfmedia-security-level').not($accessNoneBox).each(function () {
             $(this).click(function () {
                 if ($(this).prop('checked')) {
+                    $accessNoneBox.prop('checked', false);
                     setRequiredLevels($(this), $selector);
                 } else {
                     enableRequiredLevels($(this), $selector);
                 }
             });
         });
-        $selector.find('#cmfcmfmedia-security-level-no-access').click(function () {
+        $accessNoneBox.click(function () {
             $selector.find('.cmfcmfmedia-security-level')
+                .not($accessNoneBox)
                 .prop('checked', false)
                 .attr('disabled', false);
-            $(this).prop('checked', false);
-        })
+        });
+        fixCheckboxes($selector);
     };
 
     function setRequiredLevels($level, $selector) {

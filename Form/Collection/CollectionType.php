@@ -96,7 +96,7 @@ class CollectionType extends AbstractType
                 'required' => true,
                 'label' => $this->__('Parent'),
                 'query_builder' => function (EntityRepository $er) use ($theCollection, $securityManager) {
-                    $qb = $securityManager->getVisibleCollectionsQueryBuilder(
+                    $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
                         $theCollection->getId() != null ? SecurityTree::PERM_LEVEL_EDIT_COLLECTION : SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
                     );
                     $qb
@@ -125,24 +125,6 @@ class CollectionType extends AbstractType
                     (isset($this->parent) ? $this->parent->getWatermark() : null),
                 'placeholder' => $this->__('No watermark'),
                 'property' => 'title',
-            ])
-            ->add('userPermissions', 'collection', [
-                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\UserPermissionType',
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false
-            ])
-            ->add('groupPermissions', 'collection', [
-                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\GroupPermissionType',
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false
-            ])
-            ->add('ownerPermissions', 'collection', [
-                'entry_type' => 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\OwnerPermissionType',
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false
             ])
         ;
     }

@@ -4,6 +4,7 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Security\SecurityTree;
 use Doctrine\ORM\QueryBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -26,6 +27,7 @@ class FinderController extends AbstractController
             throw new AccessDeniedException();
         }
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'display')) {
+            // @todo Use new permissions.
             throw new AccessDeniedException();
         }
 
@@ -39,6 +41,7 @@ class FinderController extends AbstractController
     public function popupChooseCollectionsAction()
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'display')) {
+            // @todo Use new permissions.
             throw new AccessDeniedException();
         }
 
@@ -55,6 +58,7 @@ class FinderController extends AbstractController
             throw new AccessDeniedException();
         }
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'display')) {
+            // @todo Use new permissions.
             throw new AccessDeniedException();
         }
 
@@ -76,6 +80,7 @@ class FinderController extends AbstractController
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'display')) {
             throw new AccessDeniedException();
         }
+        // @todo Use new permissions.
 
         $q = $request->query->get('q');
 
@@ -126,7 +131,8 @@ class FinderController extends AbstractController
      */
     public function getCollectionsAction($parentId, $hookedObjectId = null)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'view')) {
+        $securityManager = $this->get('cmfcmf_media_module.security_manager');
+        if (!$securityManager->hasPermission('collection', 'view')) {
             throw new AccessDeniedException();
         }
 
@@ -136,12 +142,19 @@ class FinderController extends AbstractController
         if ($parentId == '#') {
             $parentId = null;
         }
-        $hookedObjectEntity = null;
         if ($hookedObjectId != null) {
             $hookedObjectEntity = $em->find('CmfcmfMediaModule:HookedObject\HookedObjectEntity', $hookedObjectId);
+        } else {
+            $hookedObjectEntity = null;
         }
 
-        $collections = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->findVisibleByParentId($parentId);
+        $qb = $securityManager->getCollectionsWithAccessQueryBuilder(SecurityTree::PERM_LEVEL_OVERVIEW);
+        $collections = $qb
+            ->andWhere($qb->expr()->eq('c.parent', ':parentId'))
+            ->setParameter('parentId', $parentId)
+            ->getQuery()
+            ->execute()
+        ;
         $collections = array_map(function (CollectionEntity $collection) use ($mediaTypeCollection, $hookedObjectEntity) {
             return $collection->toArrayForJsTree($mediaTypeCollection, $hookedObjectEntity, true);
         }, $collections);

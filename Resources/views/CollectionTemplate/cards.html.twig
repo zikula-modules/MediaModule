@@ -51,7 +51,7 @@
                     {% if child.mediaForThumbnail is not null %}
                         {% set thumbnail = mediaTypeCollection.mediaTypeFromEntity(child.mediaForThumbnail).thumbnail(child.mediaForThumbnail, 200, 150, 'url') %}
                         {% if child.mediaForThumbnail.attribution is not empty %}
-                            {% set supportText = __('Cover') ~ ' ' ~ child.mediaForThumbnail.attribution %}
+                            {% set supportText = __('Cover') ~ ' ' ~ child.mediaForThumbnail.attribution ~ '<br>' %}
                         {% endif %}
                     {% endif %}
                     {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}

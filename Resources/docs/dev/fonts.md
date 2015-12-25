@@ -1,6 +1,6 @@
 # Providing other fonts for text-based watermarks
 
-If you feel the provided fonts don't fit your needs, you have two options to add other `*.ttf` fonts.
+If you feel like the provided fonts don't fit your needs, you have two options to add other `*.ttf` fonts.
 
 1. Add a custom font loader from within your bundle (preferred).
 2. Copy `*.ttf` files into the `Resources/fonts` folder (not preferred, as it's going to be overridden by the next 
