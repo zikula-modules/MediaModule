@@ -2,12 +2,27 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
-use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class AbstractCollectionPermission implements CollectionPermissionInterface
 {
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
+    public function getId()
+    {
+        return strtolower($this->getType());
+    }
+
     public function getFormClass()
     {
         return 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\\' . $this->getType() . 'PermissionType';
@@ -46,15 +61,5 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
             $qb->expr()->like("$entity.$field", ':' . $type . '3'),
             $qb->expr()->like("$entity.$field", ':' . $type . '4')
         );
-    }
-
-    public function onNoPermission(CollectionEntity $collection)
-    {
-        return false;
-    }
-
-    public function acquirePermission(CollectionEntity $collection)
-    {
-        return false;
     }
 }

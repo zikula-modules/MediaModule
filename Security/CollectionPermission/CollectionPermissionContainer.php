@@ -19,7 +19,20 @@ class CollectionPermissionContainer
      */
     public function addCollectionPermission(CollectionPermissionInterface $permission)
     {
-        $this->permissions[] = $permission;
+        $this->permissions[$permission->getId()] = $permission;
+    }
+
+    /**
+     * @param $id
+     * @return CollectionPermissionInterface
+     */
+    public function getCollectionPermission($id)
+    {
+        if (!isset($this->permissions[$id])) {
+            throw new \InvalidArgumentException();
+        }
+
+        return $this->permissions[$id];
     }
 
     /**

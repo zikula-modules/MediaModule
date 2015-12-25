@@ -6,6 +6,10 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class SecurityTree
 {
+    /**
+     * Make sure to also change the special handling of the no access checkbox in js/Collection/Permission/New.js
+     * if this constant is changed!
+     */
     const PERM_LEVEL_NONE = 'none';
 
     const PERM_LEVEL_OVERVIEW = 'overview';

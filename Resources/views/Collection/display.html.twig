@@ -13,32 +13,57 @@
         </div>
     {% endif %}
 
-    {{ content|raw }}
-
-    {{ hook|raw }}
-
     <div class="row" style="margin-top: 20px;">
         <div class="col-xs-12">
-            {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS')) %}
-                <a href="{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}" class="btn btn-default">
+            {% set createCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS')) %}
+            {% set addMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_ADD_MEDIA')) %}
+
+            {% if createCollectionPermission and addMediaPermission %}
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-plus"></i> {{ __('Create') }} <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}">
+                                <i class="fa fa-folder-o"></i> {{ __('collection') }}
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('cmfcmfmediamodule_media_new', {parent: collection.slug}) }}">
+                                <i class="fa fa-picture-o"></i> {{ __('media') }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            {% elseif createCollectionPermission %}
+                <a href="{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
                     <i class="fa fa-plus"></i> {{ __('Create new collection') }}
                 </a>
-            {% endif %}
-            {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_ADD_MEDIA')) %}
-                <a href="{{ path('cmfcmfmediamodule_media_new', {parent: collection.slug}) }}" class="btn btn-default">
+            {% elseif addMediaPermission %}
+                <a href="{{ path('cmfcmfmediamodule_media_new', {parent: collection.slug}) }}" class="btn btn-default btn-sm">
                     <i class="fa fa-plus"></i> {{ __('Create new media') }}
                 </a>
             {% endif %}
             {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
-                <a href="{{ path('cmfcmfmediamodule_collection_edit', {slug: collection.slug}) }}" class="btn btn-default">
+                <a href="{{ path('cmfcmfmediamodule_collection_edit', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
                     <i class="fa fa-edit"></i> {{ __('Edit collection') }}
                 </a>
             {% endif %}
+            {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
+                <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
+                    <i class="fa fa-user-secret"></i> {{ __('View and change permissions') }}
+                </a>
+            {% endif %}
             {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION')) %}
-                <a href="{{ path('cmfcmfmediamodule_collection_download', {slug: collection.slug}) }}" class="btn btn-default">
+                <a href="{{ path('cmfcmfmediamodule_collection_download', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
                     <i class="fa fa-download"></i> {{ __('Download collection') }}
                 </a>
             {% endif %}
         </div>
     </div>
+
+    {{ content|raw }}
+
+    {{ hook|raw }}
 {% endblock %}

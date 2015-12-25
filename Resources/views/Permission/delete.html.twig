@@ -1,0 +1,63 @@
+{% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% block title %}
+    {{ __('Delete permission') }}
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="alert alert-danger">
+                {{ __('Do you really want to delete this permission?') }}
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>{{ __('Description') }}</th>
+                        <th>{{ __('Collection') }}</th>
+                        <th>{{ __('Permissionlevels') }}</th>
+                        <th>{{ __('Applied to self') }}</th>
+                        <th>{{ __('Applied to sub-collections') }}</th>
+                        <th>{{ __('Go on') }}</th>
+                        <th>{{ __('Validity') }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td title="{{ permission.description|e('html_attr') }}">{{ permission.description }}</td>
+                        <td>
+                            <strong>{{ permission.collection.title }}</strong>
+                        </td>
+                        <td>{{ permission.permissionLevels|join(', ') }}</td>
+                        <td>{{ permission.appliedToSelf ? __('yes') : __('no') }}</td>
+                        <td>{{ permission.appliedToSubCollections ? __('yes') : __('no') }}</td>
+                        <td>{{ permission.goOn ? __('yes') : __('no') }}</td>
+                        <td>
+                            {% if permission.validAfter is not null %}
+                                {{ permission.validAfter|date }}
+                            {% else %}
+                                {{ __('now') }}
+                            {% endif %}
+                            -
+                            {% if permission.validUntil is not null %}
+                                {{ permission.validUntil|date }}
+                            {% else %}
+                                {{ __('forever') }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-offset-2 col-sm-10 col-xs-12">
+                <form action="{{ path('cmfcmfmediamodule_permission_delete', {id: permission.id}) }}" method="post">
+                    <button type="submit" class="btn btn-danger">
+                        {{ __('Delete') }}
+                    </button>
+                    <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: permission.collection.slug}) }}" class="btn btn-default">
+                        {{ __('Cancel') }}
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

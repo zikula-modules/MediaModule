@@ -3,10 +3,6 @@
 namespace Cmfcmf\Module\MediaModule\Entity\Collection;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\PasswordPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
@@ -618,44 +614,6 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return ArrayCollection|UserPermissionEntity[]
-     */
-    public function getUserPermissions()
-    {
-        return $this->permissions->filter(function (AbstractPermissionEntity $permission) {
-            return $permission instanceof UserPermissionEntity;
-        });
-    }
-
-    /**
-     * @return ArrayCollection|GroupPermissionEntity[]
-     */
-    public function getGroupPermissions()
-    {
-        return $this->permissions->filter(function (AbstractPermissionEntity $permission) {
-            return $permission instanceof GroupPermissionEntity;
-        });
-    }
-
-    /**
-     * @return ArrayCollection|OwnerPermissionEntity[]
-     */
-    public function getOwnerPermissions()
-    {
-        return $this->permissions->filter(function (AbstractPermissionEntity $permission) {
-            return $permission instanceof OwnerPermissionEntity;
-        });
-    }
-
-    /**
-     * @param UserPermissionEntity $permission
-     */
-    public function addUserPermission(UserPermissionEntity $permission)
-    {
-        $this->addPermission($permission);
-    }
-
-    /**
      * @param AbstractPermissionEntity $permission
      */
     public function addPermission(AbstractPermissionEntity $permission)
@@ -665,50 +623,10 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @param GroupPermissionEntity $permission
-     */
-    public function addGroupPermission(GroupPermissionEntity $permission)
-    {
-        $this->addPermission($permission);
-    }
-
-    /**
-     * @param OwnerPermissionEntity $permission
-     */
-    public function addOwnerPermission(OwnerPermissionEntity $permission)
-    {
-        $this->addPermission($permission);
-    }
-
-    /**
-     * @param UserPermissionEntity $permission
-     */
-    public function removeUserPermission(UserPermissionEntity $permission)
-    {
-        $this->removePermission($permission);
-    }
-
-    /**
      * @param AbstractPermissionEntity $permission
      */
     public function removePermission(AbstractPermissionEntity $permission)
     {
         $this->permissions->removeElement($permission);
-    }
-
-    /**
-     * @param GroupPermissionEntity $permission
-     */
-    public function removeGroupPermission(GroupPermissionEntity $permission)
-    {
-        $this->removePermission($permission);
-    }
-
-    /**
-     * @param OwnerPermissionEntity $permission
-     */
-    public function removeOwnerPermission(OwnerPermissionEntity $permission)
-    {
-        $this->removePermission($permission);
     }
 }

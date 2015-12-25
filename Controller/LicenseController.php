@@ -5,13 +5,13 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Form\License\LicenseType;
 use Doctrine\ORM\OptimisticLockException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -33,13 +33,10 @@ class LicenseController extends AbstractController
         }
 
         $em = $this->getDoctrine()->getManager();
-
         /** @var LicenseEntity[] $entities */
         $entities = $em->getRepository('CmfcmfMediaModule:License\LicenseEntity')->findBy([], ['id' => 'ASC']);
 
-        return [
-            'entities' => $entities,
-        ];
+        return ['entities' => $entities];
     }
 
     /**
@@ -57,9 +54,7 @@ class LicenseController extends AbstractController
         }
 
         $entity = new LicenseEntity(null);
-        $form = new LicenseType(false);
-
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm(new LicenseType(false), $entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -67,12 +62,12 @@ class LicenseController extends AbstractController
             $em->persist($entity);
             $em->flush();
 
+            $this->addFlash('status', $this->__('License created!'));
+
             return $this->redirectToRoute('cmfcmfmediamodule_license_index');
         }
 
-        return [
-            'form' => $form->createView()
-        ];
+        return ['form' => $form->createView()];
     }
 
     /**
@@ -100,15 +95,15 @@ class LicenseController extends AbstractController
                 $em->merge($entity);
                 $em->flush();
 
+                $this->addFlash('status', $this->__('License edited!'));
+
                 return $this->redirectToRoute('cmfcmfmediamodule_license_index');
             } catch (OptimisticLockException $e) {
                 $form->addError(new FormError($this->__('Someone else edited the collection. Please either cancel editing or force reload the page.')));
             }
         }
 
-        return [
-            'form' => $form->createView()
-        ];
+        return ['form' => $form->createView()];
     }
 
     /**
