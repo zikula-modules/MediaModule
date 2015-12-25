@@ -385,7 +385,6 @@ class MediaController extends AbstractController
     {
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
-
         // @todo Fix this.
 
         try {

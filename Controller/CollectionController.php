@@ -256,7 +256,7 @@ class CollectionController extends AbstractController
     public function displayAction(Request $request, CollectionEntity $entity)
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_OVERVIEW)) {
-                throw new AccessDeniedException();
+            throw new AccessDeniedException();
         }
 
         if ($entity->getDefaultTemplate() != null) {
