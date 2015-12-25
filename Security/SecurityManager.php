@@ -175,7 +175,7 @@ class SecurityManager
         // This contains all permission levels which are sufficient to grant $requestedLevel access.
         // It will contain $requestedLevel itself and all other levels which require $requestedLevel.
         $sufficientLevels = array_keys(
-            $securityGraph->getParentsOfVertex($securityGraph->getVertex($requestedLevel))->getMap()
+            $securityGraph->getVerticesRequiring($securityGraph->getVertex($requestedLevel))->getMap()
         );
         $sufficientLevels[] = $requestedLevel;
 

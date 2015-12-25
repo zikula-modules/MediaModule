@@ -2,13 +2,20 @@
 
 namespace Cmfcmf\Module\MediaModule\Security;
 
+use Fhaculty\Graph\Edge\Base;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
+use Fhaculty\Graph\Set\Vertices;
 use Fhaculty\Graph\Set\VerticesMap;
 use Fhaculty\Graph\Vertex;
 
 class SecurityGraph extends Graph
 {
+    /**
+     * @param SecurityCategory $securityCategory
+     *
+     * @return Vertices
+     */
     public function getVerticesByCategory(SecurityCategory $securityCategory)
     {
         return $this->getVertices()->getVerticesMatch(function (Vertex $vertex) use ($securityCategory) {
@@ -16,25 +23,57 @@ class SecurityGraph extends Graph
         });
     }
 
-    public function getChildrenOfVertex(Vertex $vertex)
+    /**
+     * @param Vertex $vertex
+     *
+     * @return Vertices
+     */
+    public function getRequiredVertices(Vertex $vertex)
     {
         $children = new VerticesMap();
         /** @var Directed $edge */
         foreach ($vertex->getEdgesOut() as $edge) {
-            $end = $edge->getVertexEnd();
-            $children = VerticesMap::factory($children->getMap() + [$end] + $this->getChildrenOfVertex($end)->getMap());
+            if ($edge->getAttribute('edgeType') == SecurityTree::EDGE_TYPE_REQUIRES) {
+                $end = $edge->getVertexEnd();
+                $children = VerticesMap::factory(
+                    $children->getMap() + [$end] + $this->getRequiredVertices($end)->getMap()
+                );
+            }
         }
 
         return VerticesMap::factory($children);
     }
 
-    public function getParentsOfVertex(Vertex $vertex)
+    /**
+     * @param Vertex $vertex
+     *
+     * @return Vertices
+     */
+    public function getConflictedVertices(Vertex $vertex)
+    {
+        return Vertices::factory(array_map(function (Base $edge) use ($vertex) {
+            return $edge->getVertexToFrom($vertex);
+        }, $vertex->getEdgesOut()->getEdgesMatch(function (Base $edge) {
+            return $edge->getAttribute('edgeType') == SecurityTree::EDGE_TYPE_CONFLICTS;
+        })->getVector()));
+    }
+
+    /**
+     * @param Vertex $vertex
+     *
+     * @return Vertices
+     */
+    public function getVerticesRequiring(Vertex $vertex)
     {
         $parents = new VerticesMap();
         /** @var Directed $edge */
         foreach ($vertex->getEdgesIn() as $edge) {
-            $start = $edge->getVertexStart();
-            $parents = VerticesMap::factory($parents->getMap() + [$start] + $this->getParentsOfVertex($start)->getMap());
+            if ($edge->getAttribute('edgeType') == SecurityTree::EDGE_TYPE_REQUIRES) {
+                $start = $edge->getVertexStart();
+                $parents = VerticesMap::factory(
+                    $parents->getMap() + [$start] + $this->getVerticesRequiring($start)->getMap()
+                );
+            }
         }
 
         return VerticesMap::factory($parents);
