@@ -155,147 +155,177 @@ class SecurityManager
      *     4. has appliedToSelf = 1 and is associated to the collection itself.
      *          OR
      *        has appliedToSubCollections = 1 and is associated to a parent collection.
-     *     5. has a position which is lower or equal to the position of the first permission having goOn = 0
+     *     5. applies to the current user.
+     *     6. has a position which is lower or equal to the position of the first permission having goOn = 0
      *        which applies to the collection.
      */
     public function getCollectionsWithAccessQueryBuilder($requestedLevel)
     {
+        $now = new \DateTime();
         $securityGraph = $this->getCollectionSecurityGraph();
 
-        $now = new \DateTime();
-
+        // This contains all permission levels which are sufficient to grant $requestedLevel access.
+        // It will contain $requestedLevel itself and all other levels which require $requestedLevel.
         $sufficientLevels = array_keys($securityGraph->getParentsOfVertex($securityGraph->getVertex($requestedLevel))->getMap());
         $sufficientLevels[] = $requestedLevel;
 
-        // Get all the permissions which do apply.
-        $okPermissionsQB = $this->em->createQueryBuilder();
-        $okPermissionsQB->select($okPermissionsQB->expr()->min('p.position'))
+        //
+        // First query builder.
+        // This one is responsible for point 6 in the docblock.
+        // It returns the first permission which applies to a collection and has goOn = 0.
+        // The granted permission level WILL NOT be checked and can be lower than the requested level.
+        //
+        $firstPositionWithoutGoOnQB = $this->em->createQueryBuilder();
+        $firstPositionWithoutGoOnQB
+            ->select($firstPositionWithoutGoOnQB->expr()->min('p.position'))
             ->from('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity', 'p')
             ->leftJoin('p.collection', 'collectionOfPermission')
+        ;
+
+        // Filter the permissions, so that only the ones which belong to the current user are returned.
+        $currentUserOR = $firstPositionWithoutGoOnQB->expr()->orX();
+        $collectionPermissions = $this->collectionPermissionContainer->getCollectionPermissions();
+        foreach ($collectionPermissions as $collectionPermission) {
+            $currentUserOR->add($collectionPermission->getApplicablePermissionsExpression($firstPositionWithoutGoOnQB, 'p'));
+        }
+
+        $firstPositionWithoutGoOnQB
+            // 6.1. is associated to the collection itself or a parent collection.
             ->where(
             // Get all permissions of the collection itself + all it's parent collections.
-                $okPermissionsQB->expr()->in(
+                $firstPositionWithoutGoOnQB->expr()->in(
                     'collectionOfPermission.id',
                     // Retrieve the ids of all parent collections + the collection itself.
                     $this->getParentCollectionsQB('parentCollectionsOfcollectionOfPermission')->getDQL()
                 )
             )
+            // 6.2. is currently valid (validAfter <= now < validUntil)
             ->andWhere(
-            // Make sure the permission is valid already.
-                $okPermissionsQB->expr()->orX(
-                    $okPermissionsQB->expr()->isNull('p.validAfter'),
-                    $okPermissionsQB->expr()->lte('p.validAfter', ':now')
-                )
-            )
-            ->andWhere(
-            // Make sure the permission isn't invalid already.
-                $okPermissionsQB->expr()->orX(
-                    $okPermissionsQB->expr()->isNull('p.validUntil'),
-                    $okPermissionsQB->expr()->gt('p.validUntil', ':now')
-                )
-            )
-            ->andWhere(
-            // Make sure the permission applies.
-                $okPermissionsQB->expr()->orX(
-                    $okPermissionsQB->expr()->andX(
-                    // For permissions of the collection itself, the "appliesToSelf" flag must be set.
-                        $okPermissionsQB->expr()->eq('collectionOfPermission.id', 'c.id'),
-                        $okPermissionsQB->expr()->eq('p.appliedToSelf', true)
+                $firstPositionWithoutGoOnQB->expr()->andX(
+                    $firstPositionWithoutGoOnQB->expr()->orX(
+                        $firstPositionWithoutGoOnQB->expr()->isNull('p.validAfter'),
+                        $firstPositionWithoutGoOnQB->expr()->lte('p.validAfter', ':now')
                     ),
-                    $okPermissionsQB->expr()->andX(
-                    // For parent collections' permissions, the "appliedToSubCollections" flag must be set.
-                        $okPermissionsQB->expr()->neq('collectionOfPermission.id', 'c.id'),
-                        $okPermissionsQB->expr()->eq('p.appliedToSubCollections', true)
+                    $firstPositionWithoutGoOnQB->expr()->orX(
+                        $firstPositionWithoutGoOnQB->expr()->isNull('p.validUntil'),
+                        $firstPositionWithoutGoOnQB->expr()->gt('p.validUntil', ':now')
                     )
                 )
             )
-            ->andWhere($okPermissionsQB->expr()->eq('p.goOn', $okPermissionsQB->expr()->literal(false)))
-            ->orderBy('p.position', 'ASC')
             ->setParameter('now', $now)
+            // 6.3. has appliedToSelf = 1 and is associated to the collection itself.
+            //      OR
+            //    has appliedToSubCollections = 1 and is associated to a parent collection.
+            ->andWhere(
+            // Make sure the permission applies.
+                $firstPositionWithoutGoOnQB->expr()->orX(
+                    $firstPositionWithoutGoOnQB->expr()->andX(
+                    // For permissions of the collection itself, the "appliesToSelf" flag must be set.
+                        $firstPositionWithoutGoOnQB->expr()->eq('collectionOfPermission.id', 'c.id'),
+                        $firstPositionWithoutGoOnQB->expr()->eq('p.appliedToSelf', true)
+                    ),
+                    $firstPositionWithoutGoOnQB->expr()->andX(
+                    // For parent collections' permissions, the "appliedToSubCollections" flag must be set.
+                        $firstPositionWithoutGoOnQB->expr()->neq('collectionOfPermission.id', 'c.id'),
+                        $firstPositionWithoutGoOnQB->expr()->eq('p.appliedToSubCollections', true)
+                    )
+                )
+            )
+            // 6.4. applies to the current user.
+            ->andWhere($currentUserOR)
+            // 6.5. has goOn set to false.
+            ->andWhere($firstPositionWithoutGoOnQB->expr()->eq('p.goOn', 0))
         ;
-        // Filter the permissions, so that only the ones which belong to the current user are returned.
-        $or = $okPermissionsQB->expr()->orX();
-        $collectionPermissions = $this->collectionPermissionContainer->getCollectionPermissions();
-        foreach ($collectionPermissions as $collectionPermission) {
-            $or->add($collectionPermission->getApplicablePermissionsExpression($okPermissionsQB, 'p'));
-        }
-        $okPermissionsQB->andWhere($or);
 
-        // Get all the permissions which do apply.
-        $okPermissionsQB2 = $this->em->createQueryBuilder();
-        $okPermissionsQB2->select($okPermissionsQB2->expr()->min('p2.position'))
-            ->from('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity', 'p2')
-            ->leftJoin('p2.collection', 'collectionOfPermission2')
-            ->where(
-            // Get all permissions of the collection itself + all it's parent collections.
-                $okPermissionsQB2->expr()->in(
+        //
+        // Second query builder.
+        // This one is responsible for point 1 to 6 in the docblock.
+        // It returns all the permissions which apply to the current collection but with a position
+        // lower than the one returned from the first query builder.
+        //
+        $applicablePermissionsQB = $this->em->createQueryBuilder();
+        $applicablePermissionsQB
+            ->select('x')
+            ->from('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity', 'x')
+            ->leftJoin('x.collection', 'collectionOfPermission2')
+        ;
+
+        // Create an OR expression which contains all the permission levels which would grant access.
+        $permissionLevelsOR = $applicablePermissionsQB->expr()->orX();
+        foreach ($sufficientLevels as $level) {
+            $permissionLevelsOR->add($applicablePermissionsQB->expr()->eq  ('x.permissionLevels', $applicablePermissionsQB->expr()->literal($level)));
+            $permissionLevelsOR->add($applicablePermissionsQB->expr()->like('x.permissionLevels', $applicablePermissionsQB->expr()->literal('%,' . $level)));
+            $permissionLevelsOR->add($applicablePermissionsQB->expr()->like('x.permissionLevels', $applicablePermissionsQB->expr()->literal($level . ',%')));
+            $permissionLevelsOR->add($applicablePermissionsQB->expr()->like('x.permissionLevels', $applicablePermissionsQB->expr()->literal('%,' . $level . ',%')));
+        }
+        // Create an OR expression which contains all the possible user-ids, group-ids, ...
+        // which apply to the current user.
+        $collectionPermissions = $this->collectionPermissionContainer->getCollectionPermissions();
+        $currentUserOR = $applicablePermissionsQB->expr()->orX();
+        foreach ($collectionPermissions as $collectionPermission) {
+            $currentUserOR->add($collectionPermission->getApplicablePermissionsExpression($applicablePermissionsQB, 'x'));
+        }
+
+        $applicablePermissionsQB
+            // 1. is associated to the collection itself or a parent collection.
+            ->andWhere(
+                $applicablePermissionsQB->expr()->in(
                     'collectionOfPermission2.id',
                     // Retrieve the ids of all parent collections + the collection itself.
                     $this->getParentCollectionsQB('parentCollectionsOfcollectionOfPermission2')->getDQL()
                 )
             )
+            // 2. includes the required permission level or one of it's parent permission levels
+            ->andWhere($permissionLevelsOR)
+            // 3. is currently valid (validAfter <= now < validUntil)
             ->andWhere(
-            // Make sure the permission is valid already.
-                $okPermissionsQB2->expr()->orX(
-                    $okPermissionsQB2->expr()->isNull('p2.validAfter'),
-                    $okPermissionsQB2->expr()->lte('p2.validAfter', ':now')
-                )
-            )
-            ->andWhere(
-            // Make sure the permission isn't invalid already.
-                $okPermissionsQB2->expr()->orX(
-                    $okPermissionsQB2->expr()->isNull('p2.validUntil'),
-                    $okPermissionsQB2->expr()->gt('p2.validUntil', ':now')
-                )
-            )
-            ->andWhere(
-            // Make sure the permission applies.
-                $okPermissionsQB2->expr()->orX(
-                    $okPermissionsQB2->expr()->andX(
-                    // For permissions of the collection itself, the "appliesToSelf" flag must be set.
-                        $okPermissionsQB2->expr()->eq('collectionOfPermission2.id', 'c.id'),
-                        $okPermissionsQB2->expr()->eq('p2.appliedToSelf', true)
+                $applicablePermissionsQB->expr()->andX(
+                    $applicablePermissionsQB->expr()->orX(
+                        $applicablePermissionsQB->expr()->isNull('x.validAfter'),
+                        $applicablePermissionsQB->expr()->lte('x.validAfter', ':now')
                     ),
-                    $okPermissionsQB2->expr()->andX(
-                    // For parent collections' permissions, the "appliedToSubCollections" flag must be set.
-                        $okPermissionsQB2->expr()->neq('collectionOfPermission2.id', 'c.id'),
-                        $okPermissionsQB2->expr()->eq('p2.appliedToSubCollections', true)
+                    $applicablePermissionsQB->expr()->orX(
+                        $applicablePermissionsQB->expr()->isNull('x.validUntil'),
+                        $applicablePermissionsQB->expr()->gt('x.validUntil', ':now')
                     )
                 )
             )
-            ->orderBy('p2.position', 'ASC')
             ->setParameter('now', $now)
+            // 4. has appliedToSelf = 1 and is associated to the collection itself.
+            //      OR
+            //    has appliedToSubCollections = 1 and is associated to a parent collection.
+            ->andWhere(
+                $applicablePermissionsQB->expr()->orX(
+                    $applicablePermissionsQB->expr()->andX(
+                    // For permissions of the collection itself, the "appliesToSelf" flag must be set.
+                        $applicablePermissionsQB->expr()->eq('collectionOfPermission2.id', 'c.id'),
+                        $applicablePermissionsQB->expr()->eq('x.appliedToSelf', true)
+                    ),
+                    $applicablePermissionsQB->expr()->andX(
+                    // For parent collections' permissions, the "appliedToSubCollections" flag must be set.
+                        $applicablePermissionsQB->expr()->neq('collectionOfPermission2.id', 'c.id'),
+                        $applicablePermissionsQB->expr()->eq('x.appliedToSubCollections', true)
+                    )
+                )
+            )
+            // 5. applies to the current user.
+            ->andWhere($currentUserOR)
+            // 6. has a position which is lower or equal to the position of the first permission having goOn = 0
+            // which applies to the collection.
+            ->andWhere($applicablePermissionsQB->expr()->lte('x.position', '(' . $firstPositionWithoutGoOnQB->getDQL() . ')'))
         ;
-        // Filter the permissions, so that only the ones which belong to the current user are returned.
-        $or = $okPermissionsQB2->expr()->orX();
-        $collectionPermissions = $this->collectionPermissionContainer->getCollectionPermissions();
-        foreach ($collectionPermissions as $collectionPermission) {
-            $or->add($collectionPermission->getApplicablePermissionsExpression($okPermissionsQB2, 'p2'));
-        }
-        $okPermissionsQB2->andWhere($or);
 
-        $anotherQB = $this->em->createQueryBuilder();
-        $anotherQB->select('x')
-            ->from('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity', 'x')
-            ->where($anotherQB->expr()->gte('x.position', '(' . $okPermissionsQB2->getDQL() . ')'))
-            ->andWhere($anotherQB->expr()->lte('x.position', '(' . $okPermissionsQB->getDQL() . ')'))
-        ;
-
-        $or = $anotherQB->expr()->orX();
-        foreach ($sufficientLevels as $level) {
-            $or->add($anotherQB->expr()->eq  ('x.permissionLevels', $anotherQB->expr()->literal($level)));
-            $or->add($anotherQB->expr()->like('x.permissionLevels', $anotherQB->expr()->literal('%,' . $level)));
-            $or->add($anotherQB->expr()->like('x.permissionLevels', $anotherQB->expr()->literal($level . ',%')));
-            $or->add($anotherQB->expr()->like('x.permissionLevels', $anotherQB->expr()->literal('%,' . $level . ',%')));
-        }
-        $anotherQB->andWhere($or);
-
+        //
+        // Third query builder
+        // This one returns all collections where there exists at least one permission returned
+        // by the second query builder.
+        //
         $qb = $this->em->createQueryBuilder();
         $qb->select('c')
             ->from('CmfcmfMediaModule:Collection\CollectionEntity', 'c')
-            ->where($qb->expr()->exists($anotherQB->getDQL()))
+            ->where($qb->expr()->exists($applicablePermissionsQB->getDQL()))
         ;
-        $qb->setParameters($okPermissionsQB->getParameters());
+        $qb->setParameters($firstPositionWithoutGoOnQB->getParameters());
 
         return $qb;
     }
