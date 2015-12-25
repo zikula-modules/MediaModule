@@ -46,6 +46,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
      * @param              $type
      * @param              $value
      * @param              $field
+     *
      * @return \Doctrine\ORM\Query\Expr\Composite
      */
     public static function whereInSimpleArray(QueryBuilder &$qb, $entity, $type, $value, $field)

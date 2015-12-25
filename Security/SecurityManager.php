@@ -3,7 +3,6 @@
 namespace Cmfcmf\Module\MediaModule\Security;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -106,6 +105,7 @@ class SecurityManager
      * @param $component
      * @param $instance
      * @param $level
+     *
      * @return bool
      */
     public function hasPermissionRaw($component, $instance, $level)
@@ -118,6 +118,7 @@ class SecurityManager
      *
      * @param CollectionEntity $collection
      * @param                  $permLevel
+     *
      * @return bool
      */
     private function hasCollectionPermission(CollectionEntity $collection, $permLevel)
@@ -152,6 +153,7 @@ class SecurityManager
      * Return all collections which the current user has $permLevel access to.
      *
      * @param $requestedLevel
+     *
      * @return QueryBuilder
      *
      * Select all collections where there is at least on permission which
@@ -388,6 +390,7 @@ class SecurityManager
 
     /**
      * @param $alias
+     *
      * @return QueryBuilder
      */
     private function getParentCollectionsQB($alias)

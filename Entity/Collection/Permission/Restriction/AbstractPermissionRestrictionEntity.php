@@ -79,6 +79,7 @@ abstract class AbstractPermissionRestrictionEntity
 
     /**
      * @param int $id
+     *
      * @return AbstractPermissionRestrictionEntity
      */
     public function setId($id)
@@ -98,6 +99,7 @@ abstract class AbstractPermissionRestrictionEntity
 
     /**
      * @param int $version
+     *
      * @return AbstractPermissionRestrictionEntity
      */
     public function setVersion($version)
@@ -117,6 +119,7 @@ abstract class AbstractPermissionRestrictionEntity
 
     /**
      * @param string $title
+     *
      * @return AbstractPermissionRestrictionEntity
      */
     public function setTitle($title)
@@ -127,7 +130,7 @@ abstract class AbstractPermissionRestrictionEntity
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isShared()
     {
@@ -135,7 +138,8 @@ abstract class AbstractPermissionRestrictionEntity
     }
 
     /**
-     * @param boolean $shared
+     * @param bool $shared
+     *
      * @return AbstractPermissionRestrictionEntity
      */
     public function setShared($shared)
@@ -155,6 +159,7 @@ abstract class AbstractPermissionRestrictionEntity
 
     /**
      * @param AbstractPermissionEntity[]|ArrayCollection $permissions
+     *
      * @return AbstractPermissionRestrictionEntity
      */
     public function setPermissions($permissions)

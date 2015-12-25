@@ -24,6 +24,7 @@ class CollectionPermissionContainer
 
     /**
      * @param $id
+     *
      * @return CollectionPermissionInterface
      */
     public function getCollectionPermission($id)

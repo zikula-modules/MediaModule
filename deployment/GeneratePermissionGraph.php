@@ -15,8 +15,8 @@ foreach ($graph->getVertices() as $vertex) {
 }
 
 foreach ($graph->getEdges() as $edge) {
-    $edge->setAttribute('graphviz.label',  '<includes>');
-    $edge->setAttribute('graphviz.color',  'blue');
+    $edge->setAttribute('graphviz.label', '<includes>');
+    $edge->setAttribute('graphviz.color', 'blue');
 }
 
 $graphviz = new \Graphp\GraphViz\GraphViz();

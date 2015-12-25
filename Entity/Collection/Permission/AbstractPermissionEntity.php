@@ -142,6 +142,7 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @Assert\Callback
+     *
      * @param ExecutionContextInterface $context
      */
     public function validate(ExecutionContextInterface $context)
@@ -248,6 +249,7 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @param int $position
+     *
      * @return $this
      */
     public function setPosition($position)
@@ -267,6 +269,7 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @param CollectionEntity $collection
+     *
      * @return $this
      */
     public function setCollection($collection)
@@ -286,6 +289,7 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @param \DateTime|null $validAfter
+     *
      * @return $this
      */
     public function setValidAfter($validAfter)
@@ -305,16 +309,18 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @param \DateTime|null $validUntil
+     *
      * @return $this
      */
     public function setValidUntil($validUntil)
     {
         $this->validUntil = $validUntil;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isGoOn()
     {
@@ -322,7 +328,8 @@ abstract class AbstractPermissionEntity implements Sortable
     }
 
     /**
-     * @param boolean $goOn
+     * @param bool $goOn
+     *
      * @return $this
      */
     public function setGoOn($goOn)
@@ -333,7 +340,7 @@ abstract class AbstractPermissionEntity implements Sortable
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isAppliedToSelf()
     {
@@ -341,7 +348,8 @@ abstract class AbstractPermissionEntity implements Sortable
     }
 
     /**
-     * @param boolean $appliedToSelf
+     * @param bool $appliedToSelf
+     *
      * @return $this
      */
     public function setAppliedToSelf($appliedToSelf)
@@ -352,7 +360,7 @@ abstract class AbstractPermissionEntity implements Sortable
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isAppliedToSubCollections()
     {
@@ -360,7 +368,8 @@ abstract class AbstractPermissionEntity implements Sortable
     }
 
     /**
-     * @param boolean $appliedToSubCollections
+     * @param bool $appliedToSubCollections
+     *
      * @return $this
      */
     public function setAppliedToSubCollections($appliedToSubCollections)
@@ -379,7 +388,7 @@ abstract class AbstractPermissionEntity implements Sortable
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isLocked()
     {
@@ -387,7 +396,8 @@ abstract class AbstractPermissionEntity implements Sortable
     }
 
     /**
-     * @param boolean $locked
+     * @param bool $locked
+     *
      * @return AbstractPermissionEntity
      */
     public function setLocked($locked)
