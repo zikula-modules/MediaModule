@@ -54,8 +54,7 @@ class SecurityManager
         PermissionApi $permissionApi,
         EntityManagerInterface $em,
         CollectionPermissionContainer $collectionPermissionContainer
-    )
-    {
+    ) {
         $this->translator = $translator;
         $this->permissionApi = $permissionApi;
         $this->domain = 'cmfcmfmediamodule';
@@ -94,7 +93,11 @@ class SecurityManager
             $type = $objectOrType;
         }
 
-        return $this->permissionApi->hasPermission("CmfcmfMediaModule:$type:", "$id::", $this->levels[$action]);
+        return $this->permissionApi->hasPermission(
+            "CmfcmfMediaModule:$type:",
+            "$id::",
+            $this->levels[$action]
+        );
     }
 
     /**
@@ -136,7 +139,10 @@ class SecurityManager
     public function getCollectionSecurityGraph()
     {
         if (!$this->collectionSecurityGraph) {
-            $this->collectionSecurityGraph = SecurityTree::createGraph($this->translator, $this->domain);
+            $this->collectionSecurityGraph = SecurityTree::createGraph(
+                $this->translator,
+                $this->domain
+            );
         }
 
         return $this->collectionSecurityGraph;
@@ -156,8 +162,8 @@ class SecurityManager
      *          OR
      *        has appliedToSubCollections = 1 and is associated to a parent collection.
      *     5. applies to the current user.
-     *     6. has a position which is lower or equal to the position of the first permission having goOn = 0
-     *        which applies to the collection.
+     *     6. has a position which is lower or equal to the position of the first permission having
+     *        goOn = 0 which applies to the collection.
      */
     public function getCollectionsWithAccessQueryBuilder($requestedLevel)
     {
@@ -166,7 +172,9 @@ class SecurityManager
 
         // This contains all permission levels which are sufficient to grant $requestedLevel access.
         // It will contain $requestedLevel itself and all other levels which require $requestedLevel.
-        $sufficientLevels = array_keys($securityGraph->getParentsOfVertex($securityGraph->getVertex($requestedLevel))->getMap());
+        $sufficientLevels = array_keys(
+            $securityGraph->getParentsOfVertex($securityGraph->getVertex($requestedLevel))->getMap()
+        );
         $sufficientLevels[] = $requestedLevel;
 
         //
@@ -179,14 +187,18 @@ class SecurityManager
         $firstPositionWithoutGoOnQB
             ->select($firstPositionWithoutGoOnQB->expr()->min('p.position'))
             ->from('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity', 'p')
-            ->leftJoin('p.collection', 'collectionOfPermission')
-        ;
+            ->leftJoin('p.collection', 'collectionOfPermission');
 
         // Filter the permissions, so that only the ones which belong to the current user are returned.
         $currentUserOR = $firstPositionWithoutGoOnQB->expr()->orX();
         $collectionPermissions = $this->collectionPermissionContainer->getCollectionPermissions();
         foreach ($collectionPermissions as $collectionPermission) {
-            $currentUserOR->add($collectionPermission->getApplicablePermissionsExpression($firstPositionWithoutGoOnQB, 'p'));
+            $currentUserOR->add(
+                $collectionPermission->getApplicablePermissionsExpression(
+                    $firstPositionWithoutGoOnQB,
+                    'p'
+                )
+            );
         }
 
         $firstPositionWithoutGoOnQB
@@ -196,7 +208,9 @@ class SecurityManager
                 $firstPositionWithoutGoOnQB->expr()->in(
                     'collectionOfPermission.id',
                     // Retrieve the ids of all parent collections + the collection itself.
-                    $this->getParentCollectionsQB('parentCollectionsOfcollectionOfPermission')->getDQL()
+                    $this->getParentCollectionsQB(
+                        'parentCollectionsOfcollectionOfPermission'
+                    )->getDQL()
                 )
             )
             // 6.2. is currently valid (validAfter <= now < validUntil)
@@ -221,12 +235,18 @@ class SecurityManager
                 $firstPositionWithoutGoOnQB->expr()->orX(
                     $firstPositionWithoutGoOnQB->expr()->andX(
                     // For permissions of the collection itself, the "appliesToSelf" flag must be set.
-                        $firstPositionWithoutGoOnQB->expr()->eq('collectionOfPermission.id', 'c.id'),
+                        $firstPositionWithoutGoOnQB->expr()->eq(
+                            'collectionOfPermission.id',
+                            'c.id'
+                        ),
                         $firstPositionWithoutGoOnQB->expr()->eq('p.appliedToSelf', true)
                     ),
                     $firstPositionWithoutGoOnQB->expr()->andX(
                     // For parent collections' permissions, the "appliedToSubCollections" flag must be set.
-                        $firstPositionWithoutGoOnQB->expr()->neq('collectionOfPermission.id', 'c.id'),
+                        $firstPositionWithoutGoOnQB->expr()->neq(
+                            'collectionOfPermission.id',
+                            'c.id'
+                        ),
                         $firstPositionWithoutGoOnQB->expr()->eq('p.appliedToSubCollections', true)
                     )
                 )
@@ -234,8 +254,7 @@ class SecurityManager
             // 6.4. applies to the current user.
             ->andWhere($currentUserOR)
             // 6.5. has goOn set to false.
-            ->andWhere($firstPositionWithoutGoOnQB->expr()->eq('p.goOn', 0))
-        ;
+            ->andWhere($firstPositionWithoutGoOnQB->expr()->eq('p.goOn', 0));
 
         //
         // Second query builder.
@@ -247,23 +266,47 @@ class SecurityManager
         $applicablePermissionsQB
             ->select('x')
             ->from('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity', 'x')
-            ->leftJoin('x.collection', 'collectionOfPermission2')
-        ;
+            ->leftJoin('x.collection', 'collectionOfPermission2');
 
         // Create an OR expression which contains all the permission levels which would grant access.
         $permissionLevelsOR = $applicablePermissionsQB->expr()->orX();
         foreach ($sufficientLevels as $level) {
-            $permissionLevelsOR->add($applicablePermissionsQB->expr()->eq  ('x.permissionLevels', $applicablePermissionsQB->expr()->literal($level)));
-            $permissionLevelsOR->add($applicablePermissionsQB->expr()->like('x.permissionLevels', $applicablePermissionsQB->expr()->literal('%,' . $level)));
-            $permissionLevelsOR->add($applicablePermissionsQB->expr()->like('x.permissionLevels', $applicablePermissionsQB->expr()->literal($level . ',%')));
-            $permissionLevelsOR->add($applicablePermissionsQB->expr()->like('x.permissionLevels', $applicablePermissionsQB->expr()->literal('%,' . $level . ',%')));
+            $permissionLevelsOR->add(
+                $applicablePermissionsQB->expr()->eq(
+                    'x.permissionLevels',
+                    $applicablePermissionsQB->expr()->literal($level)
+                )
+            );
+            $permissionLevelsOR->add(
+                $applicablePermissionsQB->expr()->like(
+                    'x.permissionLevels',
+                    $applicablePermissionsQB->expr()->literal('%,' . $level)
+                )
+            );
+            $permissionLevelsOR->add(
+                $applicablePermissionsQB->expr()->like(
+                    'x.permissionLevels',
+                    $applicablePermissionsQB->expr()->literal($level . ',%')
+                )
+            );
+            $permissionLevelsOR->add(
+                $applicablePermissionsQB->expr()->like(
+                    'x.permissionLevels',
+                    $applicablePermissionsQB->expr()->literal('%,' . $level . ',%')
+                )
+            );
         }
         // Create an OR expression which contains all the possible user-ids, group-ids, ...
         // which apply to the current user.
         $collectionPermissions = $this->collectionPermissionContainer->getCollectionPermissions();
         $currentUserOR = $applicablePermissionsQB->expr()->orX();
         foreach ($collectionPermissions as $collectionPermission) {
-            $currentUserOR->add($collectionPermission->getApplicablePermissionsExpression($applicablePermissionsQB, 'x'));
+            $currentUserOR->add(
+                $collectionPermission->getApplicablePermissionsExpression(
+                    $applicablePermissionsQB,
+                    'x'
+                )
+            );
         }
 
         $applicablePermissionsQB
@@ -272,7 +315,9 @@ class SecurityManager
                 $applicablePermissionsQB->expr()->in(
                     'collectionOfPermission2.id',
                     // Retrieve the ids of all parent collections + the collection itself.
-                    $this->getParentCollectionsQB('parentCollectionsOfcollectionOfPermission2')->getDQL()
+                    $this->getParentCollectionsQB(
+                        'parentCollectionsOfcollectionOfPermission2'
+                    )->getDQL()
                 )
             )
             // 2. includes the required permission level or one of it's parent permission levels
@@ -312,8 +357,12 @@ class SecurityManager
             ->andWhere($currentUserOR)
             // 6. has a position which is lower or equal to the position of the first permission having goOn = 0
             // which applies to the collection.
-            ->andWhere($applicablePermissionsQB->expr()->lte('x.position', '(' . $firstPositionWithoutGoOnQB->getDQL() . ')'))
-        ;
+            ->andWhere(
+                $applicablePermissionsQB->expr()->lte(
+                    'x.position',
+                    '(' . $firstPositionWithoutGoOnQB->getDQL() . ')'
+                )
+            );
 
         //
         // Third query builder
@@ -323,8 +372,7 @@ class SecurityManager
         $qb = $this->em->createQueryBuilder();
         $qb->select('c')
             ->from('CmfcmfMediaModule:Collection\CollectionEntity', 'c')
-            ->where($qb->expr()->exists($applicablePermissionsQB->getDQL()))
-        ;
+            ->where($qb->expr()->exists($applicablePermissionsQB->getDQL()));
         $qb->setParameters($firstPositionWithoutGoOnQB->getParameters());
 
         return $qb;
@@ -339,6 +387,7 @@ class SecurityManager
     }
 
     /**
+     * @param $alias
      * @return QueryBuilder
      */
     private function getParentCollectionsQB($alias)
