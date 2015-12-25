@@ -36,5 +36,4 @@ class UserCollectionPermission extends AbstractCollectionPermission
 
         return self::whereInSimpleArray($qb, "{$permissionAlias}_up", 'user', $userId, 'userIds');
     }
-
 }

@@ -165,7 +165,7 @@ class SecurityTree
         $vertex->setGroup($categories['permission']->getId());
         $vertex->createEdgeTo($vertices[self::PERM_LEVEL_ADD_PERMISSIONS]);
         $vertices[self::PERM_LEVEL_CHANGE_PERMISSIONS] = $vertex;
-        
+
         return $graph;
     }
 

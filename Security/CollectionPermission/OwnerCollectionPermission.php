@@ -22,6 +22,7 @@ class OwnerCollectionPermission extends AbstractCollectionPermission
     /**
      * @param QueryBuilder $qb
      * @param              $permissionAlias
+     *
      * @return Expr\Comparison|null
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
