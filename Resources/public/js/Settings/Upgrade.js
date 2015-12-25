@@ -13,7 +13,7 @@
         $li.removeClass('text-muted').addClass('text-primary');
         $icon.addClass('fa-spin');
 
-        $.ajax(Routing.generate('cmfcmfmediamodule_settings_ajaxupgrade', {step: $li.data('step')}), {
+        $.ajax(Routing.generate('cmfcmfmediamodule_upgrade_ajax', {step: $li.data('step')}), {
             timeout: 60000
         })
             .fail(function () {

@@ -11,7 +11,15 @@ use Doctrine\ORM\QueryBuilder;
  */
 class GroupCollectionPermission extends AbstractCollectionPermission
 {
-    public function getApplicablePermissionsExpression(QueryBuilder &$qb)
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->translator->trans('Group', [], 'cmfcmfmediamodule');
+    }
+
+    public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
         if (php_sapi_name() === 'cli') {
             return null;
@@ -20,11 +28,11 @@ class GroupCollectionPermission extends AbstractCollectionPermission
         }
         $groupIds[] = -1;
 
-        $qb->leftJoin($this->getEntityClass(), 'gp', Expr\Join::WITH, 'p.id = gp.id');
+        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_gp", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_gp.id");
 
         $or = $qb->expr()->orX();
         foreach ($groupIds as $c => $groupId) {
-            $or->add(self::whereInSimpleArray($qb, 'gp', "group$c", $groupId, 'groupIds'));
+            $or->add(self::whereInSimpleArray($qb, "{$permissionAlias}_gp", "group$c", $groupId, 'groupIds'));
         }
 
         return $or;

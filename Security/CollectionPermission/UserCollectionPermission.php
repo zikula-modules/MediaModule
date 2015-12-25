@@ -12,7 +12,15 @@ use Zikula\PermissionsModule\Api\PermissionApi;
  */
 class UserCollectionPermission extends AbstractCollectionPermission
 {
-    public function getApplicablePermissionsExpression(QueryBuilder &$qb)
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->translator->trans('User', [], 'cmfcmfmediamodule');
+    }
+
+    public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
         if (php_sapi_name() === 'cli') {
             return null;
@@ -24,9 +32,9 @@ class UserCollectionPermission extends AbstractCollectionPermission
             }
         }
 
-        $qb->leftJoin($this->getEntityClass(), 'up', Expr\Join::WITH, 'p.id = up.id');
+        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_up", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_up.id");
 
-        return self::whereInSimpleArray($qb, 'up', 'user', $userId, 'userIds');
+        return self::whereInSimpleArray($qb, "{$permissionAlias}_up", 'user', $userId, 'userIds');
     }
 
 }

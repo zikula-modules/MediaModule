@@ -9,8 +9,6 @@ class GroupPermissionType extends AbstractPermissionType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        parent::buildForm($builder, $options);
-
         /** @var GroupEntity[]|false $groups */
         $groups = \ModUtil::apiFunc('ZikulaGroupsModule', 'user', 'getall');
         if ($groups === false) {
@@ -29,5 +27,7 @@ class GroupPermissionType extends AbstractPermissionType
             'multiple' => true,
             'choices' => $choices
         ]);
+
+        parent::buildForm($builder, $options);
     }
 }

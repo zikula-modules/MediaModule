@@ -41,12 +41,11 @@
 {%- endblock -%}
 
 {% block cmfcmfmediamodule_permission_level_widget %}
-    {{ pageAddAsset('javascript',  zasset('@CmfcmfMediaModule:js/PermissionLevel.js')) }}
+    {{ pageAddAsset('javascript',  zasset('@CmfcmfMediaModule:js/Collection/Permission/New.js')) }}
     <div class="table-responsive">
         <table class="table table-condensed table-striped">
             <thead>
             <tr>
-                <th class="text-center">{{ __('No access') }}</th>
                 {% for category in securityCategories %}
                     <th class="text-center">{{ category.title }}</th>
                 {% endfor %}
@@ -54,11 +53,6 @@
             </thead>
             <tbody>
             <tr>
-                <td>
-                    <label>
-                        <input type="checkbox" id="cmfcmfmedia-security-level-no-access"> {{ __('No access') }}
-                    </label>
-                </td>
                 {% for category in securityCategories %}
                     <td>
                         {% for vertex in securityGraph.verticesByCategory(category) %}

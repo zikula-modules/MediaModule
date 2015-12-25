@@ -47,13 +47,13 @@
                 </div>
             {% endif %}
             <div class="list-group">
-                {% if entity.downloadAllowed is defined and entity.downloadAllowed and cmfcmfmediamodule_hasPermission(entity, 'download') %}
+                {% if entity.downloadAllowed is defined and entity.downloadAllowed and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
                     <a href="{{ path('cmfcmfmediamodule_media_download', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item">
                         <i class="fa fa-fw fa-download"></i>
                         {{ __('Download') }}
                     </a>
                 {% endif %}
-                {% if cmfcmfmediamodule_hasPermission(entity.collection, 'display') %}
+                {% if cmfcmfmediamodule_hasPermission(entity.collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_OVERVIEW')) %}
                     <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: entity.collection.slug}) }}" class="list-group-item">
                         <i class="fa fa-fw fa-picture-o"></i>
                         {{ __('Back to the collection') }}
@@ -65,13 +65,13 @@
                         {{ __('Back to the list') }}
                     </a>
                 {% endif %}
-                {% if cmfcmfmediamodule_hasPermission(entity, 'edit') %}
+                {% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
                     <a href="{{ path('cmfcmfmediamodule_media_edit', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-warning">
                         <i class="fa fa-fw fa-edit"></i>
                         {{ __('Edit') }}
                     </a>
                 {% endif %}
-                {% if cmfcmfmediamodule_hasPermission(entity, 'delete') %}
+                {% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_DELETE_MEDIA')) %}
                     <a href="{{ path('cmfcmfmediamodule_media_delete', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-danger">
                         <i class="fa fa-fw fa-trash-o"></i>
                         {{ __('Delete') }}

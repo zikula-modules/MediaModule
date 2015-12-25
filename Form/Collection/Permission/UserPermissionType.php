@@ -8,8 +8,6 @@ class UserPermissionType extends AbstractPermissionType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        parent::buildForm($builder, $options);
-
         $users = \UserUtil::getAll();
         $choices = array_map(function ($user) {
             return $user['uname'];
@@ -20,5 +18,7 @@ class UserPermissionType extends AbstractPermissionType
             'multiple' => true,
             'choices' => $choices
         ]);
+
+        parent::buildForm($builder, $options);
     }
 }

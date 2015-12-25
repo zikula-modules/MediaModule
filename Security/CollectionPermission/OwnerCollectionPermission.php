@@ -11,7 +11,20 @@ use Doctrine\ORM\QueryBuilder;
  */
 class OwnerCollectionPermission extends AbstractCollectionPermission
 {
-    public function getApplicablePermissionsExpression(QueryBuilder &$qb)
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->translator->trans('Owner', [], 'cmfcmfmediamodule');
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param              $permissionAlias
+     * @return Expr\Comparison|null
+     */
+    public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
         if (php_sapi_name() === 'cli' || !\UserUtil::isLoggedIn()) {
             return null;
@@ -19,10 +32,9 @@ class OwnerCollectionPermission extends AbstractCollectionPermission
 
         $userId = (int)\UserUtil::getVar('uid');
 
-        $qb->leftJoin($this->getEntityClass(), 'op', Expr\Join::WITH, 'p.id = op.id');
+        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_op", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_op.id");
         $qb->setParameter('opUserId', $userId);
 
         return $qb->expr()->eq('c.createdUserId', ':opUserId');
     }
-
 }

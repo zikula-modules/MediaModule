@@ -10,14 +10,14 @@ use Cmfcmf\Module\MediaModule\Form\Watermark\ImageWatermarkType;
 use Cmfcmf\Module\MediaModule\Form\Watermark\TextWatermarkType;
 use Doctrine\ORM\OptimisticLockException;
 use Gedmo\Uploadable\Uploadable;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -38,17 +38,14 @@ class WatermarkController extends AbstractController
         }
 
         $em = $this->getDoctrine()->getManager();
-
         /** @var AbstractWatermarkEntity[] $entities */
         $entities = $em->getRepository('CmfcmfMediaModule:Watermark\\AbstractWatermarkEntity')->findAll();
 
-        return [
-            'entities' => $entities,
-        ];
+        return ['entities' => $entities];
     }
 
     /**
-     * @Route("/new/{type}")
+     * @Route("/new/{type}", requirements={"type"="image|text"})
      * @Template(template="CmfcmfMediaModule:Watermark:edit.html.twig")
      *
      * @param Request $request
@@ -61,10 +58,6 @@ class WatermarkController extends AbstractController
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('watermark', 'new')) {
             throw new AccessDeniedException();
         }
-
-        if (!in_array($type, ['image', 'text'])) {
-            throw new NotFoundHttpException();
-        }
         if ($type == 'image') {
             $entity = new ImageWatermarkEntity();
             $form = new ImageWatermarkType();
@@ -72,7 +65,7 @@ class WatermarkController extends AbstractController
             $entity = new TextWatermarkEntity();
             $form = new TextWatermarkType();
         } else {
-            throw new \LogicException();
+            throw new NotFoundHttpException();
         }
 
         $form = $this->createForm($form, $entity);
@@ -91,12 +84,12 @@ class WatermarkController extends AbstractController
             $em->persist($entity);
             $em->flush();
 
+            $this->addFlash('status', $this->__('Watermark created!'));
+
             return $this->redirectToRoute('cmfcmfmediamodule_watermark_index');
         }
 
-        return [
-            'form' => $form->createView()
-        ];
+        return ['form' => $form->createView()];
     }
 
     /**
@@ -159,13 +152,13 @@ class WatermarkController extends AbstractController
         $repository = $em->getRepository('CmfcmfMediaModule:Watermark\AbstractWatermarkEntity');
         $repository->cleanupThumbs($entity, $imagineManager);
 
+        $this->addFlash('status', $this->__('Watermark updated!'));
+
         return $this->redirectToRoute('cmfcmfmediamodule_watermark_index');
 
         edit_error:
 
-        return [
-            'form' => $form->createView()
-        ];
+        return ['form' => $form->createView()];
     }
 
     /**
