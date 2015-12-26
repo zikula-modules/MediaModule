@@ -205,16 +205,9 @@ class CollectionEntity implements Node, Sluggable
 
     public function toArrayForJsTree(
         MediaTypeCollection $mediaTypeCollection,
-        HookedObjectEntity $hookedObjectEntity = null,
-        $includeChildren
+        HookedObjectEntity $hookedObjectEntity = null
     ) {
         $children = true;
-        if ($includeChildren) {
-            $children = [];
-            foreach ($this->children as $child) {
-                $children[] = $child->toArrayForJsTree($mediaTypeCollection, $hookedObjectEntity, true);
-            }
-        }
 
         $isSelected = false;
         if ($hookedObjectEntity != null) {
@@ -233,6 +226,8 @@ class CollectionEntity implements Node, Sluggable
             'text' => $this->getTitle(),
             'icon' => 'fa fa-fw fa-picture-o',
             'state' => [
+                //'opened' => false, @todo If we set opened to false, already selected collections
+                // will not be shown unless the parent is opened.
                 'opened' => true,
                 'selected' => $isSelected
             ],

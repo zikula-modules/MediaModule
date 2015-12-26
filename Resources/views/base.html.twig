@@ -15,8 +15,11 @@
     {% endif %}
 {% endblock %}
 
-<h1>{% block title %}{% endblock %}</h1>
-{{ pageSetVar('title', block('title')) }}
+{% set title = block('title') %}
+{% if title|trim is not empty %}
+    <h1>{% block title %}{% endblock %}</h1>
+    {{ pageSetVar('title', title) }}
+{% endif %}
 
 {% if renderRaw is not defined or not renderRaw %}
     {{ showflashes() }}

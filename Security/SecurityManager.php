@@ -151,26 +151,43 @@ class SecurityManager
         return $this->collectionSecurityGraph;
     }
 
+    public function getCollectionsWithAccessQueryBuilder($requestedLevel)
+    {
+        return $this->getAccessQueryBuilder($requestedLevel, 'collections');
+    }
+
+    public function getMediaWithAccessQueryBuilder($requestedLevel)
+    {
+        return $this->getAccessQueryBuilder($requestedLevel, 'media');
+    }
+
     /**
      * Return all collections which the current user has $permLevel access to.
      *
-     * @param $requestedLevel
+     * @param int    $requestedLevel The requested permission level. Must be one of the constants from
+     * the CollectionPermissionSecurityTree class.
+     * @param string $type (media|collections) Will either return media joined by collections or
+     * collections only.
      *
-     * @return QueryBuilder
+     * @return QueryBuilder Select all collections where there is at least on permission which
      *
      * Select all collections where there is at least on permission which
-     *     1. is associated to the collection itself or a parent collection.
-     *     2. includes the required permission level or one of it's parent permission levels
-     *     3. is currently valid (validAfter <= now < validUntil)
-     *     4. has appliedToSelf = 1 and is associated to the collection itself.
-     *          OR
-     *        has appliedToSubCollections = 1 and is associated to a parent collection.
-     *     5. applies to the current user.
-     *     6. has a position which is lower or equal to the position of the first permission having
-     *        goOn = 0 which applies to the collection.
+     * 1. is associated to the collection itself or a parent collection.
+     * 2. includes the required permission level or one of it's parent permission levels
+     * 3. is currently valid (validAfter <= now < validUntil)
+     * 4. has appliedToSelf = 1 and is associated to the collection itself.
+     * OR
+     * has appliedToSubCollections = 1 and is associated to a parent collection.
+     * 5. applies to the current user.
+     * 6. has a position which is lower or equal to the position of the first permission having
+     * goOn = 0 which applies to the collection.
      */
-    public function getCollectionsWithAccessQueryBuilder($requestedLevel)
+    private function getAccessQueryBuilder($requestedLevel, $type)
     {
+        if (!in_array($type, ['media', 'collections'], true)) {
+            throw new \DomainException();
+        }
+
         $now = new \DateTime();
         $securityGraph = $this->getCollectionSecurityGraph();
 
@@ -372,12 +389,22 @@ class SecurityManager
         // Third query builder
         // This one returns all collections where there exists at least one permission returned
         // by the second query builder.
+        // Or, if $type == media, returns all the media which are within a collection where
+        // there exists at least one permission returned by the second query builder.
         //
         $qb = $this->em->createQueryBuilder();
-        $qb->select('c')
-            ->from('CmfcmfMediaModule:Collection\CollectionEntity', 'c')
-            ->where($qb->expr()->exists($applicablePermissionsQB->getDQL()));
-        $qb->setParameters($firstPositionWithoutGoOnQB->getParameters());
+        if ($type == 'collections') {
+            $qb->select('c')
+                ->from('CmfcmfMediaModule:Collection\CollectionEntity', 'c');
+        } elseif ($type == 'media') {
+            $qb->select('m')
+                ->from('CmfcmfMediaModule:Media\AbstractMediaEntity', 'm')
+                ->leftJoin('m.collection', 'c');
+        } else {
+            throw new \LogicException();
+        }
+        $qb->where($qb->expr()->exists($applicablePermissionsQB->getDQL()))
+            ->setParameters($firstPositionWithoutGoOnQB->getParameters());
 
         return $qb;
     }
