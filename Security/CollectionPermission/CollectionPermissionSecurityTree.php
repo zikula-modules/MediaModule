@@ -30,7 +30,7 @@ class CollectionPermissionSecurityTree
 
     const PERM_LEVEL_DELETE_COLLECTION = 'delete-collection';
 
-    const PERM_LEVEL_ADD_PERMISSIONS = 'add-permissions';
+    const PERM_LEVEL_ENHANCE_PERMISSIONS = 'enhance-permissions';
 
     const PERM_LEVEL_CHANGE_PERMISSIONS = 'change-permissions';
 
@@ -167,21 +167,21 @@ class CollectionPermissionSecurityTree
         $vertices[self::PERM_LEVEL_DELETE_COLLECTION] = $vertex;
 
         // PERMISSIONS
-        $vertex = $graph->createVertex(self::PERM_LEVEL_ADD_PERMISSIONS);
-        $vertex->setAttribute('title', $translator->trans('Add permissions', [], $domain));
+        $vertex = $graph->createVertex(self::PERM_LEVEL_ENHANCE_PERMISSIONS);
+        $vertex->setAttribute('title', $translator->trans('Enhance permissions', [], $domain));
         $vertex->setAttribute('description', $translator->trans('Allows to add permissions.', [], $domain));
         $vertex->setAttribute('category', $categories['permission']);
         $vertex->setGroup($categories['permission']->getId());
         $vertex->createEdgeTo($vertices[self::PERM_LEVEL_DELETE_COLLECTION])
             ->setAttribute('edgeType', self::EDGE_TYPE_REQUIRES);
-        $vertices[self::PERM_LEVEL_ADD_PERMISSIONS] = $vertex;
+        $vertices[self::PERM_LEVEL_ENHANCE_PERMISSIONS] = $vertex;
 
         $vertex = $graph->createVertex(self::PERM_LEVEL_CHANGE_PERMISSIONS);
         $vertex->setAttribute('title', $translator->trans('Change permissions', [], $domain));
         $vertex->setAttribute('description', $translator->trans('Allows to adjust the permissions.', [], $domain));
         $vertex->setAttribute('category', $categories['permission']);
         $vertex->setGroup($categories['permission']->getId());
-        $vertex->createEdgeTo($vertices[self::PERM_LEVEL_ADD_PERMISSIONS])
+        $vertex->createEdgeTo($vertices[self::PERM_LEVEL_ENHANCE_PERMISSIONS])
             ->setAttribute('edgeType', self::EDGE_TYPE_REQUIRES);
         $vertices[self::PERM_LEVEL_CHANGE_PERMISSIONS] = $vertex;
 

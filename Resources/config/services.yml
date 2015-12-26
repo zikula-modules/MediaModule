@@ -32,7 +32,7 @@ services:
       arguments:
           - @cmfcmf_media_module.security_manager
       tags:
-          - { name: form.type }
+          - { name: form.type, alias: cmfcmfmediamodule_permission }
 
 
   # Listeners

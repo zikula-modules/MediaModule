@@ -7,6 +7,9 @@
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/Sortable.min.js'), 98) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Collection/Permission/View.js')) }}
 
+    {% set enhancePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS')) %}
+    {% set changePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS')) %}
+
     <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: collection.slug}) }}" class="btn btn-default">
         <i class="fa fa-folder"></i> {{ __('Back to the collection') }}
     </a>
@@ -34,7 +37,7 @@
                     data-id="{{ permission.id|e('html_attr') }}" data-version="{{ permission.version|e('html_attr') }}"
                 >
                     <td>
-                        {% if permission.locked %}
+                        {% if permission.locked or not changePermissionsPermission %}
                             <i class="fa fa-fw fa-2x fa-lock"></i>
                         {% else %}
                             <i class="fa fa-fw fa-2x fa-sort" style="cursor: move;"></i>
@@ -64,16 +67,18 @@
                         {% endif %}
                     </td>
                     <td class="text-right">
-                        <a href="#" data-toggle="modal" data-target=".cmfcmfmedia-permission-creation-modal" data-after-permission-id="{{ permission.id|e('html_attr') }}" class="cmfcmfmedia-permission-open-creation-modal">
-                            <i class="fa fa-plus fa-fw"></i>
-                        </a>
-                        {% if permission.collection.id == collection.id and not permission.locked %}
-                            <a href="{{ path('cmfcmfmediamodule_permission_edit', {id: permission.id}) }}" title="{{ __('Edit')|e('html_attr') }}">
-                                <i class="fa fa-edit fa-fw"></i>
+                        {% if changePermissionsPermission %}
+                            <a href="#" data-toggle="modal" data-target=".cmfcmfmedia-permission-creation-modal" data-after-permission-id="{{ permission.id|e('html_attr') }}" class="cmfcmfmedia-permission-open-creation-modal">
+                                <i class="fa fa-plus fa-fw"></i>
                             </a>
-                            <a href="{{ path('cmfcmfmediamodule_permission_delete', {id: permission.id}) }}" class="text-danger" title="{{ __('Delete')|e('html_attr') }}">
-                                <i class="fa fa-trash-o fa-fw"></i>
-                            </a>
+                            {% if permission.collection.id == collection.id and not permission.locked %}
+                                <a href="{{ path('cmfcmfmediamodule_permission_edit', {id: permission.id}) }}" title="{{ __('Edit')|e('html_attr') }}">
+                                    <i class="fa fa-edit fa-fw"></i>
+                                </a>
+                                <a href="{{ path('cmfcmfmediamodule_permission_delete', {id: permission.id}) }}" class="text-danger" title="{{ __('Delete')|e('html_attr') }}">
+                                    <i class="fa fa-trash-o fa-fw"></i>
+                                </a>
+                            {% endif %}
                         {% endif %}
                     </td>
             {% endfor %}

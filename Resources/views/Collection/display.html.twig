@@ -17,7 +17,6 @@
         <div class="col-xs-12">
             {% set createCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS')) %}
             {% set addMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA')) %}
-
             {% if createCollectionPermission and addMediaPermission %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -45,14 +44,24 @@
                     <i class="fa fa-plus"></i> {{ __('Create new media') }}
                 </a>
             {% endif %}
-            {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
+            {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
+            {% set enhancePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS')) %}
+            {% set changePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS')) %}
+            {% if editCollectionPermission %}
                 <a href="{{ path('cmfcmfmediamodule_collection_edit', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
                     <i class="fa fa-edit"></i> {{ __('Edit collection') }}
                 </a>
             {% endif %}
-            {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
+            {% if editCollectionPermission %}
                 <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
-                    <i class="fa fa-user-secret"></i> {{ __('View and change permissions') }}
+                    <i class="fa fa-user-secret"></i>
+                    {% if changePermissionsPermission %}
+                        {{ __('View and change permissions') }}
+                    {% elseif enhancePermissionsPermission %}
+                        {{ __('Invite people and view permissions') }}
+                    {% else %}
+                        {{ __('View permissions') }}
+                    {% endif %}
                 </a>
             {% endif %}
             {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION')) %}
