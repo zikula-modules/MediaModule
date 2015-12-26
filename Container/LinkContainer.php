@@ -2,7 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Container;
 
-use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -68,7 +68,7 @@ class LinkContainer implements LinkContainerInterface
 
         $rootCollection = $this->entityManager->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNode();
 
-        if ($this->securityManager->hasPermission($rootCollection, SecurityTree::PERM_LEVEL_OVERVIEW)) {
+        if ($this->securityManager->hasPermission($rootCollection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_collection_displayroot'),
                 'text' => $this->translator->trans('Frontend', [], $this->domain),

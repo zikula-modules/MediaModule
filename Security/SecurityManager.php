@@ -6,7 +6,7 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionCategory;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer;
-use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
@@ -31,7 +31,7 @@ class SecurityManager
     private $domain;
 
     /**
-     * @var SecurityTree
+     * @var CollectionPermissionSecurityTree
      */
     private $collectionSecurityGraph;
 
@@ -142,7 +142,7 @@ class SecurityManager
     public function getCollectionSecurityGraph()
     {
         if (!$this->collectionSecurityGraph) {
-            $this->collectionSecurityGraph = SecurityTree::createGraph(
+            $this->collectionSecurityGraph = CollectionPermissionSecurityTree::createGraph(
                 $this->translator,
                 $this->domain
             );
@@ -387,7 +387,7 @@ class SecurityManager
      */
     public function getCollectionSecurityCategories()
     {
-        return SecurityTree::getCategories($this->translator, $this->domain);
+        return CollectionPermissionSecurityTree::getCategories($this->translator, $this->domain);
     }
 
     /**

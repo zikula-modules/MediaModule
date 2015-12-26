@@ -6,7 +6,7 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Form\Collection\CollectionType;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
-use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\OptimisticLockException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -37,7 +37,7 @@ class CollectionController extends AbstractController
     public function newAction(Request $request, CollectionEntity $parent)
     {
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        if (!$securityManager->hasPermission($parent, SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
+        if (!$securityManager->hasPermission($parent, CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
             throw new AccessDeniedException();
         }
 
@@ -48,7 +48,7 @@ class CollectionController extends AbstractController
 
         if ($form->isValid()) {
             if ($this->hookValidates('collection', 'validate_edit')) {
-                if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity->getParent(), SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
+                if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity->getParent(), CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
                     throw new AccessDeniedException($this->__('You don\'t have permission to add a sub-collection to the selected parent collection.'));
                 }
                 $em = $this->getDoctrine()->getManager();
@@ -87,7 +87,7 @@ class CollectionController extends AbstractController
     public function editAction(Request $request, CollectionEntity $entity)
     {
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        if (!$securityManager->hasPermission($entity, SecurityTree::PERM_LEVEL_EDIT_COLLECTION)) {
+        if (!$securityManager->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION)) {
             throw new AccessDeniedException();
         }
 
@@ -143,7 +143,7 @@ class CollectionController extends AbstractController
      */
     public function downloadAction(CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)) {
             throw new AccessDeniedException();
         }
 
@@ -203,7 +203,7 @@ class CollectionController extends AbstractController
         $repository = $this->getDoctrine()->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
         $entity = $repository->find($id);
 
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_EDIT_COLLECTION)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION)) {
             throw new AccessDeniedException();
         }
 
@@ -231,7 +231,7 @@ class CollectionController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $rootCollection = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNode();
 
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($rootCollection, SecurityTree::PERM_LEVEL_OVERVIEW)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($rootCollection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
         }
 
@@ -270,7 +270,7 @@ class CollectionController extends AbstractController
         ;
         $entity = $qb->getQuery()->getSingleResult();
 
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_OVERVIEW)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
         }
 
@@ -318,7 +318,7 @@ class CollectionController extends AbstractController
      */
     public function displayByIdAction(CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_OVERVIEW)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
         }
 

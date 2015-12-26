@@ -5,7 +5,7 @@ namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 use Fhaculty\Graph\Vertex;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class SecurityTree
+class CollectionPermissionSecurityTree
 {
     const PERM_LEVEL_NONE = 'none';
 
