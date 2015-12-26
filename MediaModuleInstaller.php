@@ -4,6 +4,7 @@ namespace Cmfcmf\Module\MediaModule;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 
@@ -38,43 +39,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         ;
         $this->entityManager->persist($exampleCollection);
 
-        $temporaryUploadCollectionPermission = new GroupPermissionEntity();
-        $temporaryUploadCollectionPermission->setCollection($temporaryUploadCollection)
-            ->setDescription($this->__('Disallow access to the temporary upload collection.'))
-            ->setAppliedToSelf(true)
-            ->setAppliedToSubCollections(true)
-            ->setGoOn(false)
-            ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_NONE])
-            ->setPosition(1)
-            ->setGroupIds([-1])
-        ;
-        $this->entityManager->persist($temporaryUploadCollectionPermission);
-
-        $adminPermission = new GroupPermissionEntity();
-        $adminPermission->setCollection($rootCollection)
-            ->setDescription($this->__('Global admin permission'))
-            ->setAppliedToSelf(true)
-            ->setAppliedToSubCollections(true)
-            ->setGoOn(false)
-            ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS])
-            ->setPosition(2)
-            ->setGroupIds([2])
-        ;
-        $this->entityManager->persist($adminPermission);
-
-        $userPermission = new GroupPermissionEntity();
-        $userPermission->setCollection($rootCollection)
-            ->setDescription($this->__('Allow view and download for everyone.'))
-            ->setAppliedToSelf(true)
-            ->setAppliedToSubCollections(true)
-            ->setGoOn(false)
-            ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM])
-            ->setPosition(3)
-            ->setGroupIds([-1])
-        ;
-        $this->entityManager->persist($userPermission);
-
-        $this->entityManager->flush();
+        $this->createPermissions($temporaryUploadCollection, $rootCollection);
 
         if ($temporaryUploadCollection->getId() != CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
             \LogUtil::registerError($this->__('The id of the generated "temporary upload collection" must be 1, but has a different value. This should not have happened. Please report this error.'));
@@ -124,6 +89,30 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                     'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity'
                 ]);
 
+                // Create root collection.
+                $rootCollection = new CollectionEntity();
+                $rootCollection
+                    ->setTitle($this->__('Root collection'))
+                    ->setDescription('The very top of the collection tree.')
+                ;
+                $this->entityManager->persist($rootCollection);
+
+                $allCollections = $this->entityManager
+                    ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')
+                    ->findAll();
+                foreach ($allCollections as $collection) {
+                    if ($collection->getParent() === null && $collection->getId() != null) {
+                        $collection->setParent($rootCollection);
+                        $this->entityManager->merge($collection);
+                    }
+                }
+                $this->entityManager->flush();
+
+                $this->createPermissions(
+                    $this->entityManager->find('CmfcmfMediaModule:Collection\CollectionEntity', 1),
+                    $rootCollection
+                );
+
                 return true;
             default:
                 return false;
@@ -143,6 +132,13 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         return true;
     }
 
+    /**
+     * Returns a list of all entity classes.
+     *
+     * @return array
+     *
+     * @internal
+     */
     public static function getEntities()
     {
         $prefix = 'Cmfcmf\\Module\\MediaModule\\Entity\\';
@@ -184,6 +180,9 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         ];
     }
 
+    /**
+     * Creates a set of default licenses.
+     */
     private function createLicenses()
     {
         $license = new LicenseEntity('all-rights-reserved');
@@ -230,6 +229,9 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         $this->entityManager->flush();
     }
 
+    /**
+     * Creates the upload directory.
+     */
     private function createUploadDir()
     {
         $uploadDirectory = \FileUtil::getDataDirectory() . '/cmfcmf-media-module/media';
@@ -246,5 +248,61 @@ allow from all
 </FilesMatch>
 TXT;
         file_put_contents($uploadDirectory . '/.htaccess', $htaccess);
+    }
+
+    /**
+     * @param CollectionEntity $temporaryUploadCollection
+     * @param CollectionEntity $rootCollection
+     */
+    private function createPermissions(CollectionEntity $temporaryUploadCollection, CollectionEntity $rootCollection)
+    {
+        $temporaryUploadCollectionPermission = new GroupPermissionEntity();
+        $temporaryUploadCollectionPermission->setCollection($temporaryUploadCollection)
+            ->setDescription($this->__('Disallow access to the temporary upload collection.'))
+            ->setAppliedToSelf(true)
+            ->setAppliedToSubCollections(true)
+            ->setGoOn(false)
+            ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_NONE])
+            ->setPosition(1)
+            ->setGroupIds([-1]);
+        $this->entityManager->persist($temporaryUploadCollectionPermission);
+
+        $adminPermission = new GroupPermissionEntity();
+        $adminPermission->setCollection($rootCollection)
+            ->setDescription($this->__('Global admin permission'))
+            ->setAppliedToSelf(true)
+            ->setAppliedToSubCollections(true)
+            ->setGoOn(false)
+            ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS])
+            ->setPosition(2)
+            ->setGroupIds([2]); // Admin group
+        $this->entityManager->persist($adminPermission);
+
+        $ownerPermission = new OwnerPermissionEntity();
+        $ownerPermission->setCollection($rootCollection)
+            ->setDescription($this->__('Allows owners to administrate their own collections.'))
+            ->setAppliedToSelf(true)
+            ->setAppliedToSubCollections(false)
+            ->setGoOn(true)
+            ->setPermissionLevels(
+                [CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS]
+            )
+            ->setPosition(3);
+        $this->entityManager->persist($ownerPermission);
+
+        $userPermission = new GroupPermissionEntity();
+        $userPermission->setCollection($rootCollection)
+            ->setDescription($this->__('Allow view and download for everyone.'))
+            ->setAppliedToSelf(true)
+            ->setAppliedToSubCollections(true)
+            ->setGoOn(false)
+            ->setPermissionLevels(
+                [CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM]
+            )
+            ->setPosition(4)
+            ->setGroupIds([-1]); // All groups
+        $this->entityManager->persist($userPermission);
+
+        $this->entityManager->flush();
     }
 }
