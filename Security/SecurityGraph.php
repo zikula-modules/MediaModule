@@ -3,6 +3,7 @@
 namespace Cmfcmf\Module\MediaModule\Security;
 
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionCategory;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Fhaculty\Graph\Edge\Base;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
