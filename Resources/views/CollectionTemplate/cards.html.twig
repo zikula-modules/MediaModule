@@ -34,7 +34,7 @@
                 {% endfor %}
             </div>
             <i class="fa fa-fw {{ icon|e('html_attr') }}" style="position: absolute; right: 5px; bottom: 5px;"></i>
-        </div>
+        </div>isHook
     </div>
 {% endmacro %}
 
@@ -43,7 +43,7 @@
     {% if showChildCollections %}
         <div class="row" id="cmfcmfmedia-collection-sortable-container">
             {% for child in collection.children %}
-                {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\SecurityTree::PERM_LEVEL_OVERVIEW')) %}
+                {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
                     {% set hasParentOrChildCollection = true %}
                     {% set buttons = [{url: path('cmfcmfmediamodule_collection_display', {slug: child.slug}), text: __('View collection')}] %}
                     {% set thumbnail = false %}

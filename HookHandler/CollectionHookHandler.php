@@ -84,6 +84,7 @@ class CollectionHookHandler extends AbstractHookHandler
         $hookedObject = $repository->getByHookOrCreate($hook);
 
         $hookedObject->clearCollections();
+
         foreach ($this->entities as $collectionEntity) {
             // @todo Make these parameters non-static.
             $hookedObject->addCollection($collectionEntity, null, false, true);

@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\HookHandler;
 
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -31,13 +32,18 @@ abstract class AbstractHookHandler implements TranslatableInterface
      */
     private $domain;
 
-    public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack, EngineInterface $renderEngine)
+    /**
+     * @var SecurityManager
+     */
+    protected $securityManager;
+
+    public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack, EngineInterface $renderEngine, SecurityManager $securityManager)
     {
         $this->entityManager = $entityManager;
         $this->requestStack = $requestStack;
         $this->renderEngine = $renderEngine;
-
-        $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
+        $this->securityManager = $securityManager;
+        $this->domain = 'cmfcmfmediamodule';
     }
 
     public function getType()
@@ -50,7 +56,8 @@ abstract class AbstractHookHandler implements TranslatableInterface
     public function uiResponse(DisplayHook $hook, $content)
     {
         // Arrrr, we are forced to use Smarty -.-
-        // We need to clone the instance, because it causes errors otherwise when multiple hooks areas are hooked.
+        // We need to clone the instance, because it causes errors otherwise
+        // when multiple hooks areas are hooked.
         $view = clone \Zikula_View::getInstance('CmfcmfMediaModule');
         $view->setCaching(\Zikula_View::CACHE_DISABLED);
         $view->assign('content', $content);
