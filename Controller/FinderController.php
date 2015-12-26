@@ -9,7 +9,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @Route("/finder")
@@ -22,14 +21,6 @@ class FinderController extends AbstractController
      */
     public function chooseMethodAction()
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'display')) {
-            throw new AccessDeniedException();
-        }
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'display')) {
-            // @todo Use new permissions.
-            throw new AccessDeniedException();
-        }
-
         return [];
     }
 
@@ -39,11 +30,6 @@ class FinderController extends AbstractController
      */
     public function popupChooseCollectionsAction()
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'display')) {
-            // @todo Use new permissions.
-            throw new AccessDeniedException();
-        }
-
         return [];
     }
 
@@ -53,14 +39,6 @@ class FinderController extends AbstractController
      */
     public function popupChooseMediaAction()
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'display')) {
-            throw new AccessDeniedException();
-        }
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('collection', 'display')) {
-            // @todo Use new permissions.
-            throw new AccessDeniedException();
-        }
-
         return [];
     }
 
