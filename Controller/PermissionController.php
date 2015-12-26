@@ -31,11 +31,12 @@ class PermissionController extends AbstractController
      * @ParamConverter("collectionEntity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template()
      *
+     * @param Request          $request
      * @param CollectionEntity $collectionEntity
      *
      * @return array
      */
-    public function viewAction(CollectionEntity $collectionEntity)
+    public function viewAction(Request $request, CollectionEntity $collectionEntity)
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
             $collectionEntity,
@@ -53,7 +54,9 @@ class PermissionController extends AbstractController
         return [
             'entities' => $entities,
             'collection' => $collectionEntity,
-            'collectionPermissionTypeContainer' => $collectionPermissionTypeContainer
+            'collectionPermissionTypeContainer' => $collectionPermissionTypeContainer,
+            'userId' => \UserUtil::getVar('uid'),
+            'highlight' => $request->query->get('highlight', null)
         ];
     }
 
@@ -70,13 +73,7 @@ class PermissionController extends AbstractController
      */
     public function newAction(Request $request, $type, CollectionEntity $collection, AbstractPermissionEntity $afterPermission)
     {
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        if (!$securityManager->hasPermission(
-            $collection,
-            CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS
-        )) {
-            throw new AccessDeniedException();
-        }
+        $permissionLevel = $this->getPermissionLevelOrException($collection);
 
         $permissionTypeContainer = $this->get('cmfcmf_media_module.collection_permission.container');
         try {
@@ -87,8 +84,13 @@ class PermissionController extends AbstractController
 
         $entity = $permissionType->getEntityClass();
         $entity = new $entity();
+
         $form = $permissionType->getFormClass();
-        $form = new $form($collection, $securityManager);
+        $form = new $form(
+            $collection,
+            $this->get('cmfcmf_media_module.security_manager'),
+            $permissionLevel
+        );
 
         $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
@@ -96,6 +98,9 @@ class PermissionController extends AbstractController
         /** @var AbstractPermissionEntity $entity */
         $entity->setCollection($collection);
         $entity->setPosition($afterPermission->getPosition() + 1);
+        if ($permissionLevel == CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS) {
+            $entity->setGoOn(true);
+        }
 
         if ($form->isValid()) {
             $permissionRepository = $this
@@ -126,18 +131,18 @@ class PermissionController extends AbstractController
      */
     public function editAction(Request $request, AbstractPermissionEntity $permissionEntity)
     {
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        if (!$securityManager->hasPermission(
-            $permissionEntity->getCollection(),
-            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
-        )) {
-            throw new AccessDeniedException();
-        }
+        $permissionLevel = $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
+
         $collectionPermissionTypeContainer = $this->get('cmfcmf_media_module.collection_permission.container');
         $form = $collectionPermissionTypeContainer
             ->getCollectionPermissionFromEntity($permissionEntity)
             ->getFormClass();
-        $form = new $form($permissionEntity->getCollection(), $securityManager);
+
+        $form = new $form(
+            $permissionEntity->getCollection(),
+            $this->get('cmfcmf_media_module.security_manager'),
+            $permissionLevel
+        );
 
         $form = $this->createForm($form, $permissionEntity);
         $form->handleRequest($request);
@@ -179,12 +184,7 @@ class PermissionController extends AbstractController
      */
     public function deleteAction(Request $request, AbstractPermissionEntity $permissionEntity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
-            $permissionEntity->getCollection(),
-            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)
-        ) {
-            throw new AccessDeniedException();
-        }
+        $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
 
         if ($request->isMethod('GET')) {
             $collectionPermissionContainer = $this->get(
@@ -228,12 +228,12 @@ class PermissionController extends AbstractController
         $permissionVersion,
         $newIndex
     ) {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
-            $permissionEntity->getCollection(),
-            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
-        )) {
-            return new JsonResponse([], Response::HTTP_FORBIDDEN);
+        try {
+            $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
+        } catch (AccessDeniedException $e) {
+            return new JsonResponse([], JsonResponse::HTTP_FORBIDDEN);
         }
+
         $repository = $this->getDoctrine()->getRepository(
             'CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity'
         );
@@ -287,5 +287,31 @@ class PermissionController extends AbstractController
             ->orderBy('p.position', 'ASC');
 
         return $qb;
+    }
+
+    /**
+     * @param CollectionEntity         $collectionEntity
+     * @param AbstractPermissionEntity $permissionEntity
+     *
+     * @return string
+     */
+    private function getPermissionLevelOrException(
+        CollectionEntity $collectionEntity,
+        AbstractPermissionEntity $permissionEntity = null
+    ) {
+        $securityManager = $this->get('cmfcmf_media_module.security_manager');
+
+        if ($securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)) {
+            return CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS;
+        }
+        if ($permissionEntity == null) {
+            throw new AccessDeniedException();
+        }
+        if ($permissionEntity->getCreatedUserId() == \UserUtil::getVar('uid')) {
+            if ($securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS)) {
+                return CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS;
+            }
+        }
+        throw new AccessDeniedException();
     }
 }

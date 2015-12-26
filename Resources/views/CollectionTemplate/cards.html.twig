@@ -34,7 +34,7 @@
                 {% endfor %}
             </div>
             <i class="fa fa-fw {{ icon|e('html_attr') }}" style="position: absolute; right: 5px; bottom: 5px;"></i>
-        </div>isHook
+        </div>
     </div>
 {% endmacro %}
 
@@ -56,7 +56,7 @@
                         {% endif %}
                     {% endif %}
                     {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
-                    {{ macro.box(child.title, supportText, buttons, thumbnail, editCollectionPermission ? child.id : false, 'fa-list', false) }}
+                    {{ macro.box(child.title, supportText, buttons, thumbnail, editCollectionPermission ? child.id : false, 'fa-folder', false) }}
                 {% endif %}
             {% endfor %}
         </div>
@@ -75,7 +75,7 @@
             {% if media.attribution is not empty %}
                 {% set supportText = media.attribution %}
             {% endif %}
-            {% set buttons = [{url: path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('View media')}] %}
+            {% set buttons = [{url: path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('View')}] %}
             {% if media.downloadAllowed is defined and media.downloadAllowed %}
                 {% set buttons = buttons|merge([{url: path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('Download')}]) %}
             {% endif %}

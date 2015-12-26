@@ -264,6 +264,7 @@ TXT;
             ->setGoOn(false)
             ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_NONE])
             ->setPosition(1)
+            ->setLocked(true)
             ->setGroupIds([-1]);
         $this->entityManager->persist($temporaryUploadCollectionPermission);
 
@@ -275,6 +276,7 @@ TXT;
             ->setGoOn(false)
             ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS])
             ->setPosition(2)
+            ->setLocked(true)
             ->setGroupIds([2]); // Admin group
         $this->entityManager->persist($adminPermission);
 

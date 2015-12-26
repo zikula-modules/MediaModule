@@ -20,12 +20,18 @@ abstract class AbstractPermissionType extends AbstractType
      */
     private $collectionEntity;
 
-    public function __construct(CollectionEntity $collectionEntity, SecurityManager $securityManager)
+    /**
+     * @var
+     */
+    private $permissionLevel;
+
+    public function __construct(CollectionEntity $collectionEntity, SecurityManager $securityManager, $permissionLevel)
     {
         parent::__construct();
 
         $this->securityManager = $securityManager;
         $this->collectionEntity = $collectionEntity;
+        $this->permissionLevel = $permissionLevel;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -33,7 +39,8 @@ abstract class AbstractPermissionType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder->add('permissionLevels', 'cmfcmfmediamodule_permission', [
-            'label' => $this->__('Permission level') // @todo Make sure to disallow the change permission level if appropriate.
+            'label' => $this->__('Permission level'),
+            'permissionLevel' => $this->permissionLevel
         ])->add('description', 'textarea', [
             'label' => $this->__('Description'),
             'required' => false,
