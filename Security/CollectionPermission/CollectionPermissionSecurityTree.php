@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
+use Cmfcmf\Module\MediaModule\Security\SecurityGraph;
 use Fhaculty\Graph\Vertex;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -47,7 +48,7 @@ class CollectionPermissionSecurityTree
     {
         $categories = self::getCategories($translator, $domain);
 
-        require_once __DIR__ . '/../vendor/autoload.php';
+        require_once __DIR__ . '/../../vendor/autoload.php';
 
         $graph = new SecurityGraph();
         /** @var Vertex[] $vertices */
