@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 
@@ -15,6 +16,16 @@ class OwnerCollectionPermission extends AbstractCollectionPermission
      * @return string
      */
     public function getTitle()
+    {
+        return $this->translator->trans('Owner', [], 'cmfcmfmediamodule');
+    }
+
+    /**
+     * @param OwnerPermissionEntity $permissionEntity
+     *
+     * @return string
+     */
+    public function getTargets($permissionEntity)
     {
         return $this->translator->trans('Owner', [], 'cmfcmfmediamodule');
     }

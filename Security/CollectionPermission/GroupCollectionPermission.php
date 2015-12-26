@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 
@@ -17,6 +18,25 @@ class GroupCollectionPermission extends AbstractCollectionPermission
     public function getTitle()
     {
         return $this->translator->trans('Group', [], 'cmfcmfmediamodule');
+    }
+
+    /**
+     * @param GroupPermissionEntity $permissionEntity
+     *
+     * @return string
+     */
+    public function getTargets($permissionEntity)
+    {
+        $targets = [];
+        foreach ($permissionEntity->getGroupIds() as $groupId) {
+            if ($groupId == -1) {
+                $targets[] = $this->translator->trans('All groups', [], 'cmfcmfmediamodule');
+            } else {
+                $targets[] = \UserUtil::getGroup($groupId)['name'];
+            }
+        }
+
+        return implode(', ', $targets);
     }
 
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)

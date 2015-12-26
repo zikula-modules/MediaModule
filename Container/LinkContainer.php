@@ -2,8 +2,8 @@
 
 namespace Cmfcmf\Module\MediaModule\Container;
 
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
-use Cmfcmf\Module\MediaModule\Security\SecurityTree;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;

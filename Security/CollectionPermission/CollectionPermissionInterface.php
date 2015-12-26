@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 
@@ -16,6 +17,13 @@ interface CollectionPermissionInterface
      * @return string
      */
     public function getTitle();
+
+    /**
+     * @param AbstractPermissionEntity $permissionEntity
+     *
+     * @return string
+     */
+    public function getTargets($permissionEntity);
 
     /**
      * @return string

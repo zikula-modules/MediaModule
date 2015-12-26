@@ -6,7 +6,7 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Form\Collection\CollectionType;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
-use Cmfcmf\Module\MediaModule\Security\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
 use Doctrine\ORM\OptimisticLockException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -207,10 +207,6 @@ class CollectionController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        if ($entity->getParent() === null) {
-            throw new \InvalidArgumentException('Sorting root nodes is not (yet) supported!');
-        }
-
         if ($diff > 0) {
             $result = $repository->moveDown($entity, $diff);
         } else {
@@ -245,16 +241,35 @@ class CollectionController extends AbstractController
     /**
      * @Route("/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
      * @Method("GET")
-     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template()
      *
-     * @param Request          $request
-     * @param CollectionEntity $entity
+     * @param Request $request
+     * @param         $slug
      *
      * @return array
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     *
      */
-    public function displayAction(Request $request, CollectionEntity $entity)
+    public function displayAction(Request $request, $slug)
     {
+        $qb = $this
+            ->getDoctrine()
+            ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')
+            ->createQueryBuilder('c');
+
+        // Fetching all the media here is necessary because it otherwise does a query per
+        // thumbnail check to see if a thumbnail exists.
+        // @todo Make the thumbnail selectable using an association and fetch it eagerly.
+        $qb->select(['c', 'cc', 'm'])
+            ->where($qb->expr()->eq('c.slug', ':slug'))
+            ->setParameter('slug', $slug)
+            ->leftJoin('c.children', 'cc')
+            ->leftJoin('cc.media', 'm')
+        ;
+        $entity = $qb->getQuery()->getSingleResult();
+
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, SecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
         }

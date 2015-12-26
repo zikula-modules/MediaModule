@@ -13,6 +13,7 @@
                     <thead>
                     <tr>
                         <th>{{ __('Description') }}</th>
+                        <th>{{ __('Target') }}</th>
                         <th>{{ __('Collection') }}</th>
                         <th>{{ __('Permissionlevels') }}</th>
                         <th>{{ __('Applied to self') }}</th>
@@ -23,7 +24,12 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td title="{{ permission.description|e('html_attr') }}">{{ permission.description }}</td>
+                        <td title="{{ permission.description|e('html_attr') }}">
+                            {{ permission.description }}
+                        </td>
+                        <td>
+                            {{ collectionPermission.targets(permission) }}
+                        </td>
                         <td>
                             <strong>{{ permission.collection.title }}</strong>
                         </td>

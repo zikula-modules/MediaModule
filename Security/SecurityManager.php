@@ -4,7 +4,9 @@ namespace Cmfcmf\Module\MediaModule\Security;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionCategory;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
@@ -381,7 +383,7 @@ class SecurityManager
     }
 
     /**
-     * @return SecurityCategory[]
+     * @return CollectionPermissionCategory[]
      */
     public function getCollectionSecurityCategories()
     {
