@@ -24,6 +24,7 @@ class PermissionLevelType extends AbstractType
 
     public function __construct(SecurityManager $securityManager)
     {
+        // @todo Add an option to disallow selecting the change permission level.
         $this->securityManager = $securityManager;
         $this->securityGraph = $securityManager->getCollectionSecurityGraph();
     }
@@ -48,18 +49,13 @@ class PermissionLevelType extends AbstractType
         ]);
     }
 
-    public function getBlockPrefix()
-    {
-        return 'cmfcmfmediamodule_permission_level';
-    }
-
     public function getParent()
     {
-        return 'Symfony\Component\Form\Extension\Core\Type\ChoiceType';
+        return 'choice';
     }
 
     public function getName()
     {
-        return get_class($this);
+        return 'cmfcmfmediamodule_permission';
     }
 }

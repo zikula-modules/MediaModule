@@ -6,6 +6,7 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Sortable\Sortable;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -129,6 +130,38 @@ abstract class AbstractPermissionEntity implements Sortable
      * @var AbstractPermissionRestrictionEntity[]|ArrayCollection
      */
     protected $restrictions;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @ZK\StandardFields(type="userid", on="create")
+     *
+     * @var int.
+     */
+    protected $createdUserId;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @ZK\StandardFields(type="userid", on="update")
+     *
+     * @var int.
+     */
+    protected $updatedUserId;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     *
+     * @var \DateTime.
+     */
+    protected $createdDate;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Gedmo\Timestampable(on="update")
+     *
+     * @var \DateTime.
+     */
+    protected $updatedDate;
 
     public function __construct()
     {
@@ -398,11 +431,91 @@ abstract class AbstractPermissionEntity implements Sortable
     /**
      * @param bool $locked
      *
-     * @return AbstractPermissionEntity
+     * @return $this
      */
     public function setLocked($locked)
     {
         $this->locked = $locked;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCreatedUserId()
+    {
+        return $this->createdUserId;
+    }
+
+    /**
+     * @param int $createdUserId
+     *
+     * @return $this
+     */
+    public function setCreatedUserId($createdUserId)
+    {
+        $this->createdUserId = $createdUserId;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUpdatedUserId()
+    {
+        return $this->updatedUserId;
+    }
+
+    /**
+     * @param int $updatedUserId
+     *
+     * @return $this
+     */
+    public function setUpdatedUserId($updatedUserId)
+    {
+        $this->updatedUserId = $updatedUserId;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedDate()
+    {
+        return $this->createdDate;
+    }
+
+    /**
+     * @param \DateTime $createdDate
+     *
+     * @return $this
+     */
+    public function setCreatedDate($createdDate)
+    {
+        $this->createdDate = $createdDate;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getUpdatedDate()
+    {
+        return $this->updatedDate;
+    }
+
+    /**
+     * @param \DateTime $updatedDate
+     *
+     * @return $this
+     */
+    public function setUpdatedDate($updatedDate)
+    {
+        $this->updatedDate = $updatedDate;
 
         return $this;
     }

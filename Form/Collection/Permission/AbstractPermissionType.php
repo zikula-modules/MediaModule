@@ -2,17 +2,38 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Symfony\Component\Form\FormBuilderInterface;
 
 abstract class AbstractPermissionType extends AbstractType
 {
+    /**
+     * @var SecurityManager
+     */
+    private $securityManager;
+
+    /**
+     * @var CollectionEntity
+     */
+    private $collectionEntity;
+
+    public function __construct(CollectionEntity $collectionEntity, SecurityManager $securityManager)
+    {
+        parent::__construct();
+
+        $this->securityManager = $securityManager;
+        $this->collectionEntity = $collectionEntity;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
-        $builder->add('permissionLevels', 'Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType', [
-            'label' => $this->__('Permission level')
+        $builder->add('permissionLevels', 'cmfcmfmediamodule_permission', [
+            'label' => $this->__('Permission level') // @todo Make sure to disallow the change permission level if appropriate.
         ])->add('description', 'textarea', [
             'label' => $this->__('Description'),
             'required' => false,
@@ -25,10 +46,25 @@ abstract class AbstractPermissionType extends AbstractType
         ])->add('appliedToSubCollections', 'checkbox', [
             'label' => $this->__('Applies to sub-collections'),
             'required' => false
-        ])->add('goOn', 'checkbox', [
-            'label' => $this->__('Go on if this permission is not sufficient'),
-            'required' => false
-        ])->add('validAfter', 'datetime', [
+        ]);
+
+        if ($this->securityManager->hasPermission($this->collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)) {
+            $builder->add('goOn', 'checkbox', [
+                'label' => $this->__('Go on if this permission is not sufficient'),
+                'required' => false
+            ]);
+        } else {
+            $builder->add('goOn', 'checkbox', [
+                'label' => $this->__('Go on if this permission is not sufficient'),
+                'required' => true,
+                'data' => true,
+                'attr' => [
+                    'disabled' => true
+                ],
+            ]);
+        }
+
+        $builder->add('validAfter', 'datetime', [
             'label' => $this->__('Valid after'),
             'widget' => 'choice',
             'required' => false,
