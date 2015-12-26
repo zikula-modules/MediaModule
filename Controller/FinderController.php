@@ -4,7 +4,7 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\QueryBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -148,7 +148,7 @@ class FinderController extends AbstractController
             $hookedObjectEntity = null;
         }
 
-        $qb = $securityManager->getCollectionsWithAccessQueryBuilder(SecurityTree::PERM_LEVEL_OVERVIEW);
+        $qb = $securityManager->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
         $collections = $qb
             ->andWhere($qb->expr()->eq('c.parent', ':parentId'))
             ->setParameter('parentId', $parentId)

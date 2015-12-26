@@ -5,7 +5,7 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Exception\InvalidPositionException;
-use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
@@ -39,7 +39,7 @@ class PermissionController extends AbstractController
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
             $collectionEntity,
-            SecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
+            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
         )) {
             throw new AccessDeniedException();
         }
@@ -72,7 +72,7 @@ class PermissionController extends AbstractController
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
             $collection,
-            SecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
+            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
         )) {
             throw new AccessDeniedException();
         }
@@ -127,7 +127,7 @@ class PermissionController extends AbstractController
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
             $permissionEntity->getCollection(),
-            SecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
+            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
         )) {
             throw new AccessDeniedException();
         }
@@ -178,7 +178,7 @@ class PermissionController extends AbstractController
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
             $permissionEntity->getCollection(),
-            SecurityTree::PERM_LEVEL_DELETE_COLLECTION)
+            CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_COLLECTION)
         ) {
             throw new AccessDeniedException();
         }
@@ -227,7 +227,7 @@ class PermissionController extends AbstractController
     ) {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
             $permissionEntity->getCollection(),
-            SecurityTree::PERM_LEVEL_EDIT_COLLECTION
+            CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION
         )) {
             return new JsonResponse([], Response::HTTP_FORBIDDEN);
         }

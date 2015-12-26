@@ -5,7 +5,7 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection;
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
-use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -97,7 +97,7 @@ class CollectionType extends AbstractType
                 'label' => $this->__('Parent'),
                 'query_builder' => function (EntityRepository $er) use ($theCollection, $securityManager) {
                     $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
-                        $theCollection->getId() != null ? SecurityTree::PERM_LEVEL_EDIT_COLLECTION : SecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
+                        $theCollection->getId() != null ? CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION : CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
                     );
                     $qb
                         ->orderBy('c.root', 'ASC')

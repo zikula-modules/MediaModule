@@ -5,7 +5,7 @@ namespace Cmfcmf\Module\MediaModule;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
-use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 
 class MediaModuleInstaller extends \Zikula_AbstractInstaller
 {
@@ -44,7 +44,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             ->setAppliedToSelf(true)
             ->setAppliedToSubCollections(true)
             ->setGoOn(false)
-            ->setPermissionLevels([SecurityTree::PERM_LEVEL_NONE])
+            ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_NONE])
             ->setPosition(1)
             ->setGroupIds([-1])
         ;
@@ -56,7 +56,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             ->setAppliedToSelf(true)
             ->setAppliedToSubCollections(true)
             ->setGoOn(false)
-            ->setPermissionLevels([SecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS])
+            ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS])
             ->setPosition(2)
             ->setGroupIds([2])
         ;
@@ -68,7 +68,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             ->setAppliedToSelf(true)
             ->setAppliedToSubCollections(true)
             ->setGoOn(false)
-            ->setPermissionLevels([SecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM])
+            ->setPermissionLevels([CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM])
             ->setPosition(3)
             ->setGroupIds([-1])
         ;
