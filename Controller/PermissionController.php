@@ -127,7 +127,7 @@ class PermissionController extends AbstractController
     public function editAction(Request $request, AbstractPermissionEntity $permissionEntity)
     {
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        if (!$$securityManager->hasPermission(
+        if (!$securityManager->hasPermission(
             $permissionEntity->getCollection(),
             CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
         )) {
@@ -137,7 +137,7 @@ class PermissionController extends AbstractController
         $form = $collectionPermissionTypeContainer
             ->getCollectionPermissionFromEntity($permissionEntity)
             ->getFormClass();
-        $form = $form($permissionEntity->getCollection(), $securityManager);
+        $form = new $form($permissionEntity->getCollection(), $securityManager);
 
         $form = $this->createForm($form, $permissionEntity);
         $form->handleRequest($request);

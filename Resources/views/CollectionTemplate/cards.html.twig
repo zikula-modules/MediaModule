@@ -42,6 +42,7 @@
 {% block collections %}
     {% if showChildCollections %}
         <div class="row" id="cmfcmfmedia-collection-sortable-container">
+            {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
             {% for child in collection.children %}
                 {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
                     {% set hasParentOrChildCollection = true %}
@@ -55,7 +56,7 @@
                         {% endif %}
                     {% endif %}
                     {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
-                    {{ macro.box(child.title, supportText, buttons, thumbnail, child.id, 'fa-list', false) }}
+                    {{ macro.box(child.title, supportText, buttons, thumbnail, editCollectionPermission ? child.id : false, 'fa-list', false) }}
                 {% endif %}
             {% endfor %}
         </div>
@@ -68,6 +69,7 @@
 
 {% block media %}
     <div class="row" id="cmfcmfmedia-media-sortable-container">
+        {% set editMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
         {% for media in collection.media %}
             {% set supportText = '' %}
             {% if media.attribution is not empty %}
@@ -78,7 +80,7 @@
                 {% set buttons = buttons|merge([{url: path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('Download')}]) %}
             {% endif %}
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
-            {{ macro.box(media.title, supportText, buttons, mediaType.thumbnail(media, 200, 150, 'url'), media.id, mediaType.icon, mediaType.displayName) }}
+            {{ macro.box(media.title, supportText, buttons, mediaType.thumbnail(media, 200, 150, 'url'), editMediaPermission ? media.id : false, mediaType.icon, mediaType.displayName) }}
         {% else %}
             {% if collection.children is empty %}
                 <div class="col-xs-12">
