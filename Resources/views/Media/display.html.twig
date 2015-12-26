@@ -55,7 +55,7 @@
                 {% endif %}
                 {% if cmfcmfmediamodule_hasPermission(entity.collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
                     <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: entity.collection.slug}) }}" class="list-group-item">
-                        <i class="fa fa-fw fa-picture-o"></i>
+                        <i class="fa fa-fw fa-folder"></i>
                         {{ __('Back to the collection') }}
                     </a>
                 {% endif %}
