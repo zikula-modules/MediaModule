@@ -126,6 +126,7 @@ abstract class AbstractPermissionEntity implements Sortable
      * @ORM\ManyToMany(
      *     targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity",
      *     inversedBy="permissions", fetch="EAGER", cascade={"persist"})
+     * @ORM\JoinTable(name="cmfcmfmedia_permission_permission_restriction")
      *
      * @var AbstractPermissionRestrictionEntity[]|ArrayCollection
      */
