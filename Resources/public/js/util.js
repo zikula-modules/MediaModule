@@ -10,11 +10,14 @@
                 alert(title + "\n" + body);
             },
             Ajax: {
-                fail: function () {
-                    window.toastr["error"](
-                        "Sorry, the AJAX request could not be finished. Please try again.",
-                        "Something went wrong!"
-                    );
+                fail: function (data) {
+                    var errorText = "Sorry, the AJAX request could not be finished. Please try again.";
+                    if (data.responseJSON && data.responseJSON.error) {
+                        errorText = data.responseJSON.error;
+                    } else if (data.status == 403) {
+                        errorText = "You do not have permission to execute this action."
+                    }
+                    window.toastr["error"](errorText, "Something went wrong!");
                 },
                 makeExternalRequest: function (url, done, fail, always) {
                     var xmlhttp;

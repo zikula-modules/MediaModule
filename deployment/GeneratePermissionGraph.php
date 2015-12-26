@@ -1,6 +1,6 @@
 <?php
 
-use Cmfcmf\Module\MediaModule\Security\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
 use Fhaculty\Graph\Edge\Base;
 
 require_once __DIR__ . '/../../../../vendor/autoload.php';

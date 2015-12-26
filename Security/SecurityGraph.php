@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Security;
 
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionCategory;
 use Fhaculty\Graph\Edge\Base;
 use Fhaculty\Graph\Edge\Directed;
 use Fhaculty\Graph\Graph;
@@ -12,11 +13,11 @@ use Fhaculty\Graph\Vertex;
 class SecurityGraph extends Graph
 {
     /**
-     * @param SecurityCategory $securityCategory
+     * @param CollectionPermissionCategory $securityCategory
      *
      * @return Vertices
      */
-    public function getVerticesByCategory(SecurityCategory $securityCategory)
+    public function getVerticesByCategory(CollectionPermissionCategory $securityCategory)
     {
         return $this->getVertices()->getVerticesMatch(function (Vertex $vertex) use ($securityCategory) {
             return $vertex->getGroup() == $securityCategory->getId();

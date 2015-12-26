@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 use Zikula\PermissionsModule\Api\PermissionApi;
@@ -18,6 +19,21 @@ class UserCollectionPermission extends AbstractCollectionPermission
     public function getTitle()
     {
         return $this->translator->trans('User', [], 'cmfcmfmediamodule');
+    }
+
+    /**
+     * @param UserPermissionEntity $permissionEntity
+     *
+     * @return string
+     */
+    public function getTargets($permissionEntity)
+    {
+        $targets = [];
+        foreach ($permissionEntity->getUserIds() as $userId) {
+            $targets[] = \UserUtil::getVar('uname', $userId);
+        }
+
+        return implode(', ', $targets);
     }
 
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)

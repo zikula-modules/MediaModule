@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Repository\PermissionRepository")
  * @ORM\Table(name="cmfcmfmedia_permission")
  *
  * @ORM\InheritanceType(value="SINGLE_TABLE")

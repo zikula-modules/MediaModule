@@ -5,7 +5,7 @@ namespace Cmfcmf\Module\MediaModule;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
-use Cmfcmf\Module\MediaModule\Security\SecurityTree;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\SecurityTree;
 
 class MediaModuleInstaller extends \Zikula_AbstractInstaller
 {

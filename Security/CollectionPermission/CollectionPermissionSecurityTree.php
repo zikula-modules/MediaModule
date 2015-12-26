@@ -1,6 +1,6 @@
 <?php
 
-namespace Cmfcmf\Module\MediaModule\Security;
+namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
 use Fhaculty\Graph\Vertex;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -199,17 +199,17 @@ class SecurityTree
      * @param TranslatorInterface $translator
      * @param $domain
      *
-     * @return SecurityCategory[]
+     * @return CollectionPermissionCategory[]
      */
     public static function getCategories(TranslatorInterface $translator, $domain)
     {
         return [
-            'no-access' => new SecurityCategory(0, $translator->trans('No access', [], $domain)),
-            'view' => new SecurityCategory(1, $translator->trans('View', [], $domain)),
-            'add' => new SecurityCategory(2, $translator->trans('Add', [], $domain)),
-            'edit' => new SecurityCategory(3, $translator->trans('Edit', [], $domain)),
-            'delete' => new SecurityCategory(4, $translator->trans('Delete', [], $domain)),
-            'permission' => new SecurityCategory(5, $translator->trans('Permissions', [], $domain)),
+            'no-access' => new CollectionPermissionCategory(0, $translator->trans('No access', [], $domain)),
+            'view' => new CollectionPermissionCategory(1, $translator->trans('View', [], $domain)),
+            'add' => new CollectionPermissionCategory(2, $translator->trans('Add', [], $domain)),
+            'edit' => new CollectionPermissionCategory(3, $translator->trans('Edit', [], $domain)),
+            'delete' => new CollectionPermissionCategory(4, $translator->trans('Delete', [], $domain)),
+            'permission' => new CollectionPermissionCategory(5, $translator->trans('Permissions', [], $domain)),
         ];
     }
 }

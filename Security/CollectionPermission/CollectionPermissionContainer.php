@@ -2,6 +2,8 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
+
 class CollectionPermissionContainer
 {
     /**
@@ -36,6 +38,20 @@ class CollectionPermissionContainer
         return $this->permissions[$id];
     }
 
+    /**
+     * @param AbstractPermissionEntity $permissionEntity
+     *
+     * @return CollectionPermissionInterface
+     */
+    public function getCollectionPermissionFromEntity(AbstractPermissionEntity $permissionEntity)
+    {
+        foreach ($this->permissions as $permission) {
+            if (is_a($permissionEntity, $permission->getEntityClass(), false)) {
+                return $permission;
+            }
+        }
+        throw new \DomainException();
+    }
     /**
      * @return array|CollectionPermissionInterface[]
      */
