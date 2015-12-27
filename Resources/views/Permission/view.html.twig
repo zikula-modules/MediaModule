@@ -11,7 +11,7 @@
     {% set changePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS')) %}
 
     <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: collection.slug}) }}" class="btn btn-default">
-        <i class="fa fa-folder"></i> {{ __('Back to the collection') }}
+        <i class="fa fa-folder-o"></i> {{ __('Back to the collection') }}
     </a>
     <div class="table-responsive">
         <table class="table table-condensed table-striped table-hover" id="cmfcmfmedia-permission-sortable-table">

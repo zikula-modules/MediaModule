@@ -56,7 +56,7 @@
                         {% endif %}
                     {% endif %}
                     {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
-                    {{ macro.box(child.title, supportText, buttons, thumbnail, editCollectionPermission ? child.id : false, 'fa-folder', false) }}
+                    {{ macro.box(child.title, supportText, buttons, thumbnail, editCollectionPermission ? child.id : false, 'fa-folder-o', false) }}
                 {% endif %}
             {% endfor %}
         </div>
