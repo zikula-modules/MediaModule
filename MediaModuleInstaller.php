@@ -162,7 +162,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             $permissionPrefix . 'GroupPermissionEntity',
             $permissionPrefix . 'OwnerPermissionEntity',
 
-            $permissionPrefix . 'Restriction\AbstractRestrictionEntity',
+            $permissionPrefix . 'Restriction\AbstractPermissionRestrictionEntity',
             $permissionPrefix . 'Restriction\PasswordPermissionRestrictionEntity',
 
             $mediaPrefix . 'AbstractMediaEntity',
