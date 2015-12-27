@@ -4,6 +4,7 @@ namespace Cmfcmf\Module\MediaModule\Upgrade;
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\Bundle\CoreBundle\CacheClearer;
 
 class ModuleUpgrader
 {
@@ -32,17 +33,23 @@ class ModuleUpgrader
      */
     private $domain;
 
-    public function __construct(TranslatorInterface $translator, $kernelCacheDir, $kernelRootDir)
+    /**
+     * @var CacheClearer
+     */
+    private $cacheClearer;
+
+    public function __construct(TranslatorInterface $translator, CacheClearer $cacheClearer, $kernelCacheDir, $kernelRootDir)
     {
+        $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
+        $this->translator = $translator;
+        $this->cacheClearer = $cacheClearer;
+
         $this->fs = new Filesystem();
         $this->cacheFile = $kernelCacheDir . "/CmfcmfMediaModule.zip";
 
         $zikulaDir = realpath($kernelRootDir . '/..');
         $this->moduleDir = $this->fs->makePathRelative(realpath(__DIR__ . '/..'), $zikulaDir);
         $this->moduleDir = rtrim($this->moduleDir, '/\\');
-
-        $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
-        $this->translator = $translator;
     }
 
     public function checkRequirements()
@@ -91,6 +98,8 @@ class ModuleUpgrader
         $zip->close();
 
         $this->fs->remove($this->cacheFile);
+
+        $this->cacheClearer->clear('symfony');
 
         return true;
     }
