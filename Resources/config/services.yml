@@ -1,11 +1,13 @@
 imports:
   - { resource: 'mediatypes.yml' }
   - { resource: 'collectiontemplates.yml' }
+  - { resource: 'collectionpermissions.yml' }
 
 services:
   # Security management
   cmfcmf_media_module.security_manager:
     class: Cmfcmf\Module\MediaModule\Security\SecurityManager
+    arguments: [@translator, @zikula_permissions_module.api.permission, @doctrine.orm.default_entity_manager, @cmfcmf_media_module.collection_permission.container]
 
 
   # Module upgrader and version checker
@@ -25,6 +27,13 @@ services:
     tags:
       - { name: form.type, alias: cmfcmfmediamodule_font_choice }
 
+  cmfcmf_media_module.form.type.permission_level:
+      class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
+      arguments:
+          - @cmfcmf_media_module.security_manager
+      tags:
+          - { name: form.type, alias: cmfcmfmediamodule_permission }
+
 
   # Listeners
   cmfcmf_media_module.listener.module:
@@ -43,7 +52,7 @@ services:
   # Link container
   cmfcmf_media_module.container.links:
     class: Cmfcmf\Module\MediaModule\Container\LinkContainer
-    arguments: [@router, @cmfcmf_media_module.security_manager, @translator]
+    arguments: [@router, @cmfcmf_media_module.security_manager, @translator, @doctrine.orm.default_entity_manager]
     tags:
       - { name: zikula.link_container }
 
@@ -61,7 +70,7 @@ services:
 
 
   # Twig extension
-  cmfcmf_media_module.twig_extension.description_escaping:
+  cmfcmf_media_module.twig_extension:
     class: Cmfcmf\Module\MediaModule\Twig\TwigExtension
     arguments: [@markdown_extra_parser, @hook_dispatcher, @cmfcmf_media_module.security_manager, @cmfcmf_media_module.upgrade.version_checker]
     public: false
@@ -72,7 +81,7 @@ services:
   # Hook handlers
   cmfcmf_media_module.hook_handler.base:
     abstract: true
-    arguments: [@doctrine.entitymanager, @request_stack, @templating]
+    arguments: [@doctrine.entitymanager, @request_stack, @templating, @cmfcmf_media_module.security_manager]
 
   cmfcmf_media_module.hook_handler.license:
     class: Cmfcmf\Module\MediaModule\HookHandler\LicenseHookHandler

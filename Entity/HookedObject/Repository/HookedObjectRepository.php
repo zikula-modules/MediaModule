@@ -30,19 +30,20 @@ class HookedObjectRepository extends EntityRepository
 
     public function saveOrDelete(HookedObjectEntity $hookedObjectEntity)
     {
+        $entityManager = $this->getEntityManager();
         if ($hookedObjectEntity->getId()) {
             if ($this->isSomethingHooked($hookedObjectEntity)) {
-                $this->getEntityManager()->merge($hookedObjectEntity);
+                $entityManager->merge($hookedObjectEntity);
             } else {
-                $this->getEntityManager()->remove($hookedObjectEntity);
+                $entityManager->remove($hookedObjectEntity);
             }
         } else {
             if (!$this->isSomethingHooked($hookedObjectEntity)) {
                 return;
             }
-            $this->getEntityManager()->persist($hookedObjectEntity);
+            $entityManager->persist($hookedObjectEntity);
         }
-        $this->getEntityManager()->flush();
+        $entityManager->flush();
     }
 
     private function isSomethingHooked(HookedObjectEntity $hookedObjectEntity)

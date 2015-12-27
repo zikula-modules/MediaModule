@@ -1,14 +1,6 @@
 # We need to manually add all the controllers, because the media controller must come
-# before the collection controller, so that all slugs containing "/f/" will be machted
+# before the collection controller, so that all slugs containing "/f/" will be matched
 # first.
-
-cmfcmfmediamodule_controller_media:
-  resource: "@CmfcmfMediaModule/Controller/MediaController.php"
-  type:     annotation
-
-cmfcmfmediamodule_controller_collection:
-  resource: "@CmfcmfMediaModule/Controller/CollectionController.php"
-  type:     annotation
 
 cmfcmfmediamodule_controller_finder:
   resource: "@CmfcmfMediaModule/Controller/FinderController.php"
@@ -22,6 +14,22 @@ cmfcmfmediamodule_controller_settings:
   resource: "@CmfcmfMediaModule/Controller/SettingsController.php"
   type:     annotation
 
+cmfcmfmediamodule_controller_upgrade:
+  resource: "@CmfcmfMediaModule/Controller/UpgradeController.php"
+  type:     annotation
+
 cmfcmfmediamodule_controller_watermark:
   resource: "@CmfcmfMediaModule/Controller/WatermarkController.php"
+  type:     annotation
+
+cmfcmfmediamodule_controller_permission:
+  resource: "@CmfcmfMediaModule/Controller/PermissionController.php"
+  type:     annotation
+
+cmfcmfmediamodule_controller_media:
+  resource: "@CmfcmfMediaModule/Controller/MediaController.php"
+  type:     annotation
+
+cmfcmfmediamodule_controller_collection:
+  resource: "@CmfcmfMediaModule/Controller/CollectionController.php"
   type:     annotation

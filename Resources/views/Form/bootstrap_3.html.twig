@@ -39,3 +39,40 @@
         })(jQuery);
     </script>
 {%- endblock -%}
+
+{% block cmfcmfmediamodule_permission_widget %}
+    {{ pageAddAsset('javascript',  zasset('@CmfcmfMediaModule:js/Collection/Permission/New.js')) }}
+    <div class="table-responsive">
+        <table class="table table-condensed table-striped">
+            <thead>
+            <tr>
+                {% for category in securityCategories %}
+                    <th class="text-center">{{ category.title }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                {% for category in securityCategories %}
+                    <td>
+                        {% for vertex in securityGraph.verticesByCategory(category) %}
+                            <label>
+                                <input type="checkbox" class="cmfcmfmedia-security-level"
+                                       value="{{ vertex.id|e('html_attr') }}"
+                                       name="{{ full_name }}[]"
+                                       data-vertex-id="{{ vertex.id|e('html_attr') }}"
+                                       data-required-vertices="{{ securityGraph.requiredVertices(vertex).ids|json_encode|e('html_attr') }}"
+                                       data-conflicting-vertices="{{ securityGraph.conflictedVertices(vertex).ids|json_encode|e('html_attr') }}"
+                                       {% if vertex.id in value %} checked="checked" {% endif %}
+                                >
+                                {{ vertex.attribute('title') }}
+                            </label>
+                            <br/>
+                        {% endfor %}
+                    </td>
+                {% endfor %}
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -19,6 +19,7 @@
                         return {'id': node.id};
                     }
                 },
+                'force_text': true,
                 'multiple': $tree.data('multiple')
             },
             'checkbox': {

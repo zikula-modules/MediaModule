@@ -9,14 +9,17 @@
         <div class="alert alert-warning">
             <i class="fa fa-fw fa-download fa-2x pull-left"></i>
             {{ __f('The %s version of the MediaModule is available for download. You can apply the automatic upgrade by clicking here:', {'%s': cmfcmfmediamodule_newversionavailable()}) }}
-            <a href="{{ path('cmfcmfmediamodule_settings_upgrade') }}" class="alert-link">{{ __('Upgrade now!') }}</a>
+            <a href="{{ path('cmfcmfmediamodule_upgrade_doupgrade') }}" class="alert-link">{{ __('Upgrade now!') }}</a>
             <div class="clearfix"></div>
         </div>
     {% endif %}
 {% endblock %}
 
-<h1>{% block title %}{% endblock %}</h1>
-{{ pageSetVar('title', block('title')) }}
+{% set title = block('title') %}
+{% if title|trim is not empty %}
+    <h1>{% block title %}{% endblock %}</h1>
+    {{ pageSetVar('title', title) }}
+{% endif %}
 
 {% if renderRaw is not defined or not renderRaw %}
     {{ showflashes() }}

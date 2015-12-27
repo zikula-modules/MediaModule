@@ -4,14 +4,17 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection;
 
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class CollectionType extends AbstractType
 {
     /**
-     * @var CollectionEntity
+     * @var CollectionEntity|null
      */
     private $parent;
 
@@ -20,12 +23,18 @@ class CollectionType extends AbstractType
      */
     private $templateCollection;
 
-    public function __construct(TemplateCollection $templateCollection, CollectionEntity $parent = null)
+    /**
+     * @var SecurityManager
+     */
+    private $securityManager;
+
+    public function __construct(TemplateCollection $templateCollection, CollectionEntity $parent = null, SecurityManager $securityManager)
     {
         parent::__construct();
 
         $this->parent = $parent;
         $this->templateCollection = $templateCollection;
+        $this->securityManager = $securityManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -67,6 +76,8 @@ class CollectionType extends AbstractType
         //        ])
         //    ;
         //}
+        $securityManager = $this->securityManager;
+
         $builder
             ->add('description', 'textarea', [
                 'label' => $this->__('Description'),
@@ -80,35 +91,52 @@ class CollectionType extends AbstractType
                 'required' => false,
                 'placeholder' => $this->__('Default'),
                 'choices' => $this->templateCollection->getCollectionTemplateTitles()
-            ])
-            ->add('parent', 'entity', [
+            ]);
+        if ($this->parent !== null) {
+            $builder->add('parent', 'entity', [
                 'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
-                'required' => false,
+                'required' => true,
                 'label' => $this->__('Parent'),
-                'query_builder' => function (EntityRepository $er) use ($theCollection) {
-                    $qb = $er->createQueryBuilder('c');
-                    $qb
-                        ->orderBy('c.root', 'ASC')
-                        ->addOrderBy('c.lft', 'ASC')
-                        ->where($qb->expr()->not($qb->expr()->eq('c.id', ':uploadCollectionId')))
-                        ->setParameter('uploadCollectionId', CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID)
-                    ;
-
+                'query_builder' => function (EntityRepository $er) use ($theCollection, $securityManager) {
+                    /** @var CollectionRepository $er */
+                    $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
+                        CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
+                    );
+                    $qb->orderBy('c.root', 'ASC')
+                        ->addOrderBy('c.lft', 'ASC');
                     if ($theCollection->getId() != null) {
-                        // The collection is currently edited.
-                        $qb
-                            ->andWhere($qb->expr()->neq('c.id', ':id'))
-                            ->setParameter('id', $theCollection->getId())
-                        ;
+                        // The collection is currently edited. Make sure it's not placed onto
+                        // itself mor one of it's children.
+                        $qb->andWhere(
+                            $qb->expr()->not(
+                                $qb->expr()->in(
+                                    'c.id',
+                                    $er->getChildrenQuery($theCollection)->getDQL()
+                                )
+                            )
+                        )->andWhere($qb->expr()->neq('c.id', ':id'))
+                        ->setParameter('id', $theCollection->getId());
                     }
 
                     return $qb;
                 },
                 'data' => $this->parent,
-                'placeholder' => $this->__('[No parent]'),
                 'property' => 'indentedTitle',
-            ])
-            ->add('watermark', 'entity', [
+            ]);
+        } else {
+            $builder->add('parent', 'entity', [
+                'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
+                'required' => false,
+                'label' => $this->__('Parent'),
+                'data' => $this->parent,
+                'placeholder' => $this->__('No parent'),
+                'choices' => [],
+                'attr' => [
+                    'readonly' => true
+                ]
+            ]);
+        }
+        $builder->add('watermark', 'entity', [
                 'class' => 'CmfcmfMediaModule:Watermark\AbstractWatermarkEntity',
                 'required' => false,
                 'label' => $this->__('Watermark'),

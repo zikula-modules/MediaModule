@@ -2,7 +2,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Container;
 
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\Core\LinkContainer\LinkContainerInterface;
@@ -29,12 +31,18 @@ class LinkContainer implements LinkContainerInterface
      */
     private $translator;
 
-    public function __construct(RouterInterface $router, SecurityManager $securityManager, TranslatorInterface $translator)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(RouterInterface $router, SecurityManager $securityManager, TranslatorInterface $translator, EntityManagerInterface $entityManager)
     {
         $this->router = $router;
         $this->securityManager = $securityManager;
         $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
         $this->translator = $translator;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -58,7 +66,9 @@ class LinkContainer implements LinkContainerInterface
 
         $links = [];
 
-        if ($this->securityManager->hasPermission('collection', 'view')) {
+        $rootCollection = $this->entityManager->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNode();
+
+        if ($this->securityManager->hasPermission($rootCollection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_collection_displayroot'),
                 'text' => $this->translator->trans('Frontend', [], $this->domain),
@@ -92,10 +102,8 @@ class LinkContainer implements LinkContainerInterface
                 'text' => $this->translator->trans('Settings', [], $this->domain),
                 'icon' => 'cog'
             ];
-        }
-        if ($this->securityManager->hasPermission('settings', 'admin')) {
             $links[] = [
-                'url' => $this->router->generate('cmfcmfmediamodule_settings_upgrade'),
+                'url' => $this->router->generate('cmfcmfmediamodule_upgrade_doupgrade'),
                 'text' => $this->translator->trans('Upgrade', [], $this->domain),
                 'icon' => 'download'
             ];

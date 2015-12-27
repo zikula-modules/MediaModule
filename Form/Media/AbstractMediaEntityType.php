@@ -3,9 +3,12 @@
 namespace Cmfcmf\Module\MediaModule\Form\Media;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Form\DataTransformer\ArrayToJsonTransformer;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
 use Zikula\Common\I18n\TranslatableInterface;
@@ -27,10 +30,16 @@ abstract class AbstractMediaEntityType extends AbstractType implements Translata
      */
     private $allowTemporaryUploadCollection;
 
-    public function __construct($isCreation = false, CollectionEntity $parent = null, $allowTemporaryUploadCollection = false)
+    /**
+     * @var SecurityManager
+     */
+    private $securityManager;
+
+    public function __construct(SecurityManager $securityManager, $isCreation = false, CollectionEntity $parent = null, $allowTemporaryUploadCollection = false)
     {
         parent::__construct();
 
+        $this->securityManager = $securityManager;
         $this->isCreation = $isCreation;
         $this->parent = $parent;
         $this->allowTemporaryUploadCollection = $allowTemporaryUploadCollection;
@@ -59,20 +68,24 @@ abstract class AbstractMediaEntityType extends AbstractType implements Translata
             'class' => 'hidden',
         ];
 
+        $securityManager = $this->securityManager;
         $allowTemporaryUploadCollection = $this->allowTemporaryUploadCollection;
         $collectionOptions = [
             'required' => true,
             'label' => $this->__('Collection'),
             'class' => 'CmfcmfMediaModule:Collection\CollectionEntity',
-            'query_builder' => function (EntityRepository $er) use ($allowTemporaryUploadCollection) {
-                $qb = $er->createQueryBuilder('c');
-                $qb
-                    ->orderBy('c.root', 'ASC')
-                    ->addOrderBy('c.lft', 'ASC')
-                ;
-                if (!$allowTemporaryUploadCollection) {
-                    $qb->where($qb->expr()->not($qb->expr()->eq('c.id', ':uploadCollectionId')))
-                        ->setParameter('uploadCollectionId', CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID);
+            'query_builder' => function (EntityRepository $er) use ($allowTemporaryUploadCollection, $securityManager) {
+                /** @var CollectionRepository $er */
+                $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
+                    CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA
+                );
+                $qb->orderBy('c.root', 'ASC')
+                    ->addOrderBy('c.lft', 'ASC');
+
+                if ($allowTemporaryUploadCollection) {
+                    $qb->orWhere(
+                        $qb->expr()->eq('c.id', CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID)
+                    );
                 }
 
                 return $qb;

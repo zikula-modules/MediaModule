@@ -2,6 +2,7 @@
 
 namespace Cmfcmf\Module\MediaModule;
 
+use Cmfcmf\Module\MediaModule\DependencyInjection\CollectionPermissionCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\CollectionTemplateCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\FontCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\MediaTypeCompilerPass;
@@ -17,5 +18,6 @@ class CmfcmfMediaModule extends AbstractModule
         $container->addCompilerPass(new MediaTypeCompilerPass());
         $container->addCompilerPass(new CollectionTemplateCompilerPass());
         $container->addCompilerPass(new FontCompilerPass());
+        $container->addCompilerPass(new CollectionPermissionCompilerPass());
     }
 }

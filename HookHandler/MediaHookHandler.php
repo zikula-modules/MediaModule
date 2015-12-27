@@ -5,6 +5,7 @@ namespace Cmfcmf\Module\MediaModule\HookHandler;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Zikula\Core\Hook\DisplayHook;
 use Zikula\Core\Hook\ProcessHook;
 use Zikula\Core\Hook\ValidationHook;
@@ -53,6 +54,7 @@ class MediaHookHandler extends AbstractHookHandler
         $content = $this->renderEngine->render('CmfcmfMediaModule:Media:hookEdit.html.twig', [
             'selectedMedia' => $selectedMedia,
         ]);
+
         $this->uiResponse($hook, $content);
     }
 
@@ -67,7 +69,9 @@ class MediaHookHandler extends AbstractHookHandler
             if (!empty($mediaId)) {
                 $mediaEntity = $this->entityManager->find('CmfcmfMediaModule:Media\AbstractMediaEntity', $mediaId);
                 if (!is_object($mediaEntity)) {
-                    $validationResponse->addError('media', $this->__('Unknown media'));
+                    $validationResponse->addError('media', $this->__('Unknown medium'));
+                } elseif (!$this->securityManager->hasPermission($mediaEntity, CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)) {
+                    $validationResponse->addError('media', $this->__('Unknown medium'));
                 } else {
                     $this->entities[] = $mediaEntity;
                 }

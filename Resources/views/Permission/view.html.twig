@@ -1,0 +1,120 @@
+{% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% block title %}
+    {{ __f('Permissions related to "%s"', {'%s': collection.title}) }}
+{% endblock %}
+{% block content %}
+    {% include '@CmfcmfMediaModule/util.html.twig' %}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/Sortable.min.js'), 98) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Collection/Permission/View.js')) }}
+
+    {% set enhancePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS')) %}
+    {% set changePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS')) %}
+
+    <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: collection.slug}) }}" class="btn btn-default">
+        <i class="fa fa-folder-o"></i> {{ __('Back to the collection') }}
+    </a>
+    <div class="table-responsive">
+        <table class="table table-condensed table-striped table-hover" id="cmfcmfmedia-permission-sortable-table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>{{ __('Description') }}</th>
+                <th>{{ __('Target') }}</th>
+                <th>{{ __('Permissionlevels') }}</th>
+                <th>{{ __('Applied to self') }}</th>
+                <th>{{ __('Applied to sub-collections') }}</th>
+                <th>{{ __('Go on') }}</th>
+                <th>{{ __('Validity') }}</th>
+                <th>{{ __('Actions') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set permissionLockedTitle = __('This permission is locked. You cannot edit or delete it.') %}
+            {% set permissionNotEditableTitle = __('To edit this permission, please go to the parent collection in which this permission is defined.') %}
+            {% for permission in entities %}
+                <tr class="{% if permission.locked %}danger locked{% elseif permission.collection.id != collection.id %}warning{% elseif highlight and permission.id == highlight %}info{% endif %}{% if permission.goOn %} goOn{% endif %}"
+                    title="{% if permission.locked %}{{ permissionLockedTitle|e('html_attr') }}{% elseif permission.collection.id != collection.id %}{{ permissionNotEditableTitle|e('html_attr') }}{% endif %}"
+                    data-id="{{ permission.id|e('html_attr') }}" data-version="{{ permission.version|e('html_attr') }}"
+                >
+                    <td>
+                        {% if permission.locked or not (changePermissionsPermission or (enhancePermissionsPermission and permission.createdUserId == userId)) %}
+                            <i class="fa fa-fw fa-2x fa-lock"></i>
+                        {% else %}
+                            <i class="fa fa-fw fa-2x fa-sort" style="cursor: move;"></i>
+                        {% endif %}
+                    </td>
+                    <td title="{{ permission.description|e('html_attr') }}">
+                        {{ permission.description }}
+                    </td>
+                    <td>
+                        {{ collectionPermissionTypeContainer.collectionPermissionFromEntity(permission).targets(permission) }}
+                    </td>
+                    <td>{{ permission.permissionLevels|join(', ') }}</td>
+                    <td>{{ permission.appliedToSelf ? __('yes') : __('no') }}</td>
+                    <td>{{ permission.appliedToSubCollections ? __('yes') : __('no') }}</td>
+                    <td>{{ permission.goOn ? __('yes') : __('no') }}</td>
+                    <td>
+                        {% if permission.validAfter is not null %}
+                            {{ permission.validAfter|date }}
+                        {% else %}
+                            {{ __('now') }}
+                        {% endif %}
+                        -
+                        {% if permission.validUntil is not null %}
+                            {{ permission.validUntil|date }}
+                        {% else %}
+                            {{ __('forever') }}
+                        {% endif %}
+                    </td>
+                    <td class="text-right">
+                        {% if changePermissionsPermission or enhancePermissionsPermission %}
+                            <a href="#" data-toggle="modal" data-target=".cmfcmfmedia-permission-creation-modal" data-after-permission-id="{{ permission.id|e('html_attr') }}" class="cmfcmfmedia-permission-open-creation-modal">
+                                <i class="fa fa-plus fa-fw"></i>
+                            </a>
+                            {% if permission.collection.id == collection.id and not permission.locked %}
+                                {% if changePermissionsPermission or permission.createdUserId == userId %}
+                                    <a href="{{ path('cmfcmfmediamodule_permission_edit', {id: permission.id}) }}" title="{{ __('Edit')|e('html_attr') }}">
+                                        <i class="fa fa-edit fa-fw"></i>
+                                    </a>
+                                    <a href="{{ path('cmfcmfmediamodule_permission_delete', {id: permission.id}) }}" class="text-danger" title="{{ __('Delete')|e('html_attr') }}">
+                                        <i class="fa fa-trash-o fa-fw"></i>
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal fade cmfcmfmedia-permission-creation-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">{{ __('Choose permission type') }}</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="cmfcmfmedia-permission-collection" value="{{ collection.id|e('html_attr') }}">
+                    <input type="hidden" id="cmfcmfmedia-permission-after-permission-id" value="">
+                    <div class="alert alert-info">
+                        {{ __('To create a permission rule for guests (not logged-in visitors), choose "User" and select the "guest" user. To create a permission for everyone, choose "Group" and select "all groups".') }}
+                    </div>
+                    <select class="form-control" title="{{ __('Permission type')|e('html_attr') }}" id="cmfcmfmedia-permission-permission-type">
+                        {% for permissionType in collectionPermissionTypeContainer.collectionPermissions %}
+                            <option value="{{ permissionType.id }}">{{ permissionType.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-primary" id="cmfcmfmedia-permission-create-btn">
+                        {{ __('Create permission') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
