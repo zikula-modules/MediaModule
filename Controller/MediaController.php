@@ -10,6 +10,7 @@ use Cmfcmf\Module\MediaModule\MediaType\PasteMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\WebMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -80,7 +81,10 @@ class MediaController extends AbstractController
      */
     public function editAction(Request $request, AbstractMediaEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA) && $entity->getCollection()->getId() != CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+                $entity,
+                CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA)
+        ) {
             throw new AccessDeniedException();
         }
 
@@ -169,7 +173,10 @@ class MediaController extends AbstractController
      */
     public function deleteAction(Request $request, AbstractMediaEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+            $entity,
+            CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA)
+        ) {
             throw new AccessDeniedException();
         }
 
@@ -220,21 +227,23 @@ class MediaController extends AbstractController
      */
     public function newAction(Request $request)
     {
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        if (!$securityManager->hasPermission('media', 'new')) {
-            // @todo Correct permission!
-            throw new AccessDeniedException();
-        }
-        // @todo Validate parent slug!
+        $this->checkMediaCreationAllowed();
 
         $isPopup = $request->query->filter('popup', false, false, FILTER_VALIDATE_BOOLEAN);
         $parentCollectionSlug = $request->query->get('parent', null);
 
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
+        $collections = $this->get('cmfcmf_media_module.security_manager')
+            ->getCollectionsWithAccessQueryBuilder(
+                CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA
+            )
+            ->getQuery()
+            ->execute();
+
         return [
             'webMediaTypes' => $mediaTypeCollection->getWebMediaTypes(true),
-            'collections' => $securityManager->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA)->getQuery()->execute(),
+            'collections' => $collections,
             'parentCollectionSlug' => $parentCollectionSlug,
             'isPopup' => $isPopup
         ];
@@ -256,10 +265,7 @@ class MediaController extends AbstractController
         if (!in_array($type, ['paste', 'web', 'upload'])) {
             throw new NotFoundHttpException();
         }
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'new')) {
-            throw new AccessDeniedException();
-            // @todo Fix this.
-        }
+        $this->checkMediaCreationAllowed();
 
         $init = $request->request->get('init', false);
         $mediaType = $this->get('cmfcmf_media_module.media_type_collection')->getMediaType($mediaType);
@@ -319,10 +325,7 @@ class MediaController extends AbstractController
      */
     public function matchesPasteAction(Request $request)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'new')) {
-            // @todo Fix this.
-            throw new AccessDeniedException();
-        }
+        $this->checkMediaCreationAllowed();
 
         $pastedText = $request->request->get('pastedText', false);
         if ($pastedText === false) {
@@ -358,9 +361,15 @@ class MediaController extends AbstractController
         $id = $request->query->get('id');
         $position = $request->query->get('position');
 
-        $entity = $this->getDoctrine()->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')->find($id);
+        $entity = $this
+            ->getDoctrine()
+            ->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')
+            ->find($id);
 
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+            $entity,
+            CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA)
+        ) {
             throw new AccessDeniedException();
         }
 
@@ -383,9 +392,9 @@ class MediaController extends AbstractController
      */
     public function webCreationAjaxResultsAction(Request $request, $mediaType)
     {
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $this->checkMediaCreationAllowed();
 
-        // @todo Fix this.
+        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
         try {
             $mediaType = $mediaTypeCollection->getMediaType($mediaType);
@@ -419,11 +428,7 @@ class MediaController extends AbstractController
      */
     public function getMediaTypeFromFileAction(Request $request)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'new')) {
-            throw new AccessDeniedException();
-        }
-
-        // @todo Fix this.
+        $this->checkMediaCreationAllowed();
 
         $mediaTypes = $this->get('cmfcmf_media_module.media_type_collection')->getUploadableMediaTypes();
         $files = $request->request->get('files', false);
@@ -476,10 +481,7 @@ class MediaController extends AbstractController
      */
     public function uploadAction(Request $request)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'new')) {
-            // @todo Fix this.
-            throw new AccessDeniedException();
-        }
+        $this->checkMediaCreationAllowed();
 
         try {
             $mediaTypes = $this->get('cmfcmf_media_module.media_type_collection')->getUploadableMediaTypes();
@@ -555,7 +557,12 @@ class MediaController extends AbstractController
      */
     public function popupEmbedAction(AbstractMediaEntity $entity)
     {
-        // @todo Fix this.
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+            $entity,
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
+        ) {
+            throw new AccessDeniedException();
+        }
 
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
@@ -581,7 +588,10 @@ class MediaController extends AbstractController
      */
     public function downloadAction(AbstractFileEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+            $entity,
+            CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM)
+        ) {
             throw new AccessDeniedException();
         }
 
@@ -612,7 +622,10 @@ class MediaController extends AbstractController
      */
     public function displayAction(AbstractMediaEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+            $entity,
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
+        ) {
             throw new AccessDeniedException();
         }
 
@@ -629,6 +642,22 @@ class MediaController extends AbstractController
                 new RouteUrl('cmfcmfmediamodule_media_display', ['slug' => $entity->getSlug()])
             )
         ];
+    }
+
+    private function checkMediaCreationAllowed()
+    {
+        $securityManager = $this->get('cmfcmf_media_module.security_manager');
+
+        $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
+            CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA
+        );
+        $qb->setMaxResults(1);
+
+        try {
+            $qb->getQuery()->getSingleResult();
+        } catch (NoResultException $e) {
+            throw new AccessDeniedException();
+        }
     }
 
     private function getDefaultEntity(Request $request, $type, MediaTypeInterface $mediaType, $init, $collection)
