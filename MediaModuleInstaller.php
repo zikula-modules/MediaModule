@@ -19,6 +19,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         $rootCollection = new CollectionEntity();
         $rootCollection
             ->setTitle($this->__('Root collection'))
+            ->setSlug($this->__('root'))
             ->setDescription('The very top of the collection tree.')
         ;
         $this->entityManager->persist($rootCollection);
@@ -93,6 +94,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                 $rootCollection = new CollectionEntity();
                 $rootCollection
                     ->setTitle($this->__('Root collection'))
+                    ->setSlug($this->__('root'))
                     ->setDescription('The very top of the collection tree.')
                 ;
                 $this->entityManager->persist($rootCollection);
