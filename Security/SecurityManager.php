@@ -22,6 +22,8 @@ class SecurityManager
 
     /**
      * @var PermissionApi
+     *
+     * @todo Use Permission API if core_min is 1.4.2.
      */
     private $permissionApi;
 
@@ -94,7 +96,7 @@ class SecurityManager
             $type = $objectOrType;
         }
 
-        return $this->permissionApi->hasPermission(
+        return \SecurityUtil::checkPermission(
             "CmfcmfMediaModule:$type:",
             "$id::",
             $this->levels[$action]
@@ -112,7 +114,7 @@ class SecurityManager
      */
     public function hasPermissionRaw($component, $instance, $level)
     {
-        return $this->permissionApi->hasPermission($component, $instance, $level);
+        return \SecurityUtil::checkPermission($component, $instance, $level);
     }
 
     /**
