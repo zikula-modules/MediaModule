@@ -64,6 +64,7 @@ before_deploy:
     - rm -Rf vendor
     - rm -Rf .git
     - composer install --no-dev --prefer-dist
+    - rm auth.json
     - zip -qr MediaModule.zip .
 
 deploy:
