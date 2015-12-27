@@ -16,7 +16,7 @@ class VersionChecker
 
     const GITHUB_REPO = 'MediaModule';
 
-    private $allowedAssetContentTypes = ['application/x-zip', 'application/zip'];
+    private $allowedAssetContentTypes = ['application/x-zip', 'application/zip', 'application/x-zip-compressed'];
 
     private $githubApiCache;
 
