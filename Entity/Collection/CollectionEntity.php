@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CollectionEntity implements Node, Sluggable
 {
-    const TEMPORARY_UPLOAD_COLLECTION_ID = 2;
+    const TEMPORARY_UPLOAD_COLLECTION_ID = 1;
 
     /**
      * @ORM\Column(name="id", type="integer")

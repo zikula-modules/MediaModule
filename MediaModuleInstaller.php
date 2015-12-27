@@ -16,35 +16,38 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
 
         $this->createLicenses();
 
-        $rootCollection = new CollectionEntity();
-        $rootCollection
-            ->setTitle($this->__('Root collection'))
-            ->setSlug($this->__('root'))
-            ->setDescription('The very top of the collection tree.')
-        ;
-        $this->entityManager->persist($rootCollection);
-
         $temporaryUploadCollection = new CollectionEntity();
         $temporaryUploadCollection
             ->setTitle($this->__('Temporary upload collection'))
             ->setDescription($this->__('This collection is needed as temporary storage for uploaded files. Do not edit or delete!'))
-            ->setParent($rootCollection)
         ;
         $this->entityManager->persist($temporaryUploadCollection);
+
+        // We need to create and flush the upload collection first, because it has to has the ID 1.
+        $this->entityManager->flush();
+        if ($temporaryUploadCollection->getId() != CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
+            \LogUtil::registerError($this->__f('The id of the generated "temporary upload collection" must be %s, but has a different value. This should not have happened. Please report this error.', [CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID]));
+        }
+
+        $rootCollection = new CollectionEntity();
+        $rootCollection
+            ->setTitle($this->__('Root collection'))
+            ->setSlug($this->__('root'))
+            ->setDescription('The very top of the collection tree.');
+        $this->entityManager->persist($rootCollection);
+
+        $temporaryUploadCollection->setParent($rootCollection);
+        $this->entityManager->merge($temporaryUploadCollection);
 
         $exampleCollection = new CollectionEntity();
         $exampleCollection
             ->setTitle($this->__('Example collection'))
             ->setDescription($this->__('Edit or delete this example collection'))
-            ->setParent($rootCollection)
-        ;
+            ->setParent($rootCollection);
         $this->entityManager->persist($exampleCollection);
 
         $this->createPermissions($temporaryUploadCollection, $rootCollection);
 
-        if ($temporaryUploadCollection->getId() != CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
-            \LogUtil::registerError($this->__('The id of the generated "temporary upload collection" must be 1, but has a different value. This should not have happened. Please report this error.'));
-        }
 
         \HookUtil::registerProviderBundles($this->version->getHookProviderBundles());
         \HookUtil::registerSubscriberBundles($this->version->getHookSubscriberBundles());
@@ -105,6 +108,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                     ->findAll();
                 foreach ($allCollections as $collection) {
                     if ($collection->getParent() === null && $collection->getId() != null) {
+                        // Collection has no parent and isn't the to-be-created root collection.
                         $collection->setParent($rootCollection);
                         $this->entityManager->merge($collection);
                     }
