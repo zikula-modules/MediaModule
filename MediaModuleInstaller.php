@@ -101,7 +101,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                 $this->entityManager->persist($rootCollection);
 
                 $allCollections = $this->entityManager
-                    ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')
+                    ->getRepository('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity')
                     ->findAll();
                 foreach ($allCollections as $collection) {
                     if ($collection->getParent() === null && $collection->getId() != null) {
@@ -112,7 +112,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                 $this->entityManager->flush();
 
                 $this->createPermissions(
-                    $this->entityManager->find('CmfcmfMediaModule:Collection\CollectionEntity', 1),
+                    $this->entityManager->find('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity', 1),
                     $rootCollection
                 );
 
