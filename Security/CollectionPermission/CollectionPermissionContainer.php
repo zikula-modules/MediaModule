@@ -52,6 +52,7 @@ class CollectionPermissionContainer
         }
         throw new \DomainException();
     }
+
     /**
      * @return array|CollectionPermissionInterface[]
      */

@@ -116,7 +116,6 @@ class CollectionType extends AbstractType
                             )
                         )->andWhere($qb->expr()->neq('c.id', ':id'))
                         ->setParameter('id', $theCollection->getId());
-
                     }
 
                     return $qb;

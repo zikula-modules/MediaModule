@@ -250,7 +250,6 @@ class CollectionController extends AbstractController
      *
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
-     *
      */
     public function displayAction(Request $request, $slug)
     {

@@ -165,9 +165,9 @@ class SecurityManager
      * Return all collections which the current user has $permLevel access to.
      *
      * @param int    $requestedLevel The requested permission level. Must be one of the constants from
-     * the CollectionPermissionSecurityTree class.
-     * @param string $type (media|collections) Will either return media joined by collections or
-     * collections only.
+     *                               the CollectionPermissionSecurityTree class.
+     * @param string $type           (media|collections) Will either return media joined by collections or
+     *                               collections only.
      *
      * @return QueryBuilder Select all collections where there is at least on permission which
      *

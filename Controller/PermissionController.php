@@ -209,7 +209,6 @@ class PermissionController extends AbstractController
         ]);
     }
 
-
     /**
      * @Route("/ajax/reorder/{permissionId}/{permissionVersion}/{newIndex}.json",
      *     options={"expose" = true},
