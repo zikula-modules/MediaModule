@@ -100,7 +100,7 @@ class CollectionType extends AbstractType
                 'query_builder' => function (EntityRepository $er) use ($theCollection, $securityManager) {
                     /** @var CollectionRepository $er */
                     $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
-                        $theCollection->getId() != null ? CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION : CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
+                        CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
                     );
                     $qb->orderBy('c.root', 'ASC')
                         ->addOrderBy('c.lft', 'ASC');
