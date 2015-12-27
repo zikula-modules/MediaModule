@@ -35,6 +35,5 @@ foreach ($graph->getEdges()->getEdgesMatch(function (Base $edge) {
     $graph->removeEdge($edge);
 }
 
-
 $graphviz = new \Graphp\GraphViz\GraphViz();
 rename($graphviz->createImageFile($graph), __DIR__ . '/require-graph.png');

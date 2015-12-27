@@ -14,8 +14,8 @@ class PermissionRepository extends EntityRepository
      * It also makes sure that there isn't a goOn = 0 entity above a locked entity.
      *
      * @param AbstractPermissionEntity $permissionEntity
-     * @param bool                     $fixPosition Whether or not the position of the permission
-     * shall be automatically fixed. If false, an exception will be thrown.
+     * @param bool                     $fixPosition      Whether or not the position of the permission
+     *                                                   shall be automatically fixed. If false, an exception will be thrown.
      */
     public function save(AbstractPermissionEntity $permissionEntity, $fixPosition)
     {

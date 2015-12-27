@@ -52,6 +52,7 @@ class PermissionLevelType extends AbstractType
                 if ($options['permissionLevel'] == CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS) {
                     $this->fixSecurityGraph();
                 }
+
                 return array_map(function (Vertex $vertex) {
                     return $vertex->getAttribute('title');
                 }, $this->securityGraph->getVertices()->getMap());
