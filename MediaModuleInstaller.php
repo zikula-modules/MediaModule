@@ -48,7 +48,6 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
 
         $this->createPermissions($temporaryUploadCollection, $rootCollection);
 
-
         \HookUtil::registerProviderBundles($this->version->getHookProviderBundles());
         \HookUtil::registerSubscriberBundles($this->version->getHookSubscriberBundles());
 
