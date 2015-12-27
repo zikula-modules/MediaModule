@@ -70,7 +70,7 @@ services:
 
 
   # Twig extension
-  cmfcmf_media_module.twig_extension.description_escaping:
+  cmfcmf_media_module.twig_extension:
     class: Cmfcmf\Module\MediaModule\Twig\TwigExtension
     arguments: [@markdown_extra_parser, @hook_dispatcher, @cmfcmf_media_module.security_manager, @cmfcmf_media_module.upgrade.version_checker]
     public: false
