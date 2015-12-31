@@ -7,293 +7,132 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zikula 1.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-10-07 15:08+0100\n"
+"POT-Creation-Date: 2015-12-31 21:39+0100\n"
+"PO-Revision-Date: 2015-12-31 21:47+0100\n"
 "Last-Translator: Christian Flach <cmfcmf.flach@gmail.com>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.1\n"
+"X-Generator: Poedit 1.8.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "%s display hooks"
-msgstr "%s Display Hooks"
+#: HookHandler/MediaHookHandler.php:72 HookHandler/MediaHookHandler.php:74
+msgid "Unknown medium"
+msgstr "Unbekanntes Medium"
 
-msgid "%s hooks"
-msgstr "%s Hooks"
+#: HookHandler/LicenseHookHandler.php:60
+msgid "Unknown license"
+msgstr "Unbekannte Lizenz"
 
-msgid "%s min"
-msgstr "%s min"
+#: HookHandler/CollectionHookHandler.php:71
+msgid "Unknown collection"
+msgstr "Unbekannte Sammlung"
 
-msgid "A title for you to recognize the watermark."
-msgstr "Ein Titel, sodass Sie das Wasserzeichen einfach wiedererkennen."
+#: Twig/TwigExtension.php:128
+msgid "Anonymous"
+msgstr "Anonym"
 
-msgid "Actions"
-msgstr "Aktionen"
+#: Form/Media/PlaintextType.php:16
+msgid "Use syntax highlighting"
+msgstr "Syntax Hervorhebung aktivieren"
 
-msgid "Add files (try drag and drop as well!)"
-msgstr "Dateien hinzufügen (probieren Sie auch Drag'n'Drop!)"
-
-msgid "Add medium from the Web"
-msgstr "Medium aus dem Internet hinzufügen"
-
-msgid "Added by"
-msgstr "Hinzugefügt von"
-
-msgid "Album"
-msgstr "Album"
-
-msgid "Allow download"
-msgstr "Download erlauben"
-
-msgid "Allow to use for uploads"
-msgstr "Für Uploads erlauben"
-
-msgid "Allow to use for web embeds"
-msgstr "Für Web Einbindung erlauben"
-
-msgid "Aperture"
-msgstr "Blende"
-
-msgid "As is - use with editors like Scribite"
-msgstr "Wie es ist - zum benutzen mit Editoren wie Scribite"
-
-msgid "Attributions"
-msgstr "Zuschreibungen"
-
-msgid "Audio"
-msgstr "Audio"
-
-msgid "Audio bit rate"
-msgstr "Audio Bit Rate"
-
-msgid "Audio channels"
-msgstr "Audio Kanäle"
-
-msgid "Audio sample rate"
-msgstr "Audio Sample Rate"
-
-msgid "Author"
-msgstr "Autor"
-
-msgid "Author Avatar URL"
-msgstr "Autor Avatar URL"
-
-msgid "Author URL"
-msgstr "Autor URL"
-
-msgid "Author avatar"
-msgstr "Autor Avatar"
-
-msgid "Back to overview"
-msgstr "Zurück zur Übersicht"
-
-msgid "Back to the collection"
-msgstr "Zurück zur Sammlung"
-
-msgid "Back to the list"
-msgstr "Zurück zur Medienliste"
-
-msgid "Band"
-msgstr "Band"
-
-msgid "Big thumbnail slider"
-msgstr "Großer Slider"
-
-msgid "Bit rate"
-msgstr "Bit Rate"
-
-msgid "Camera"
-msgstr "Kamera"
-
-msgid "Cancel"
-msgstr " Abbrechen"
-
-msgid "Cards with thumbnails"
-msgstr "Karten mit Vorschaubildern"
-
+#: Form/Media/AbstractFileType.php:15
 msgid "Change file"
 msgstr "Datei ändern"
 
-msgid "Change settings"
-msgstr "Einstellungen ändern"
+#: Form/Media/AbstractFileType.php:21
+msgid "Allow download"
+msgstr "Download erlauben"
 
-msgid "Channel"
-msgstr "Kanal"
+#: Form/Media/DeezerType.php:20
+msgid "Show playlist"
+msgstr "Wiedergabeliste anzeigen"
 
-msgid "Channels"
-msgstr "Kanäle"
+#: Form/Media/AbstractMediaEntityType.php:55
+#: Form/Collection/CollectionType.php:47
+msgid "You may use HTML."
+msgstr "Sie können HTML benutzen."
 
-msgid "Checking file system permissions"
-msgstr "Überprüfe Dateisystem Zugriffsrechte"
+#: Form/Media/AbstractMediaEntityType.php:58
+#: Form/Collection/CollectionType.php:50
+msgid "Only plaintext allowed."
+msgstr "Nur Klartext erlaubt."
 
-msgid "Checking installed and available versions"
-msgstr "Überprüfe installierte und verfügbare Versionen"
+#: Form/Media/AbstractMediaEntityType.php:61
+#: Form/Collection/CollectionType.php:53
+msgid "You may use MarkDown."
+msgstr "Sie können MarkDown benutzen"
 
-msgid "Checking server requirements"
-msgstr "Überprüfe Server Vorraussetzungen"
-
-msgid "Choose collections to embed"
-msgstr "Wählen Sie die Sammlungen zum einbetten"
-
-msgid "Close"
-msgstr "Schließen"
-
-msgid "Cmfcmf MediaModule"
-msgstr "Cmfcmf MedienModul"
-
-msgid "Cmfcmf MediaModule description"
-msgstr "Alle Arten von Medien verwalten und hochladen"
-
+#: Form/Media/AbstractMediaEntityType.php:75
 msgid "Collection"
 msgstr "Sammlung"
 
-msgid "Collection description escaping strategy"
-msgstr "Sammlungsbeschreibung Escaping Strategie"
+#: Form/Media/AbstractMediaEntityType.php:93
+msgid "Select collection"
+msgstr "Sammlung wählen"
 
-msgid "Collections"
-msgstr "Sammlungen"
+#: Form/Media/AbstractMediaEntityType.php:103
+#: Form/Collection/CollectionType.php:64 Form/License/LicenseType.php:35
+msgid "Title"
+msgstr "Titel"
 
-msgid "Contained files"
-msgstr "Beinhaltete Dateien"
-
-msgid "Content"
-msgstr "Inhalt"
-
-msgid "Cover"
-msgstr "Cover"
-
-msgid "Create a new image-based watermark"
-msgstr "Neues Bild-basiertes Wasserzeichen erstellen"
-
-msgid "Create a new text-based watermark"
-msgstr "Neues Text-basiertes Wasserzeichen erstellen"
-
-msgid "Create new collection"
-msgstr "Neue Sammlung erstellen"
-
-msgid "Create new license"
-msgstr "Neue Lizenz erstellen"
-
-msgid "Create new media"
-msgstr "Neues Medium erstellen"
-
-msgid "Create new watermark"
-msgstr "Neues Wasserzeichen erstellen"
-
-msgid "Create or edit collection"
-msgstr "Sammlung erstellen oder bearbeiten"
-
-msgid "Create or edit license"
-msgstr "Lizenz erstellen oder bearbeiten"
-
-msgid "Deezer"
-msgstr "Deezer"
-
-msgid "Default"
-msgstr "Standard"
-
-msgid "Default collection template"
-msgstr "Standard Template für Sammlungen"
-
-msgid "Delete"
-msgstr " Löschen"
-
+#: Form/Media/AbstractMediaEntityType.php:107
+#: Form/Collection/CollectionType.php:83
+#: Form/Collection/Permission/AbstractPermissionType.php:45
 msgid "Description"
 msgstr "Beschreibung"
 
-msgid "Do you really want to delete this license?"
-msgstr "Wollen Sie diese Lizenz wirklich löschen?"
+#: Form/Media/AbstractMediaEntityType.php:114
+msgid "License"
+msgstr "Lizenz"
 
-msgid "Do you really want to delete this media object?"
-msgstr "Wollen Sie dieses Medienobjekt wirklich löschen?"
+#: Form/Media/AbstractMediaEntityType.php:125
+msgid "Unknown"
+msgstr "Unbekannt"
 
-msgid "Do you really want to delete this watermark?"
-msgstr "Wollen Sie dieses Wasserzeichen wirklich löschen?"
+#: Form/Media/AbstractMediaEntityType.php:131
+msgid "Author"
+msgstr "Autor"
 
-msgid "Download"
-msgstr " Download"
+#: Form/Media/AbstractMediaEntityType.php:136
+msgid "Author URL"
+msgstr "Autor URL"
 
-msgid "Download collection"
-msgstr "Sammlung herunterladen"
+#: Form/Media/AbstractMediaEntityType.php:141
+msgid "Author Avatar URL"
+msgstr "Autor Avatar URL"
 
-msgid "Downloading new version"
-msgstr "Herunterladen der neuen Version"
+#: Form/SettingsType.php:28
+msgid "Collection description escaping strategy"
+msgstr "Sammlungsbeschreibung Escaping Strategie"
 
-msgid "Duration"
-msgstr "Dauer"
+#: Form/SettingsType.php:32 Form/SettingsType.php:42
+msgid "Safe - no HTML permitted, only plain text"
+msgstr "Sicher - kein HTML erlaubt, nur Klartext"
 
-msgid "Edit"
-msgstr " Bearbeiten"
+#: Form/SettingsType.php:33 Form/SettingsType.php:43
+msgid "MarkDown"
+msgstr "MarkDown"
 
-msgid "Edit collection"
-msgstr "Sammlung bearbeiten"
+#: Form/SettingsType.php:34 Form/SettingsType.php:44
+msgid "As is - use with editors like Scribite"
+msgstr "Wie es ist - zum benutzen mit Editoren wie Scribite"
 
-msgid "Edit or delete this example collection"
-msgstr "Bearbeiten oder löschen Sie diese Beispielsammlung"
+#: Form/SettingsType.php:38
+msgid "Media description escaping strategy"
+msgstr "Medienbeschreibung Escaping Strategie"
 
-msgid "Embed"
-msgstr "Einbetten"
+#: Form/SettingsType.php:48
+msgid "Default collection template"
+msgstr "Standard Template für Sammlungen"
 
-msgid "Enabled for upload"
-msgstr "Zum Hochladen erlauben"
+#: Form/SettingsType.php:59
+msgid "SoundCloud \"Client ID\""
+msgstr "SoundCloud \"Client ID\""
 
-msgid "Enabled for web embed"
-msgstr "Zur Web Einbindung erlauben"
-
-msgid "Example collection"
-msgstr "Beispielsammlung"
-
-msgid "Extracting new version"
-msgstr "Extrahiere neue version"
-
-msgid "Fast upload"
-msgstr "Schnelles Hochladen"
-
-msgid "File archive"
-msgstr "Dateiarchiv"
-
-msgid "File type not supported!"
-msgstr "Dateityp wird nicht unterstützt!"
-
-msgid "File upload"
-msgstr "Datei hochladen"
-
-msgid "File uploaded!"
-msgstr "Datei hochgeladen!"
-
-msgid "Find media and collections"
-msgstr "Medien und Sammlungen suchen"
-
-msgid "Flash"
-msgstr "Blitz"
-
-msgid "Flickr"
-msgstr "Flickr"
-
-msgid "Focal length"
-msgstr "Brennweite"
-
-msgid "Followers: "
-msgstr "Follower:"
-
-msgid "Font size"
-msgstr "Schriftgröße"
-
-msgid "Frame rate"
-msgstr "Framerate"
-
-msgid "Full"
-msgstr "Voll"
-
-msgid "Fullscreen"
-msgstr "Vollbild"
-
-msgid "Genre"
-msgstr "Genre"
-
+#: Form/SettingsType.php:64
 msgid ""
 "Go to http://soundcloud.com/you/apps/new and create a new application. The "
 "name doesn't matter. In the next screen, enter the url of your Zikula "
@@ -306,15 +145,11 @@ msgstr ""
 "for Authentication\" frei. Dann speichern und die \"Client ID\" hier "
 "hereinkopieren."
 
-msgid ""
-"Go to https://apps.twitter.com/ and create a new application. The name "
-"doesn't matter and \"Callback URL\" should be empty. Then go to \"Keys and "
-"Access Tokens\". At the bottom, click at \"Create my access token\"."
-msgstr ""
-"Gehen Sie auf https://apps.twitter.com/ und erstellen eine neue Anwendung. "
-"Der Name ist egal und \"Callback URL\" sollte leer bleiben. Dann auf \"Keys "
-"and Access Tokens\" gehen und unten auf \"Create my access token\" klicken."
+#: Form/SettingsType.php:78
+msgid "Google API Developer Key"
+msgstr "Google API Developer Key"
 
+#: Form/SettingsType.php:83
 msgid ""
 "Go to https://console.developers.google.com/project and create a new "
 "project. The name and id don't matter. Then go to \"APIs and Authentication -"
@@ -329,515 +164,129 @@ msgstr ""
 "credentials -> API-Key -> Server-Key\". Wieder ist der Name egal, dann den "
 "API Key hierher kopieren."
 
-msgid "Google API Developer Key"
-msgstr "Google API Developer Key"
-
-msgid "Hook validation failed!"
-msgstr "Hook Validierung fehlgeschlagen!"
-
-msgid "Hooks"
-msgstr "Hooks"
-
-msgid "ID"
-msgstr "ID"
-
-msgid "ISO value"
-msgstr "ISO Wert"
-
-msgid "Icon"
-msgstr "Symbol"
-
-msgid "Id"
-msgstr "ID"
-
-msgid ""
-"If you check this box, you will be able to embed media from the web using "
-"this license."
-msgstr ""
-"Wenn Sie hier einen Haken setzen, wird das Einbetten von Medien aus dem Web "
-"unter dieser Lizenz aktiviert."
-
-msgid ""
-"If you check this box, you will be able to upload media and license it under "
-"this license."
-msgstr ""
-"Wenn Sie hier einen Haken setzen, wird das Hochladen von Medien unter dieser "
-"Lizenz aktiviert."
-
-msgid ""
-"If you use the fast upload, all media will be uploaded instantly and you "
-"will only be able to select the collection to upload the media too. If you "
-"would like to edit further settings, i.e. titles, descriptions or licenses, "
-"you can do so by either not using the fast upload and uploading the media "
-"one by one or by editing the media after you uploaded everything"
-msgstr ""
-"Wenn Sie den Schnellen Upload verwenden, werden alle Mediendateien "
-"gleichzeitig hochgeladen. In diesem Fall können Sie bloß die Sammlung "
-"auswählen, in die die Dateien hochgeladen werden sollen. Wenn Sie weitere "
-"Einstellungen, zum Beispiel Titel, Beschreibung oder Lizenzen bearbeiten "
-"wollen, dürfen Sie entweder den Schnellen Upload nicht verwenden und müssen "
-"die Medien nacheinander hochladen oder die Medien nach dem Hochladen einzeln "
-"bearbeiten"
-
-msgid "Image"
-msgstr "Bild"
-
-msgid "Image Url"
-msgstr "Bild URL"
-
-msgid "Image size"
-msgstr "Bildgröße"
-
-msgid "Image to be used as watermark."
-msgstr "Bild zur Benutzung als Wasserzeichen"
-
-msgid "Insert search text"
-msgstr "Suchtext eingeben"
-
-msgid "Invalid data, errors: "
-msgstr "Ungültige Daten, Fehler:"
-
-msgid "Invalid step received"
-msgstr "Ungültiger Schritt erhalten"
-
-msgid ""
-"It seems like the Scribite / CKEditor integration is working! Make sure you "
-"use a \"special\" or \"full\" toolbar."
-msgstr ""
-"Es scheint als würde die Scribite / CKEditor Integrierung funktionieren! "
-"Stellen Sie sicher, dass Sie die \"special\" oder \"full\" Tollbar benutzen."
-
-msgid "License"
-msgstr "Lizenz"
-
-msgid "License ID"
-msgstr "Lizenz ID"
-
-msgid "License deleted!"
-msgstr "Lizenz gelöscht!"
-
-msgid "Licenses"
-msgstr "Lizenzen"
-
-msgid "License|Licenses"
-msgstr "Lizenz|Lizenzen"
-
-msgid "MarkDown"
-msgstr "MarkDown"
-
-msgid "Markdown"
-msgstr "MarkDown"
-
-msgid "Marks a license as outdated to give a visual hint while uploading."
-msgstr ""
-"Markieren Sie eine Lizenz als veraltet, um den Benutzern bei der Auswahl "
-"einen Hinweis zu geben."
-
-msgid "Media"
-msgstr "Medien"
-
-msgid "Media Module - %s"
-msgstr "MedienModule - %s"
-
-msgid "Media collections"
-msgstr "Sammlungen"
-
-msgid "Media description escaping strategy"
-msgstr "Medienbeschreibung Escaping Strategie"
-
-msgid "Media list"
-msgstr "Medienliste"
-
-msgid "Medium"
-msgstr "Medium"
-
-msgid "Metering mode"
-msgstr "Messmodus"
-
-msgid "Next"
-msgstr "Weiter"
-
-msgid "No media attached yet!"
-msgstr "Bisher keine Medien angehangen!"
-
-msgid "No media available yet!"
-msgstr "Bisher keine Medien verfügbar!"
-
-msgid "No release to upgrade to available!"
-msgstr "Keine Version zum upgrade verfügbar!"
-
-msgid "No watermark"
-msgstr "Kein Wasserzeichen"
-
-msgid "Only plaintext allowed."
-msgstr "Nur Klartext erlaubt."
-
-msgid "Optional url of a small license icon."
-msgstr "Optionale URL zu einem kleinen Icon für die Lizenz."
-
-msgid "Outdated"
-msgstr "Veraltet"
-
-msgid "PDF"
-msgstr "PDF"
-
-msgid "Parent"
-msgstr "Elternsammlung"
-
-msgid "Parse"
-msgstr "Analysieren"
-
-msgid "Paste URL / Embed code"
-msgstr "URL oder Einbettungscode einfügen"
-
-msgid "Paste url or embed code"
-msgstr "URL oder Einbettungscode einfügen"
-
-msgid "Plaintext"
-msgstr "Klartext"
-
-msgid "Playlist"
-msgstr "Wiedergabeliste"
-
-msgid "Please select the size to embed."
-msgstr "Bitte wählen Sie die einzubettende Größe"
-
-msgid "Position"
-msgstr "Position"
-
-msgid "Previous"
-msgstr "Zurück"
-
-msgid "Publisher"
-msgstr "Verleger"
-
-msgid "Raw"
-msgstr "Roh"
-
-msgid "Relative size"
-msgstr "Relative Größe"
-
-msgid "Rendered"
-msgstr "Gerendert"
-
-msgid "Resolution"
-msgstr "Auflösung"
-
-msgid "Root collections"
-msgstr "Wurzelsammlungen"
-
-msgid "Running upgrade"
-msgstr "Führe Upgrade aus"
-
-msgid "Safe - no HTML permitted, only plain text"
-msgstr "Sicher - kein HTML erlaubt, nur Klartext"
-
-msgid "Sample rate"
-msgstr "Sample Rate"
-
-msgid "Save"
-msgstr "Speichern"
-
-msgid "Scribite integration"
-msgstr "Scribite Integration"
-
-msgid "Scribite is not installed."
-msgstr "Scribite ist nicht installiert"
-
-msgid "Seamless and responsive grid"
-msgstr "Responsives Gitter"
-
-msgid "Search the web"
-msgstr "Internet durchsuchen"
-
-msgid "Select a service below"
-msgstr "Service wählen"
-
-msgid "Select collection"
-msgstr "Sammlung wählen"
-
-msgid "Select license"
-msgstr "Lizenz wählen"
-
-msgid "Select template"
-msgstr "Template wählen"
-
-msgid "Select uploaded collection"
-msgstr "Hochgeladene Sammlung wählen"
-
-msgid "Select uploaded medium"
-msgstr "Hochgeladenes Medium wählen"
-
-msgid "Settings"
-msgstr "Einstellungen"
-
-msgid "Settings saved!"
-msgstr "Einstellungen gespeichert!"
-
-msgid "Show"
-msgstr "Anzeigen"
-
-msgid "Show playlist"
-msgstr "Wiedergabeliste anzeigen"
-
-msgid "Shutter speed"
-msgstr "Belichtungszeit"
-
-msgid ""
-"Simply paste your URL or embed code here and we'll try to figure everything "
-"out."
-msgstr ""
-"Fügen Sie einfach die URL oder den Einbettungscode hier ein und wir machen "
-"den Rest."
-
-msgid "Small"
-msgstr "Klein"
-
-msgid "Smaller images will not be watermarked."
-msgstr "Kleinere Bilder werden nicht mit Wasserzeichen versehen."
-
-msgid ""
-"Someone else edited the collection. Please either cancel editing or force "
-"reload the page."
-msgstr ""
-"Jemand anderes hat die Sammlung bearbeitet. Bitte brechen Sie die "
-"Bearbeitung ab oder erzwingen Sie ein erneutes Laden der Seite."
-
-msgid ""
-"Someone else edited the watermark. Please either cancel editing or force "
-"reload the page."
-msgstr ""
-"Jemand anderes hat das Wasserzeichen bearbeitet. Bitte brechen Sie die "
-"Bearbeitung ab oder erzwingen Sie ein erneutes Laden der Seite."
-
-msgid "Something went wrong. The release doesn't contain a ZIP asset."
-msgstr "Etwas ist schief gegangen. Die neue Version hat keine ZIP Datei."
-
-msgid ""
-"Sorry, the collection appears to be empty or does not have any downloadable "
-"files."
-msgstr ""
-"Entschuldigung, die Sammlung scheint leer zu sein oder keine "
-"herunterladbaren Dateien zu erhalten."
-
-msgid ""
-"Sorry, you need to have admin permissions for the ZikulaExtensionsModule to "
-"run the upgrade!"
-msgstr ""
-"Entschuldigung, Sie brauchen Admin Berechtigungen für das "
-"ZikulaExtensionsModul um die Aktualisierung durchführen zu können!"
-
-msgid "SoundCloud"
-msgstr "SoundCloud"
-
-msgid "SoundCloud \"Client ID\""
-msgstr "SoundCloud \"Client ID\""
-
-msgid "Start"
-msgstr "Starten"
-
-msgid "Start upgrade"
-msgstr "Aktualisierung starten"
-
-msgid "Start upload"
-msgstr "Upload beginnen"
-
-msgid "Template"
-msgstr "Template"
-
-msgid "Temporary Upload Collection"
-msgstr "Temporäre Hochlade-Sammlung"
-
-msgid "Text to be used as watermark."
-msgstr "Text, der als Wasserzeichen benutzt werden soll"
-
-msgid ""
-"The %s version of the MediaModule is available for download. You can apply "
-"the automatic upgrade by clicking here:"
-msgstr ""
-"Die %s Version des Medien Moduls ist zum Download bereit. Sie können die "
-"automatische Aktualisierung durchführen, indem Sie hier klicken:"
-
-msgid "The contained files can not be displayed."
-msgstr "Die beinhalteten Dateien können nicht angezeigt werden."
-
-msgid ""
-"The font size to use, reagardless of the image size. Either this or the "
-"\"Relative size\" option must be set."
-msgstr ""
-"Die zu benutzende Schriftgröße, unabhängig von der Bildgröße. Entweder diese "
-"Option oder \"Relative Größe\" muss gesetzt werden."
-
-msgid ""
-"The id of the generated \"temporary upload collection\" must be 1, but has a "
-"different value. This should not have happened. Please report this error."
-msgstr ""
-"Die ID der generierten \"Temporären Hochlade-Sammlung\" muss 1 sein, hat "
-"aber einen anderen Wert. Dies sollte nicht passieren. Bitte melden Sie "
-"diesen Fehler."
-
-msgid "The place where you can look up the license text."
-msgstr "Ein Link zu einer Seite, auf der man sich den Lizenztext ansehen kann."
-
-msgid ""
-"The size of the watermark in percent. If set, it will resize the watermark "
-"accordingly."
-msgstr ""
-"Die Größe des Wasserzeichens in Prozent. Wenn gesetzt, wird das "
-"Wasserzeichen dementsprechend angepasst."
-
-msgid "The title of the license to use for displaying it."
-msgstr "Der Titel der Lizenz"
-
-msgid "The tweet is loading."
-msgstr "Der Tweet lädt."
-
-msgid "The upload was corrupted. Please try again!"
-msgstr "Die hochgeladene Datei war kaputt. Bitte versuchen Sie es erneut!"
-
-msgid ""
-"The x position of the watermark inside the picture. Negative numbers will "
-"position it right aligned."
-msgstr ""
-"Die X Position des Wasserzeichen innerhalb des Bildes. Negative Zahlen "
-"positionieren es rechts ausgerichtet."
-
-msgid ""
-"The y position of the watermark inside the picture. Negative numbers will "
-"position it bottom aligned."
-msgstr ""
-"Die Y Position des Wasserzeichen innerhalb des Bildes. Negative Zahlen "
-"positionieren es unten ausgerichtet."
-
-msgid "This collection is currently empty!"
-msgstr "Diese Sammlung ist im Moment leer."
-
-msgid ""
-"This collection is needed as temporary storage for uploaded files. Do not "
-"edit or delete!"
-msgstr ""
-"Diese Sammlung wird benötigt als temporärer Ort für hochgeladene Dateien "
-"benutzt. Nicht löschen oder bearbeiten!"
-
-msgid ""
-"This content is licensed under the following license|This content is "
-"licensed under the following licenses"
-msgstr ""
-"Dieser Inhalt ist lizensiert unter der folgenden Lizenz|Dieser inhalt ist "
-"lizensiert unter den folgenden Lizenzen"
-
-msgid "This is where the Tweet will appear."
-msgstr "Hier wird der Tweet erscheinen."
-
-msgid "Thumbnail"
-msgstr "Vorschaubild"
-
-msgid "Title"
-msgstr "Titel"
-
-msgid "Track number"
-msgstr "Titelnummer"
-
-msgid "Tweet"
-msgstr "Tweet"
-
-msgid "Tweet by: "
-msgstr "Tweet von:"
-
-msgid "Twitter"
-msgstr "Twitter"
-
-msgid "Twitter API Access Token"
-msgstr "Twitter API Access Token"
-
-msgid "Twitter API Access Token Secret"
-msgstr "Twitter API Access Token Secret"
-
+#: Form/SettingsType.php:87
 msgid "Twitter API Consumer Key"
 msgstr "Twitter API Consumer Key"
 
+#: Form/SettingsType.php:92
+msgid ""
+"Go to https://apps.twitter.com/ and create a new application. The name "
+"doesn't matter and \"Callback URL\" should be empty. Then go to \"Keys and "
+"Access Tokens\". At the bottom, click at \"Create my access token\"."
+msgstr ""
+"Gehen Sie auf https://apps.twitter.com/ und erstellen eine neue Anwendung. "
+"Der Name ist egal und \"Callback URL\" sollte leer bleiben. Dann auf \"Keys "
+"and Access Tokens\" gehen und unten auf \"Create my access token\" klicken."
+
+#: Form/SettingsType.php:96
 msgid "Twitter API Secret"
 msgstr "Twitter API Secret"
 
-msgid "Type"
-msgstr " Typ"
+#: Form/SettingsType.php:102
+msgid "Twitter API Access Token"
+msgstr "Twitter API Access Token"
 
-msgid "Unknown"
-msgstr "Unbekannt"
+#: Form/SettingsType.php:108
+msgid "Twitter API Access Token Secret"
+msgstr "Twitter API Access Token Secret"
 
-msgid "Unknown collection"
-msgstr "Unbekannte Sammlung"
+#: Form/SettingsType.php:114 Form/License/LicenseType.php:77
+#: Form/Watermark/AbstractWatermarkType.php:54
+msgid "Save"
+msgstr "Speichern"
 
-msgid "Unknown license"
-msgstr "Unbekannte Lizenz"
+#: Form/Collection/CollectionType.php:90
+msgid "Template"
+msgstr "Template"
 
-msgid "Unknown media"
-msgstr "Unbekanntes Medium"
+#: Form/Collection/CollectionType.php:92
+msgid "Default"
+msgstr "Standard"
 
-msgid "Upgrade module"
-msgstr "Modul aktualisieren"
+#: Form/Collection/CollectionType.php:99
+#: Form/Collection/CollectionType.php:130
+msgid "Parent"
+msgstr "Elternsammlung"
 
-msgid "Upgrade now!"
-msgstr "Jetzt aktualisieren!"
+#: Form/Collection/CollectionType.php:132
+msgid "No parent"
+msgstr "Keine Eltern"
 
-msgid "Upload a file"
-msgstr "Datei hochladen"
-
-msgid "Url"
-msgstr "URL"
-
-msgid "Use syntax highlighting"
-msgstr "Syntax Hervorhebung aktivieren"
-
-msgid "Video"
-msgstr "Video"
-
-msgid "Video bit rate"
-msgstr "Video Bit Rate"
-
-msgid "View collection"
-msgstr "Sammlung ansehen"
-
-msgid "View media"
-msgstr "Medium ansehen"
-
+#: Form/Collection/CollectionType.php:142
 msgid "Watermark"
 msgstr "Wasserzeichen"
 
-msgid "Watermark deleted!"
-msgstr "Wasserzeichen gelöscht!"
+#: Form/Collection/CollectionType.php:145
+msgid "No watermark"
+msgstr "Kein Wasserzeichen"
 
-msgid "Watermarks"
-msgstr "Wasserzeichen"
+#: Form/Collection/Permission/UserPermissionType.php:17
+msgid "Users"
+msgstr "Benutzer"
 
-msgid "Year"
-msgstr "Jahr"
+#: Form/Collection/Permission/GroupPermissionType.php:19
+msgid "All groups"
+msgstr "Alle Gruppen"
 
-msgid "You may use HTML."
-msgstr "Sie können HTML benutzen."
+#: Form/Collection/Permission/GroupPermissionType.php:26
+msgid "Groups"
+msgstr "Gruppen"
 
-msgid "You may use MarkDown."
-msgstr "Sie können MarkDown benutzen"
+#: Form/Collection/Permission/PasswordPermissionType.php:12
+msgid "Password"
+msgstr "Passwort"
 
-msgid "You must upload a file of the same type."
+#: Form/Collection/Permission/AbstractPermissionType.php:42
+msgid "Permission level"
+msgstr "Zugriffslevel"
+
+#: Form/Collection/Permission/AbstractPermissionType.php:48
+msgid "This is just for you to remember why you created this permission."
 msgstr ""
-"Sie müssen eine Datei des selben Typs hochladen, wie die bereits "
-"hochgeladene Datei."
+"Dies ist nur für Sie, um den Grund für dieses Zugriffsrecht zu notieren."
 
+#: Form/Collection/Permission/AbstractPermissionType.php:51
+msgid "Applies to the collection itself"
+msgstr "Gilt für die Sammlung selber"
+
+#: Form/Collection/Permission/AbstractPermissionType.php:54
+msgid "Applies to sub-collections"
+msgstr "Gilt für Unter-Sammlungen"
+
+#: Form/Collection/Permission/AbstractPermissionType.php:60
+#: Form/Collection/Permission/AbstractPermissionType.php:65
+msgid "Go on if this permission is not sufficient"
+msgstr "Weitergehen, falls dieses Zugriffsrecht nicht ausreicht."
+
+#: Form/Collection/Permission/AbstractPermissionType.php:75
+msgid "Valid after"
+msgstr "Gültig ab"
+
+#: Form/Collection/Permission/AbstractPermissionType.php:79
 msgid ""
-"You should set \"Collection description escaping strategy\" to \"As is\" for "
-"Scribite to work properly!"
+"If you specify a date, the permission rule will only be taken into account "
+"after the specified date."
 msgstr ""
-"Sie sollten die \"Sammlungsbeschreibung Escaping Strategie\" auf \"Wie es ist"
-"\" stellen, damit Scribite ordentlich funktioniert!"
+"Wenn Sie ein Datum angeben, wird dieses Zugriffsrecht erst ab dem "
+"angegebenen Datum aktiv."
 
+#: Form/Collection/Permission/AbstractPermissionType.php:82
+msgid "Valid until"
+msgstr "Gültig bis"
+
+#: Form/Collection/Permission/AbstractPermissionType.php:86
 msgid ""
-"You should set \"Media description escaping strategy\" to \"As is\" for "
-"Scribite to work properly!"
+"If you specify a date, the permission rule will only be taken into account "
+"until the specified date."
 msgstr ""
-"Sie sollten die \"Medienbeschreibung Escaping Strategie\" auf \"Wie es ist\" "
-"stellen, damit Scribite ordentlich funktioniert!"
+"Wenn Sie ein Datum angeben, ist dieses Zugriffsrecht nur bist zum "
+"angegebenen Datum aktiv."
 
+#: Form/License/LicenseType.php:29
+msgid "License ID"
+msgstr "Lizenz ID"
+
+#: Form/License/LicenseType.php:31
 msgid ""
 "You won't be able to change the ID after creation. It should be something "
 "like \"gplv3\" or similar."
@@ -845,39 +294,878 @@ msgstr ""
 "Sie werden die ID nach der Erstellung nicht mehr ändern können. Benutzen Sie "
 "etwas wie \"GPLv3\", oder ähnliches."
 
-msgid "YouTube"
-msgstr "YouTube"
+#: Form/License/LicenseType.php:38
+msgid "The title of the license to use for displaying it."
+msgstr "Der Titel der Lizenz"
 
+#: Form/License/LicenseType.php:42
+msgid "Url"
+msgstr "URL"
+
+#: Form/License/LicenseType.php:45
+msgid "The place where you can look up the license text."
+msgstr "Ein Link zu einer Seite, auf der man sich den Lizenztext ansehen kann."
+
+#: Form/License/LicenseType.php:49
+msgid "Image Url"
+msgstr "Bild URL"
+
+#: Form/License/LicenseType.php:52
+msgid "Optional url of a small license icon."
+msgstr "Optionale URL zu einem kleinen Icon für die Lizenz."
+
+#: Form/License/LicenseType.php:56
+msgid "Outdated"
+msgstr "Veraltet"
+
+#: Form/License/LicenseType.php:59
+msgid "Marks a license as outdated to give a visual hint while uploading."
+msgstr ""
+"Markieren Sie eine Lizenz als veraltet, um den Benutzern bei der Auswahl "
+"einen Hinweis zu geben."
+
+#: Form/License/LicenseType.php:63
+msgid "Allow to use for uploads"
+msgstr "Für Uploads erlauben"
+
+#: Form/License/LicenseType.php:66
+msgid ""
+"If you check this box, you will be able to upload media and license it under "
+"this license."
+msgstr ""
+"Wenn Sie hier einen Haken setzen, wird das Hochladen von Medien unter dieser "
+"Lizenz aktiviert."
+
+#: Form/License/LicenseType.php:70
+msgid "Allow to use for web embeds"
+msgstr "Für Web Einbindung erlauben"
+
+#: Form/License/LicenseType.php:73
+msgid ""
+"If you check this box, you will be able to embed media from the web using "
+"this license."
+msgstr ""
+"Wenn Sie hier einen Haken setzen, wird das Einbetten von Medien aus dem Web "
+"unter dieser Lizenz aktiviert."
+
+#: Form/Watermark/TextWatermarkType.php:14
+msgid "Text to be used as watermark."
+msgstr "Text, der als Wasserzeichen benutzt werden soll"
+
+#: Form/Watermark/TextWatermarkType.php:19
+msgid "Font size"
+msgstr "Schriftgröße"
+
+#: Form/Watermark/TextWatermarkType.php:22
+msgid ""
+"The font size to use, reagardless of the image size. Either this or the "
+"\"Relative size\" option must be set."
+msgstr ""
+"Die zu benutzende Schriftgröße, unabhängig von der Bildgröße. Entweder diese "
+"Option oder \"Relative Größe\" muss gesetzt werden."
+
+#: Form/Watermark/TextWatermarkType.php:26
+msgid "Font"
+msgstr "Schrift"
+
+#: Form/Watermark/AbstractWatermarkType.php:17
+msgid "A title for you to recognize the watermark."
+msgstr "Ein Titel, sodass Sie das Wasserzeichen einfach wiedererkennen."
+
+#: Form/Watermark/AbstractWatermarkType.php:23
+msgid ""
+"The x position of the watermark inside the picture. Negative numbers will "
+"position it right aligned."
+msgstr ""
+"Die X Position des Wasserzeichen innerhalb des Bildes. Negative Zahlen "
+"positionieren es rechts ausgerichtet."
+
+#: Form/Watermark/AbstractWatermarkType.php:29
+msgid ""
+"The y position of the watermark inside the picture. Negative numbers will "
+"position it bottom aligned."
+msgstr ""
+"Die Y Position des Wasserzeichen innerhalb des Bildes. Negative Zahlen "
+"positionieren es unten ausgerichtet."
+
+#: Form/Watermark/AbstractWatermarkType.php:36
+#: Form/Watermark/AbstractWatermarkType.php:43
+msgid "Smaller images will not be watermarked."
+msgstr "Kleinere Bilder werden nicht mit Wasserzeichen versehen."
+
+#: Form/Watermark/AbstractWatermarkType.php:50
+msgid ""
+"The size of the watermark in percent. If set, it will resize the watermark "
+"accordingly."
+msgstr ""
+"Die Größe des Wasserzeichens in Prozent. Wenn gesetzt, wird das "
+"Wasserzeichen dementsprechend angepasst."
+
+#: Form/Watermark/ImageWatermarkType.php:34
+msgid "Image to be used as watermark."
+msgstr "Bild zur Benutzung als Wasserzeichen"
+
+#: MediaModuleVersion.php:10
+msgid "Cmfcmf MediaModule"
+msgstr "Cmfcmf MedienModul"
+
+#: MediaModuleVersion.php:11
+msgid "Cmfcmf MediaModule description"
+msgstr "Alle Arten von Medien verwalten und hochladen"
+
+#: MediaModuleVersion.php:12
+msgid "collections"
+msgstr "Sammlungen"
+
+#: MediaModuleVersion.php:27
+msgid "Collections"
+msgstr "Sammlungen"
+
+#: MediaModuleVersion.php:28
+msgid "Media"
+msgstr "Medien"
+
+#: MediaModuleVersion.php:29
+msgid "Licenses"
+msgstr "Lizenzen"
+
+#: MediaModuleVersion.php:46
+#, php-format
+msgid "%s hooks"
+msgstr "%s Hooks"
+
+#: MediaModuleVersion.php:65
+#, php-format
+msgid "%s display hooks"
+msgstr "%s Display Hooks"
+
+#: MediaModuleVersion.php:73
+#, php-format
+msgid "Media Module - %s"
+msgstr "MedienModule - %s"
+
+#: MediaModuleInstaller.php:21
+msgid "Temporary upload collection"
+msgstr "Sammlung für temporäre Uploads"
+
+#: MediaModuleInstaller.php:22
+msgid ""
+"This collection is needed as temporary storage for uploaded files. Do not "
+"edit or delete!"
+msgstr ""
+"Diese Sammlung wird benötigt als temporärer Ort für hochgeladene Dateien "
+"benutzt. Nicht löschen oder bearbeiten!"
+
+#: MediaModuleInstaller.php:29
+#, php-format
+msgid ""
+"The id of the generated \"temporary upload collection\" must be %s, but has "
+"a different value. This should not have happened. Please report this error."
+msgstr ""
+"Die ID der generierten \"Sammlung für temporäre Uploads\" muss %s sein, hat "
+"aber einen anderen Wert. Das hätte nicht passieren sollen. Bitte melden Sie "
+"dieses Problem."
+
+#: MediaModuleInstaller.php:34 MediaModuleInstaller.php:99
+msgid "Root collection"
+msgstr "Wurzelsammlung"
+
+#: MediaModuleInstaller.php:35 MediaModuleInstaller.php:100
+msgid "root"
+msgstr "wurzel"
+
+#: MediaModuleInstaller.php:44
+msgid "Example collection"
+msgstr "Beispielsammlung"
+
+#: MediaModuleInstaller.php:45
+msgid "Edit or delete this example collection"
+msgstr "Bearbeiten oder löschen Sie diese Beispielsammlung"
+
+#: MediaModuleInstaller.php:267
+msgid "Disallow access to the temporary upload collection."
+msgstr "Verbietet Zugriff auf die Sammlung temporärer Uploads."
+
+#: MediaModuleInstaller.php:279
+msgid "Global admin permission"
+msgstr "Globales Admin Zugriffsrecht"
+
+#: MediaModuleInstaller.php:291
+msgid "Allows owners to administrate their own collections."
+msgstr "Erlaubt es den Besitzern ihre eigenen Sammlungen zu administrieren."
+
+#: MediaModuleInstaller.php:303
+msgid "Allow view and download for everyone."
+msgstr "Anzeige und Download für Jeden erlauben."
+
+#: Entity/Media/AbstractMediaEntity.php:199
+#: Entity/Media/AbstractMediaEntity.php:208
+#, php-format
+msgid "Content of %s"
+msgstr "Inhalt von %s"
+
+#: Controller/UpgradeController.php:31
+msgid "Checking server requirements"
+msgstr "Überprüfe Server Vorraussetzungen"
+
+#: Controller/UpgradeController.php:35
+msgid "Checking installed and available versions"
+msgstr "Überprüfe installierte und verfügbare Versionen"
+
+#: Controller/UpgradeController.php:39
+msgid "Checking file system permissions"
+msgstr "Überprüfe Dateisystem Zugriffsrechte"
+
+#: Controller/UpgradeController.php:43
+msgid "Downloading new version"
+msgstr "Herunterladen der neuen Version"
+
+#: Controller/UpgradeController.php:47
+msgid "Extracting new version"
+msgstr "Extrahiere neue version"
+
+#: Controller/UpgradeController.php:51
+msgid "Running upgrade"
+msgstr "Führe Upgrade aus"
+
+#: Controller/UpgradeController.php:86 Controller/UpgradeController.php:106
 msgid "Your GitHub API Rate limit is exceeded. Please try again later."
 msgstr ""
 "Ihr GitHub API Zugriffslimit ist erschöpft. Versuchen Sie es später erneut."
 
-msgid "Your browser does not support the audio element."
-msgstr "Ihr Browser unterstützt das Audio Element nicht."
+#: Controller/UpgradeController.php:92 Controller/UpgradeController.php:112
+msgid "No release to upgrade to available!"
+msgstr "Keine Version zum upgrade verfügbar!"
 
-msgid "[No parent]"
-msgstr "[Keine Elternsammlung]"
+#: Controller/UpgradeController.php:98
+msgid "Could not connect to GitHub."
+msgstr "Verbindung mit GitHub fehlgeschlagen."
 
-msgid "and embed it"
-msgstr "und einbetten"
+#: Controller/UpgradeController.php:120
+msgid "Something went wrong. The release doesn't contain a ZIP asset."
+msgstr "Etwas ist schief gegangen. Die neue Version hat keine ZIP Datei."
 
-msgid "at "
-msgstr "am"
+#: Controller/UpgradeController.php:136
+msgid "Invalid step received"
+msgstr "Ungültiger Schritt erhalten"
 
-msgid "collections"
-msgstr "Sammlungen"
+#: Controller/LicenseController.php:65
+msgid "License created!"
+msgstr "Lizenz erstellt!"
 
-msgid "no"
-msgstr "nein"
+#: Controller/LicenseController.php:98
+msgid "License edited!"
+msgstr "Lizenz bearbeitet!"
 
-msgid "off"
-msgstr "aus"
+#: Controller/LicenseController.php:102
+#: Controller/CollectionController.php:112 Controller/MediaController.php:141
+msgid ""
+"Someone else edited the collection. Please either cancel editing or force "
+"reload the page."
+msgstr ""
+"Jemand anderes hat die Sammlung bearbeitet. Bitte brechen Sie die "
+"Bearbeitung ab oder erzwingen Sie ein erneutes Laden der Seite."
 
-msgid "on"
-msgstr "an"
+#: Controller/LicenseController.php:133
+msgid "License deleted!"
+msgstr "Lizenz gelöscht!"
 
-msgid "yes"
-msgstr "ja"
+#: Controller/PermissionController.php:111
+msgid "Permission created!"
+msgstr "Zugriffsrecht erstellt!"
 
-#~ msgid "Anonymous"
-#~ msgstr "Anonym"
+#: Controller/PermissionController.php:160
+msgid ""
+"Someone else edited the permission. Please either cancel editing or force "
+"reload the page."
+msgstr ""
+"Jemand hat das Zugriffsrecht bearbeitet. Bitte brechen Sie das Bearbeiten ab "
+"oder laden Sie die Seite neu."
+
+#: Controller/PermissionController.php:164
+msgid "Permission updated!"
+msgstr "Zugriffsrecht aktualisiert!"
+
+#: Controller/PermissionController.php:205
+msgid "Permission deleted!"
+msgstr "Zugriffsrecht gelöscht!"
+
+#: Controller/PermissionController.php:252
+msgid ""
+"Someone modified a permission rule. Please reload the page and try again!"
+msgstr ""
+"Jemand hat ein Zugriffsrecht bearbeitet. Bitte laden Sie die Seite neu und "
+"versuchen Sie es erneut!"
+
+#: Controller/PermissionController.php:256
+msgid "You cannot move the permission rule to this position!"
+msgstr "Sie können das Zugriffsrecht nicht an diese Position bewegen!"
+
+#: Controller/CollectionController.php:52
+msgid ""
+"You don't have permission to add a sub-collection to the selected parent "
+"collection."
+msgstr ""
+"Sie haben keine Erlaubnis, eine Sammlung zur angegebenen Elternsammlung "
+"hinzuzufügen."
+
+#: Controller/CollectionController.php:179
+msgid ""
+"Sorry, the collection appears to be empty or does not have any downloadable "
+"files."
+msgstr ""
+"Entschuldigung, die Sammlung scheint leer zu sein oder keine "
+"herunterladbaren Dateien zu erhalten."
+
+#: Controller/SettingsController.php:40
+msgid "Settings saved!"
+msgstr "Einstellungen gespeichert!"
+
+#: Controller/AbstractController.php:63 Controller/MediaController.php:207
+msgid "Hook validation failed!"
+msgstr "Hook Validierung fehlgeschlagen!"
+
+#: Controller/MediaController.php:124
+msgid "You must upload a file of the same type."
+msgstr ""
+"Sie müssen eine Datei des selben Typs hochladen, wie die bereits "
+"hochgeladene Datei."
+
+#: Controller/MediaController.php:511
+msgid "The upload was corrupted. Please try again!"
+msgstr "Die hochgeladene Datei war kaputt. Bitte versuchen Sie es erneut!"
+
+#: Controller/MediaController.php:523
+msgid "File type not supported!"
+msgstr "Dateityp wird nicht unterstützt!"
+
+#: Controller/MediaController.php:540
+msgid "Invalid data, errors: "
+msgstr "Ungültige Daten, Fehler:"
+
+#: Controller/MediaController.php:552
+msgid "File uploaded!"
+msgstr "Datei hochgeladen!"
+
+#: Controller/WatermarkController.php:87
+msgid "Watermark created!"
+msgstr "Wasserzeichen erstellt!"
+
+#: Controller/WatermarkController.php:142
+msgid ""
+"Someone else edited the watermark. Please either cancel editing or force "
+"reload the page."
+msgstr ""
+"Jemand anderes hat das Wasserzeichen bearbeitet. Bitte brechen Sie die "
+"Bearbeitung ab oder erzwingen Sie ein erneutes Laden der Seite."
+
+#: Controller/WatermarkController.php:155
+msgid "Watermark updated!"
+msgstr "Wasserzeichen aktualisiert!"
+
+#: Controller/WatermarkController.php:196
+msgid "Watermark deleted!"
+msgstr "Wasserzeichen gelöscht!"
+
+#~ msgid "%s min"
+#~ msgstr "%s min"
+
+#~ msgid "Actions"
+#~ msgstr "Aktionen"
+
+#~ msgid "Add files (try drag and drop as well!)"
+#~ msgstr "Dateien hinzufügen (probieren Sie auch Drag'n'Drop!)"
+
+#~ msgid "Add medium from the Web"
+#~ msgstr "Medium aus dem Internet hinzufügen"
+
+#~ msgid "Added by"
+#~ msgstr "Hinzugefügt von"
+
+#~ msgid "Album"
+#~ msgstr "Album"
+
+#~ msgid "Aperture"
+#~ msgstr "Blende"
+
+#~ msgid "Attributions"
+#~ msgstr "Zuschreibungen"
+
+#~ msgid "Audio"
+#~ msgstr "Audio"
+
+#~ msgid "Audio bit rate"
+#~ msgstr "Audio Bit Rate"
+
+#~ msgid "Audio channels"
+#~ msgstr "Audio Kanäle"
+
+#~ msgid "Audio sample rate"
+#~ msgstr "Audio Sample Rate"
+
+#~ msgid "Author avatar"
+#~ msgstr "Autor Avatar"
+
+#~ msgid "Back to overview"
+#~ msgstr "Zurück zur Übersicht"
+
+#~ msgid "Back to the collection"
+#~ msgstr "Zurück zur Sammlung"
+
+#~ msgid "Back to the list"
+#~ msgstr "Zurück zur Medienliste"
+
+#~ msgid "Band"
+#~ msgstr "Band"
+
+#~ msgid "Big thumbnail slider"
+#~ msgstr "Großer Slider"
+
+#~ msgid "Bit rate"
+#~ msgstr "Bit Rate"
+
+#~ msgid "Camera"
+#~ msgstr "Kamera"
+
+#~ msgid "Cancel"
+#~ msgstr " Abbrechen"
+
+#~ msgid "Cards with thumbnails"
+#~ msgstr "Karten mit Vorschaubildern"
+
+#~ msgid "Change settings"
+#~ msgstr "Einstellungen ändern"
+
+#~ msgid "Channel"
+#~ msgstr "Kanal"
+
+#~ msgid "Channels"
+#~ msgstr "Kanäle"
+
+#~ msgid "Choose collections to embed"
+#~ msgstr "Wählen Sie die Sammlungen zum einbetten"
+
+#~ msgid "Close"
+#~ msgstr "Schließen"
+
+#~ msgid "Contained files"
+#~ msgstr "Beinhaltete Dateien"
+
+#~ msgid "Content"
+#~ msgstr "Inhalt"
+
+#~ msgid "Cover"
+#~ msgstr "Cover"
+
+#~ msgid "Create a new image-based watermark"
+#~ msgstr "Neues Bild-basiertes Wasserzeichen erstellen"
+
+#~ msgid "Create a new text-based watermark"
+#~ msgstr "Neues Text-basiertes Wasserzeichen erstellen"
+
+#~ msgid "Create new collection"
+#~ msgstr "Neue Sammlung erstellen"
+
+#~ msgid "Create new license"
+#~ msgstr "Neue Lizenz erstellen"
+
+#~ msgid "Create new media"
+#~ msgstr "Neues Medium erstellen"
+
+#~ msgid "Create new watermark"
+#~ msgstr "Neues Wasserzeichen erstellen"
+
+#~ msgid "Create or edit collection"
+#~ msgstr "Sammlung erstellen oder bearbeiten"
+
+#~ msgid "Create or edit license"
+#~ msgstr "Lizenz erstellen oder bearbeiten"
+
+#~ msgid "Deezer"
+#~ msgstr "Deezer"
+
+#~ msgid "Delete"
+#~ msgstr " Löschen"
+
+#~ msgid "Do you really want to delete this license?"
+#~ msgstr "Wollen Sie diese Lizenz wirklich löschen?"
+
+#~ msgid "Do you really want to delete this media object?"
+#~ msgstr "Wollen Sie dieses Medienobjekt wirklich löschen?"
+
+#~ msgid "Do you really want to delete this watermark?"
+#~ msgstr "Wollen Sie dieses Wasserzeichen wirklich löschen?"
+
+#~ msgid "Download"
+#~ msgstr " Download"
+
+#~ msgid "Download collection"
+#~ msgstr "Sammlung herunterladen"
+
+#~ msgid "Duration"
+#~ msgstr "Dauer"
+
+#~ msgid "Edit"
+#~ msgstr " Bearbeiten"
+
+#~ msgid "Edit collection"
+#~ msgstr "Sammlung bearbeiten"
+
+#~ msgid "Embed"
+#~ msgstr "Einbetten"
+
+#~ msgid "Enabled for upload"
+#~ msgstr "Zum Hochladen erlauben"
+
+#~ msgid "Enabled for web embed"
+#~ msgstr "Zur Web Einbindung erlauben"
+
+#~ msgid "Fast upload"
+#~ msgstr "Schnelles Hochladen"
+
+#~ msgid "File archive"
+#~ msgstr "Dateiarchiv"
+
+#~ msgid "File upload"
+#~ msgstr "Datei hochladen"
+
+#~ msgid "Find media and collections"
+#~ msgstr "Medien und Sammlungen suchen"
+
+#~ msgid "Flash"
+#~ msgstr "Blitz"
+
+#~ msgid "Flickr"
+#~ msgstr "Flickr"
+
+#~ msgid "Focal length"
+#~ msgstr "Brennweite"
+
+#~ msgid "Followers: "
+#~ msgstr "Follower:"
+
+#~ msgid "Frame rate"
+#~ msgstr "Framerate"
+
+#~ msgid "Full"
+#~ msgstr "Voll"
+
+#~ msgid "Fullscreen"
+#~ msgstr "Vollbild"
+
+#~ msgid "Genre"
+#~ msgstr "Genre"
+
+#~ msgid "Hooks"
+#~ msgstr "Hooks"
+
+#~ msgid "ID"
+#~ msgstr "ID"
+
+#~ msgid "ISO value"
+#~ msgstr "ISO Wert"
+
+#~ msgid "Icon"
+#~ msgstr "Symbol"
+
+#~ msgid "Id"
+#~ msgstr "ID"
+
+#~ msgid ""
+#~ "If you use the fast upload, all media will be uploaded instantly and you "
+#~ "will only be able to select the collection to upload the media too. If "
+#~ "you would like to edit further settings, i.e. titles, descriptions or "
+#~ "licenses, you can do so by either not using the fast upload and uploading "
+#~ "the media one by one or by editing the media after you uploaded everything"
+#~ msgstr ""
+#~ "Wenn Sie den Schnellen Upload verwenden, werden alle Mediendateien "
+#~ "gleichzeitig hochgeladen. In diesem Fall können Sie bloß die Sammlung "
+#~ "auswählen, in die die Dateien hochgeladen werden sollen. Wenn Sie weitere "
+#~ "Einstellungen, zum Beispiel Titel, Beschreibung oder Lizenzen bearbeiten "
+#~ "wollen, dürfen Sie entweder den Schnellen Upload nicht verwenden und "
+#~ "müssen die Medien nacheinander hochladen oder die Medien nach dem "
+#~ "Hochladen einzeln bearbeiten"
+
+#~ msgid "Image"
+#~ msgstr "Bild"
+
+#~ msgid "Image size"
+#~ msgstr "Bildgröße"
+
+#~ msgid "Insert search text"
+#~ msgstr "Suchtext eingeben"
+
+#~ msgid ""
+#~ "It seems like the Scribite / CKEditor integration is working! Make sure "
+#~ "you use a \"special\" or \"full\" toolbar."
+#~ msgstr ""
+#~ "Es scheint als würde die Scribite / CKEditor Integrierung funktionieren! "
+#~ "Stellen Sie sicher, dass Sie die \"special\" oder \"full\" Tollbar "
+#~ "benutzen."
+
+#~ msgid "License|Licenses"
+#~ msgstr "Lizenz|Lizenzen"
+
+#~ msgid "Markdown"
+#~ msgstr "MarkDown"
+
+#~ msgid "Media collections"
+#~ msgstr "Sammlungen"
+
+#~ msgid "Media list"
+#~ msgstr "Medienliste"
+
+#~ msgid "Medium"
+#~ msgstr "Medium"
+
+#~ msgid "Metering mode"
+#~ msgstr "Messmodus"
+
+#~ msgid "Next"
+#~ msgstr "Weiter"
+
+#~ msgid "No media attached yet!"
+#~ msgstr "Bisher keine Medien angehangen!"
+
+#~ msgid "No media available yet!"
+#~ msgstr "Bisher keine Medien verfügbar!"
+
+#~ msgid "PDF"
+#~ msgstr "PDF"
+
+#~ msgid "Parse"
+#~ msgstr "Analysieren"
+
+#~ msgid "Paste URL / Embed code"
+#~ msgstr "URL oder Einbettungscode einfügen"
+
+#~ msgid "Paste url or embed code"
+#~ msgstr "URL oder Einbettungscode einfügen"
+
+#~ msgid "Plaintext"
+#~ msgstr "Klartext"
+
+#~ msgid "Playlist"
+#~ msgstr "Wiedergabeliste"
+
+#~ msgid "Please select the size to embed."
+#~ msgstr "Bitte wählen Sie die einzubettende Größe"
+
+#~ msgid "Position"
+#~ msgstr "Position"
+
+#~ msgid "Previous"
+#~ msgstr "Zurück"
+
+#~ msgid "Publisher"
+#~ msgstr "Verleger"
+
+#~ msgid "Raw"
+#~ msgstr "Roh"
+
+#~ msgid "Relative size"
+#~ msgstr "Relative Größe"
+
+#~ msgid "Rendered"
+#~ msgstr "Gerendert"
+
+#~ msgid "Resolution"
+#~ msgstr "Auflösung"
+
+#~ msgid "Root collections"
+#~ msgstr "Wurzelsammlungen"
+
+#~ msgid "Sample rate"
+#~ msgstr "Sample Rate"
+
+#~ msgid "Scribite integration"
+#~ msgstr "Scribite Integration"
+
+#~ msgid "Scribite is not installed."
+#~ msgstr "Scribite ist nicht installiert"
+
+#~ msgid "Seamless and responsive grid"
+#~ msgstr "Responsives Gitter"
+
+#~ msgid "Search the web"
+#~ msgstr "Internet durchsuchen"
+
+#~ msgid "Select a service below"
+#~ msgstr "Service wählen"
+
+#~ msgid "Select license"
+#~ msgstr "Lizenz wählen"
+
+#~ msgid "Select template"
+#~ msgstr "Template wählen"
+
+#~ msgid "Select uploaded collection"
+#~ msgstr "Hochgeladene Sammlung wählen"
+
+#~ msgid "Select uploaded medium"
+#~ msgstr "Hochgeladenes Medium wählen"
+
+#~ msgid "Settings"
+#~ msgstr "Einstellungen"
+
+#~ msgid "Show"
+#~ msgstr "Anzeigen"
+
+#~ msgid "Shutter speed"
+#~ msgstr "Belichtungszeit"
+
+#~ msgid ""
+#~ "Simply paste your URL or embed code here and we'll try to figure "
+#~ "everything out."
+#~ msgstr ""
+#~ "Fügen Sie einfach die URL oder den Einbettungscode hier ein und wir "
+#~ "machen den Rest."
+
+#~ msgid "Small"
+#~ msgstr "Klein"
+
+#~ msgid ""
+#~ "Sorry, you need to have admin permissions for the ZikulaExtensionsModule "
+#~ "to run the upgrade!"
+#~ msgstr ""
+#~ "Entschuldigung, Sie brauchen Admin Berechtigungen für das "
+#~ "ZikulaExtensionsModul um die Aktualisierung durchführen zu können!"
+
+#~ msgid "SoundCloud"
+#~ msgstr "SoundCloud"
+
+#~ msgid "Start"
+#~ msgstr "Starten"
+
+#~ msgid "Start upgrade"
+#~ msgstr "Aktualisierung starten"
+
+#~ msgid "Start upload"
+#~ msgstr "Upload beginnen"
+
+#~ msgid "Temporary Upload Collection"
+#~ msgstr "Temporäre Hochlade-Sammlung"
+
+#~ msgid ""
+#~ "The %s version of the MediaModule is available for download. You can "
+#~ "apply the automatic upgrade by clicking here:"
+#~ msgstr ""
+#~ "Die %s Version des Medien Moduls ist zum Download bereit. Sie können die "
+#~ "automatische Aktualisierung durchführen, indem Sie hier klicken:"
+
+#~ msgid "The contained files can not be displayed."
+#~ msgstr "Die beinhalteten Dateien können nicht angezeigt werden."
+
+#~ msgid ""
+#~ "The id of the generated \"temporary upload collection\" must be 1, but "
+#~ "has a different value. This should not have happened. Please report this "
+#~ "error."
+#~ msgstr ""
+#~ "Die ID der generierten \"Temporären Hochlade-Sammlung\" muss 1 sein, hat "
+#~ "aber einen anderen Wert. Dies sollte nicht passieren. Bitte melden Sie "
+#~ "diesen Fehler."
+
+#~ msgid "The tweet is loading."
+#~ msgstr "Der Tweet lädt."
+
+#~ msgid "This collection is currently empty!"
+#~ msgstr "Diese Sammlung ist im Moment leer."
+
+#~ msgid ""
+#~ "This content is licensed under the following license|This content is "
+#~ "licensed under the following licenses"
+#~ msgstr ""
+#~ "Dieser Inhalt ist lizensiert unter der folgenden Lizenz|Dieser inhalt ist "
+#~ "lizensiert unter den folgenden Lizenzen"
+
+#~ msgid "This is where the Tweet will appear."
+#~ msgstr "Hier wird der Tweet erscheinen."
+
+#~ msgid "Thumbnail"
+#~ msgstr "Vorschaubild"
+
+#~ msgid "Track number"
+#~ msgstr "Titelnummer"
+
+#~ msgid "Tweet"
+#~ msgstr "Tweet"
+
+#~ msgid "Tweet by: "
+#~ msgstr "Tweet von:"
+
+#~ msgid "Twitter"
+#~ msgstr "Twitter"
+
+#~ msgid "Type"
+#~ msgstr " Typ"
+
+#~ msgid "Unknown media"
+#~ msgstr "Unbekanntes Medium"
+
+#~ msgid "Upgrade module"
+#~ msgstr "Modul aktualisieren"
+
+#~ msgid "Upgrade now!"
+#~ msgstr "Jetzt aktualisieren!"
+
+#~ msgid "Upload a file"
+#~ msgstr "Datei hochladen"
+
+#~ msgid "Video"
+#~ msgstr "Video"
+
+#~ msgid "Video bit rate"
+#~ msgstr "Video Bit Rate"
+
+#~ msgid "View collection"
+#~ msgstr "Sammlung ansehen"
+
+#~ msgid "View media"
+#~ msgstr "Medium ansehen"
+
+#~ msgid "Watermarks"
+#~ msgstr "Wasserzeichen"
+
+#~ msgid "Year"
+#~ msgstr "Jahr"
+
+#~ msgid ""
+#~ "You should set \"Collection description escaping strategy\" to \"As is\" "
+#~ "for Scribite to work properly!"
+#~ msgstr ""
+#~ "Sie sollten die \"Sammlungsbeschreibung Escaping Strategie\" auf \"Wie es "
+#~ "ist\" stellen, damit Scribite ordentlich funktioniert!"
+
+#~ msgid ""
+#~ "You should set \"Media description escaping strategy\" to \"As is\" for "
+#~ "Scribite to work properly!"
+#~ msgstr ""
+#~ "Sie sollten die \"Medienbeschreibung Escaping Strategie\" auf \"Wie es ist"
+#~ "\" stellen, damit Scribite ordentlich funktioniert!"
+
+#~ msgid "YouTube"
+#~ msgstr "YouTube"
+
+#~ msgid "Your browser does not support the audio element."
+#~ msgstr "Ihr Browser unterstützt das Audio Element nicht."
+
+#~ msgid "[No parent]"
+#~ msgstr "[Keine Elternsammlung]"
+
+#~ msgid "and embed it"
+#~ msgstr "und einbetten"
+
+#~ msgid "at "
+#~ msgstr "am"
+
+#~ msgid "no"
+#~ msgstr "nein"
+
+#~ msgid "off"
+#~ msgstr "aus"
+
+#~ msgid "on"
+#~ msgstr "an"
+
+#~ msgid "yes"
+#~ msgstr "ja"
