@@ -447,6 +447,7 @@ class SecurityManager
     /**
      * Creates a query builder using the given alias which will return all parent
      * collections of the "c" collection.
+     *
      * @param $alias
      *
      * @return QueryBuilder

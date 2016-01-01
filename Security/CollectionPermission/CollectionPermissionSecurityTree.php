@@ -76,7 +76,7 @@ class CollectionPermissionSecurityTree
     const PERM_LEVEL_DELETE_COLLECTION = 'delete-collection';
 
     /**
-     * Allows to enhance permissions by adding permissions with goOn = 1
+     * Allows to enhance permissions by adding permissions with goOn = 1.
      */
     const PERM_LEVEL_ENHANCE_PERMISSIONS = 'enhance-permissions';
 
