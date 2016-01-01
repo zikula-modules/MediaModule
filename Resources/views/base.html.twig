@@ -62,14 +62,7 @@
             {% if cmfcmfmediamodule_hasPermission('settings', 'admin') %}
                 <li>
                     <a href="{{ path('cmfcmfmediamodule_settings_settings') }}">
-                        {{ __('Settings') }}
-                    </a>
-                </li>
-            {% endif %}
-            {% if cmfcmfmediamodule_hasPermission('hooks', 'admin') %}
-                <li>
-                    <a href="{{ path('zikulaextensionsmodule_admin_hooks', {moduleName: 'CmfcmfMediaModule'}) }}">
-                        {{ __('Hooks') }}
+                        {{ __('Backend') }}
                     </a>
                 </li>
             {% endif %}

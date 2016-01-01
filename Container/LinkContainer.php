@@ -82,20 +82,6 @@ class LinkContainer implements LinkContainerInterface
                 'icon' => 'picture-o'
             ];
         }
-        if ($this->securityManager->hasPermission('watermark', 'moderate')) {
-            $links[] = [
-                'url' => $this->router->generate('cmfcmfmediamodule_watermark_index'),
-                'text' => $this->translator->trans('Watermarks', [], $this->domain),
-                'icon' => 'map-marker'
-            ];
-        }
-        if ($this->securityManager->hasPermission('license', 'moderate')) {
-            $links[] = [
-                'url' => $this->router->generate('cmfcmfmediamodule_license_index'),
-                'text' => $this->translator->trans('Licenses', [], $this->domain),
-                'icon' => 'copyright'
-            ];
-        }
         if ($this->securityManager->hasPermission('settings', 'admin')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_settings_settings'),
