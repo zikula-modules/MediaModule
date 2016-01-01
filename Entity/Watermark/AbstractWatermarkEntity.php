@@ -1,13 +1,22 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
+use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Imagine\Image\ImagineInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 
 /**
  * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\Watermark\Repository\WatermarkRepository")

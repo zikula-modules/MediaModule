@@ -1,10 +1,19 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface

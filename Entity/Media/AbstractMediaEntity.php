@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\Entity\Media;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
@@ -9,11 +18,11 @@ use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
 use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Sluggable\Sluggable;
 use Gedmo\Sortable\Sortable;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository")

@@ -1,8 +1,15 @@
 <?php
 
-namespace Cmfcmf\Module\MediaModule\Tests\Entity\Repository;
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-use Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository\HookedObjectRepository;
+namespace Cmfcmf\Module\MediaModule\Tests\Entity\Repository;
 
 class HookedObjectRepositoryTest extends \PHPUnit_Framework_TestCase
 {
