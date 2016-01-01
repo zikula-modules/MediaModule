@@ -15,6 +15,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class UserPermissionType extends AbstractPermissionType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $users = \UserUtil::getAll();
@@ -23,7 +26,7 @@ class UserPermissionType extends AbstractPermissionType
         }, $users);
 
         $builder->add('userIds', 'choice', [
-            'label' => $this->__('Users'),
+            'label' => $this->translator->trans('Users', [], 'cmfcmfmediamodule'),
             'multiple' => true,
             'choices' => $choices
         ]);

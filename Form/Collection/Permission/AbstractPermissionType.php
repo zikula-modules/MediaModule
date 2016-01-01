@@ -34,66 +34,106 @@ abstract class AbstractPermissionType extends AbstractType
      */
     private $permissionLevel;
 
-    public function __construct(CollectionEntity $collectionEntity, SecurityManager $securityManager, $permissionLevel)
-    {
-        parent::__construct();
-
+    public function __construct(
+        CollectionEntity $collectionEntity,
+        SecurityManager $securityManager,
+        $permissionLevel
+    ) {
         $this->securityManager = $securityManager;
         $this->collectionEntity = $collectionEntity;
         $this->permissionLevel = $permissionLevel;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
-        $builder->add('permissionLevels', 'cmfcmfmediamodule_permission', [
-            'label' => $this->__('Permission level'),
-            'permissionLevel' => $this->permissionLevel
-        ])->add('description', 'textarea', [
-            'label' => $this->__('Description'),
-            'required' => false,
-            'attr' => [
-                'help' => $this->__('This is just for you to remember why you created this permission.')
-            ]
-        ])->add('appliedToSelf', 'checkbox', [
-            'label' => $this->__('Applies to the collection itself'),
-            'required' => false
-        ])->add('appliedToSubCollections', 'checkbox', [
-            'label' => $this->__('Applies to sub-collections'),
-            'required' => false
-        ]);
-
-        if ($this->securityManager->hasPermission($this->collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)) {
-            $builder->add('goOn', 'checkbox', [
-                'label' => $this->__('Go on if this permission is not sufficient'),
+        $builder->add(
+            'permissionLevels',
+            'cmfcmfmediamodule_permission',
+            [
+                'label' => $this->translator->trans('Permission level', [], 'cmfcmfmediamodule'),
+                'permissionLevel' => $this->permissionLevel
+            ])->add(
+            'description',
+            'textarea',
+            [
+                'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
+                'required' => false,
+                'attr' => [
+                    'help' => $this->translator->trans(
+                        'This is just for you to remember why you created this permission.',
+                        [],
+                        'cmfcmfmediamodule')
+                ]
+            ])->add(
+            'appliedToSelf',
+            'checkbox',
+            [
+                'label' => $this->translator->trans('Applies to the collection itself', [], 'cmfcmfmediamodule'),
+                'required' => false
+            ])->add(
+            'appliedToSubCollections',
+            'checkbox',
+            [
+                'label' => $this->translator->trans('Applies to sub-collections', [], 'cmfcmfmediamodule'),
                 'required' => false
             ]);
+
+        if ($this->securityManager->hasPermission(
+            $this->collectionEntity,
+            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)
+        ) {
+            $builder->add(
+                'goOn',
+                'checkbox',
+                [
+                    'label' => $this->translator->trans('Go on if this permission is not sufficient', [], 'cmfcmfmediamodule'),
+                    'required' => false
+                ]);
         } else {
-            $builder->add('goOn', 'checkbox', [
-                'label' => $this->__('Go on if this permission is not sufficient'),
-                'required' => true,
-                'data' => true,
-                'attr' => [
-                    'disabled' => true
-                ],
-            ]);
+            $builder->add(
+                'goOn',
+                'checkbox',
+                [
+                    'label' => $this->translator->trans('Go on if this permission is not sufficient', [], 'cmfcmfmediamodule'),
+                    'required' => true,
+                    'data' => true,
+                    'attr' => [
+                        'disabled' => true
+                    ],
+                ]);
         }
 
-        $builder->add('validAfter', 'datetime', [
-            'label' => $this->__('Valid after'),
-            'widget' => 'choice',
-            'required' => false,
-            'attr' => [
-                'help' => $this->__('If you specify a date, the permission rule will only be taken into account after the specified date.')
-            ]
-        ])->add('validUntil', 'datetime', [
-            'label' => $this->__('Valid until'),
-            'widget' => 'choice',
-            'required' => false,
-            'attr' => [
-                'help' => $this->__('If you specify a date, the permission rule will only be taken into account until the specified date.')
-            ]
-        ]);
+        $builder->add(
+            'validAfter',
+            'datetime',
+            [
+                'label' => $this->translator->trans('Valid after', [], 'cmfcmfmediamodule'),
+                'widget' => 'choice',
+                'required' => false,
+                'attr' => [
+                    'help' => $this->translator->trans(
+                        'If you specify a date, the permission rule will only be taken into account after the specified date.',
+                        [],
+                        'cmfcmfmediamodule')
+                ]
+            ])->add(
+            'validUntil',
+            'datetime',
+            [
+                'label' => $this->translator->trans('Valid until', [], 'cmfcmfmediamodule'),
+                'widget' => 'choice',
+                'required' => false,
+                'attr' => [
+                    'help' => $this->translator->trans(
+                        'If you specify a date, the permission rule will only be taken into account until the specified date.',
+                        [],
+                        'cmfcmfmediamodule')
+                ]
+            ]);
     }
 }

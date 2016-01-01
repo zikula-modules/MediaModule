@@ -11,6 +11,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Controller;
 
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 use Zikula\Component\HookDispatcher\Hook;
 use Zikula\Core\Controller\AbstractController as BaseAbstractController;
@@ -21,11 +22,28 @@ use Zikula\Core\UrlInterface;
  */
 abstract class AbstractController extends BaseAbstractController
 {
+    /**
+     * Notifies subscribers of the given hook.
+     *
+     * @param Hook $hook
+     *
+     * @return Hook
+     */
     protected function notifyHooks(Hook $hook)
     {
         return $this->get('hook_dispatcher')->dispatch($hook->getName(), $hook);
     }
 
+    /**
+     * Get the display hook content for the given hook.
+     *
+     * @param string            $name
+     * @param string            $event
+     * @param string|null       $id
+     * @param UrlInterface|null $url
+     *
+     * @return string
+     */
     protected function getDisplayHookContent($name, $event, $id = null, UrlInterface $url = null)
     {
         $eventName = "cmfcmfmediamodule.ui_hooks.$name.$event";
@@ -45,6 +63,14 @@ abstract class AbstractController extends BaseAbstractController
         return strlen($content) == 0 ? "" : "<div class=\"row\">\n$content</div>";
     }
 
+    /**
+     * Applies process hooks.
+     *
+     * @param string            $name
+     * @param string            $event
+     * @param string            $id
+     * @param UrlInterface|null $url
+     */
     protected function applyProcessHook($name, $event, $id, UrlInterface $url = null)
     {
         /* @noinspection PhpParamsInspection */
@@ -55,6 +81,14 @@ abstract class AbstractController extends BaseAbstractController
         ));
     }
 
+    /**
+     * Checks whether or not the hook validates.
+     *
+     * @param string $name
+     * @param string $event
+     *
+     * @return bool
+     */
     protected function hookValidates($name, $event)
     {
         /* @noinspection PhpParamsInspection */
@@ -69,7 +103,9 @@ abstract class AbstractController extends BaseAbstractController
     }
 
     /**
-     * @param \Symfony\Component\Form\Form $form
+     * Adds an error message to the form.
+     *
+     * @param Form $form
      */
     protected function hookValidationError($form)
     {

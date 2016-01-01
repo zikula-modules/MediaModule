@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\PasteMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
@@ -110,7 +111,11 @@ class MediaController extends AbstractController
 
         $mediaType = $this->get('cmfcmf_media_module.media_type_collection')->getMediaTypeFromEntity($entity);
         $form = $mediaType->getFormTypeClass();
-        $form = $this->createForm(new $form($securityManager, false, $parent), $entity);
+        /** @var AbstractType $form */
+        $form = new $form($securityManager, false, $parent);
+        $form->setTranslator($this->get('translator'));
+        /** @var \Symfony\Component\Form\Form $form */
+        $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -288,7 +293,11 @@ class MediaController extends AbstractController
         $entity = $this->getDefaultEntity($request, $type, $mediaType, $init, $collection);
 
         $form = $mediaType->getFormTypeClass();
-        $form = $this->createForm(new $form($securityManager, true), $entity);
+        /** @var AbstractType $form */
+        $form = new $form($securityManager, true);
+        $form->setTranslator($this->get('translator'));
+        $form = $this->createForm($form, $entity);
+        /** @var \Symfony\Component\Form\Form $form */
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -537,7 +546,11 @@ class MediaController extends AbstractController
             $entity = new $entity();
 
             $form = $selectedMediaType->getFormTypeClass();
-            $form = $this->createForm(new $form($securityManager, true, null, true), $entity, ['csrf_protection' => false]);
+            /** @var AbstractType $form */
+            $form = new $form($securityManager, true, null, true);
+            $form->setTranslator($this->get('translator'));
+            /** @var \Symfony\Component\Form\Form $form */
+            $form = $this->createForm($form, $entity, ['csrf_protection' => false]);
             $form->remove('file');
 
             $form->submit([

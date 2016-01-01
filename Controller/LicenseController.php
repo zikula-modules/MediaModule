@@ -63,7 +63,9 @@ class LicenseController extends AbstractController
         }
 
         $entity = new LicenseEntity(null);
-        $form = $this->createForm(new LicenseType(false), $entity);
+        $form = new LicenseType(false);
+        $form->setTranslator($this->get('translator'));
+        $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -95,7 +97,9 @@ class LicenseController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $form = $this->createForm(new LicenseType(true), $entity);
+        $form = new LicenseType(true);
+        $form->setTranslator($this->get('translator'));
+        $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {

@@ -15,6 +15,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class FlickrType extends WebType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);

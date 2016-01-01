@@ -71,6 +71,8 @@ class UpgradeController extends AbstractController
     /**
      * @Route("/settings/upgrade/ajax/{step}", options={"expose" = true})
      *
+     * @param $step
+     *
      * @return JsonResponse
      */
     public function ajaxAction($step)

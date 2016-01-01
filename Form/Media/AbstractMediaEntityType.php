@@ -20,9 +20,11 @@ use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermission
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
-use Zikula\Common\I18n\TranslatableInterface;
 
-abstract class AbstractMediaEntityType extends AbstractType implements TranslatableInterface
+/**
+ * Provides some convenience methods for all media form types.
+ */
+abstract class AbstractMediaEntityType extends AbstractType
 {
     /**
      * @var bool
@@ -44,30 +46,46 @@ abstract class AbstractMediaEntityType extends AbstractType implements Translata
      */
     private $securityManager;
 
-    public function __construct(SecurityManager $securityManager, $isCreation = false, CollectionEntity $parent = null, $allowTemporaryUploadCollection = false)
-    {
-        parent::__construct();
-
+    public function __construct(
+        SecurityManager $securityManager,
+        $isCreation = false,
+        CollectionEntity $parent = null,
+        $allowTemporaryUploadCollection = false
+    ) {
         $this->securityManager = $securityManager;
         $this->isCreation = $isCreation;
         $this->parent = $parent;
         $this->allowTemporaryUploadCollection = $allowTemporaryUploadCollection;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
-        $escapingStrategy = \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForMedia');
+        $escapingStrategy = \ModUtil::getVar(
+            'CmfcmfMediaModule',
+            'descriptionEscapingStrategyForMedia');
         switch ($escapingStrategy) {
             case 'raw':
-                $descriptionHelp = $this->__('You may use HTML.');
+                $descriptionHelp = $this->translator->trans(
+                    'You may use HTML.',
+                    [],
+                    'cmfcmfmediamodule');
                 break;
             case 'text':
-                $descriptionHelp = $this->__('Only plaintext allowed.');
+                $descriptionHelp = $this->translator->trans(
+                    'Only plaintext allowed.',
+                    [],
+                    'cmfcmfmediamodule');
                 break;
             case 'markdown':
-                $descriptionHelp = $this->__('You may use MarkDown.');
+                $descriptionHelp = $this->translator->trans(
+                    'You may use MarkDown.',
+                    [],
+                    'cmfcmfmediamodule');
                 break;
             default:
                 throw new \LogicException();
@@ -81,9 +99,12 @@ abstract class AbstractMediaEntityType extends AbstractType implements Translata
         $allowTemporaryUploadCollection = $this->allowTemporaryUploadCollection;
         $collectionOptions = [
             'required' => true,
-            'label' => $this->__('Collection'),
+            'label' => $this->translator->trans('Collection', [], 'cmfcmfmediamodule'),
             'class' => 'CmfcmfMediaModule:Collection\CollectionEntity',
-            'query_builder' => function (EntityRepository $er) use ($allowTemporaryUploadCollection, $securityManager) {
+            'query_builder' => function (EntityRepository $er) use (
+                $allowTemporaryUploadCollection,
+                $securityManager
+            ) {
                 /** @var CollectionRepository $er */
                 $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
                     CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA
@@ -99,7 +120,7 @@ abstract class AbstractMediaEntityType extends AbstractType implements Translata
 
                 return $qb;
             },
-            'placeholder' => $this->__('Select collection'),
+            'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
             'property' => 'indentedTitle',
         ];
         if ($this->parent !== null) {
@@ -108,54 +129,91 @@ abstract class AbstractMediaEntityType extends AbstractType implements Translata
 
         $builder
             ->add('collection', 'entity', $collectionOptions)
-            ->add('title', isset($options['hiddenFields']) && in_array('title', $options['hiddenFields']) ? 'hidden' : 'text', [
-                'label' => $this->__('Title')
-            ])
-            ->add('description', isset($options['hiddenFields']) && in_array('description', $options['hiddenFields']) ? 'hidden' : 'textarea', [
-                'required' => false,
-                'label' => $this->__('Description'),
-                'attr' => [
-                    'help' => $descriptionHelp
-                ]
-            ])
-            ->add('license', 'entity', [
-                'required' => false,
-                'label' => $this->__('License'),
-                'class' => 'CmfcmfMediaModule:License\LicenseEntity',
-                'preferred_choices' => function (LicenseEntity $license) {
-                    return !$license->isOutdated();
-                },
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('l')
-                        ->orderBy('l.title', 'ASC')
-                        ->where('l.enabledForUpload = 1');
+            ->add(
+                'title',
+                isset($options['hiddenFields']) && in_array(
+                    'title',
+                    $options['hiddenFields']) ? 'hidden' : 'text',
+                [
+                    'label' => $this->translator->trans('Title', [], 'cmfcmfmediamodule')
+                ])
+            ->add(
+                'description',
+                isset($options['hiddenFields']) && in_array(
+                    'description',
+                    $options['hiddenFields']) ? 'hidden' : 'textarea',
+                [
+                    'required' => false,
+                    'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
+                    'attr' => [
+                        'help' => $descriptionHelp
+                    ]
+                ])
+            ->add(
+                'license',
+                'entity',
+                [
+                    'required' => false,
+                    'label' => $this->translator->trans('License', [], 'cmfcmfmediamodule'),
+                    'class' => 'CmfcmfMediaModule:License\LicenseEntity',
+                    'preferred_choices' => function (LicenseEntity $license) {
+                        return !$license->isOutdated();
+                    },
+                    'query_builder' => function (EntityRepository $er) {
+                        return $er->createQueryBuilder('l')
+                            ->orderBy('l.title', 'ASC')
+                            ->where('l.enabledForUpload = 1');
                         // @todo Move to the actual uploadable file types.
-                },
-                'placeholder' => $this->__('Unknown'),
-                'property' => 'title',
-                'attr' => isset($options['hiddenFields']) && in_array('license', $options['hiddenFields']) ? $hiddenAttr : [],
-                'label_attr' => isset($options['hiddenFields']) && in_array('license', $options['hiddenFields']) ? $hiddenAttr : []
-            ])
-            ->add('author', isset($options['hiddenFields']) && in_array('author', $options['hiddenFields']) ? 'hidden' : 'text', [
-                'label' => $this->__('Author'),
-                'required' => false,
-                'empty_data' => null
-            ])
-            ->add('authorUrl', isset($options['hiddenFields']) && in_array('authorUrl', $options['hiddenFields']) ? 'hidden' : 'url', [
-                'label' => $this->__('Author URL'),
-                'required' => false,
-                'empty_data' => null
-            ])
-            ->add('authorAvatarUrl', isset($options['hiddenFields']) && in_array('authorAvatarUrl', $options['hiddenFields']) ? 'hidden' : 'url', [
-                'label' => $this->__('Author Avatar URL'),
-                'required' => false,
-                'empty_data' => null
-            ])
-            ->add('mediaType', 'hidden', [
-                'mapped' => false
-            ])
-            ->add('extraData', 'hidden')
-        ;
+                    },
+                    'placeholder' => $this->translator->trans('Unknown', [], 'cmfcmfmediamodule'),
+                    'property' => 'title',
+                    'attr' => isset($options['hiddenFields']) && in_array(
+                        'license',
+                        $options['hiddenFields']) ? $hiddenAttr : [],
+                    'label_attr' => isset($options['hiddenFields']) && in_array(
+                        'license',
+                        $options['hiddenFields']) ? $hiddenAttr : []
+                ])
+            ->add(
+                'author',
+                isset($options['hiddenFields']) && in_array(
+                    'author',
+                    $options['hiddenFields']) ? 'hidden' : 'text',
+                [
+                    'label' => $this->translator->trans('Author', [], 'cmfcmfmediamodule'),
+                    'required' => false,
+                    'empty_data' => null
+                ])
+            ->add(
+                'authorUrl',
+                isset($options['hiddenFields']) && in_array(
+                    'authorUrl',
+                    $options['hiddenFields']) ? 'hidden' : 'url',
+                [
+                    'label' => $this->translator->trans('Author URL', [], 'cmfcmfmediamodule'),
+                    'required' => false,
+                    'empty_data' => null
+                ])
+            ->add(
+                'authorAvatarUrl',
+                isset($options['hiddenFields']) && in_array(
+                    'authorAvatarUrl',
+                    $options['hiddenFields']) ? 'hidden' : 'url',
+                [
+                    'label' => $this->translator->trans(
+                        'Author Avatar URL',
+                        [],
+                        'cmfcmfmediamodule'),
+                    'required' => false,
+                    'empty_data' => null
+                ])
+            ->add(
+                'mediaType',
+                'hidden',
+                [
+                    'mapped' => false
+                ])
+            ->add('extraData', 'hidden');
 
         $builder->get('extraData')->addModelTransformer(new ArrayToJsonTransformer());
     }

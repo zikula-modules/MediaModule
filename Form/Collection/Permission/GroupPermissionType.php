@@ -16,6 +16,9 @@ use Zikula\GroupsModule\Entity\GroupEntity;
 
 class GroupPermissionType extends AbstractPermissionType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         /** @var GroupEntity[]|false $groups */
@@ -25,14 +28,14 @@ class GroupPermissionType extends AbstractPermissionType
         }
 
         $choices = [];
-        $choices[-1] = $this->__('All groups');
+        $choices[-1] = $this->translator->trans('All groups', [], 'cmfcmfmediamodule');
 
         foreach ($groups as $group) {
             $choices[$group->getGid()] = $group->getName();
         }
 
         $builder->add('groupIds', 'choice', [
-            'label' => $this->__('Groups'),
+            'label' => $this->translator->trans('Groups', [], 'cmfcmfmediamodule'),
             'multiple' => true,
             'choices' => $choices
         ]);

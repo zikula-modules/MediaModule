@@ -31,7 +31,6 @@ class ImageWatermarkType extends AbstractWatermarkType
      */
     public function __construct(ImageWatermarkEntity $entity = null)
     {
-        parent::__construct();
         $this->entity = $entity;
     }
 
@@ -49,7 +48,7 @@ class ImageWatermarkType extends AbstractWatermarkType
                 'multiple' => false,
                 'mapped' => false,
                 'attr' => [
-                    'help' => $this->__('Image to be used as watermark.')
+                    'help' => $this->translator->trans('Image to be used as watermark.', [], 'cmfcmfmediamodule')
                 ],
                 'data' => $file, // @todo Still needed??
                 'required' => $this->entity === null,

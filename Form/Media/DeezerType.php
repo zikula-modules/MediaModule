@@ -15,6 +15,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class DeezerType extends WebType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $options['hiddenFields'] = [
@@ -26,7 +29,7 @@ class DeezerType extends WebType
             ->add('musicType', 'hidden')
             ->add('musicId', 'hidden')
             ->add('showPlaylist', 'checkbox', [
-                'label' => $this->__('Show playlist'),
+                'label' => $this->translator->trans('Show playlist', [], 'cmfcmfmediamodule'),
                 'required' => false
             ])
         ;

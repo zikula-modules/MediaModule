@@ -52,7 +52,9 @@ class CollectionController extends AbstractController
 
         $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
         $entity = new CollectionEntity();
-        $form = $this->createForm(new CollectionType($templateCollection, $parent, $securityManager), $entity);
+        $form = new CollectionType($templateCollection, $parent, $securityManager);
+        $form->setTranslator($this->get('translator'));
+        $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -101,7 +103,9 @@ class CollectionController extends AbstractController
         }
 
         $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
-        $form = $this->createForm(new CollectionType($templateCollection, $entity->getParent(), $securityManager), $entity);
+        $form = new CollectionType($templateCollection, $entity->getParent(), $securityManager);
+        $form->setTranslator($this->get('translator'));
+        $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -231,7 +235,6 @@ class CollectionController extends AbstractController
     /**
      * @Route("")
      * @Method("GET")
-     * @Template()
      *
      * @return array
      */

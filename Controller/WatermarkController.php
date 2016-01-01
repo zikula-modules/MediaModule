@@ -76,6 +76,7 @@ class WatermarkController extends AbstractController
         } else {
             throw new NotFoundHttpException();
         }
+        $form->setTranslator($this->get('translator'));
 
         $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
@@ -124,6 +125,7 @@ class WatermarkController extends AbstractController
         } else {
             throw new \LogicException();
         }
+        $form->setTranslator($this->get('translator'));
 
         $form = $this->createForm($form, $entity);
         $form->handleRequest($request);

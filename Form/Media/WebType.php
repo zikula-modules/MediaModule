@@ -15,6 +15,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class WebType extends AbstractMediaEntityType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);

@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Exception\InvalidPositionException;
+use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query\Expr;
@@ -95,12 +96,14 @@ class PermissionController extends AbstractController
         $entity = new $entity();
 
         $form = $permissionType->getFormClass();
+        /** @var AbstractType $form */
         $form = new $form(
             $collection,
             $this->get('cmfcmf_media_module.security_manager'),
             $permissionLevel
         );
-
+        $form->setTranslator($this->get('translator'));
+        /** @var \Symfony\Component\Form\Form $form */
         $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
 
@@ -147,12 +150,14 @@ class PermissionController extends AbstractController
             ->getCollectionPermissionFromEntity($permissionEntity)
             ->getFormClass();
 
+        /** @var AbstractType $form */
         $form = new $form(
             $permissionEntity->getCollection(),
             $this->get('cmfcmf_media_module.security_manager'),
             $permissionLevel
         );
-
+        $form->setTranslator($this->get('translator'));
+        /** @var \Symfony\Component\Form\Form $form */
         $form = $this->createForm($form, $permissionEntity);
         $form->handleRequest($request);
 

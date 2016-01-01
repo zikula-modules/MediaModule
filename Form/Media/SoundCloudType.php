@@ -15,6 +15,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class SoundCloudType extends WebType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $options['hiddenFields'] = [

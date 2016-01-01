@@ -15,6 +15,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class PlaintextType extends AbstractFileType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
@@ -22,7 +25,7 @@ class PlaintextType extends AbstractFileType
         $builder
             ->add('useSyntaxHighlighting', 'checkbox', [
                 'required' => false,
-                'label' => $this->__('Use syntax highlighting')
+                'label' => $this->translator->trans('Use syntax highlighting', [], 'cmfcmfmediamodule')
             ])
         ;
     }

@@ -15,10 +15,13 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class PasswordPermissionType extends AbstractPermissionType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('password', 'password', [
-            'label' => $this->__('Password'),
+            'label' => $this->translator->trans('Password', [], 'cmfcmfmediamodule'),
         ]);
 
         parent::buildForm($builder, $options);

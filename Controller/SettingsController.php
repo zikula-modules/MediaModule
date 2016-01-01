@@ -32,13 +32,21 @@ class SettingsController extends AbstractController
      */
     public function settingsAction(Request $request)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('settings', 'admin')) {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+            'settings',
+            'admin')
+        ) {
             throw new AccessDeniedException();
         }
 
-        $collectionTemplateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
+        $collectionTemplateCollection = $this->get(
+            'cmfcmf_media_module.collection_template_collection');
+        $translator = $this->get('translator');
 
-        $form = $this->createForm(new SettingsType($collectionTemplateCollection->getCollectionTemplateTitles()));
+        $form = $this->createForm(
+            new SettingsType(
+                $translator,
+                $collectionTemplateCollection->getCollectionTemplateTitles()));
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -55,14 +63,20 @@ class SettingsController extends AbstractController
 
         if ($scribiteInstalled) {
             $mediaBinding = $this->get('hook_dispatcher')->getBindingBetweenAreas(
-                "subscriber.cmfcmfmediamodule.ui_hooks.media", "provider.scribite.ui_hooks.editor");
+                "subscriber.cmfcmfmediamodule.ui_hooks.media",
+                "provider.scribite.ui_hooks.editor");
             $collectionBinding = $this->get('hook_dispatcher')->getBindingBetweenAreas(
-                "subscriber.cmfcmfmediamodule.ui_hooks.collection", "provider.scribite.ui_hooks.editor");
+                "subscriber.cmfcmfmediamodule.ui_hooks.collection",
+                "provider.scribite.ui_hooks.editor");
 
-            $descriptionEscapingStrategyForCollectionOk =  !is_object($collectionBinding)
-                || \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection') == 'raw';
+            $descriptionEscapingStrategyForCollectionOk = !is_object($collectionBinding)
+                || \ModUtil::getVar(
+                    'CmfcmfMediaModule',
+                    'descriptionEscapingStrategyForCollection') == 'raw';
             $descriptionEscapingStrategyForMediaOk = !is_object($mediaBinding)
-                || \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForMedia') == 'raw';
+                || \ModUtil::getVar(
+                    'CmfcmfMediaModule',
+                    'descriptionEscapingStrategyForMedia') == 'raw';
         }
 
         return [

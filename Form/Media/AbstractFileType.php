@@ -15,19 +15,22 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class AbstractFileType extends AbstractMediaEntityType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
         $builder
             ->add('file', 'file', [
-                'label' => $this->__('Change file'),
+                'label' => $this->translator->trans('Change file', [], 'cmfcmfmediamodule'),
                 'mapped' => false,
                 'required' => false
             ])
             ->add('downloadAllowed', 'checkbox', [
                 'required' => false,
-                'label' => $this->__('Allow download')
+                'label' => $this->translator->trans('Allow download', [], 'cmfcmfmediamodule')
             ])
         ;
     }

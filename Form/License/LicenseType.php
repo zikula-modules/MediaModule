@@ -26,7 +26,6 @@ class LicenseType extends AbstractType
      */
     public function __construct($isEdit)
     {
-        parent::__construct();
         $this->isEdit = $isEdit;
     }
 
@@ -41,55 +40,55 @@ class LicenseType extends AbstractType
             ->add('id', 'text', [
                 'required' => true,
                 'disabled' => $this->isEdit,
-                'label' => $this->__('License ID'),
+                'label' => $this->translator->trans('License ID', [], 'cmfcmfmediamodule'),
                 'attr' => [
-                    'help' => $this->__('You won\'t be able to change the ID after creation. It should be something like "gplv3" or similar.')
+                    'help' => $this->translator->trans('You won\'t be able to change the ID after creation. It should be something like "gplv3" or similar.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('title', 'text', [
-                'label' => $this->__('Title'),
+                'label' => $this->translator->trans('Title', [], 'cmfcmfmediamodule'),
                 'required' => true,
                 'attr' => [
-                    'help' => $this->__('The title of the license to use for displaying it.')
+                    'help' => $this->translator->trans('The title of the license to use for displaying it.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('url', 'url', [
-                'label' => $this->__('Url'),
+                'label' => $this->translator->trans('Url', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'attr' => [
-                    'help' => $this->__('The place where you can look up the license text.')
+                    'help' => $this->translator->trans('The place where you can look up the license text.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('imageUrl', 'url', [
-                'label' => $this->__('Image Url'),
+                'label' => $this->translator->trans('Image Url', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'attr' => [
-                    'help' => $this->__('Optional url of a small license icon.')
+                    'help' => $this->translator->trans('Optional url of a small license icon.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('outdated', 'checkbox', [
-                'label' => $this->__('Outdated'),
+                'label' => $this->translator->trans('Outdated', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'attr' => [
-                    'help' => $this->__('Marks a license as outdated to give a visual hint while uploading.')
+                    'help' => $this->translator->trans('Marks a license as outdated to give a visual hint while uploading.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('enabledForUpload', 'checkbox', [
-                'label' => $this->__('Allow to use for uploads'),
+                'label' => $this->translator->trans('Allow to use for uploads', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'attr' => [
-                    'help' => $this->__('If you check this box, you will be able to upload media and license it under this license.')
+                    'help' => $this->translator->trans('If you check this box, you will be able to upload media and license it under this license.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('enabledForWeb', 'checkbox', [
-                'label' => $this->__('Allow to use for web embeds'),
+                'label' => $this->translator->trans('Allow to use for web embeds', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'attr' => [
-                    'help' => $this->__('If you check this box, you will be able to embed media from the web using this license.')
+                    'help' => $this->translator->trans('If you check this box, you will be able to embed media from the web using this license.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('submit', 'submit', [
-                'label' => $this->__('Save')
+                'label' => $this->translator->trans('Save', [], 'cmfcmfmediamodule')
             ])
         ;
     }
