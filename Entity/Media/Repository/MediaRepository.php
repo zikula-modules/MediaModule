@@ -17,6 +17,14 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class MediaRepository extends EntityRepository
 {
+    /**
+     * Creates a Doctrine Paginator with the given page and entities per page.
+     *
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return Paginator
+     */
     public function getPaginated($page, $perPage)
     {
         $qb = $this->createQueryBuilder('m');

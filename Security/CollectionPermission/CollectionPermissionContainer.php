@@ -13,6 +13,9 @@ namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 
+/**
+ * Holds all collection permissions.
+ */
 class CollectionPermissionContainer
 {
     /**
@@ -26,6 +29,8 @@ class CollectionPermissionContainer
     }
 
     /**
+     * Adds a new collection permission to the list.
+     *
      * @param CollectionPermissionInterface $permission
      */
     public function addCollectionPermission(CollectionPermissionInterface $permission)
@@ -34,20 +39,24 @@ class CollectionPermissionContainer
     }
 
     /**
-     * @param $id
+     * Returns the specified collection permission.
+     *
+     * @param string $id
      *
      * @return CollectionPermissionInterface
      */
     public function getCollectionPermission($id)
     {
         if (!isset($this->permissions[$id])) {
-            throw new \InvalidArgumentException();
+            throw new \DomainException();
         }
 
         return $this->permissions[$id];
     }
 
     /**
+     * Returns the appropriate collection permission for the given entity.
+     *
      * @param AbstractPermissionEntity $permissionEntity
      *
      * @return CollectionPermissionInterface
@@ -63,6 +72,8 @@ class CollectionPermissionContainer
     }
 
     /**
+     * Returns all collection permissions indexed by id.
+     *
      * @return array|CollectionPermissionInterface[]
      */
     public function getCollectionPermissions()

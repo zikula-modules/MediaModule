@@ -41,12 +41,15 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
+     * No assertions.
+     *
      * @var int
      */
     protected $id;
 
     /**
      * @ORM\Column(name="title", type="string", length=255)
+     *
      * @Assert\NotBlank()
      * @Assert\Length(max="255")
      *
@@ -55,13 +58,15 @@ class CollectionEntity implements Node, Sluggable
     protected $title;
 
     /**
+     * @ORM\Column(length=128, unique=true)
      * @Gedmo\Slug(fields={"title"}, unique=true, handlers={
      *      @Gedmo\SlugHandler(class="Gedmo\Sluggable\Handler\TreeSlugHandler", options={
      *          @Gedmo\SlugHandlerOption(name="parentRelationField", value="parent"),
      *          @Gedmo\SlugHandlerOption(name="separator", value="/")
      *      })
      * })
-     * @ORM\Column(length=128, unique=true)
+     *
+     * No assertions.
      *
      * @var string
      */
@@ -70,6 +75,8 @@ class CollectionEntity implements Node, Sluggable
     /**
      * @ORM\Column(type="text", nullable=true)
      *
+     * No assertions.
+     *
      * @var string
      */
     protected $description;
@@ -77,31 +84,39 @@ class CollectionEntity implements Node, Sluggable
     /**
      * @ORM\Column(type="string", nullable=true)
      *
+     * No assertions.
+     *
      * @var string|null
      */
     protected $defaultTemplate;
 
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity", mappedBy="collection",
-     *     fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity",
+     *     mappedBy="collection", fetch="EXTRA_LAZY")
      * @ORM\OrderBy({"position" = "ASC"})
+     *
+     * No assertions.
      *
      * @var AbstractMediaEntity[]|ArrayCollection
      **/
     protected $media;
 
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity", mappedBy="collection",
-     *     fetch="EXTRA_LAZY", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity",
+     *     mappedBy="collection", fetch="EXTRA_LAZY", cascade={"persist"})
+     *
+     * No assertions.
      *
      * @var HookedObjectCollectionEntity[]|ArrayCollection
      */
     protected $hookedObjectCollections;
 
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity", mappedBy="collection",
-     *     fetch="LAZY", orphanRemoval=true, cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity",
+     *     mappedBy="collection", fetch="LAZY", orphanRemoval=true, cascade={"persist"})
      * @ORM\OrderBy({"position"="ASC"})
+     *
+     * No assertions.
      *
      * @var AbstractPermissionEntity[]|ArrayCollection
      */
@@ -111,6 +126,8 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
      *
+     * No assertions.
+     *
      * @var int
      */
     protected $createdUserId;
@@ -118,6 +135,8 @@ class CollectionEntity implements Node, Sluggable
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="update")
+     *
+     * No assertions.
      *
      * @var int
      */
@@ -127,6 +146,8 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      *
+     * No assertions.
+     *
      * @var \DateTime
      */
     protected $createdDate;
@@ -134,6 +155,8 @@ class CollectionEntity implements Node, Sluggable
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
+     *
+     * No assertions.
      *
      * @var \DateTime
      */
@@ -143,46 +166,58 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\Column(type="integer")
      * @ORM\Version
      *
+     * No assertions.
+     *
      * @var int
      */
     private $version;
 
     /**
-     * @Gedmo\TreeLeft
      * @ORM\Column(name="lft", type="integer")
+     * @Gedmo\TreeLeft
+     *
+     * No assertions.
      *
      * @var int
      */
     private $lft;
 
     /**
-     * @Gedmo\TreeLevel
-     * @ORM\Column(name="lvl", type="integer")
-     *
-     * @var int
-     */
-    private $lvl;
-
-    /**
-     * @Gedmo\TreeRight
      * @ORM\Column(name="rgt", type="integer")
+     * @Gedmo\TreeRight
+     *
+     * No assertions.
      *
      * @var int
      */
     private $rgt;
 
     /**
-     * @Gedmo\TreeRoot
+     * @ORM\Column(name="lvl", type="integer")
+     * @Gedmo\TreeLevel
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    private $lvl;
+
+    /**
      * @ORM\Column(name="root", type="integer", nullable=true)
+     * @Gedmo\TreeRoot
+     *
+     * No assertions.
      *
      * @var int
      */
     private $root;
 
     /**
-     * @Gedmo\TreeParent
      * @ORM\ManyToOne(targetEntity="CollectionEntity", inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
+     * @Gedmo\TreeParent
+     *
+     * No assertions.
      *
      * @var CollectionEntity|null
      */
@@ -192,6 +227,8 @@ class CollectionEntity implements Node, Sluggable
      * @ORM\OneToMany(targetEntity="CollectionEntity", mappedBy="parent")
      * @ORM\OrderBy({"lft" = "ASC"})
      *
+     * No assertions.
+     *
      * @var CollectionEntity[]|ArrayCollection
      */
     private $children;
@@ -199,8 +236,10 @@ class CollectionEntity implements Node, Sluggable
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity")
      *
+     * No assertions.
+     *
      * @var AbstractWatermarkEntity|null
-     **/
+     */
     private $watermark;
 
     public function __construct()
@@ -212,6 +251,14 @@ class CollectionEntity implements Node, Sluggable
         $this->permissions = new ArrayCollection();
     }
 
+    /**
+     * Converts the entity to an array to be used for JsTree.
+     *
+     * @param MediaTypeCollection     $mediaTypeCollection
+     * @param HookedObjectEntity|null $hookedObjectEntity
+     *
+     * @return array
+     */
     public function toArrayForJsTree(
         MediaTypeCollection $mediaTypeCollection,
         HookedObjectEntity $hookedObjectEntity = null
@@ -242,6 +289,31 @@ class CollectionEntity implements Node, Sluggable
             ],
             'cmfcmfmediamodule' => $this->toArrayForFinder($mediaTypeCollection)
         ];
+    }
+
+    /**
+     * Converts the entity to an array to be used with the finder.
+     *
+     * @param MediaTypeCollection $mediaTypeCollection
+     *
+     * @return array
+     */
+    public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection)
+    {
+        $thumbnail = $this->getMediaForThumbnail();
+
+        $array = [
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'mediaCount' => $this->media->count(),
+            'thumbnail' => null
+        ];
+
+        if ($thumbnail && $mediaTypeCollection) {
+            $array['thumbnail'] = $thumbnail->toArrayForFinder($mediaTypeCollection, false);
+        }
+
+        return $array;
     }
 
     /**
@@ -278,19 +350,6 @@ class CollectionEntity implements Node, Sluggable
         return $this;
     }
 
-    public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection)
-    {
-        $thumbnail = $this->getMediaForThumbnail();
-
-        return [
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'mediaCount' => $this->media->count(),
-            'thumbnail' => $thumbnail && $mediaTypeCollection ? $thumbnail->toArrayForFinder($mediaTypeCollection,
-                false) : null
-        ];
-    }
-
     /**
      * @return AbstractMediaEntity|null
      */
@@ -325,14 +384,26 @@ class CollectionEntity implements Node, Sluggable
 
         $breadcrumbs = array_reverse($breadcrumbs, false);
 
-        $breadcrumbs[] = [
-            'url' => $selfIsClickable ? $router->generate('cmfcmfmediamodule_collection_display', ['slug' => $this->slug]) : null,
-            'title' => $this->title
-        ];
+        if ($selfIsClickable) {
+            $breadcrumbs[] = [
+                'url' => $router->generate('cmfcmfmediamodule_collection_display', ['slug' => $this->slug]),
+                'title' => $this->title
+            ];
+        } else {
+            $breadcrumbs[] = [
+                'url' => null,
+                'title' => $this->title
+            ];
+        }
 
         return $breadcrumbs;
     }
 
+    /**
+     * Whether or not this collection is the root collection.
+     *
+     * @return bool
+     */
     public function isRoot()
     {
         return $this->parent === null;
@@ -346,13 +417,16 @@ class CollectionEntity implements Node, Sluggable
         return $this->parent;
     }
 
+    /**
+     * @param CollectionEntity|null $parent
+     */
     public function setParent(CollectionEntity $parent = null)
     {
         $this->parent = $parent;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getSlug()
     {
@@ -360,7 +434,7 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @param mixed $slug
+     * @param string $slug
      *
      * @return CollectionEntity
      */
@@ -371,6 +445,11 @@ class CollectionEntity implements Node, Sluggable
         return $this;
     }
 
+    /**
+     * Returns the title prefixed with multiple "--" depending on the tree level.
+     *
+     * @return string
+     */
     public function getIndentedTitle()
     {
         $indented = '';
@@ -510,7 +589,7 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @return \Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity[]|ArrayCollection
+     * @return AbstractMediaEntity[]|ArrayCollection
      */
     public function getMedia()
     {
@@ -518,7 +597,7 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @param \Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity[]|ArrayCollection $media
+     * @param AbstractMediaEntity[]|ArrayCollection $media
      *
      * @return CollectionEntity
      */

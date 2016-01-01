@@ -23,6 +23,8 @@ class GroupPermissionEntity extends AbstractPermissionEntity
     /**
      * @ORM\Column(type="simple_array")
      *
+     * No assertions.
+     *
      * @var int[]
      */
     protected $groupIds;

@@ -12,12 +12,16 @@
 namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Symfony\Component\Form\FormError;
+use Zikula\Component\HookDispatcher\Hook;
 use Zikula\Core\Controller\AbstractController as BaseAbstractController;
 use Zikula\Core\UrlInterface;
 
+/**
+ * Provides some convenience functions for the MediaModule controllers regarding hooks.
+ */
 abstract class AbstractController extends BaseAbstractController
 {
-    protected function notifyHooks(\Zikula\Component\HookDispatcher\Hook $hook)
+    protected function notifyHooks(Hook $hook)
     {
         return $this->get('hook_dispatcher')->dispatch($hook->getName(), $hook);
     }

@@ -21,12 +21,18 @@ class LicenseType extends AbstractType
      */
     private $isEdit;
 
+    /**
+     * @param bool $isEdit Whether or not the license is currenlty edited.
+     */
     public function __construct($isEdit)
     {
         parent::__construct();
         $this->isEdit = $isEdit;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);

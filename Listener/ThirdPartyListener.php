@@ -15,6 +15,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Zikula_Event;
 
+/**
+ * Listens to Scribite events.
+ */
 class ThirdPartyListener implements EventSubscriberInterface
 {
     /**
@@ -32,6 +35,9 @@ class ThirdPartyListener implements EventSubscriberInterface
      */
     private $resourceRoot;
 
+    /**
+     * @param string $kernelRootDir The kernel root directory.
+     */
     public function __construct($kernelRootDir)
     {
         $this->zikulaRoot = realpath($kernelRootDir . '/..');
@@ -39,6 +45,9 @@ class ThirdPartyListener implements EventSubscriberInterface
         $this->fs = new Filesystem();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function getSubscribedEvents()
     {
         return [

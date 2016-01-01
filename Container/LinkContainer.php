@@ -18,6 +18,9 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\Core\LinkContainer\LinkContainerInterface;
 
+/**
+ * Provides a list of links for the admin interface.
+ */
 class LinkContainer implements LinkContainerInterface
 {
     /**
@@ -31,11 +34,6 @@ class LinkContainer implements LinkContainerInterface
     private $securityManager;
 
     /**
-     * @var string
-     */
-    private $domain;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -45,11 +43,22 @@ class LinkContainer implements LinkContainerInterface
      */
     private $entityManager;
 
-    public function __construct(RouterInterface $router, SecurityManager $securityManager, TranslatorInterface $translator, EntityManagerInterface $entityManager)
-    {
+    /**
+     * LinkContainer constructor.
+     *
+     * @param RouterInterface        $router
+     * @param SecurityManager        $securityManager
+     * @param TranslatorInterface    $translator
+     * @param EntityManagerInterface $entityManager
+     */
+    public function __construct(
+        RouterInterface $router,
+        SecurityManager $securityManager,
+        TranslatorInterface $translator,
+        EntityManagerInterface $entityManager
+    ) {
         $this->router = $router;
         $this->securityManager = $securityManager;
-        $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
         $this->translator = $translator;
         $this->entityManager = $entityManager;
     }
@@ -75,31 +84,37 @@ class LinkContainer implements LinkContainerInterface
 
         $links = [];
 
-        $rootCollection = $this->entityManager->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNode();
+        $rootCollection = $this->entityManager
+            ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')
+            ->getRootNode()
+        ;
 
-        if ($this->securityManager->hasPermission($rootCollection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
+        if ($this->securityManager->hasPermission(
+            $rootCollection,
+            CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)
+        ) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_collection_displayroot'),
-                'text' => $this->translator->trans('Frontend', [], $this->domain),
+                'text' => $this->translator->trans('Frontend', [], 'cmfcmfmediamodule'),
                 'icon' => 'home'
             ];
         }
         if ($this->securityManager->hasPermission('media', 'moderate')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_media_adminlist'),
-                'text' => $this->translator->trans('Media list', [], $this->domain),
+                'text' => $this->translator->trans('Media list', [], 'cmfcmfmediamodule'),
                 'icon' => 'picture-o'
             ];
         }
         if ($this->securityManager->hasPermission('settings', 'admin')) {
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_settings_settings'),
-                'text' => $this->translator->trans('Settings', [], $this->domain),
+                'text' => $this->translator->trans('Settings', [], 'cmfcmfmediamodule'),
                 'icon' => 'cog'
             ];
             $links[] = [
                 'url' => $this->router->generate('cmfcmfmediamodule_upgrade_doupgrade'),
-                'text' => $this->translator->trans('Upgrade', [], $this->domain),
+                'text' => $this->translator->trans('Upgrade', [], 'cmfcmfmediamodule'),
                 'icon' => 'download'
             ];
         }

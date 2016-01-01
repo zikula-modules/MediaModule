@@ -11,6 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
+/**
+ * A category of collection permissions.
+ */
 class CollectionPermissionCategory
 {
     /**
@@ -23,6 +26,10 @@ class CollectionPermissionCategory
      */
     private $title;
 
+    /**
+     * @param string $id    The permission category id.
+     * @param string $title The permission title.
+     */
     public function __construct($id, $title)
     {
         $this->id = $id;
@@ -30,6 +37,8 @@ class CollectionPermissionCategory
     }
 
     /**
+     * Get the permission category id.
+     *
      * @return int
      */
     public function getId()
@@ -38,6 +47,8 @@ class CollectionPermissionCategory
     }
 
     /**
+     * Get the permission category title.
+     *
      * @return string
      */
     public function getTitle()

@@ -11,10 +11,16 @@
 
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
+/**
+ * Displays media in a grid-like layout, with less text than other templates.
+ */
 class GridTemplate extends AbstractTemplate
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getTitle()
     {
-        return $this->translator->trans('Seamless and responsive grid', [], $this->domain);
+        return $this->translator->trans('Seamless and responsive grid', [], 'cmfcmfmediamodule');
     }
 }

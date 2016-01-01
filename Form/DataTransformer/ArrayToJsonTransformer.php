@@ -13,13 +13,22 @@ namespace Cmfcmf\Module\MediaModule\Form\DataTransformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 
+/**
+ * Transforms an array to JSON.
+ */
 class ArrayToJsonTransformer implements DataTransformerInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function transform($value)
     {
         return json_encode($value);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function reverseTransform($value)
     {
         return json_decode($value, true);

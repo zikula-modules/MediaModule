@@ -40,6 +40,8 @@ abstract class AbstractPermissionEntity implements Sortable
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
+     * No assertions.
+     *
      * @var int
      */
     protected $id;
@@ -48,6 +50,8 @@ abstract class AbstractPermissionEntity implements Sortable
      * @ORM\Column(type="integer")
      * @ORM\Version
      *
+     * No assertions.
+     *
      * @var int
      */
     protected $version;
@@ -55,6 +59,8 @@ abstract class AbstractPermissionEntity implements Sortable
     /**
      * @ORM\Column(type="integer")
      * @Gedmo\SortablePosition()
+     *
+     * No assertions.
      *
      * @var int
      */
@@ -81,6 +87,8 @@ abstract class AbstractPermissionEntity implements Sortable
     /**
      * @ORM\Column(type="boolean")
      *
+     * See the validate function for assertions.
+     *
      * @var bool
      */
     protected $appliedToSelf;
@@ -88,12 +96,16 @@ abstract class AbstractPermissionEntity implements Sortable
     /**
      * @ORM\Column(type="boolean")
      *
+     * See the validate function for assertions.
+     *
      * @var bool
      */
     protected $appliedToSubCollections;
 
     /**
      * @ORM\Column(type="boolean")
+     *
+     * No assertions.
      *
      * @var bool
      */
@@ -120,12 +132,16 @@ abstract class AbstractPermissionEntity implements Sortable
     /**
      * @ORM\Column(type="boolean")
      *
+     * No assertions.
+     *
      * @var bool
      */
     protected $locked;
 
     /**
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", inversedBy="permissions")
+     *
+     * No assertions.
      *
      * @var CollectionEntity
      */
@@ -137,6 +153,8 @@ abstract class AbstractPermissionEntity implements Sortable
      *     inversedBy="permissions", fetch="EAGER", cascade={"persist"})
      * @ORM\JoinTable(name="cmfcmfmedia_permission_permission_restriction")
      *
+     * No assertions.
+     *
      * @var AbstractPermissionRestrictionEntity[]|ArrayCollection
      */
     protected $restrictions;
@@ -144,6 +162,8 @@ abstract class AbstractPermissionEntity implements Sortable
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
+     *
+     * No assertions.
      *
      * @var int.
      */
@@ -153,6 +173,8 @@ abstract class AbstractPermissionEntity implements Sortable
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="update")
      *
+     * No assertions.
+     *
      * @var int.
      */
     protected $updatedUserId;
@@ -161,6 +183,8 @@ abstract class AbstractPermissionEntity implements Sortable
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      *
+     * No assertions.
+     *
      * @var \DateTime.
      */
     protected $createdDate;
@@ -168,6 +192,8 @@ abstract class AbstractPermissionEntity implements Sortable
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
+     *
+     * No assertions.
      *
      * @var \DateTime.
      */
@@ -184,6 +210,8 @@ abstract class AbstractPermissionEntity implements Sortable
     }
 
     /**
+     * Make sure at least one of appliedToSelf and appliedToSubCollections is set.
+     *
      * @Assert\Callback
      *
      * @param ExecutionContextInterface $context

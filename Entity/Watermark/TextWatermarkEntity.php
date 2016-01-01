@@ -23,6 +23,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
 {
     /**
      * @ORM\Column(type="text", length=255)
+     *
      * @Assert\Length(max="255")
      * @Assert\NotBlank()
      *
@@ -32,6 +33,8 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     *
+     * No assertions.
      *
      * @var int
      */

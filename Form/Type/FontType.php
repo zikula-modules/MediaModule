@@ -17,6 +17,9 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Displays a font selector.
+ */
 class FontType extends AbstractType
 {
     /**
@@ -24,11 +27,17 @@ class FontType extends AbstractType
      */
     private $fontCollection;
 
+    /**
+     * @param FontCollection $fontCollection
+     */
     public function __construct(FontCollection $fontCollection)
     {
         $this->fontCollection = $fontCollection;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
@@ -45,15 +54,16 @@ class FontType extends AbstractType
         $view->vars['fontUrl'] = $this->fontCollection->getFontUrl();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getParent()
     {
         return 'choice';
     }
 
     /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
+     * {@inheritdoc}
      */
     public function getName()
     {

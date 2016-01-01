@@ -11,10 +11,16 @@
 
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
+/**
+ * Displays one big slider for media.
+ */
 class SliderTemplate extends AbstractTemplate
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getTitle()
     {
-        return $this->translator->trans('Big thumbnail slider', [], $this->domain);
+        return $this->translator->trans('Big thumbnail slider', [], 'cmfcmfmediamodule');
     }
 }

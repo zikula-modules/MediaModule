@@ -13,6 +13,11 @@ namespace Cmfcmf\Module\MediaModule;
 
 class MediaModuleVersion extends \Zikula_AbstractVersion
 {
+    /**
+     * Returns the module's metadata.
+     *
+     * @return array
+     */
     public function getMetaData()
     {
         $meta = [];
@@ -30,6 +35,9 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
         return $meta;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function setupHookBundles()
     {
         $entities = [
@@ -46,10 +54,12 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
         }
     }
 
-    // Subscriber hooks for media entities.
-    // This allows other modules to hook to the media display pages,
-    // for example the Tag module could be hooked.
-
+    /**
+     * Creates a subscriber UI hook using the given name and title.
+     *
+     * @param string $name
+     * @param string $title
+     */
     private function createSubscriberUIHook($name, $title)
     {
         $bundle = new \Zikula_HookManager_SubscriberBundle($this->name, "subscriber.cmfcmfmediamodule.ui_hooks.$name", "ui_hooks", $this->__f("%s hooks", [$title]));
@@ -66,9 +76,12 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
         $this->registerHookSubscriberBundle($bundle);
     }
 
-    // Subscriber hooks for media entites.
-    // This allows other modules to filter the media description.
-
+    /**
+     * Creates a subscriber filter hook using the given name and title.
+     *
+     * @param string $name
+     * @param string $title
+     */
     private function createSubscriberFilterHook($name, $title)
     {
         $bundle = new \Zikula_HookManager_SubscriberBundle($this->name, "subscriber.cmfcmfmediamodule.filter_hooks.$name", "filter_hooks", $this->__f("%s display hooks", [$title]));
@@ -77,6 +90,12 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
         $this->registerHookSubscriberBundle($bundle);
     }
 
+    /**
+     * Creates a provider UI hook using the given name and title.
+     *
+     * @param string $name
+     * @param string $title
+     */
     private function createProviderUIHook($name, $title)
     {
         $bundle = new \Zikula_HookManager_ProviderBundle($this->name, "provider.cmfcmfmediamodule.ui_hooks.$name", "ui_hooks", $this->__f("Media Module - %s", [$title]));

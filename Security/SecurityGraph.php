@@ -20,9 +20,15 @@ use Fhaculty\Graph\Set\Vertices;
 use Fhaculty\Graph\Set\VerticesMap;
 use Fhaculty\Graph\Vertex;
 
+/**
+ * Represents the graph of permissions.
+ * Extends the Fhaculty Graph class and adds some convenience methods.
+ */
 class SecurityGraph extends Graph
 {
     /**
+     * Returns all vertices in the specified category.
+     *
      * @param CollectionPermissionCategory $securityCategory
      *
      * @return Vertices
@@ -35,6 +41,8 @@ class SecurityGraph extends Graph
     }
 
     /**
+     * Returns all vertices required by the given vertex.
+     *
      * @param Vertex $vertex
      *
      * @return Vertices
@@ -56,6 +64,8 @@ class SecurityGraph extends Graph
     }
 
     /**
+     * Returns all vertices conflicting with the given vertex.
+     *
      * @param Vertex $vertex
      *
      * @return Vertices
@@ -70,6 +80,8 @@ class SecurityGraph extends Graph
     }
 
     /**
+     * Return all vertices requiring the given vertex.
+     *
      * @param Vertex $vertex
      *
      * @return Vertices

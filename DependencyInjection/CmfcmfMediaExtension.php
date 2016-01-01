@@ -16,14 +16,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
+/**
+ * Loads the services.yml file.
+ */
 class CmfcmfMediaExtension extends Extension
 {
     /**
-     * Loads service definition file containing persistent event handlers.
-     * Responds to the app.config configuration parameter.
-     *
-     * @param array            $configs
-     * @param ContainerBuilder $container
+     * {@inheritdoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {

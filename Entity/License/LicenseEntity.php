@@ -27,6 +27,8 @@ class LicenseEntity
      * @ORM\Column(type="string")
      * @ORM\Id
      *
+     * No assertions.
+     *
      * @var string
      */
     protected $id;
@@ -35,12 +37,15 @@ class LicenseEntity
      * @ORM\Column(type="integer")
      * @ORM\Version
      *
+     * No assertions.
+     *
      * @var int
      */
     private $version;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
      * @Assert\NotBlank()
      * @Assert\Length(max="255")
      *
@@ -51,12 +56,15 @@ class LicenseEntity
     /**
      * @ORM\Column(type="boolean")
      *
+     * No assertions.
+     *
      * @var bool
      */
     protected $outdated;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     *
      * @Assert\Url()
      *
      * @var string
@@ -65,6 +73,7 @@ class LicenseEntity
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     *
      * @Assert\Url()
      *
      * @var string
@@ -74,6 +83,8 @@ class LicenseEntity
     /**
      * @ORM\Column(type="boolean")
      *
+     * No assertions.
+     *
      * @var bool
      */
     protected $enabledForUpload;
@@ -81,12 +92,18 @@ class LicenseEntity
     /**
      * @ORM\Column(type="boolean")
      *
+     * No assertions.
+     *
      * @var bool
      */
     protected $enabledForWeb;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity", mappedBy="licenses")
+     * @ORM\ManyToMany(
+     *     targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity",
+     *     mappedBy="licenses")
+     *
+     * No assertions.
      *
      * @var HookedObjectEntity[]|ArrayCollection
      */
@@ -101,6 +118,11 @@ class LicenseEntity
         $this->hookedObjects = new ArrayCollection();
     }
 
+    /**
+     * Converts the license entity to an array.
+     *
+     * @return array
+     */
     public function toArray()
     {
         return [

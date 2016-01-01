@@ -15,39 +15,89 @@ use Cmfcmf\Module\MediaModule\Security\SecurityGraph;
 use Fhaculty\Graph\Vertex;
 use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Generates the permission graph.
+ */
 class CollectionPermissionSecurityTree
 {
+    /**
+     * Disallow any access.
+     */
     const PERM_LEVEL_NONE = 'none';
 
+    /**
+     * Only allow basic overview access. A single medium is not accessable.
+     */
     const PERM_LEVEL_OVERVIEW = 'overview';
 
+    /**
+     * Allows to download a whole collection.
+     */
     const PERM_LEVEL_DOWNLOAD_COLLECTION = 'download-collection';
 
+    /**
+     * Allows to view media details.
+     */
     const PERM_LEVEL_MEDIA_DETAILS = 'media-details';
 
+    /**
+     * Allows to download a single medium.
+     */
     const PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM = 'download-single-media';
 
+    /**
+     * Allows to add media to the collection.
+     */
     const PERM_LEVEL_ADD_MEDIA = 'add-media';
 
+    /**
+     * Allows to create new sub-collections.
+     */
     const PERM_LEVEL_ADD_SUB_COLLECTIONS = 'add-sub-collections';
 
+    /**
+     * Allows to edit media.
+     */
     const PERM_LEVEL_EDIT_MEDIA = 'edit-media';
 
+    /**
+     * Allows to edit the collection.
+     */
     const PERM_LEVEL_EDIT_COLLECTION = 'edit-collection';
 
+    /**
+     * Allows to delete media.
+     */
     const PERM_LEVEL_DELETE_MEDIA = 'delete-media';
 
+    /**
+     * Allows to delete the collection.
+     */
     const PERM_LEVEL_DELETE_COLLECTION = 'delete-collection';
 
+    /**
+     * Allows to enhance permissions by adding permissions with goOn = 1
+     */
     const PERM_LEVEL_ENHANCE_PERMISSIONS = 'enhance-permissions';
 
+    /**
+     * Allows to change permissions.
+     */
     const PERM_LEVEL_CHANGE_PERMISSIONS = 'change-permissions';
 
+    /**
+     * Permission A requires permission B.
+     */
     const EDGE_TYPE_REQUIRES = 'requires';
 
+    /**
+     * Permission A conflicts with permission B.
+     */
     const EDGE_TYPE_CONFLICTS = 'conflicts';
 
     /**
+     * Creates the permission graph.
+     *
      * @param TranslatorInterface $translator
      * @param $domain
      *
@@ -206,6 +256,8 @@ class CollectionPermissionSecurityTree
     }
 
     /**
+     * Get a list of permission categories.
+     *
      * @param TranslatorInterface $translator
      * @param $domain
      *

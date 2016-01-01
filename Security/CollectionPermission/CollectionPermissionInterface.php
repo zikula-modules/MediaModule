@@ -15,19 +15,28 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEnt
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 
+/**
+ * Represents a collection permission.
+ */
 interface CollectionPermissionInterface
 {
     /**
+     * Get the collection permission id.
+     *
      * @return string
      */
     public function getId();
 
     /**
+     * Get the collection permission title.
+     *
      * @return string
      */
     public function getTitle();
 
     /**
+     * Get a string representation of the targeted users of the given permission entity.
+     *
      * @param AbstractPermissionEntity $permissionEntity
      *
      * @return string
@@ -35,16 +44,22 @@ interface CollectionPermissionInterface
     public function getTargets($permissionEntity);
 
     /**
+     * Get the entity class related to this collection permission.
+     *
      * @return string
      */
     public function getEntityClass();
 
     /**
+     * Get the form class related to this collection permission.
+     *
      * @return string
      */
     public function getFormClass();
 
     /**
+     * Extends the given query builder to only return applicable permissions to the current user.
+     *
      * @param QueryBuilder &$qb
      * @param              $permissionAlias
      *

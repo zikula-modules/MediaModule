@@ -16,6 +16,9 @@ use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Provides convenience methods for all collections templates.
+ */
 abstract class AbstractTemplate implements TemplateInterface
 {
     /**
@@ -29,22 +32,29 @@ abstract class AbstractTemplate implements TemplateInterface
     protected $translator;
 
     /**
-     * @var string
+     * @param EngineInterface     $renderEngine
+     * @param TranslatorInterface $translator
      */
-    protected $domain;
-
     public function __construct(EngineInterface $renderEngine, TranslatorInterface $translator)
     {
-        $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
         $this->renderEngine = $renderEngine;
         $this->translator = $translator;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return strtolower($this->getType());
     }
 
+    /**
+     * Calculates the template "type", which is it's unique identifier inside the MediaModule.
+     * It's used for the "name" and "template path".
+     *
+     * @return string
+     */
     protected function getType()
     {
         $class = get_class($this);
@@ -52,11 +62,19 @@ abstract class AbstractTemplate implements TemplateInterface
         return substr($class, strrpos($class, '\\') + 1, -strlen('Template'));
     }
 
+    /**
+     * Returns the template path for this collection template.
+     *
+     * @return string
+     */
     protected function getTemplate()
     {
         return "CmfcmfMediaModule:CollectionTemplate:" . lcfirst($this->getType()) . ".html.twig";
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function render(CollectionEntity $collectionEntity, MediaTypeCollection $mediaTypeCollection, $showChildCollections)
     {
         return $this->renderEngine->render($this->getTemplate(), [

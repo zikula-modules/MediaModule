@@ -22,7 +22,7 @@ use Doctrine\ORM\QueryBuilder;
 class GroupCollectionPermission extends AbstractCollectionPermission
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getTitle()
     {
@@ -48,6 +48,9 @@ class GroupCollectionPermission extends AbstractCollectionPermission
         return implode(', ', $targets);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
         if (php_sapi_name() === 'cli') {

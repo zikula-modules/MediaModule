@@ -11,8 +11,18 @@
 
 namespace Cmfcmf\Module\MediaModule\Metadata;
 
+/**
+ * Reads metadata from a given file.
+ */
 class GenericMetadataReader
 {
+    /**
+     * Reads metadata from the given file.
+     *
+     * @param string $file
+     *
+     * @return array The metadata.
+     */
     public static function readMetadata($file)
     {
         require_once __DIR__ . '/../vendor/autoload.php';

@@ -16,6 +16,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Form type for an image watermark.
+ */
 class ImageWatermarkType extends AbstractWatermarkType
 {
     /**
@@ -23,12 +26,18 @@ class ImageWatermarkType extends AbstractWatermarkType
      */
     protected $entity;
 
+    /**
+     * @param ImageWatermarkEntity|null $entity
+     */
     public function __construct(ImageWatermarkEntity $entity = null)
     {
         parent::__construct();
         $this->entity = $entity;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $file = null;

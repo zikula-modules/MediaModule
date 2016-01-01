@@ -11,6 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
+/**
+ * Provides a list of all collection templates with some convenience methods.
+ */
 class TemplateCollection
 {
     /**
@@ -23,16 +26,31 @@ class TemplateCollection
         $this->templates = [];
     }
 
+    /**
+     * Adds a collection template to the template list.
+     *
+     * @param TemplateInterface $template
+     */
     public function addCollectionTemplate(TemplateInterface $template)
     {
         $this->templates[$template->getName()] = $template;
     }
 
+    /**
+     * Returns the list of collection templates indexed by template name.
+     *
+     * @return array|TemplateInterface[]
+     */
     public function getCollectionTemplates()
     {
         return $this->templates;
     }
 
+    /**
+     * Returns a list of template titles indexed by template name.
+     *
+     * @return array|string[]
+     */
     public function getCollectionTemplateTitles()
     {
         return array_map(function (TemplateInterface $template) {
@@ -41,17 +59,25 @@ class TemplateCollection
     }
 
     /**
-     * @param string $template
+     * Returns the specified collection template.
+     *
+     * @param string $template The template name.
      *
      * @return TemplateInterface
      */
     public function getCollectionTemplate($template)
     {
+        if (!$this->hasTemplate($template)) {
+            throw new \DomainException();
+        }
+
         return $this->templates[$template];
     }
 
     /**
-     * @param string $template
+     * Checks whether or not the specified collection template exists.
+     *
+     * @param string $template The template name.
      *
      * @return bool
      */

@@ -17,18 +17,24 @@ use Doctrine\ORM\EntityRepository;
 
 class WatermarkRepository extends EntityRepository
 {
-    public function cleanupThumbs(AbstractWatermarkEntity $entity, \SystemPlugin_Imagine_Manager $imagineManager)
-    {
+    /**
+     * Removes all thumbnails generated for media with the given entity.
+     *
+     * @param AbstractWatermarkEntity       $entity
+     * @param \SystemPlugin_Imagine_Manager $imagineManager
+     */
+    public function cleanupThumbs(
+        AbstractWatermarkEntity $entity,
+        \SystemPlugin_Imagine_Manager $imagineManager
+    ) {
         $imagineManager->setModule('CmfcmfMediaModule');
 
         $qb = $this->getEntityManager()->createQueryBuilder();
-        $qb
-            ->select('m')
+        $qb->select('m')
             ->from('CmfcmfMediaModule:Media\AbstractMediaEntity', 'm')
             ->leftJoin('m.collection', 'c')
             ->where($qb->expr()->eq('c.watermark', ':watermark'))
-            ->setParameter('watermark', $entity)
-        ;
+            ->setParameter('watermark', $entity);
 
         /** @var AbstractMediaEntity[] $media */
         $media = $qb->getQuery()->execute();

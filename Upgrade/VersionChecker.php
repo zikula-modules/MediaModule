@@ -19,13 +19,20 @@ use Github\ResultPager as GitHubResultPager;
 use vierbergenlars\SemVer\expression;
 use vierbergenlars\SemVer\version;
 
+/**
+ * Checks whether or not a new version is available.
+ */
 class VersionChecker
 {
     const GITHUB_USER = 'cmfcmf';
 
     const GITHUB_REPO = 'MediaModule';
 
-    private $allowedAssetContentTypes = ['application/x-zip', 'application/zip', 'application/x-zip-compressed'];
+    private $allowedAssetContentTypes = [
+        'application/x-zip',
+        'application/zip',
+        'application/x-zip-compressed'
+    ];
 
     private $githubApiCache;
 
@@ -38,6 +45,8 @@ class VersionChecker
     }
 
     /**
+     * Returns the GitHub release array to upgrade to or false if there is no such release.
+     *
      * @param $currentVersion
      *
      * @return array|bool

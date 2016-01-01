@@ -11,6 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Font;
 
+/**
+ * Represents a font.
+ */
 interface FontInterface
 {
     /**

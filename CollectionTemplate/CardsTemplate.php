@@ -11,10 +11,16 @@
 
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
+/**
+ * A basic but beautiful template using Bootstrap 4 Cards to display media and collections.
+ */
 class CardsTemplate extends AbstractTemplate
 {
+    /**
+     * {@inheritdoc}
+     */
     public function getTitle()
     {
-        return $this->translator->trans('Cards with thumbnails', [], $this->domain);
+        return $this->translator->trans('Cards with thumbnails', [], 'cmfcmfmediamodule');
     }
 }

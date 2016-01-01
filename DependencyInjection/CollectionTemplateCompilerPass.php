@@ -15,8 +15,15 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * Calls "addCollectionTemplate" for each collection template on the collection
+ * template container.
+ */
 class CollectionTemplateCompilerPass implements CompilerPassInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->has('cmfcmf_media_module.collection_template_collection')) {

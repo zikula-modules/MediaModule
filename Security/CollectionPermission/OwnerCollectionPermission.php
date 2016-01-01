@@ -22,7 +22,7 @@ use Doctrine\ORM\QueryBuilder;
 class OwnerCollectionPermission extends AbstractCollectionPermission
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getTitle()
     {
@@ -40,10 +40,7 @@ class OwnerCollectionPermission extends AbstractCollectionPermission
     }
 
     /**
-     * @param QueryBuilder $qb
-     * @param              $permissionAlias
-     *
-     * @return Expr\Comparison|null
+     * {@inheritdoc}
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {

@@ -17,6 +17,9 @@ use Zikula\Core\Hook\ProcessHook;
 use Zikula\Core\Hook\ValidationHook;
 use Zikula\Core\Hook\ValidationResponse;
 
+/**
+ * Handles license hooks.
+ */
 class LicenseHookHandler extends AbstractHookHandler
 {
     /**
@@ -24,6 +27,9 @@ class LicenseHookHandler extends AbstractHookHandler
      */
     private $entities;
 
+    /**
+     * @param DisplayHook $hook
+     */
     public function uiView(DisplayHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
@@ -35,6 +41,9 @@ class LicenseHookHandler extends AbstractHookHandler
         $this->uiResponse($hook, $content);
     }
 
+    /**
+     * @param DisplayHook $hook
+     */
     public function uiEdit(DisplayHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:License\LicenseEntity');
@@ -55,6 +64,9 @@ class LicenseHookHandler extends AbstractHookHandler
         $this->uiResponse($hook, $content);
     }
 
+    /**
+     * @param ValidationHook $hook
+     */
     public function validateEdit(ValidationHook $hook)
     {
         $licenseIds = $this->requestStack->getCurrentRequest()
@@ -66,7 +78,7 @@ class LicenseHookHandler extends AbstractHookHandler
             if (!empty($licenseId)) {
                 $licenseEntity = $this->entityManager->find('CmfcmfMediaModule:License\LicenseEntity', $licenseId);
                 if (!is_object($licenseEntity)) {
-                    $validationResponse->addError('license', $this->__('Unknown license'));
+                    $validationResponse->addError('license', $this->translator->trans('Unknown license', [], 'cmfcmfmediamodule'));
                 } else {
                     $this->entities[] = $licenseEntity;
                 }
@@ -76,6 +88,9 @@ class LicenseHookHandler extends AbstractHookHandler
         $hook->setValidator($this->getProvider(), $validationResponse);
     }
 
+    /**
+     * @param ProcessHook $hook
+     */
     public function processEdit(ProcessHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');

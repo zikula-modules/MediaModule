@@ -15,6 +15,9 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\Bundle\CoreBundle\CacheClearer;
 
+/**
+ * Upgrades the module.
+ */
 class ModuleUpgrader
 {
     /**
@@ -38,18 +41,23 @@ class ModuleUpgrader
     private $translator;
 
     /**
-     * @var string
-     */
-    private $domain;
-
-    /**
      * @var CacheClearer
      */
     private $cacheClearer;
 
-    public function __construct(TranslatorInterface $translator, CacheClearer $cacheClearer, $kernelCacheDir, $kernelRootDir)
-    {
-        $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
+    /**
+     * ModuleUpgrader constructor.
+     *
+     * @param TranslatorInterface $translator
+     * @param CacheClearer        $cacheClearer
+     * @param string              $kernelCacheDir
+     * @param string              $kernelRootDir
+     */
+    public function __construct(TranslatorInterface $translator,
+        CacheClearer $cacheClearer,
+        $kernelCacheDir,
+        $kernelRootDir
+    ) {
         $this->translator = $translator;
         $this->cacheClearer = $cacheClearer;
 
@@ -61,30 +69,47 @@ class ModuleUpgrader
         $this->moduleDir = rtrim($this->moduleDir, '/\\');
     }
 
+    /**
+     * Checks whether the server fulfills all necessary requirements.
+     *
+     * @return bool|string
+     */
     public function checkRequirements()
     {
         if (class_exists('ZipArchive') && extension_loaded('curl')) {
             return true;
         }
 
-        return $this->translator->trans('Please enable the ZIP and CURL PHP extensions', [], $this->domain);
+        return $this->translator->trans('Please enable the ZIP and CURL PHP extensions', [], 'cmfcmfmediamodule');
     }
 
+    /**
+     * Checks whether the permissions for the MediaModule directory are setup correctly.
+     *
+     * @return bool|string
+     */
     public function checkPermissions()
     {
         if (!is_writable($this->moduleDir)) {
-            return $this->translator->trans('Please make %s writable.', ['%s' => $this->moduleDir], $this->domain);
+            return $this->translator->trans('Please make %s writable.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule');
         }
         if (!is_writable($this->moduleDir . '/Controller/MediaController.php')) {
-            return $this->translator->trans('%s is writable but it\'s content is not. Please make sure to make it recursively writable.', ['%s' => $this->moduleDir], $this->domain);
+            return $this->translator->trans('%s is writable but it\'s content is not. Please make sure to make it recursively writable.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule');
         }
         if (!is_writable($this->moduleDir . '/.gitignore')) {
-            return $this->translator->trans('%s is writable but some files are not. Please make sure to make it recursively writable. If you already tried, please try "chmod 777 -R media-module" from within the cmfcmf folder.', ['%s' => $this->moduleDir], $this->domain);
+            return $this->translator->trans('%s is writable but some files are not. Please make sure to make it recursively writable. If you already tried, please try "chmod 777 -R media-module" from within the cmfcmf folder.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule');
         }
 
         return true;
     }
 
+    /**
+     * Downloads the new version from the given URL.
+     *
+     * @param string $url
+     *
+     * @return bool
+     */
     public function downloadNewVersion($url)
     {
         file_put_contents($this->cacheFile, fopen($url, 'r'));
@@ -92,6 +117,11 @@ class ModuleUpgrader
         return true;
     }
 
+    /**
+     * Extracts the new version, removes old files and clears the cache.
+     *
+     * @return bool
+     */
     public function extractNewVersion()
     {
         // First check if the module dir really is writable.
@@ -113,6 +143,11 @@ class ModuleUpgrader
         return true;
     }
 
+    /**
+     * Executes the upgrade.
+     *
+     * @return bool|string
+     */
     public function upgrade()
     {
         $filemodules = \ModUtil::apiFunc('ZikulaExtensionsModule', 'admin', 'getfilemodules');
@@ -126,6 +161,6 @@ class ModuleUpgrader
             return $worked;
         }
 
-        return $this->translator->trans('Something went wrong with the upgrade code. This should not have happened!', [], $this->domain);
+        return $this->translator->trans('Something went wrong with the upgrade code. This should not have happened!', [], 'cmfcmfmediamodule');
     }
 }

@@ -11,6 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Font;
 
+/**
+ * A font loader is responsible to load fonts and return a list of FontInterfaces.
+ */
 interface FontLoaderInterface
 {
     /**

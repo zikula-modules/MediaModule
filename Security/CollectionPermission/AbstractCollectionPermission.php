@@ -15,6 +15,9 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Provides convenience methods for collection permissions.
+ */
 abstract class AbstractCollectionPermission implements CollectionPermissionInterface
 {
     /**
@@ -22,21 +25,33 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
      */
     protected $translator;
 
+    /**
+     * @param TranslatorInterface $translator
+     */
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return strtolower($this->getType());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getFormClass()
     {
         return 'Cmfcmf\Module\MediaModule\Form\Collection\Permission\\' . $this->getType() . 'PermissionType';
     }
 
+    /**
+     * @return string
+     */
     protected function getType()
     {
         $class = get_class($this);
@@ -44,6 +59,9 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
         return substr($class, strrpos($class, '\\') + 1, -strlen('CollectionPermission'));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getEntityClass()
     {
         return 'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\\' . $this->getType() . 'PermissionEntity';
@@ -56,7 +74,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
      * @param              $value
      * @param              $field
      *
-     * @return \Doctrine\ORM\Query\Expr\Composite
+     * @return Expr\Composite
      */
     public static function whereInSimpleArray(QueryBuilder &$qb, $entity, $type, $value, $field)
     {

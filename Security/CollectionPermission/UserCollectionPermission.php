@@ -23,7 +23,7 @@ use Zikula\PermissionsModule\Api\PermissionApi;
 class UserCollectionPermission extends AbstractCollectionPermission
 {
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getTitle()
     {
@@ -45,6 +45,9 @@ class UserCollectionPermission extends AbstractCollectionPermission
         return implode(', ', $targets);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
         if (php_sapi_name() === 'cli') {

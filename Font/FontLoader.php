@@ -14,6 +14,9 @@ namespace Cmfcmf\Module\MediaModule\Font;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
+/**
+ * A font loader loading all fonts from the Resources/fonts interface.
+ */
 class FontLoader implements FontLoaderInterface
 {
     /**
@@ -34,7 +37,11 @@ class FontLoader implements FontLoaderInterface
             $fontName = pathinfo($file->getFilename(), PATHINFO_FILENAME);
             $title = str_replace('_', ' ', $fontName);
 
-            $fonts[] = new Font("cmfcmfmediamodule:$fontName", $title, $file->getPathname(), $fontName);
+            $fonts[] = new Font(
+                "cmfcmfmediamodule:$fontName",
+                $title,
+                $file->getPathname(),
+                $fontName);
         }
 
         return $fonts;

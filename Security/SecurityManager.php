@@ -162,11 +162,27 @@ class SecurityManager
         return $this->collectionSecurityGraph;
     }
 
+    /**
+     * Returns a query builder which will return all collections the current user has
+     * $requestedLevel access to. Use "->andWhere" to further strip down the result.
+     *
+     * @param string $requestedLevel The requested access level.
+     *
+     * @return QueryBuilder
+     */
     public function getCollectionsWithAccessQueryBuilder($requestedLevel)
     {
         return $this->getAccessQueryBuilder($requestedLevel, 'collections');
     }
 
+    /**
+     * Returns a query builder which will return all media the current user has
+     * $requestedLevel access to. Use "->andWhere" to further strip down the result.
+     *
+     * @param string $requestedLevel The requested access level.
+     *
+     * @return QueryBuilder
+     */
     public function getMediaWithAccessQueryBuilder($requestedLevel)
     {
         return $this->getAccessQueryBuilder($requestedLevel, 'media');
@@ -429,6 +445,8 @@ class SecurityManager
     }
 
     /**
+     * Creates a query builder using the given alias which will return all parent
+     * collections of the "c" collection.
      * @param $alias
      *
      * @return QueryBuilder

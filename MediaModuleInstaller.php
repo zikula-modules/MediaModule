@@ -19,6 +19,9 @@ use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermission
 
 class MediaModuleInstaller extends \Zikula_AbstractInstaller
 {
+    /**
+     * {@inheritdoc}
+     */
     public function install()
     {
         \DoctrineHelper::createSchema($this->entityManager, static::getEntities());
@@ -72,6 +75,9 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         return true;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function upgrade($oldversion)
     {
         switch ($oldversion) {
@@ -134,6 +140,9 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function uninstall()
     {
         // @todo Also delete media files?
@@ -266,6 +275,8 @@ TXT;
     }
 
     /**
+     * Creates the basic permission scheme.
+     *
      * @param CollectionEntity $temporaryUploadCollection
      * @param CollectionEntity $rootCollection
      */

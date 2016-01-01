@@ -11,6 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Font;
 
+/**
+ * A collection of fonts.
+ */
 class FontCollection
 {
     /**
@@ -23,6 +26,9 @@ class FontCollection
      */
     private $fonts;
 
+    /**
+     * @var bool Whether or not the fonts have already been loaded.
+     */
     private $loaded;
 
     public function __construct()
@@ -32,6 +38,11 @@ class FontCollection
         $this->loaded = false;
     }
 
+    /**
+     * Adds a font loader to the collection.
+     *
+     * @param FontLoaderInterface $fontLoader
+     */
     public function addFontLoader(FontLoaderInterface $fontLoader)
     {
         if ($this->loaded) {

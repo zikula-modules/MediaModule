@@ -22,6 +22,9 @@ use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Displays a permission level selector.
+ */
 class PermissionLevelType extends AbstractType
 {
     /**
@@ -52,6 +55,9 @@ class PermissionLevelType extends AbstractType
         $view->vars['securityCategories'] = $this->securityManager->getCollectionSecurityCategories();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
@@ -69,11 +75,17 @@ class PermissionLevelType extends AbstractType
         ])->setRequired('permissionLevel');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getParent()
     {
         return 'choice';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return 'cmfcmfmediamodule_permission';

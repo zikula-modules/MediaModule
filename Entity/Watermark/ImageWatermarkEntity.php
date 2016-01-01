@@ -19,9 +19,11 @@ use Imagine\Image\ImagineInterface;
 
 /**
  * @ORM\Entity
- * @Gedmo\Uploadable(pathMethod="getPathToUploadTo", filenameGenerator="SHA1", appendNumber=true, allowedTypes="image/png,image/jpeg,image/gif")
+ * @Gedmo\Uploadable(pathMethod="getPathToUploadTo", filenameGenerator="SHA1", appendNumber=true,
+ *     allowedTypes="image/png,image/jpeg,image/gif")
  *
- * NOTE: If you change the allowed mime types here, make sure to also change them in {@link ImageWatermarkType}.
+ * NOTE: If you change the allowed mime types here, make sure to also change them in
+ * {@link ImageWatermarkType}.
  */
 class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
 {
@@ -43,8 +45,15 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
      */
     protected $fileSize;
 
-    public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height)
-    {
+    /**
+     * {@inheritdoc}
+     */
+    public function getImagineImage(
+        ImagineInterface $imagine,
+        FontCollection $fontCollection,
+        $width,
+        $height
+    ) {
         $watermarkImage = $imagine->open($this->getPath());
         if ($this->getRelativeSize() !== null) {
             $y = (int) $height * $this->getRelativeSize() / 100;

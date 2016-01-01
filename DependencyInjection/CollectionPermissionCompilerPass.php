@@ -15,8 +15,15 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * Calls "addCollectionPermission" for each collection permission on the collection
+ * permission container.
+ */
 class CollectionPermissionCompilerPass implements CompilerPassInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->has('cmfcmf_media_module.collection_template_collection')) {

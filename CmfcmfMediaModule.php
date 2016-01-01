@@ -20,6 +20,11 @@ use Zikula\Core\AbstractModule;
 
 class CmfcmfMediaModule extends AbstractModule
 {
+    /**
+     * {@inheritdoc}
+     *
+     * Adds compiler passes to the container.
+     */
     public function build(ContainerBuilder $container)
     {
         parent::build($container);

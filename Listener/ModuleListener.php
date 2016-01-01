@@ -16,6 +16,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Zikula\Core\CoreEvents;
 use Zikula\Core\Event\ModuleStateEvent;
 
+/**
+ * Listen to module removals.
+ */
 class ModuleListener implements EventSubscriberInterface
 {
     /**
@@ -23,11 +26,17 @@ class ModuleListener implements EventSubscriberInterface
      */
     private $em;
 
+    /**
+     * @param EntityManagerInterface $em
+     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -35,6 +44,11 @@ class ModuleListener implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * Called if a module is removed.
+     *
+     * @param ModuleStateEvent $event
+     */
     public function moduleRemoved(ModuleStateEvent $event)
     {
         if ($event->getModule()) {
@@ -48,7 +62,6 @@ class ModuleListener implements EventSubscriberInterface
         }
 
         $this->em->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity')
-            ->deleteAllOfModule($name)
-        ;
+            ->deleteAllOfModule($name);
     }
 }

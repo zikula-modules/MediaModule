@@ -11,6 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Font;
 
+/**
+ * Convenience class to represent a font.
+ */
 class Font implements FontInterface
 {
     /**
@@ -37,7 +40,8 @@ class Font implements FontInterface
      * @param string      $id             The unique font id.
      * @param string      $title          The font title.
      * @param string      $path           The font path.
-     * @param string|null $googleFontName The name of the corresponding Google font or null if it doesn't exist.
+     * @param string|null $googleFontName The name of the corresponding Google font or null if it
+     *                                    doesn't exist.
      */
     public function __construct($id, $title, $path, $googleFontName)
     {

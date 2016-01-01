@@ -15,6 +15,7 @@ use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -37,6 +38,8 @@ abstract class AbstractWatermarkEntity
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
+     * No assertions.
+     *
      * @var int
      */
     protected $id;
@@ -45,12 +48,15 @@ abstract class AbstractWatermarkEntity
      * @ORM\Column(type="integer")
      * @ORM\Version
      *
+     * No assertions.
+     *
      * @var int
      */
     private $version;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
      * @Assert\NotBlank()
      * @Assert\Length(max="255")
      *
@@ -60,6 +66,7 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @ORM\Column(type="integer")
+     *
      * @Assert\NotBlank()
      *
      * @var int
@@ -68,6 +75,7 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @ORM\Column(type="integer")
+     *
      * @Assert\NotBlank()
      *
      * @var int
@@ -76,6 +84,7 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     *
      * @Assert\GreaterThanOrEqual(value=0)
      *
      * @var int
@@ -84,6 +93,7 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     *
      * @Assert\GreaterThanOrEqual(value=0)
      *
      * @var int
@@ -92,6 +102,7 @@ abstract class AbstractWatermarkEntity
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     *
      * @Assert\Range(min=0, max=100)
      *
      * @var int
@@ -102,6 +113,8 @@ abstract class AbstractWatermarkEntity
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
      *
+     * No assertions.
+     *
      * @var int.
      */
     protected $createdUserId;
@@ -109,6 +122,8 @@ abstract class AbstractWatermarkEntity
     /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="update")
+     *
+     * No assertions.
      *
      * @var int.
      */
@@ -118,6 +133,8 @@ abstract class AbstractWatermarkEntity
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      *
+     * No assertions.
+     *
      * @var \DateTime.
      */
     protected $createdDate;
@@ -125,6 +142,8 @@ abstract class AbstractWatermarkEntity
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
+     *
+     * No assertions.
      *
      * @var \DateTime.
      */
@@ -146,12 +165,17 @@ abstract class AbstractWatermarkEntity
     /**
      * @param ImagineInterface $imagine
      * @param FontCollection   $fontCollection
-     * @param $width
-     * @param $height
+     * @param                  $width
+     * @param                  $height
      *
-     * @return \Imagine\Image\ImageInterface
+     * @return ImageInterface
      */
-    abstract public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height);
+    abstract public function getImagineImage(
+        ImagineInterface $imagine,
+        FontCollection $fontCollection,
+        $width,
+        $height
+    );
 
     /**
      * @return int
@@ -346,7 +370,7 @@ abstract class AbstractWatermarkEntity
     /**
      * Set the value of Min Size.
      *
-     * @param int minSizeX
+     * @param int $minSizeX
      *
      * @return self
      */
@@ -370,7 +394,7 @@ abstract class AbstractWatermarkEntity
     /**
      * Set the value of Min Size.
      *
-     * @param int minSizeY
+     * @param int $minSizeY
      *
      * @return self
      */

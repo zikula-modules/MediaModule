@@ -72,7 +72,7 @@ services:
   # Twig extension
   cmfcmf_media_module.twig_extension:
     class: Cmfcmf\Module\MediaModule\Twig\TwigExtension
-    arguments: [@markdown_extra_parser, @hook_dispatcher, @cmfcmf_media_module.security_manager, @cmfcmf_media_module.upgrade.version_checker]
+    arguments: [@markdown_extra_parser, @hook_dispatcher, @cmfcmf_media_module.security_manager, @cmfcmf_media_module.upgrade.version_checker, @translator]
     public: false
     tags:
       - { name: twig.extension }

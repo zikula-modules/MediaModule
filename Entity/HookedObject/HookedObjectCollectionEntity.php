@@ -25,19 +25,28 @@ class HookedObjectCollectionEntity
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
+     * No assertions.
+     *
      * @var int
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity", inversedBy="hookedObjectCollections")
+     * @ORM\ManyToOne(
+     *     targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity",
+     *     inversedBy="hookedObjectCollections")
+     *
+     * No assertions.
      *
      * @var HookedObjectEntity
      */
     private $hookedObject;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", inversedBy="hookedObjectCollections")
+     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity",
+     *     inversedBy="hookedObjectCollections")
+     *
+     * No assertions.
      *
      * @var CollectionEntity
      */
@@ -46,12 +55,16 @@ class HookedObjectCollectionEntity
     /**
      * @ORM\Column(type="string", length=20, nullable=true)
      *
+     * No assertions.
+     *
      * @var string
      */
     private $template;
 
     /**
      * @ORM\Column(type="boolean")
+     *
+     * No assertions.
      *
      * @var bool
      */
@@ -60,12 +73,17 @@ class HookedObjectCollectionEntity
     /**
      * @ORM\Column(type="boolean")
      *
+     * No assertions.
+     *
      * @var bool
      */
     private $showChildCollections;
 
-    public function __construct($template, $showParentCollections = false, $showChildCollection = true)
-    {
+    public function __construct(
+        $template,
+        $showParentCollections = false,
+        $showChildCollection = true
+    ) {
         $this->template = $template;
         $this->showParentCollections = $showParentCollections;
         $this->showChildCollections = $showChildCollection;

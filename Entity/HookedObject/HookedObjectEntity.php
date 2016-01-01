@@ -11,6 +11,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\HookedObject;
 
+use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateInterface;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
@@ -32,34 +33,49 @@ class HookedObjectEntity
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
+     * No assertions.
+     *
      * @var int
      */
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity", inversedBy="hookedObjects")
+     * @ORM\ManyToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity",
+     *     inversedBy="hookedObjects")
      * @ORM\JoinTable(name="cmfcmfmedia_hookedobject_license")
      *
+     * No assertions.
+     *
      * @var LicenseEntity[]|ArrayCollection
-     **/
+     */
     private $licenses;
 
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity", mappedBy="hookedObject", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OneToMany(
+     *     targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity",
+     *     mappedBy="hookedObject", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * No assertions.
      *
      * @var HookedObjectCollectionEntity[]|ArrayCollection
-     **/
+     */
     private $hookedObjectCollections;
 
     /**
-     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectMediaEntity", mappedBy="hookedObject", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OneToMany(
+     *     targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectMediaEntity",
+     *     mappedBy="hookedObject", cascade={"persist", "remove"}, orphanRemoval=true)
+     *
+     * No assertions.
      *
      * @var HookedObjectMediaEntity[]|ArrayCollection
-     **/
+     */
     private $hookedObjectMedia;
 
     /**
      * @ORM\Column(length=50)
+     *
+     * No assertions.
      *
      * @var string
      */
@@ -68,6 +84,8 @@ class HookedObjectEntity
     /**
      * @ORM\Column(type="integer")
      *
+     * No assertions.
+     *
      * @var int
      */
     private $areaId;
@@ -75,12 +93,16 @@ class HookedObjectEntity
     /**
      * @ORM\Column(type="integer")
      *
+     * No assertions.
+     *
      * @var int
      */
     private $objectId;
 
     /**
      * @ORM\Column(type="object", nullable=true)
+     *
+     * No assertions.
      *
      * @var UrlInterface
      */
@@ -260,58 +282,84 @@ class HookedObjectEntity
         return $this;
     }
 
+    /**
+     * Adds the given license to this HookedObject.
+     *
+     * @param LicenseEntity $licenseEntity
+     */
     public function addLicense(LicenseEntity $licenseEntity)
     {
         $licenseEntity->getHookedObjects()->add($this);
         $this->licenses->add($licenseEntity);
     }
 
-    public function addMedia(AbstractMediaEntity $mediaEntity)
+    /**
+     * Adds the given medium to this HookedObject.
+     *
+     * @param AbstractMediaEntity $mediaEntity
+     */
+    public function addMedium(AbstractMediaEntity $mediaEntity)
     {
         $hookedObjectMedia = new HookedObjectMediaEntity();
-        $hookedObjectMedia
-            ->setMedia($mediaEntity)
-            ->setHookedObject($this);
+        $hookedObjectMedia->setMedia($mediaEntity)->setHookedObject($this);
 
         $mediaEntity->getHookedObjectMedia()->add($hookedObjectMedia);
         $this->hookedObjectMedia->add($hookedObjectMedia);
     }
 
-    public function addCollection(CollectionEntity $collectionEntity, $template, $showParentCollection, $showChildCollections)
-    {
+    /**
+     * Adds the given collection to this HookedObject. Also includes the template to use
+     * and whether or not parent and child collections shall be shown.
+     *
+     * @param CollectionEntity       $collectionEntity
+     * @param TemplateInterface|null $template
+     * @param bool                   $showParentCollection
+     * @param bool                   $showChildCollections
+     */
+    public function addCollection(
+        CollectionEntity $collectionEntity,
+        TemplateInterface $template = null,
+        $showParentCollection,
+        $showChildCollections
+    ) {
         $hookedObjectCollection = new HookedObjectCollectionEntity(
             $template, $showParentCollection, $showChildCollections
         );
-        $hookedObjectCollection
-            ->setCollection($collectionEntity)
-            ->setHookedObject($this);
+        $hookedObjectCollection->setCollection($collectionEntity)->setHookedObject($this);
 
         $collectionEntity->getHookedObjectCollections()->add($hookedObjectCollection);
         $this->hookedObjectCollections->add($hookedObjectCollection);
     }
 
+    /**
+     * Removes all hooked licenses from this HookedObject.
+     */
     public function clearLicenses()
     {
-        $this->licenses->forAll(function ($key, LicenseEntity $licenseEntity) {
+        foreach ($this->licenses as $licenseEntity) {
             $licenseEntity->getHookedObjects()->remove($this->getId());
-        });
+        }
 
         $this->licenses->clear();
     }
 
+    /**
+     * Removes all hooked media from this HookedObject.
+     */
     public function clearMedia()
     {
         foreach ($this->hookedObjectMedia as $hookedObjectMediaEntity) {
             $hookedObjectMediaEntity
                 ->getMedia()->getHookedObjectMedia()->removeElement($hookedObjectMediaEntity);
-            $hookedObjectMediaEntity
-                ->setMedia(null)
-                ->setHookedObject(null);
+            $hookedObjectMediaEntity->setMedia(null)->setHookedObject(null);
         }
 
         $this->hookedObjectMedia->clear();
     }
 
+    /**
+     * Removes all hooked collections from this HookedObject.
+     */
     public function clearCollections()
     {
         foreach ($this->hookedObjectCollections as$hookedObjectCollectionEntity) {
@@ -319,9 +367,7 @@ class HookedObjectEntity
                 ->getCollection()->getHookedObjectCollections()->removeElement(
                     $hookedObjectCollectionEntity
                 );
-            $hookedObjectCollectionEntity
-                ->setCollection(null)
-                ->setHookedObject(null);
+            $hookedObjectCollectionEntity->setCollection(null)->setHookedObject(null);
         }
 
         $this->hookedObjectCollections->clear();

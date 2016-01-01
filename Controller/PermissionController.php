@@ -87,7 +87,7 @@ class PermissionController extends AbstractController
         $permissionTypeContainer = $this->get('cmfcmf_media_module.collection_permission.container');
         try {
             $permissionType = $permissionTypeContainer->getCollectionPermission($type);
-        } catch (\InvalidArgumentException $e) {
+        } catch (\DomainException $e) {
             throw new NotFoundHttpException();
         }
 

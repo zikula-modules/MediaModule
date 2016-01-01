@@ -25,19 +25,28 @@ class HookedObjectMediaEntity
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      *
+     * No assertions.
+     *
      * @var int
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity", inversedBy="hookedObjectMedia")
+     * @ORM\ManyToOne(
+     *     targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity",
+     *     inversedBy="hookedObjectMedia")
+     *
+     * No assertions.
      *
      * @var HookedObjectEntity
      */
     private $hookedObject;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity", inversedBy="hookedObjectMedia")
+     * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity",
+     *     inversedBy="hookedObjectMedia")
+     *
+     * No assertions.
      *
      * @var AbstractMediaEntity
      */

@@ -19,6 +19,9 @@ use Zikula\Core\Hook\ProcessHook;
 use Zikula\Core\Hook\ValidationHook;
 use Zikula\Core\Hook\ValidationResponse;
 
+/**
+ * Handles collection hooks.
+ */
 class CollectionHookHandler extends AbstractHookHandler
 {
     /**
@@ -31,11 +34,19 @@ class CollectionHookHandler extends AbstractHookHandler
      */
     private $mediaTypeCollection;
 
+    /**
+     * Sets the media type collection.
+     *
+     * @param MediaTypeCollection $mediaTypeCollection
+     */
     public function setMediaTypeCollection(MediaTypeCollection $mediaTypeCollection)
     {
         $this->mediaTypeCollection = $mediaTypeCollection;
     }
 
+    /**
+     * @param DisplayHook $hook
+     */
     public function uiView(DisplayHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
@@ -49,6 +60,9 @@ class CollectionHookHandler extends AbstractHookHandler
         $this->uiResponse($hook, $content);
     }
 
+    /**
+     * @param DisplayHook $hook
+     */
     public function uiEdit(DisplayHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
@@ -65,6 +79,9 @@ class CollectionHookHandler extends AbstractHookHandler
         $this->uiResponse($hook, $content);
     }
 
+    /**
+     * @param ValidationHook $hook
+     */
     public function validateEdit(ValidationHook $hook)
     {
         $request = $this->requestStack->getCurrentRequest()->request;
@@ -77,7 +94,7 @@ class CollectionHookHandler extends AbstractHookHandler
             if (!empty($collectionId)) {
                 $collectionEntity = $this->entityManager->find('CmfcmfMediaModule:Collection\CollectionEntity', $collectionId);
                 if (!is_object($collectionEntity)) {
-                    $validationResponse->addError('collections', $this->__('Unknown collection'));
+                    $validationResponse->addError('collections', $this->translator->trans('Unknown collection', [], 'cmfcmfmediamodule'));
                 } else {
                     $this->entities[] = $collectionEntity;
                 }
@@ -87,6 +104,9 @@ class CollectionHookHandler extends AbstractHookHandler
         $hook->setValidator($this->getProvider(), $validationResponse);
     }
 
+    /**
+     * @param ProcessHook $hook
+     */
     public function processEdit(ProcessHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');

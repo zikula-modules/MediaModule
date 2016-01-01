@@ -15,11 +15,14 @@ use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Zikula\Common\I18n\TranslatableInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\Core\Hook\DisplayHook;
 use Zikula\Core\Hook\ProcessHook;
 
-abstract class AbstractHookHandler implements TranslatableInterface
+/**
+ * Provides convenience methods for hook handling.
+ */
+abstract class AbstractHookHandler
 {
     /**
      * @var EntityManagerInterface
@@ -37,31 +40,35 @@ abstract class AbstractHookHandler implements TranslatableInterface
     protected $renderEngine;
 
     /**
-     * @var string
-     */
-    private $domain;
-
-    /**
      * @var SecurityManager
      */
     protected $securityManager;
 
-    public function __construct(EntityManagerInterface $entityManager, RequestStack $requestStack, EngineInterface $renderEngine, SecurityManager $securityManager)
-    {
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        RequestStack $requestStack,
+        EngineInterface $renderEngine,
+        SecurityManager $securityManager,
+        TranslatorInterface $translator
+    ) {
         $this->entityManager = $entityManager;
         $this->requestStack = $requestStack;
         $this->renderEngine = $renderEngine;
         $this->securityManager = $securityManager;
-        $this->domain = 'cmfcmfmediamodule';
+        $this->translator = $translator;
     }
 
-    public function getType()
-    {
-        $class = get_class($this);
-
-        return lcfirst(substr($class, strrpos($class, '\\') + 1, -strlen('HookHandler')));
-    }
-
+    /**
+     * Generates a Hook response using the given content.
+     *
+     * @param DisplayHook $hook
+     * @param string      $content
+     */
     public function uiResponse(DisplayHook $hook, $content)
     {
         // Arrrr, we are forced to use Smarty -.-
@@ -76,71 +83,36 @@ abstract class AbstractHookHandler implements TranslatableInterface
         );
     }
 
+    /**
+     * Processes the hook deletion by removing the HookedObject.
+     *
+     * @param ProcessHook $hook
+     */
     public function processDelete(ProcessHook $hook)
     {
-        $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
+        $repository = $this->entityManager
+            ->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
         $hookedObject = $repository->getByHookOrCreate($hook);
 
         $this->entityManager->remove($hookedObject);
         $this->entityManager->flush();
     }
 
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        $class = get_class($this);
+
+        return lcfirst(substr($class, strrpos($class, '\\') + 1, -strlen('HookHandler')));
+    }
+
+    /**
+     * @return string
+     */
     protected function getProvider()
     {
         return 'provider.cmfcmfmediamodule.ui_hooks.' . $this->getType();
-    }
-
-    /**
-     * singular translation for modules.
-     *
-     * @param string $msg Message.
-     *
-     * @return string
-     */
-    public function __($msg)
-    {
-        return __($msg, $this->domain);
-    }
-
-    /**
-     * Plural translations for modules.
-     *
-     * @param string $m1 Singular.
-     * @param string $m2 Plural.
-     * @param int    $n  Count.
-     *
-     * @return string
-     */
-    public function _n($m1, $m2, $n)
-    {
-        return _n($m1, $m2, $n, $this->domain);
-    }
-
-    /**
-     * Format translations for modules.
-     *
-     * @param string       $msg   Message.
-     * @param string|array $param Format parameters.
-     *
-     * @return string
-     */
-    public function __f($msg, $param)
-    {
-        return __f($msg, $param, $this->domain);
-    }
-
-    /**
-     * Format pural translations for modules.
-     *
-     * @param string       $m1    Singular.
-     * @param string       $m2    Plural.
-     * @param int          $n     Count.
-     * @param string|array $param Format parameters.
-     *
-     * @return string
-     */
-    public function _fn($m1, $m2, $n, $param)
-    {
-        return _fn($m1, $m2, $n, $param, $this->domain);
     }
 }

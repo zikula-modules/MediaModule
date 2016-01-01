@@ -20,6 +20,9 @@ use Zikula\Core\Hook\ProcessHook;
 use Zikula\Core\Hook\ValidationHook;
 use Zikula\Core\Hook\ValidationResponse;
 
+/**
+ * Handles media hooks.
+ */
 class MediaHookHandler extends AbstractHookHandler
 {
     /**
@@ -32,11 +35,19 @@ class MediaHookHandler extends AbstractHookHandler
      */
     private $mediaTypeCollection;
 
+    /**
+     * Sets the media type collection.
+     *
+     * @param MediaTypeCollection $mediaTypeCollection
+     */
     public function setMediaTypeCollection(MediaTypeCollection $mediaTypeCollection)
     {
         $this->mediaTypeCollection = $mediaTypeCollection;
     }
 
+    /**
+     * @param DisplayHook $hook
+     */
     public function uiView(DisplayHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
@@ -50,6 +61,9 @@ class MediaHookHandler extends AbstractHookHandler
         $this->uiResponse($hook, $content);
     }
 
+    /**
+     * @param DisplayHook $hook
+     */
     public function uiEdit(DisplayHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
@@ -67,6 +81,9 @@ class MediaHookHandler extends AbstractHookHandler
         $this->uiResponse($hook, $content);
     }
 
+    /**
+     * @param ValidationHook $hook
+     */
     public function validateEdit(ValidationHook $hook)
     {
         $mediaIds = $this->requestStack->getCurrentRequest()
@@ -78,9 +95,9 @@ class MediaHookHandler extends AbstractHookHandler
             if (!empty($mediaId)) {
                 $mediaEntity = $this->entityManager->find('CmfcmfMediaModule:Media\AbstractMediaEntity', $mediaId);
                 if (!is_object($mediaEntity)) {
-                    $validationResponse->addError('media', $this->__('Unknown medium'));
+                    $validationResponse->addError('media', $this->translator->trans('Unknown medium', [], 'cmfcmfmediamodule'));
                 } elseif (!$this->securityManager->hasPermission($mediaEntity, CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)) {
-                    $validationResponse->addError('media', $this->__('Unknown medium'));
+                    $validationResponse->addError('media', $this->translator->trans('Unknown medium', [], 'cmfcmfmediamodule'));
                 } else {
                     $this->entities[] = $mediaEntity;
                 }
@@ -90,6 +107,9 @@ class MediaHookHandler extends AbstractHookHandler
         $hook->setValidator($this->getProvider(), $validationResponse);
     }
 
+    /**
+     * @param ProcessHook $hook
+     */
     public function processEdit(ProcessHook $hook)
     {
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
@@ -97,7 +117,7 @@ class MediaHookHandler extends AbstractHookHandler
 
         $hookedObject->clearMedia();
         foreach ($this->entities as $mediaEntity) {
-            $hookedObject->addMedia($mediaEntity);
+            $hookedObject->addMedium($mediaEntity);
         }
 
         $repository->saveOrDelete($hookedObject);

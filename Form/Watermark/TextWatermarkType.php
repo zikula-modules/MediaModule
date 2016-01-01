@@ -13,8 +13,14 @@ namespace Cmfcmf\Module\MediaModule\Form\Watermark;
 
 use Symfony\Component\Form\FormBuilderInterface;
 
+/**
+ * Form type for a text watermark.
+ */
 class TextWatermarkType extends AbstractWatermarkType
 {
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder

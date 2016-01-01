@@ -17,7 +17,11 @@ use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
 use Github\Exception\RuntimeException;
 use Michelf\MarkdownExtra;
+use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Provides some custom Twig extensions.
+ */
 class TwigExtension extends \Twig_Extension
 {
     /**
@@ -40,31 +44,65 @@ class TwigExtension extends \Twig_Extension
      */
     private $versionChecker;
 
-    public function __construct(MarkdownExtra $markdownExtra, \Zikula_HookDispatcher $hookDispatcher, SecurityManager $securityManager, VersionChecker $versionChecker)
-    {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @param MarkdownExtra          $markdownExtra
+     * @param \Zikula_HookDispatcher $hookDispatcher
+     * @param SecurityManager        $securityManager
+     * @param VersionChecker         $versionChecker
+     * @param TranslatorInterface    $translator
+     */
+    public function __construct(
+        MarkdownExtra $markdownExtra,
+        \Zikula_HookDispatcher $hookDispatcher,
+        SecurityManager $securityManager,
+        VersionChecker $versionChecker,
+        TranslatorInterface $translator
+    ) {
         $this->markdownExtra = $markdownExtra;
         $this->hookDispatcher = $hookDispatcher;
         $this->securityManager = $securityManager;
         $this->versionChecker = $versionChecker;
+        $this->translator = $translator;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('cmfcmfmediamodule_getdescription', [$this, 'escapeDescription'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter(
+                'cmfcmfmediamodule_getdescription',
+                [$this, 'escapeDescription'],
+                ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('cmfcmfmediamodule_unamefromuid', [$this, 'userNameFromUid']),
             new \Twig_SimpleFilter('cmfcmfmediamodule_avatarfromuid', [$this, 'avatarFromUid'])
         ];
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getFunctions()
     {
         return [
             new \Twig_SimpleFunction('cmfcmfmediamodule_hasPermission', [$this, 'hasPermission']),
-            new \Twig_SimpleFunction('cmfcmfmediamodule_newversionavailable', [$this, 'newVersionAvailable'])
+            new \Twig_SimpleFunction(
+                'cmfcmfmediamodule_newversionavailable',
+                [$this, 'newVersionAvailable'])
         ];
     }
 
+    /**
+     * Checks whether or not a new version of the module is available.
+     *
+     * @return array|bool|string
+     */
     public function newVersionAvailable()
     {
         $lastNewVersionCheck = \ModUtil::getVar('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
@@ -75,8 +113,13 @@ class TwigExtension extends \Twig_Extension
                 if ($this->versionChecker->checkRateLimit()) {
                     // The remaining rate limit is high enough.
                     $info = \ModUtil::getInfoFromName('CmfcmfMediaModule');
-                    if (($release = $this->versionChecker->getReleaseToUpgradeTo($info['version'])) !== false) {
-                        \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', $release['tag_name']);
+                    if (($release = $this->versionChecker->getReleaseToUpgradeTo(
+                            $info['version'])) !== false
+                    ) {
+                        \ModUtil::setVar(
+                            'CmfcmfMediaModule',
+                            'newVersionAvailable',
+                            $release['tag_name']);
 
                         return $release['tag_name'];
                     }
@@ -106,10 +149,14 @@ class TwigExtension extends \Twig_Extension
         $strategy = null;
         $hookName = null;
         if ($entity instanceof CollectionEntity) {
-            $strategy = \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection');
+            $strategy = \ModUtil::getVar(
+                'CmfcmfMediaModule',
+                'descriptionEscapingStrategyForCollection');
             $hookName = 'collections';
         } elseif ($entity instanceof AbstractMediaEntity) {
-            $strategy = \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForMedia');
+            $strategy = \ModUtil::getVar(
+                'CmfcmfMediaModule',
+                'descriptionEscapingStrategyForMedia');
             $hookName = 'media';
         } else {
             throw new \LogicException();
@@ -131,10 +178,17 @@ class TwigExtension extends \Twig_Extension
         }
     }
 
+    /**
+     * Converts a user id to it's username.
+     *
+     * @param int $uid The user id.
+     *
+     * @return string
+     */
     public function userNameFromUid($uid)
     {
         if ($uid == 0) {
-            return __('Anonymous', \ZLanguage::getModuleDomain('CmfcmfMediaModule'));
+            return $this->translator->trans('Anonymous', [], 'cmfcmfmediamodule');
         }
         $uname = \UserUtil::getVar('uname', $uid);
         $realname = \UserUtil::getVar('realname', $uid);
@@ -142,6 +196,13 @@ class TwigExtension extends \Twig_Extension
         return !empty($realname) ? $realname : $uname;
     }
 
+    /**
+     * Returns the url to the avatar image of the given user by it's id.
+     *
+     * @param int $uid The user id.
+     *
+     * @return string
+     */
     public function avatarFromUid($uid)
     {
         $email = \UserUtil::getVar('email', $uid);
@@ -151,13 +212,24 @@ class TwigExtension extends \Twig_Extension
         return "https://www.gravatar.com/avatar/$hash.jpg?d=mm";
     }
 
-    public function getName()
-    {
-        return 'cmfcmfmediamodule_twigextension';
-    }
-
+    /**
+     * Checks whether or not the current user has permission.
+     *
+     * @param string|object $objectOrType
+     * @param string        $action
+     *
+     * @return bool
+     */
     public function hasPermission($objectOrType, $action)
     {
         return $this->securityManager->hasPermission($objectOrType, $action);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'cmfcmfmediamodule_twigextension';
     }
 }
