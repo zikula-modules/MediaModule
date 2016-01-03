@@ -24,8 +24,6 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class TwigExtension extends \Twig_Extension
 {
-    const VERSION_CHECK_PERIOD = 24 * 60 * 60;
-
     /**
      * @var MarkdownExtra
      */
@@ -109,7 +107,7 @@ class TwigExtension extends \Twig_Extension
     {
         $lastNewVersionCheck = \ModUtil::getVar('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
         $currentVersion = \ModUtil::getInfoFromName('CmfcmfMediaModule')['version'];
-        if (time() > $lastNewVersionCheck + self::VERSION_CHECK_PERIOD) {
+        if (time() > $lastNewVersionCheck + 24 * 60 * 60) {
             // Last version check older than a day.
             $this->checkForNewVersion($currentVersion);
         }
@@ -131,6 +129,8 @@ class TwigExtension extends \Twig_Extension
     /**
      * Checks if a new version of the module is available.
      * Requires the CURL PHP extension.
+     *
+     * @param $currentVersion
      */
     private function checkForNewVersion($currentVersion)
     {
