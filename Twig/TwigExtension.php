@@ -24,6 +24,8 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class TwigExtension extends \Twig_Extension
 {
+    const VERSION_CHECK_PERIOD = 24 * 60 * 60;
+
     /**
      * @var MarkdownExtra
      */
@@ -106,35 +108,49 @@ class TwigExtension extends \Twig_Extension
     public function newVersionAvailable()
     {
         $lastNewVersionCheck = \ModUtil::getVar('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
-        if (time() - 24 * 60 * 60 > $lastNewVersionCheck) {
+        $currentVersion = \ModUtil::getInfoFromName('CmfcmfMediaModule')['version'];
+        if (time() > $lastNewVersionCheck + self::VERSION_CHECK_PERIOD) {
             // Last version check older than a day.
-            \ModUtil::setVar('CmfcmfMediaModule', 'lastNewVersionCheck', time());
-            try {
-                if ($this->versionChecker->checkRateLimit()) {
-                    // The remaining rate limit is high enough.
-                    $info = \ModUtil::getInfoFromName('CmfcmfMediaModule');
-                    if (($release = $this->versionChecker->getReleaseToUpgradeTo(
-                            $info['version'])) !== false
-                    ) {
-                        \ModUtil::setVar(
-                            'CmfcmfMediaModule',
-                            'newVersionAvailable',
-                            $release['tag_name']);
-
-                        return $release['tag_name'];
-                    }
-                }
-            } catch (RuntimeException $e) {
-                // Something went wrong with the GitHub API. Fail silently.
-            }
+            $this->checkForNewVersion($currentVersion);
         }
 
         $newVersionAvailable = \ModUtil::getVar('CmfcmfMediaModule', 'newVersionAvailable', false);
         if ($newVersionAvailable != false) {
-            return $newVersionAvailable;
+            if ($newVersionAvailable == $currentVersion) {
+                // Somehow the user manually upgraded the module.
+                // Remove "Install new version" popup.
+                \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', false);
+            } else {
+                return $newVersionAvailable;
+            }
         }
 
         return false;
+    }
+
+    /**
+     * Checks if a new version of the module is available.
+     * Requires the CURL PHP extension.
+     */
+    private function checkForNewVersion($currentVersion)
+    {
+        if (!function_exists('curl_init')) {
+            return;
+        }
+
+        \ModUtil::setVar('CmfcmfMediaModule', 'lastNewVersionCheck', time());
+        try {
+            if (!$this->versionChecker->checkRateLimit()) {
+                // The remaining rate limit isn't high enough.
+                return;
+            }
+            $release = $this->versionChecker->getReleaseToUpgradeTo($currentVersion);
+            if ($release !== false) {
+                \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', $release['tag_name']);
+            }
+        } catch (RuntimeException $e) {
+            // Something went wrong with the GitHub API. Fail silently.
+        }
     }
 
     /**
