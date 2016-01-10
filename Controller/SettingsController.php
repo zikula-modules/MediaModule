@@ -207,7 +207,7 @@ class SettingsController extends AbstractController
         if ($form->isValid()) {
             $data = $form->getData();
             foreach ($data as $name => $value) {
-                $variableApi->set('CmfcmfMediaModule', $name, $value);
+                \ModUtil::setVar('CmfcmfMediaModule', $name, $value);
             }
             $this->addFlash('status', $this->__('Settings saved!'));
         }

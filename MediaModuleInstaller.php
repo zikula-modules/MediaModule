@@ -68,6 +68,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         $this->setVar('descriptionEscapingStrategyForCollection', 'text');
         $this->setVar('descriptionEscapingStrategyForMedia', 'text');
         $this->setVar('defaultCollectionTemplate', 'cards');
+        $this->setVar('defaultLicense', null);
         $this->setVar('slugEditable', true);
         $this->setVar('lastNewVersionCheck', 0);
         $this->setVar('newVersionAvailable', false);

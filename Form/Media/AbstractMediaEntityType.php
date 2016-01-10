@@ -166,6 +166,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                     'preferred_choices' => function (LicenseEntity $license) {
                         return !$license->isOutdated();
                     },
+                    'data' => \ModUtil::getVar('CmfcmfMediaModule', 'defaultLicense'),
                     'query_builder' => function (EntityRepository $er) {
                         return $er->createQueryBuilder('l')
                             ->orderBy('l.title', 'ASC')

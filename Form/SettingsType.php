@@ -11,6 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Form;
 
+use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType as SymfonyAbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -45,6 +48,9 @@ class SettingsType extends SymfonyAbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var EntityManagerInterface $em */
+        $em = \ServiceUtil::get('doctrine.orm.entity_manager');
+
         $builder
             ->add('descriptionEscapingStrategyForCollection', 'choice', [
                 'label' => $this->translator->trans('Collection description escaping strategy', [], 'cmfcmfmediamodule'),
@@ -71,6 +77,23 @@ class SettingsType extends SymfonyAbstractType
                 'required' => true,
                 'allowDefaultTemplate' => false,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'defaultCollectionTemplate'),
+            ])
+            ->add('defaultLicense', 'entity', [
+                'label' => $this->translator->trans('Default license', [], 'cmfcmfmediamodule'),
+                'required' => false,
+                // @todo This does not work. I am stupid I suppose.
+                // @todo Note to self: Download the Symfony Docs.
+                'data' => $em->getReference('CmfcmfMediaModule:License\LicenseEntity', \ModUtil::getVar('CmfcmfMediaModule', 'defaultLicense')),
+                'class' => 'CmfcmfMediaModule:License\LicenseEntity',
+                'preferred_choices' => function (LicenseEntity $license) {
+                    return !$license->isOutdated();
+                },
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('l')
+                        ->orderBy('l.title', 'ASC');
+                },
+                'placeholder' => $this->translator->trans('Unknown', [], 'cmfcmfmediamodule'),
+                'property' => 'title',
             ])
             // @todo Allow to edit slugs.
             //->add('slugEditable', 'checkbox', [
