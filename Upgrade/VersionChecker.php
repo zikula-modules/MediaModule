@@ -194,6 +194,7 @@ class VersionChecker
      * Returns the first ZIP asset of the given GitHub release or false if none is found.
      *
      * @param array $release
+     *
      * @return bool
      */
     public function getZipAssetFromRelease($release)

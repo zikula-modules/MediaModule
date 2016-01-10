@@ -104,7 +104,7 @@ class ModuleUpgrader
     /**
      * Execute the upgrade.
      *
-     * @param string $step The step to execute.
+     * @param string         $step           The step to execute.
      * @param VersionChecker $versionChecker
      *
      * @return bool Whether or not the upgrade is done.
