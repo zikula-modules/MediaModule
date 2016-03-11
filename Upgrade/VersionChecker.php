@@ -160,16 +160,7 @@ class VersionChecker
     private function filterReleasesWithoutZipAsset($releases)
     {
         return array_filter($releases, function ($release) {
-            if (count($release['assets']) == 0) {
-                return false;
-            }
-            foreach ($release['assets'] as $asset) {
-                if (in_array($asset['content_type'], $this->allowedAssetContentTypes, true)) {
-                    return true;
-                }
-            }
-
-            return false;
+            return false != $this->getZipAssetFromRelease($release);
         });
     }
 
@@ -197,6 +188,27 @@ class VersionChecker
         $limit    = GitHubResponseMediator::getContent($response);
 
         return $limit['resources']['core']['remaining'] > 10;
+    }
+
+    /**
+     * Returns the first ZIP asset of the given GitHub release or false if none is found.
+     *
+     * @param array $release
+     *
+     * @return bool
+     */
+    public function getZipAssetFromRelease($release)
+    {
+        if (count($release['assets']) == 0) {
+            return false;
+        }
+        foreach ($release['assets'] as $asset) {
+            if (in_array($asset['content_type'], $this->allowedAssetContentTypes, true)) {
+                return $asset;
+            }
+        }
+
+        return false;
     }
 
     private function getClient()
