@@ -14,7 +14,6 @@ namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
-use Zikula\PermissionsModule\Api\PermissionApi;
 
 /**
  * @todo Once Zikula supports the Symfony user mechanism, retrieve the user
@@ -56,7 +55,9 @@ class UserCollectionPermission extends AbstractCollectionPermission
             if (\UserUtil::isLoggedIn()) {
                 $userId = (int)\UserUtil::getVar('uid');
             } else {
-                $userId = PermissionApi::UNREGISTERED_USER;
+                // Cannot use PermissionAPI constant due to
+                // https://github.com/zikula/core/issues/2800
+                $userId = 1; //PermissionApi::UNREGISTERED_USER;
             }
         }
 
