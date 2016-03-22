@@ -16,15 +16,16 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Zikula\Core\AbstractExtensionInstaller;
 
-class MediaModuleInstaller extends \Zikula_AbstractInstaller
+class MediaModuleInstaller extends AbstractExtensionInstaller
 {
     /**
      * {@inheritdoc}
      */
     public function install()
     {
-        \DoctrineHelper::createSchema($this->entityManager, static::getEntities());
+        $this->schemaTool->create(static::getEntities());
 
         $this->createLicenses();
 
@@ -38,7 +39,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
         // We need to create and flush the upload collection first, because it has to has the ID 1.
         $this->entityManager->flush();
         if ($temporaryUploadCollection->getId() != CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
-            \LogUtil::registerError($this->__f('The id of the generated "temporary upload collection" must be %s, but has a different value. This should not have happened. Please report this error.', [CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID]));
+            throw new \Exception($this->__f('The id of the generated "temporary upload collection" must be %s, but has a different value. This should not have happened. Please report this error.', ['%s' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID]));
         }
 
         $rootCollection = new CollectionEntity();
@@ -60,8 +61,8 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
 
         $this->createPermissions($temporaryUploadCollection, $rootCollection);
 
-        \HookUtil::registerProviderBundles($this->version->getHookProviderBundles());
-        \HookUtil::registerSubscriberBundles($this->version->getHookSubscriberBundles());
+        $this->hookApi->installSubscriberHooks($this->bundle->getMetaData());
+        $this->hookApi->installProviderHooks($this->bundle->getMetaData());
 
         $this->setVar('descriptionEscapingStrategyForCollection', 'text');
         $this->setVar('descriptionEscapingStrategyForMedia', 'text');
@@ -95,7 +96,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
             case '1.0.4':
             case '1.0.5':
             case '1.0.6':
-                \DoctrineHelper::createSchema($this->entityManager, [
+                $this->schemaTool->create([
                     'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity',
                     'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity',
                     'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity',
@@ -104,7 +105,7 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
                     'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\PasswordPermissionRestrictionEntity',
                     'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity',
                 ]);
-                \DoctrineHelper::updateSchema($this->entityManager, [
+                $this->schemaTool->update([
                     'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity'
                 ]);
 
@@ -146,10 +147,10 @@ class MediaModuleInstaller extends \Zikula_AbstractInstaller
     public function uninstall()
     {
         // @todo Also delete media files?
-        \DoctrineHelper::dropSchema($this->entityManager, static::getEntities());
+        $this->schemaTool->drop(static::getEntities());
 
-        \HookUtil::unregisterProviderBundles($this->version->getHookProviderBundles());
-        \HookUtil::unregisterSubscriberBundles($this->version->getHookSubscriberBundles());
+        $this->hookApi->uninstallSubscriberHooks($this->bundle->getMetaData());
+        $this->hookApi->uninstallProviderHooks($this->bundle->getMetaData());
 
         $this->delVars();
 

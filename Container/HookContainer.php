@@ -9,32 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule;
+namespace Cmfcmf\Module\MediaModule\Container;
 
-class MediaModuleVersion extends \Zikula_AbstractVersion
+use Zikula\Bundle\HookBundle\AbstractHookContainer;
+use Zikula\Bundle\HookBundle\Bundle\SubscriberBundle;
+use Zikula\Bundle\HookBundle\Bundle\ProviderBundle;
+
+class HookContainer extends AbstractHookContainer
 {
-    /**
-     * Returns the module's metadata.
-     *
-     * @return array
-     */
-    public function getMetaData()
-    {
-        $meta = [];
-        $meta["displayname"]    = $this->__("Cmfcmf MediaModule");
-        $meta["description"]    = $this->__("Cmfcmf MediaModule description");
-        $meta["url"]            = $this->__("collections");
-        $meta["version"]        = "1.1.0";
-        $meta["core_min"]       = "1.4.1";
-        $meta["securityschema"] = ["CmfcmfMediaModule::" => "::"];
-        $meta['capabilities'] = [
-            \HookUtil::SUBSCRIBER_CAPABLE => ['enabled' => true],
-            \HookUtil::PROVIDER_CAPABLE => ['enabled' => true]
-        ];
-
-        return $meta;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -62,7 +44,7 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
      */
     private function createSubscriberUIHook($name, $title)
     {
-        $bundle = new \Zikula_HookManager_SubscriberBundle($this->name, "subscriber.cmfcmfmediamodule.ui_hooks.$name", "ui_hooks", $this->__f("%s hooks", [$title]));
+        $bundle = new SubscriberBundle("CmfcmfMediaModule", "subscriber.cmfcmfmediamodule.ui_hooks.$name", "ui_hooks", $this->__f("%s hooks", ['%s' => $title]));
 
         $bundle->addEvent("display_view", "cmfcmfmediamodule.ui_hooks.$name.display_view");
         $bundle->addEvent("form_edit", "cmfcmfmediamodule.ui_hooks.$name.form_edit");
@@ -84,7 +66,7 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
      */
     private function createSubscriberFilterHook($name, $title)
     {
-        $bundle = new \Zikula_HookManager_SubscriberBundle($this->name, "subscriber.cmfcmfmediamodule.filter_hooks.$name", "filter_hooks", $this->__f("%s display hooks", [$title]));
+        $bundle = new SubscriberBundle("CmfcmfMediaModule", "subscriber.cmfcmfmediamodule.filter_hooks.$name", "filter_hooks", $this->__f("%s display hooks", ['%s' => $title]));
         $bundle->addEvent('filter', "cmfcmfmediamodule.filter_hooks.$name.filter");
 
         $this->registerHookSubscriberBundle($bundle);
@@ -98,7 +80,7 @@ class MediaModuleVersion extends \Zikula_AbstractVersion
      */
     private function createProviderUIHook($name, $title)
     {
-        $bundle = new \Zikula_HookManager_ProviderBundle($this->name, "provider.cmfcmfmediamodule.ui_hooks.$name", "ui_hooks", $this->__f("Media Module - %s", [$title]));
+        $bundle = new ProviderBundle("CmfcmfMediaModule", "provider.cmfcmfmediamodule.ui_hooks.$name", "ui_hooks", $this->__f("Media Module - %s", ['%s' => $title]));
 
         $class = "Cmfcmf\\Module\\MediaModule\\HookHandler\\" . ucfirst($name) . "HookHandler";
         $service = "cmfcmf_media_module.hook_handler.$name";
