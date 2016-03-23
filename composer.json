@@ -1,7 +1,7 @@
 {
     "name": "cmfcmf/media-module",
     "version": "1.1.1",
-    "description": "Media management module",
+    "description": "A Zikula 1.4.1+ module to handle all sorts of media.",
     "type": "zikula-module",
     "license": "MIT",
     "authors": [
@@ -30,8 +30,8 @@
         "zikula": {
             "class": "Cmfcmf\\Module\\MediaModule\\CmfcmfMediaModule",
             "core-compatibility": ">=1.4.2",
-            "displayname": "Cmfcmf MediaModule",
-            "url": "collections",
+            "displayname": "MediaModule",
+            "url": "media",
             "oldnames": [],
             "capabilities": {
                 "admin": {"route": "cmfcmfmediamodule_settings_settings"},
