@@ -32,6 +32,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         $temporaryUploadCollection = new CollectionEntity();
         $temporaryUploadCollection
             ->setTitle($this->__('Temporary upload collection'))
+            ->setSlug('tmp')
             ->setDescription($this->__('This collection is needed as temporary storage for uploaded files. Do not edit or delete!'))
         ;
         $this->entityManager->persist($temporaryUploadCollection);
