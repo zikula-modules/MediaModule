@@ -79,8 +79,8 @@ class VersionChecker
             return false;
         }
 
-        if (!version::eq($this->getVersionFromRelease($highestPatchRelease), $currentVersion)) {
-            // The currently installed version is not equal to the highest patch version.
+        if (version::gt($this->getVersionFromRelease($highestPatchRelease), $currentVersion)) {
+            // The currently installed version is lower than the highest patch version.
             // So upgrade to this one first.
             return $highestPatchRelease;
         }
