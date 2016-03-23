@@ -1,5 +1,6 @@
 {
     "name": "cmfcmf/media-module",
+    "version": "1.1.1",
     "description": "Media management module",
     "type": "zikula-module",
     "license": "MIT",
@@ -27,7 +28,20 @@
     },
     "extra": {
         "zikula": {
-            "class": "Cmfcmf\\Module\\MediaModule\\CmfcmfMediaModule"
+            "class": "Cmfcmf\\Module\\MediaModule\\CmfcmfMediaModule",
+            "core-compatibility": ">=1.4.2",
+            "displayname": "Cmfcmf MediaModule",
+            "url": "collections",
+            "oldnames": [],
+            "capabilities": {
+                "admin": {"route": "cmfcmfmediamodule_settings_settings"},
+                "user": {"route": "cmfcmfmediamodule_collection_displayroot"},
+                "hook_subscriber": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"},
+                "hook_provider": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"}
+            },
+            "securityschema": {
+                "CmfcmfMediaModule::": "::"
+            }
         }
     },
     "config": {
