@@ -13,7 +13,8 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
-use Zikula\Component\HookDispatcher\Hook;
+use Zikula\Bundle\HookBundle\Hook\DisplayHookResponse;
+use Zikula\Bundle\HookBundle\Hook\Hook;
 use Zikula\Core\Controller\AbstractController as BaseAbstractController;
 use Zikula\Core\UrlInterface;
 
@@ -49,6 +50,7 @@ abstract class AbstractController extends BaseAbstractController
         $eventName = "cmfcmfmediamodule.ui_hooks.$name.$event";
         $hook = new \Zikula_DisplayHook($eventName, $id, $url);
         $this->get('hook_dispatcher')->dispatch($eventName, $hook);
+        /** @var DisplayHookResponse[] $responses */
         $responses = $hook->getResponses();
 
         $content = "";
@@ -96,7 +98,7 @@ abstract class AbstractController extends BaseAbstractController
             "cmfcmfmediamodule.ui_hooks.$name.$event",
             new \Zikula_Hook_ValidationProviders()
         );
-        /** @var \Zikula\Core\Hook\ValidationProviders $hookvalidators */
+        /** @var \Zikula\Bundle\HookBundle\Hook\ValidationProviders $hookvalidators */
         $hookvalidators = $this->notifyHooks($validationHook)->getValidators();
 
         return !$hookvalidators->hasErrors();

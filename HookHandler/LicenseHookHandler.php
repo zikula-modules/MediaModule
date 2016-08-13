@@ -12,10 +12,10 @@
 namespace Cmfcmf\Module\MediaModule\HookHandler;
 
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
-use Zikula\Core\Hook\DisplayHook;
-use Zikula\Core\Hook\ProcessHook;
-use Zikula\Core\Hook\ValidationHook;
-use Zikula\Core\Hook\ValidationResponse;
+use Zikula\Bundle\HookBundle\Hook\DisplayHook;
+use Zikula\Bundle\HookBundle\Hook\ProcessHook;
+use Zikula\Bundle\HookBundle\Hook\ValidationHook;
+use Zikula\Bundle\HookBundle\Hook\ValidationResponse;
 
 /**
  * Handles license hooks.

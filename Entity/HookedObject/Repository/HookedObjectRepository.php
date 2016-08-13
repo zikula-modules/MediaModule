@@ -13,7 +13,7 @@ namespace Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository;
 
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Doctrine\ORM\EntityRepository;
-use Zikula\Component\HookDispatcher\Hook;
+use Zikula\Bundle\HookBundle\Hook\Hook;
 
 class HookedObjectRepository extends EntityRepository
 {
@@ -26,17 +26,14 @@ class HookedObjectRepository extends EntityRepository
      */
     public function getByHookOrCreate(Hook $hook)
     {
+        /** @var HookedObjectEntity $entity */
         $entity = $this->findOneBy([
             'module' => $hook->getCaller(),
             'areaId' => $hook->getAreaId(),
             'objectId' => $hook->getId()
         ]);
 
-        if ($entity) {
-            return $entity;
-        }
-
-        return new HookedObjectEntity($hook);
+        return $entity ? $entity : new HookedObjectEntity($hook);
     }
 
     /**

@@ -17,9 +17,9 @@ use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Zikula\Component\HookDispatcher\Hook;
-use Zikula\Core\Hook\DisplayHook;
-use Zikula\Core\Hook\ProcessHook;
+use Zikula\Bundle\HookBundle\Hook\Hook;
+use Zikula\Bundle\HookBundle\Hook\DisplayHook;
+use Zikula\Bundle\HookBundle\Hook\ProcessHook;
 use Zikula\Core\UrlInterface;
 
 /**

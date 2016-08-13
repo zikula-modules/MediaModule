@@ -30,7 +30,7 @@ class HookedObjectRepositoryTest extends \PHPUnit_Framework_TestCase
 //
 //    public function testIsSomethingHookedMethod()
 //    {
-//        $hookStub = $this->getMockBuilder('Zikula\Component\HookDispatcher\Hook')
+//        $hookStub = $this->getMockBuilder('Zikula\Bundle\HookBundle\Hook\Hook')
 //            ->getMock();
 //        $this->repository->getByHookOrCreate($hookStub);
 //    }

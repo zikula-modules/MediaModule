@@ -16,8 +16,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
-use Zikula\Core\Hook\DisplayHook;
-use Zikula\Core\Hook\ProcessHook;
+use Zikula\Bundle\HookBundle\Hook\DisplayHook;
+use Zikula\Bundle\HookBundle\Hook\DisplayHookResponse;
+use Zikula\Bundle\HookBundle\Hook\ProcessHook;
 
 /**
  * Provides convenience methods for hook handling.
@@ -71,16 +72,7 @@ abstract class AbstractHookHandler
      */
     public function uiResponse(DisplayHook $hook, $content)
     {
-        // Arrrr, we are forced to use Smarty -.-
-        // We need to clone the instance, because it causes errors otherwise
-        // when multiple hooks areas are hooked.
-        $view = clone \Zikula_View::getInstance('CmfcmfMediaModule');
-        $view->setCaching(\Zikula_View::CACHE_DISABLED);
-        $view->assign('content', $content);
-
-        $hook->setResponse(
-            new \Zikula_Response_DisplayHook($this->getProvider(), $view, 'dummy.tpl')
-        );
+        $hook->setResponse(new DisplayHookResponse($this->getProvider(), $content));
     }
 
     /**
