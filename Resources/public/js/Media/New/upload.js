@@ -106,6 +106,8 @@
                 url: Routing.generate('cmfcmfmediamodule_media_upload'), // Set the url
                 thumbnailWidth: 80,
                 thumbnailHeight: 80,
+                maxThumbnailFilesize: 5,
+                maxFilesize: $('#cmfcmfmedia-upload').data('max-filesize') / 1000 / 1000,
                 parallelUploads: 20,
                 maxFiles: isPopup ? 1 : null,
                 previewTemplate: previewTemplate,

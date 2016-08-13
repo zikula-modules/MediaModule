@@ -94,7 +94,8 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction('cmfcmfmediamodule_hasPermission', [$this, 'hasPermission']),
             new \Twig_SimpleFunction(
                 'cmfcmfmediamodule_newversionavailable',
-                [$this, 'newVersionAvailable'])
+                [$this, 'newVersionAvailable']),
+            new \Twig_SimpleFunction('cmfcmfmediamodule_maxfilesize', [$this, 'maxFileSize'])
         ];
     }
 
@@ -239,6 +240,50 @@ class TwigExtension extends \Twig_Extension
     public function hasPermission($objectOrType, $action)
     {
         return $this->securityManager->hasPermission($objectOrType, $action);
+    }
+
+    public function maxFileSize()
+    {
+        // Based on http://stackoverflow.com/a/22500394/2560557
+        // by Deckard http://stackoverflow.com/users/974390/deckard
+        function phpSizeToBytes($sSize) {
+            if (is_numeric($sSize)) {
+                return $sSize;
+            }
+            $sSuffix = substr($sSize, -1);
+            $iValue = substr($sSize, 0, -1);
+            switch(strtoupper($sSuffix)) {
+                /** @noinspection PhpMissingBreakStatementInspection */
+                case 'P':
+                    $iValue *= 1024;
+                /** @noinspection PhpMissingBreakStatementInspection */
+                case 'T':
+                    $iValue *= 1024;
+                /** @noinspection PhpMissingBreakStatementInspection */
+                case 'G':
+                    $iValue *= 1024;
+                /** @noinspection PhpMissingBreakStatementInspection */
+                case 'M':
+                    $iValue *= 1024;
+                case 'K':
+                    $iValue *= 1024;
+                    break;
+            }
+
+            return $iValue;
+        }
+
+        static $max = -1;
+
+        if ($max < 0) {
+            $max = phpSizeToBytes(ini_get('post_max_size'));
+            $uploadMax = phpSizeToBytes(ini_get('upload_max_filesize'));
+            if ($uploadMax > 0 && $uploadMax < $max) {
+                $max = $uploadMax;
+            }
+        }
+
+        return $max;
     }
 
     /**
