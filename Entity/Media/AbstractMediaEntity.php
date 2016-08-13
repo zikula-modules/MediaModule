@@ -205,7 +205,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         if ($this->author === null) {
             $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->author) . '</a>';
 
-            return __f('Content of %s', [$author], $dom);
+            return __f('By %s', [$author], $dom);
         }
 
         if ($this->authorUrl === null) {
@@ -214,7 +214,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->author) . '</a>';
         }
 
-        return __f('Content of %s', [$author], $dom);
+        return __f('By %s', [$author], $dom);
     }
 
     /**
