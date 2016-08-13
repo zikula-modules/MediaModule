@@ -75,7 +75,13 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
             'text/css',
             'text/csv',
             'text/html',
-            'text/x-c++'
+            'text/x-c++',
+            'application/xml',
+            'text/xml',
+            'application/atom+xml',
+            'application/xhtml+xml',
+            'application/mathml+xml',
+            'application/rss+xml'
         ];
     }
 
