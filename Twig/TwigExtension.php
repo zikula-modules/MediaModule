@@ -246,7 +246,7 @@ class TwigExtension extends \Twig_Extension
     {
         // Based on http://stackoverflow.com/a/22500394/2560557
         // by Deckard http://stackoverflow.com/users/974390/deckard
-        function phpSizeToBytes($sSize) {
+        $phpSizeToBytes = function ($sSize) {
             if (is_numeric($sSize)) {
                 return $sSize;
             }
@@ -271,13 +271,13 @@ class TwigExtension extends \Twig_Extension
             }
 
             return $iValue;
-        }
+        };
 
         static $max = -1;
 
         if ($max < 0) {
-            $max = phpSizeToBytes(ini_get('post_max_size'));
-            $uploadMax = phpSizeToBytes(ini_get('upload_max_filesize'));
+            $max = $phpSizeToBytes(ini_get('post_max_size'));
+            $uploadMax = $phpSizeToBytes(ini_get('upload_max_filesize'));
             if ($uploadMax > 0 && $uploadMax < $max) {
                 $max = $uploadMax;
             }
