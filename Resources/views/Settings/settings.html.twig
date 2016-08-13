@@ -1,20 +1,33 @@
 {% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
-{% block title __('Change settings') %}
+{% block title __('Settings') %}
 {% block content %}
-    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
-    <h2>{{ __('Scribite integration') }}</h2>
-    {% if scribiteInstalled %}
-        <div class="alert alert-success">{{ __('It seems like the Scribite / CKEditor integration is working! Make sure you use a "special" or "full" toolbar.') }}</div>
-        {% if not descriptionEscapingStrategyForCollectionOk %}
-            <div class="alert alert-danger">{{ __('You should set "Collection description escaping strategy" to "As is" for Scribite to work properly!') }}</div>
-        {% endif %}
-        {% if not descriptionEscapingStrategyForMediaOk %}
-            <div class="alert alert-danger">{{ __('You should set "Media description escaping strategy" to "As is" for Scribite to work properly!') }}</div>
-        {% endif %}
-    {% else %}
-        <div class="alert alert-info">{{ __('Scribite is not installed.') }}</div>
-    {% endif %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-3">
+            <ul class="nav nav-pills nav-stacked">
+                <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_requirements'%}class="active"{% endif %}>
+                    <a href="{{ path('cmfcmfmediamodule_settings_requirements') }}">
+                        <i class="fa fa-check fa-fw"></i> {{ __('Requirements') }}
+                    </a>
+                </li>
+                <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_general'%}class="active"{% endif %}>
+                    <a href="{{ path('cmfcmfmediamodule_settings_general') }}">
+                        <i class="fa fa-cog fa-fw"></i> {{ __('General') }}
+                    </a>
+                </li>
+                <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_upgrade_doupgrade'%}class="active"{% endif %}>
+                    <a href="{{ path('cmfcmfmediamodule_upgrade_doupgrade') }}">
+                        <i class="fa fa-download fa-fw"></i> {{ __('Upgrade') }}
+                    </a>
+                </li>
+                <li>
+                    <a href="http://cmfcmf.github.io/MediaModule/docs/">
+                        <i class="fa fa-external-link fa-fw"></i> {{ __('Help and Docs') }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-xs-12 col-sm-9">
+            {% block settings_content  %}{% endblock %}
+        </div>
+    </div>
 {% endblock %}

@@ -11,7 +11,7 @@
         function executeStep(step) {
             var steps = $('#cmfcmfmedia-settings-upgrade-start-btn').data('steps');
             if (steps == step) {
-                window.location.href = Routing.generate('cmfcmfmediamodule_settings_settings');
+                window.location.href = Routing.generate('cmfcmfmediamodule_settings_index');
                 return;
             }
 

@@ -106,21 +106,11 @@ class LinkContainer implements LinkContainerInterface
                 'icon' => 'picture-o'
             ];
         }
-        $links[] = [
-            'url' => 'http://cmfcmf.github.io/MediaModule/docs/',
-            'text' => $this->translator->trans('Help and Docs', [], 'cmfcmfmediamodule'),
-            'icon' => 'question'
-        ];
         if ($this->securityManager->hasPermission('settings', 'admin')) {
             $links[] = [
-                'url' => $this->router->generate('cmfcmfmediamodule_settings_settings'),
+                'url' => $this->router->generate('cmfcmfmediamodule_settings_index'),
                 'text' => $this->translator->trans('Settings', [], 'cmfcmfmediamodule'),
                 'icon' => 'cog'
-            ];
-            $links[] = [
-                'url' => $this->router->generate('cmfcmfmediamodule_upgrade_doupgrade'),
-                'text' => $this->translator->trans('Upgrade', [], 'cmfcmfmediamodule'),
-                'icon' => 'download'
             ];
         }
 

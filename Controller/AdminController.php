@@ -19,7 +19,7 @@ class AdminController extends \Zikula_AbstractController
 {
     public function indexAction()
     {
-        $url = $this->get('router')->generate('cmfcmfmediamodule_settings_settings');
+        $url = $this->get('router')->generate('cmfcmfmediamodule_settings_index');
         $this->redirect($url);
     }
 }

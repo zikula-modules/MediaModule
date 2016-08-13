@@ -34,7 +34,7 @@
             "url": "media",
             "oldnames": [],
             "capabilities": {
-                "admin": {"route": "cmfcmfmediamodule_settings_settings"},
+                "admin": {"route": "cmfcmfmediamodule_settings_index"},
                 "user": {"route": "cmfcmfmediamodule_collection_displayroot"},
                 "hook_subscriber": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"},
                 "hook_provider": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"}

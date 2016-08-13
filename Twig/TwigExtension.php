@@ -13,6 +13,7 @@ namespace Cmfcmf\Module\MediaModule\Twig;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Helper\PHPIniHelper;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
 use Github\Exception\RuntimeException;
@@ -244,46 +245,7 @@ class TwigExtension extends \Twig_Extension
 
     public function maxFileSize()
     {
-        // Based on http://stackoverflow.com/a/22500394/2560557
-        // by Deckard http://stackoverflow.com/users/974390/deckard
-        $phpSizeToBytes = function ($sSize) {
-            if (is_numeric($sSize)) {
-                return $sSize;
-            }
-            $sSuffix = substr($sSize, -1);
-            $iValue = substr($sSize, 0, -1);
-            switch (strtoupper($sSuffix)) {
-                /** @noinspection PhpMissingBreakStatementInspection */
-                case 'P':
-                    $iValue *= 1024;
-                /** @noinspection PhpMissingBreakStatementInspection */
-                case 'T':
-                    $iValue *= 1024;
-                /** @noinspection PhpMissingBreakStatementInspection */
-                case 'G':
-                    $iValue *= 1024;
-                /** @noinspection PhpMissingBreakStatementInspection */
-                case 'M':
-                    $iValue *= 1024;
-                case 'K':
-                    $iValue *= 1024;
-                    break;
-            }
-
-            return $iValue;
-        };
-
-        static $max = -1;
-
-        if ($max < 0) {
-            $max = $phpSizeToBytes(ini_get('post_max_size'));
-            $uploadMax = $phpSizeToBytes(ini_get('upload_max_filesize'));
-            if ($uploadMax > 0 && $uploadMax < $max) {
-                $max = $uploadMax;
-            }
-        }
-
-        return $max;
+        return PHPIniHelper::getMaxUploadSize();
     }
 
     /**

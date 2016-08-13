@@ -1,10 +1,8 @@
-{% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
+{% extends 'CmfcmfMediaModule:Settings:settings.html.twig' %}
 
 {% block upgradeNotification %}{% endblock %}
 
-{% block title %}{{ __('Upgrade module') }}{% endblock %}
-
-{% block content %}
+{% block settings_content %}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Settings/Upgrade.js')) }}
     {% if not hasPermission %}
         <div class="alert alert-danger">

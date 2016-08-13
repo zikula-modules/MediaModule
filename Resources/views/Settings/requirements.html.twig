@@ -1,0 +1,19 @@
+{% extends 'CmfcmfMediaModule:Settings:settings.html.twig' %}
+{% block settings_content %}
+    <div class="alert alert-{{ uploadSize.state }}">
+        <strong>{{ uploadSize.message }}</strong>
+        {{ __f('Used for %s', {'%s': uploadSize.for}) }}.
+    </div>
+    <div class="alert alert-{{ fileInfo.state }}">
+        <strong>{{ fileInfo.message }}</strong>
+        {{ __f('Used for %s', {'%s': fileInfo.for}) }}.
+    </div>
+    <div class="alert alert-{{ imagine.state }}">
+        <strong>{{ imagine.message }}</strong>
+        {{ __f('Used for %s', {'%s': imagine.for}) }}.
+    </div>
+    <div class="alert alert-{{ memoryLimit.state }}">
+        <strong>{{ memoryLimit.message }}</strong>
+        {{ __f('Used for %s', {'%s': memoryLimit.for}) }}.
+    </div>
+{% endblock %}
