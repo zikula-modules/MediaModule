@@ -18,6 +18,7 @@ use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Parameter;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class CollectionType extends AbstractType
@@ -136,15 +137,20 @@ class CollectionType extends AbstractType
                         if ($theCollection->getId() != null) {
                             // The collection is currently edited. Make sure it's not placed onto
                             // itself mor one of it's children.
-                            $qb->andWhere(
-                                $qb->expr()->not(
-                                    $qb->expr()->in(
+                            $childrenQuery = $er->getChildrenQuery($theCollection);
+                            $qb
+                                ->andWhere(
+                                    $qb->expr()->notIn(
                                         'c.id',
-                                        $er->getChildrenQuery($theCollection)->getDQL()
+                                        $childrenQuery->getDQL()
                                     )
                                 )
-                            )->andWhere($qb->expr()->neq('c.id', ':id'))
-                                ->setParameter('id', $theCollection->getId());
+                                ->andWhere($qb->expr()->neq('c.id', ':id'))
+                                ->setParameter('id', $theCollection->getId())
+                            ;
+                            $childrenQuery->getParameters()->forAll(function ($key, Parameter $parameter) use ($qb) {
+                                $qb->setParameter($parameter->getName(), $parameter->getValue());
+                            });
                         }
 
                         return $qb;
