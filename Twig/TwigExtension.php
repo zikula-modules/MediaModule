@@ -252,7 +252,7 @@ class TwigExtension extends \Twig_Extension
             }
             $sSuffix = substr($sSize, -1);
             $iValue = substr($sSize, 0, -1);
-            switch(strtoupper($sSuffix)) {
+            switch (strtoupper($sSuffix)) {
                 /** @noinspection PhpMissingBreakStatementInspection */
                 case 'P':
                     $iValue *= 1024;
