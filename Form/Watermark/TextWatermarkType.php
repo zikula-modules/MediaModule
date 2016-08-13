@@ -40,6 +40,12 @@ class TextWatermarkType extends AbstractWatermarkType
             ->add('font', 'cmfcmfmediamodule_font_choice', [
                 'label' => $this->translator->trans('Font', [], 'cmfcmfmediamodule')
             ])
+            ->add('fontColor', 'cmfcmfmediamodule_color', [
+                'label' => $this->translator->trans('Font color', [], 'cmfcmfmediamodule')
+            ])
+            ->add('backgroundColor', 'cmfcmfmediamodule_color', [
+                'label' => $this->translator->trans('Background color', [], 'cmfcmfmediamodule')
+            ])
         ;
         parent::buildForm($builder, $options);
     }

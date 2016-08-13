@@ -27,6 +27,11 @@ services:
     tags:
       - { name: form.type, alias: cmfcmfmediamodule_font_choice }
 
+  cmfcmf_media_module.form.type.color:
+    class: Cmfcmf\Module\MediaModule\Form\Type\ColorType
+    tags:
+      - { name: form.type, alias: cmfcmfmediamodule_color }
+
   cmfcmf_media_module.form.type.permission_level:
       class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
       arguments:

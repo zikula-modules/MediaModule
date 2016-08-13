@@ -85,7 +85,8 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
 
     public function getUrl()
     {
-        return $this->getPath();
+        // @todo This won't work if Zikula is installed in a subdirectory.
+        return "/" . $this->getPath();
     }
 
     /**

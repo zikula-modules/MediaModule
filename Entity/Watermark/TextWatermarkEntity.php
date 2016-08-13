@@ -14,6 +14,8 @@ namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Imagine\Image\ImagineInterface;
+use Imagine\Image\Palette\RGB;
+use Imagine\Image\Point;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -51,6 +53,30 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
     protected $font;
 
     /**
+     * @ORM\Column(type="string", length=9)
+     * @Assert\Regex("/^#[0-9a-fA-F]{8,8}$/")
+     *
+     * @var string
+     */
+    protected $fontColor;
+
+    /**
+     * @ORM\Column(type="string", length=9)
+     * @Assert\Regex("/^#[0-9a-fA-F]{8,8}$/")
+     *
+     * @var string
+     */
+    protected $backgroundColor;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->fontColor = "#000000FF";
+        $this->backgroundColor = "#00000000";
+    }
+
+    /**
      * @return string
      */
     public function getText()
@@ -80,46 +106,15 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         } else {
             throw new \LogicException('Either relative or absolute watermark size must be set!');
         }
-        if (true || !class_exists('ImagickDraw')) {
-            // Fall back to ugly image.
-            $palette = new \Imagine\Image\Palette\RGB();
-            $font = $imagine->font($fontPath, $fontSize, $palette->color('#000'));
-            $box = $font->box($this->getText());
-            $watermarkImage = $imagine->create($box, $palette->color('#FFF'));
-            $watermarkImage->draw()->text($this->text, $font, new \Imagine\Image\Point(0, 0));
-        } else {
-            // CURRENTLY DISABLED.
-            // Use nicer Imagick implementation.
-            // Untested!
-            // @todo Test and implement it!
-            $draw = new \ImagickDraw();
-            $draw->setFont($fontPath);
-            $draw->setFontSize($fontSize);
-            $draw->setStrokeAntialias(true);  //try with and without
-            $draw->setTextAntialias(true);  //try with and without
 
-            $draw->setFillColor('#fff');
+        $str2col = function ($str) {
+            return (new RGB())->color(substr($str, 0, 7), (int)round(hexdec(substr($str, 7, 2)) / 2.55));
+        };
 
-            $textOnly = new \Imagick();
-            $textOnly->newImage(1400, 400, "transparent");  //transparent canvas
-            $textOnly->annotateImage($draw, 0, 0, 0, $this->text);
-
-            //Create stroke
-            $draw->setFillColor('#000'); //same as stroke color
-            $draw->setStrokeColor('#000');
-            $draw->setStrokeWidth(8);
-
-            $strokeImage = new \Imagick();
-            $strokeImage->newImage(1400, 400, "transparent");
-            $strokeImage->annotateImage($draw, 0, 0, 0, $this->text);
-
-            //Composite text over stroke
-            $strokeImage->compositeImage($textOnly, \Imagick::COMPOSITE_OVER, 0, 0, \Imagick::CHANNEL_ALPHA);
-            $strokeImage->trimImage(0);  //cut transparent border
-
-            $watermarkImage = $imagine->load($strokeImage->getImageBlob());
-            //$strokeImage->resizeImage(300,0, \Imagick::FILTER_CATROM, 0.9, false); //resize to final size
-        }
+        $font = $imagine->font($fontPath, $fontSize, $str2col($this->fontColor));
+        $box = $font->box($this->getText());
+        $watermarkImage = $imagine->create($box, $str2col($this->backgroundColor));
+        $watermarkImage->draw()->text($this->text, $font, new Point(0, 0));
 
         return $watermarkImage;
     }
@@ -193,5 +188,45 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         $this->font = $font;
 
         return $this;
+    }
+
+    /**
+     * @param string $fontColor
+     *
+     * @return TextWatermarkEntity
+     */
+    public function setFontColor($fontColor)
+    {
+        $this->fontColor = $fontColor;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFontColor()
+    {
+        return $this->fontColor;
+    }
+
+    /**
+     * @param string $backgroundColor
+     *
+     * @return TextWatermarkEntity
+     */
+    public function setBackgroundColor($backgroundColor)
+    {
+        $this->backgroundColor = $backgroundColor;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackgroundColor()
+    {
+        return $this->backgroundColor;
     }
 }

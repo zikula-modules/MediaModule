@@ -33,7 +33,6 @@
         (function ($) {
             $('#{{ id|e('js') }}').find('.radio label').each(function () {
                 var font = $(this).text().trim();
-                console.log(font);
                 $(this).css({'font-family': "'" + font + "'"});
             });
         })(jQuery);
@@ -76,3 +75,27 @@
         </table>
     </div>
 {% endblock %}
+
+{%- block cmfcmfmediamodule_color_widget -%}
+    {{ block('form_widget_simple') }}
+    {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/color-picker/spectrum.css')) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/color-picker/spectrum.js')) }}
+    {#{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/color-picker/i18n/jquery-spectrum-' ~ lang() ~ '.js')) }#}
+    <script type="text/javascript">
+        // Using JavaScript here is extremely ugly. Oh well..
+        (function ($) {
+            $('#{{ id|e('js') }}').spectrum({
+                preferredFormat: "hex8", // argb
+                showButtons: false,
+                showInitial: true,
+                flat: true,
+                showAlpha: true
+            });
+        })(jQuery);
+    </script>
+    <style>
+        .sp-container {
+            z-index: 100;
+        }
+    </style>
+{%- endblock -%}

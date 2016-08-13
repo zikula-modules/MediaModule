@@ -96,6 +96,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             case '1.0.3':
             case '1.0.4':
             case '1.0.5':
+            /** @noinspection PhpMissingBreakStatementInspection */
             case '1.0.6':
                 $this->schemaTool->create([
                     'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity',
@@ -135,6 +136,9 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $this->entityManager->find('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity', 1),
                     $rootCollection
                 );
+            case '1.1.1':
+                $this->schemaTool->update(['Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity']);
+                $this->container->get('doctrine.dbal.connection')->executeUpdate("UPDATE `cmfcmfmedia_watermarks` SET `fontColor`='#000000ff',`backgroundColor`='#00000000' WHERE `discr`='text'");
 
                 return true;
             default:
