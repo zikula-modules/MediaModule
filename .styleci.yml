@@ -10,6 +10,7 @@ disabled:
   - unalign_equals
   - unalign_double_arrow
   - phpdoc_to_comment
+  - phpdoc_annotation_without_dot
   
 enabled:
   - short_array_syntax
