@@ -21,6 +21,6 @@ class SliderTemplate extends AbstractTemplate
      */
     public function getTitle()
     {
-        return $this->translator->trans('Big thumbnail slider', [], 'cmfcmfmediamodule');
+        return $this->translator->trans('Image slider', [], 'cmfcmfmediamodule');
     }
 }

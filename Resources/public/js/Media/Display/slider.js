@@ -4,8 +4,10 @@
         $slider.slick({
             autoplay: true,
             dots: $slider.children().size() <= 10,
-            variableWidth: false,
-            lazyLoad: 'ondemand'
+            slidesToShow: 1,
+            centerMode: true,
+            variableWidth: true,
+            centerPadding: 40
         });
     });
 })(jQuery);

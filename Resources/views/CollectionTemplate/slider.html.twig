@@ -5,10 +5,19 @@
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/slick/slick.css'), 98) }}
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/slick/slick-theme.css'), 99) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/slider.js')) }}
+    <style>
+        .slick-prev:before, .slick-next:before {
+            color: black;
+        }
+        .slick-slide {
+            margin-left: 20px;
+            margin-right: 20px;
+        }
+    </style>
 
     <div id="cmfcmfmedia-display-slider">
         {% for media in collection.media %}
-            <div>
+            <div class="img-thumbnail">
                 {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
                 {% set bigThumbnail = mediaType.thumbnail(media, 800, 450, 'url', 'inset') %}
                 <a href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
