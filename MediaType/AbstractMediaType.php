@@ -15,6 +15,7 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\ExtensionsModule\Api\VariableApi;
 
 abstract class AbstractMediaType implements MediaTypeInterface
 {
@@ -28,11 +29,32 @@ abstract class AbstractMediaType implements MediaTypeInterface
      */
     protected $translator;
 
-    public function __construct(EngineInterface $renderEngine, TranslatorInterface $translator)
+    /**
+     * @var string
+     */
+    protected $domain;
+
+    /**
+     * @var VariableApi
+     */
+    private $variableApi;
+
+    public function __construct(EngineInterface $renderEngine, TranslatorInterface $translator, VariableApi $variableApi)
     {
-        $this->domain = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
+        $this->domain = 'cmfcmfmediamodule'; // @todo Remove!
         $this->renderEngine = $renderEngine;
         $this->translator = $translator;
+        $this->variableApi = $variableApi;
+    }
+
+    public function getVar($name, $default)
+    {
+        return $this->variableApi->get('CmfcmfMediaModule', 'mediaType:' . $this->getAlias() . ':' . $name, $default);
+    }
+
+    public function setVar($name, $value)
+    {
+        $this->variableApi->set('CmfcmfMediaModule', 'mediaType:' . $this->getAlias() . ':' . $name, $value);
     }
 
     public function isEnabled()
