@@ -24,4 +24,8 @@
         <strong>{{ curl.message }}</strong>
         {{ __f('Used for %s', {'%s': curl.for}) }}.
     </div>
+    <div class="alert alert-{{ phar.state }}">
+        <strong>{{ phar.message }}</strong>
+        {{ __f('Used for %s', {'%s': phar.for}) }}.
+    </div>
 {% endblock %}

@@ -149,8 +149,21 @@ class SettingsController extends AbstractController
         } else {
             $curl = [
                 'for' => $this->getTranslator()->trans('Module upgrade'),
-                'state' => 'success',
+                'state' => 'danger',
                 'message' => $this->getTranslator()->trans('The CURL PHP extension is missing.'),
+            ];
+        }
+        if (class_exists('PharData')) {
+            $phar = [
+                'for' => $this->getTranslator()->trans('TAR archive content preview'),
+                'state' => 'success',
+                'message' => $this->getTranslator()->trans('The Phar PHP extension is installed.'),
+            ];
+        } else {
+            $phar = [
+                'for' => $this->getTranslator()->trans('TAR archive content preview'),
+                'state' => 'warning',
+                'message' => $this->getTranslator()->trans('The Phar PHP extension is missing.'),
             ];
         }
 
@@ -160,7 +173,8 @@ class SettingsController extends AbstractController
             'fileInfo' => $fileInfo,
             'imagine' => $imagine,
             'curl' => $curl,
-            'zip' => $zip
+            'zip' => $zip,
+            'phar' => $phar
         ];
     }
 
