@@ -50,13 +50,13 @@ class SettingsController extends AbstractController
             $fileInfo = [
                 'for' => $this->getTranslator()->trans('File Upload Mime Type guessing'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('The PHP FileInfo extension is loaded.'),
+                'message' => $this->getTranslator()->trans('The FileInfo PHP extension is installed.'),
             ];
         } else if (FileBinaryMimeTypeGuesser::isSupported()) {
             $fileInfo = [
                 'for' => $this->getTranslator()->trans('File Upload Mime Type guessing'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('Unix System detected. The file command will be used:'),
+                'message' => $this->getTranslator()->trans('Unix System detected. The file command will be used.'),
             ];
         } else {
             $fileInfo = [
@@ -127,11 +127,40 @@ class SettingsController extends AbstractController
             ];
         }
 
+        if (class_exists('ZipArchive')) {
+            $zip = [
+                'for' => $this->getTranslator()->trans('Module upgrade and ZIP content preview'),
+                'state' => 'success',
+                'message' => $this->getTranslator()->trans('The ZIP PHP extension is installed.'),
+            ];
+        } else {
+            $zip = [
+                'for' => $this->getTranslator()->trans('Module upgrade and ZIP content preview'),
+                'state' => 'danger',
+                'message' => $this->getTranslator()->trans('The ZIP PHP extension is missing.'),
+            ];
+        }
+        if (extension_loaded('curl')) {
+            $curl = [
+                'for' => $this->getTranslator()->trans('Module upgrade'),
+                'state' => 'success',
+                'message' => $this->getTranslator()->trans('The CURL PHP extension is installed.'),
+            ];
+        } else {
+            $curl = [
+                'for' => $this->getTranslator()->trans('Module upgrade'),
+                'state' => 'success',
+                'message' => $this->getTranslator()->trans('The CURL PHP extension is missing.'),
+            ];
+        }
+
         return [
             'memoryLimit' => $memoryLimit,
             'uploadSize' => $uploadSize,
             'fileInfo' => $fileInfo,
-            'imagine' => $imagine
+            'imagine' => $imagine,
+            'curl' => $curl,
+            'zip' => $zip
         ];
     }
 
@@ -196,6 +225,9 @@ class SettingsController extends AbstractController
         ];
     }
 
+    /**
+     * Ensures the user has permission to view and update settings.
+     */
     private function ensurePermission()
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(

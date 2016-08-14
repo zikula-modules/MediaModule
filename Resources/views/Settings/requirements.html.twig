@@ -16,4 +16,12 @@
         <strong>{{ memoryLimit.message }}</strong>
         {{ __f('Used for %s', {'%s': memoryLimit.for}) }}.
     </div>
+    <div class="alert alert-{{ zip.state }}">
+        <strong>{{ zip.message }}</strong>
+        {{ __f('Used for %s', {'%s': zip.for}) }}.
+    </div>
+    <div class="alert alert-{{ curl.state }}">
+        <strong>{{ curl.message }}</strong>
+        {{ __f('Used for %s', {'%s': curl.for}) }}.
+    </div>
 {% endblock %}
