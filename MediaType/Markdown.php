@@ -76,15 +76,11 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
     }
 
     /**
-     * Whether or not this media type supports uploading the file represented by the file info array.
-     *
-     * @param array $file
-     *
-     * @return int 10 if it perfectly matches, 0 if it can't upload.
+     * {@inheritdoc}
      */
-    public function canUploadArr(array $file)
+    public function mightUpload($mimeType, $size, $name)
     {
-        if ($file['mimeType'] == 'text/plain' && pathinfo($file['name'], PATHINFO_EXTENSION) == 'md') {
+        if ($mimeType == 'text/plain' && pathinfo($name, PATHINFO_EXTENSION) == 'md') {
             return 5;
         }
 

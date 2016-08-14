@@ -64,15 +64,11 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
     }
 
     /**
-     * Whether or not this media type supports uploading the file represented by the file info array.
-     *
-     * @param array $file
-     *
-     * @return int 10 if it perfectly matches, 0 if it can't upload.
+     * {@inheritdoc}
      */
-    public function canUploadArr(array $file)
+    public function mightUpload($mimeType, $size, $name)
     {
-        return in_array($file['mimeType'], $this->getSupportedMimeTypes()) ? 5 : 0;
+        return in_array($mimeType, $this->getSupportedMimeTypes()) ? 5 : 0;
     }
 
     /**

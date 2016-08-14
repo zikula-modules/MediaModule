@@ -468,7 +468,7 @@ class MediaController extends AbstractController
             $max = 0;
             $selectedMediaType = null;
             foreach ($mediaTypes as $mediaType) {
-                $n = $mediaType->canUploadArr($file);
+                $n = $mediaType->mightUpload($file['mimeType'], $file['size'], $file['name']);
                 if ($n > $max) {
                     $max = $n;
                     $selectedMediaType = $mediaType;

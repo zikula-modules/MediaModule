@@ -28,11 +28,13 @@ interface UploadableMediaTypeInterface
     /**
      * Whether or not this media type supports uploading the file represented by the file info array.
      *
-     * @param array $file size, mimeType and name will be set. These values MUST NOT be tested, as they come from the client.
+     * @param string $mimeType The mime type
+     * @param int    $size The file size
+     * @param string $name The file name
      *
      * @return int 10 if it perfectly matches, 0 if it can't upload.
      */
-    public function canUploadArr(array $file);
+    public function mightUpload($mimeType, $size, $name);
 
     public function getOriginalWithWatermark(AbstractFileEntity $entity, $mode, $optimize);
 }
