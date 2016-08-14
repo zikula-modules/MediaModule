@@ -15,8 +15,14 @@
             <div class="well well-sm">
                 {% if entity.license %}
                     <p>
-                        <strong>{{ __('License') }}</strong>: {{ entity.license.title }} <br />
-                        <a href="{{ entity.license.url }}">{{ entity.license.url }}</a>
+                        <strong>{{ __('License') }}</strong>:
+                        {% if entity.license.url is not null %}
+                            <a href="{{ entity.license.url|e('html_attr') }}">
+                        {% endif %}
+                            {{ entity.license.title }}
+                        {% if entity.license.url is not null %}
+                            </a
+                        {% endif %}
                     </p>
                 {% endif %}
                 {% if entity.authorAvatarUrl is not empty %}

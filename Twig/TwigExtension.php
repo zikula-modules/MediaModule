@@ -188,7 +188,7 @@ class TwigExtension extends \Twig_Extension
             case 'raw':
                 return $description;
             case 'text':
-                return htmlentities($description);
+                return nl2br(htmlentities($description));
             case 'markdown':
                 return $this->markdownExtra->transform($description);
             default:
