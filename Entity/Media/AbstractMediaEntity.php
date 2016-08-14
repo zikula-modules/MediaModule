@@ -83,7 +83,9 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     protected $title;
 
     /**
-     * @Gedmo\Slug(fields={"title"}, unique_base="collection", unique=true)
+     * @Gedmo\Slug(fields={"title"}, unique_base="collection", unique=true, updatable=true, handlers={
+     *      @Gedmo\SlugHandler(class="Cmfcmf\Module\MediaModule\Helper\MediaSlugHandler", options={})
+     * })
      * @ORM\Column(length=128)
      */
     protected $slug;
