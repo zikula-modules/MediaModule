@@ -124,7 +124,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 5;
         }
-        if ($file->getMimeType() == 'application/ogg') {
+        if ($file->getMimeType() == 'application/ogg' || ($file->getMimeType() == 'application/octet-stream' && $file->getClientOriginalExtension() == 'mp3')) {
             // This could be a video or audio file.
             $meta = GenericMetadataReader::readMetadata($file->getPathname());
             if (isset($meta['audio']['dataformat'])) {
@@ -145,6 +145,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             'audio/wav',
             'audio/x-wav',
             'audio/mpeg',
+            'audio/mp3'
         ];
     }
 

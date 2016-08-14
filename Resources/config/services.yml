@@ -53,6 +53,11 @@ services:
     tags:
       - { name: kernel.event_subscriber }
 
+  cmfcmf_media_module.listener.doctrine:
+    class: Cmfcmf\Module\MediaModule\Listener\DoctrineListener
+    tags:
+      - { name: doctrine.event_subscriber }
+
 
   # Link container
   cmfcmf_media_module.container.links:
