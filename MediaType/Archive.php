@@ -11,10 +11,8 @@
 
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
-use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\ArchiveEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterface

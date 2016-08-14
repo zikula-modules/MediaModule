@@ -27,16 +27,23 @@ class ArchiveEntity extends AbstractFileEntity
             case 'application/x-gzip':
             case 'application/x-tar':
             case 'application/x-gtar':
+                if (!class_exists('PharData')) {
+                    break;
+                }
                 try {
                     $tar = new \PharData($info['filePath']);
                 } catch (\UnexpectedValueException $e) {
                     break;
                 }
+                if (!$tar->decompressFiles()) {
+                    break;
+                }
                 $this->setNumberOfFiles($tar->count());
 
                 $i = 0;
+                /** @var \PharFileInfo $file */
                 foreach ($tar as $file) {
-                    $files[] = $file;
+                    $files[] = $file->getFilename();
                     if ($i >= 1000) {
                         break;
                     }
