@@ -180,6 +180,15 @@
             };
             $input.blur(actualCallback);
             $btn.change(actualCallback);
+            $(document).on("keypress", $input, function(event) {
+                if (event.keyCode != 13) {
+                    return true;
+                } else {
+                    $input.blur();
+                    // Ignore ENTER -> Do not submit form on enter.
+                    return false;
+                }
+            });
         }
     }
 })(jQuery);
