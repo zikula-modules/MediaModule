@@ -12,6 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\Form\Media;
 
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class DeezerType extends WebType
 {
@@ -28,10 +29,19 @@ class DeezerType extends WebType
         $builder
             ->add('musicType', 'hidden')
             ->add('musicId', 'hidden')
-            ->add('showPlaylist', 'checkbox', [
+        ;
+        if ($options['showPlaylistCheckbox']) {
+            $builder->add('showPlaylist', 'checkbox', [
                 'label' => $this->translator->trans('Show playlist', [], 'cmfcmfmediamodule'),
                 'required' => false
-            ])
-        ;
+            ]);
+        }
+    }
+
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    {
+        parent::setDefaultOptions($resolver);
+
+        $resolver->setRequired('showPlaylistCheckbox');
     }
 }

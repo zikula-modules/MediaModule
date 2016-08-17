@@ -115,7 +115,7 @@ class MediaController extends AbstractController
         $form = new $form($securityManager, false, $parent);
         $form->setTranslator($this->get('translator'));
         /** @var \Symfony\Component\Form\Form $form */
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm($form, $entity, $mediaType->getFormOptions($entity));
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -296,7 +296,7 @@ class MediaController extends AbstractController
         /** @var AbstractType $form */
         $form = new $form($securityManager, true);
         $form->setTranslator($this->get('translator'));
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm($form, $entity, $mediaType->getFormOptions($entity));
         /** @var \Symfony\Component\Form\Form $form */
         $form->handleRequest($request);
 

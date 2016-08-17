@@ -72,6 +72,11 @@ abstract class AbstractMediaType implements MediaTypeInterface
         return 'Cmfcmf\\Module\\MediaModule\\Form\\Media\\' . ucfirst($this->getAlias()) . 'Type';
     }
 
+    public function getFormOptions(AbstractMediaEntity $entity)
+    {
+        return [];
+    }
+
     public function renderWebCreationTemplate()
     {
         return $this->renderEngine->render(

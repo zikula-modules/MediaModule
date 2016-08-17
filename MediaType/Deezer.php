@@ -179,6 +179,14 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         }
     }
 
+    public function getFormOptions(AbstractMediaEntity $entity)
+    {
+        /** @var DeezerEntity $entity */
+        return [
+            'showPlaylistCheckbox' => $entity->getMusicType() == 'playlist'
+        ];
+    }
+
     public function getSearchResults(Request $request, $q, $dropdownValue = null)
     {
         // TODO: Implement getSearchResults() method.

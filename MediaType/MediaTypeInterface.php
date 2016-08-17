@@ -21,6 +21,8 @@ interface MediaTypeInterface
 
     public function getFormTypeClass();
 
+    public function getFormOptions(AbstractMediaEntity $entity);
+
     public function getDisplayName();
 
     public function toArray();
