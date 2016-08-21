@@ -4,7 +4,7 @@ services:
 
   cmfcmf_media_module.importer.abstract_service:
     abstract: true
-    arguments: [@translator, @form.factory, @cmfcmf_media_module.media_type_collection, @doctrine, "@=service('kernel').getModule('CmfcmfMediaModule').getTranslationDomain()"]
+    arguments: [@translator, @form.factory, @cmfcmf_media_module.media_type_collection, "@doctrine.orm.entity_manager", "@=service('kernel').getModule('CmfcmfMediaModule').getTranslationDomain()"]
 
   cmfcmf_media_module.importer.server_directory:
     parent: cmfcmf_media_module.importer.abstract_service

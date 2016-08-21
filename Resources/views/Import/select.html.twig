@@ -1,7 +1,5 @@
-{% extends 'CmfcmfMediaModule::AdminBase.html.twig' %}
-{% block title %}
-    {{ __('Choose importer') }}
-{% endblock %}
+{% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
+{% block title __('Choose importer') %}
 {% block content %}
     <div class="list-group">
         {% for importer in importers %}

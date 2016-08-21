@@ -3,13 +3,12 @@
 namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\ImportType;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Zikula\Core\Theme\Annotation\Theme;
+use Zikula\ThemeModule\Engine\Annotation\Theme;
 
 class ImportController extends AbstractController
 {
@@ -18,11 +17,9 @@ class ImportController extends AbstractController
      * @Template()
      * @Theme("admin")
      *
-     * @param Request $request
-     *
-     * @return array|RedirectResponse
+     * @return array
      */
-    public function selectAction(Request $request)
+    public function selectAction()
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('import', 'admin')) {
             throw new AccessDeniedException();
@@ -56,16 +53,17 @@ class ImportController extends AbstractController
         }
         $importer = $importerCollection->getImporter($importer);
 
-        $form = $this->createForm(new ImportType($importer->getSettingsForm(), $this->get('translator'), $this->get('kernel')->getModule('CmfcmfMediaModule')->getTranslationDomain()));
+        $importType = new ImportType($importer->getSettingsForm(), $this->get('translator'), $this->get('cmfcmf_media_module.security_manager'));
+        $form = $this->createForm($importType);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $success = $importer->import($form->getData());
+            $success = $importer->import($form->getData(), $this->get('session')->getFlashBag());
 
             if ($success === true) {
                 $this->addFlash('status', $this->__('Media imported successfully.'));
 
-                return $this->redirectToRoute('cmfcmfmediamodule_collection_display', $form->getData()['collection']->getSlug());
+                return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $form->getData()['collection']->getSlug()]);
             } else if (is_string($success)) {
                 $this->addFlash('error', $success);
             } else {

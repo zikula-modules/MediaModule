@@ -3,7 +3,7 @@
 namespace Cmfcmf\Module\MediaModule\Importer;
 
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -30,17 +30,17 @@ abstract class AbstractImporter implements ImporterInterface
     protected $mediaTypeCollection;
 
     /**
-     * @var ManagerRegistry
+     * @var EntityManagerInterface
      */
-    protected $managerRegistry;
+    protected $em;
 
-    public function __construct(TranslatorInterface $translator, FormFactory $formFactory, MediaTypeCollection $mediaTypeCollection, ManagerRegistry $managerRegistry, $domain)
+    public function __construct(TranslatorInterface $translator, FormFactory $formFactory, MediaTypeCollection $mediaTypeCollection, EntityManagerInterface $em, $domain)
     {
         $this->translator = $translator;
         $this->formFactory = $formFactory;
         $this->domain = $domain;
         $this->mediaTypeCollection = $mediaTypeCollection;
-        $this->managerRegistry = $managerRegistry;
+        $this->em = $em;
     }
 
     public function getId()
@@ -55,7 +55,7 @@ abstract class AbstractImporter implements ImporterInterface
     {
         $form = 'Cmfcmf\\Module\\MediaModule\\Form\\Importer\\' . $this->getType() . 'Type';
 
-        return new $form();
+        return new $form($this->translator);
     }
 
     /**

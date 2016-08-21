@@ -4,10 +4,12 @@ namespace Cmfcmf\Module\MediaModule\Importer;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
+use Gedmo\Uploadable\FileInfo\FileInfoArray;
 use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class ServerDirectoryImporter extends AbstractImporter
 {
@@ -36,52 +38,64 @@ class ServerDirectoryImporter extends AbstractImporter
         $this->uploadManager = $uploadManager;
     }
 
-    public function import($formData)
+    public function import($formData, FlashBagInterface $flashBag)
     {
         $serverDirectory = $formData['importSettings']['serverDirectory'];
         if (!is_readable($serverDirectory)) {
-            return $this->translator->trans('Cannot read from the specified directory.', [], $this->domain);
+            return $this->translator->trans('Cannot read from the specified directory.', [], 'cmfcmfmediamodule');
         }
         if (!is_dir($serverDirectory)) {
-            return $this->translator->trans('The specified directory doesn\'t appear to be a directory.', [], $this->domain);
+            return $this->translator->trans('The specified directory doesn\'t appear to be a directory.', [], 'cmfcmfmediamodule');
+        }
+        if (!is_readable($serverDirectory)) {
+            return $this->translator->trans('The specified directory isn\'t readable for the webserver.', [], 'cmfcmfmediamodule');
         }
         /** @var CollectionEntity $rootCollection */
         $rootCollection = $formData['collection'];
 
-
         $finder = Finder::create()
             ->in($serverDirectory)
-            ->depth($formData['importSettings']['includeSubDirectories'] ? '>0' : '==1')
+            ->depth($formData['importSettings']['includeSubDirectories'] ? '>=0' : '==0')
             ->files()
         ;
+        $collectionMapping = [];
+        $c = 0;
         /** @var SplFileInfo $finderFile */
         foreach ($finder as $finderFile) {
-            $file = new File($finderFile->getPath(), false);
-            $max = -1;
-            $selectedMediaType = null;
-            foreach ($this->mediaTypeCollection->getUploadableMediaTypes() as $mediaType) {
-                $n = $mediaType->canUpload($file);
-                if ($n > $max) {
-                    $max = $n;
-                    $selectedMediaType = $mediaType;
-                }
-            }
+            $file = new File($finderFile->getPathname(), false);
+            $selectedMediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
             if ($selectedMediaType === null) {
+                $flashBag->add('warning', $this->translator->trans('Could not import file %file%, because this kind of media isn\'t yet supported by the MediaModule.', ['%file%' => $file->getPathname()], 'cmfcmfmediamodule'));
                 continue;
             }
 
             $entityClass = $selectedMediaType->getEntityClass();
             /** @var AbstractFileEntity $entity */
             $entity = new $entityClass();
-            $entity->setCollection($rootCollection);
-            $entity->setTitle('test');
+            if ($formData['importSettings']['createSubCollectionsForSubDirectories'] && $finderFile->getRelativePath() != "") {
+                $relativePath = $finderFile->getRelativePath();
+                if (!isset($collectionMapping[$relativePath])) {
+                    $collection = new CollectionEntity();
+                    $collection->setParent($rootCollection);
+                    $collection->setTitle(dirname($finderFile->getRealPath()));
+                    $this->em->persist($collection);
+                    $collectionMapping[$relativePath] = $collection;
+                }
+                $entity->setCollection($collectionMapping[$relativePath]);
+            } else {
+                $entity->setCollection($rootCollection);
+            }
+            $entity->setTitle(pathinfo($file->getFilename(), PATHINFO_FILENAME));
 
-            $em = $this->managerRegistry->getManagerForClass($entityClass);
+            $this->uploadManager->markEntityToUpload($entity, ImportedFile::fromFile($file));
+            $this->em->persist($entity);
 
-            $this->uploadManager->markEntityToUpload($entity, $file);
-            $em->persist($entity);
-            $em->flush();
+            $c++;
+            if ($c % 10 == 0) {
+                $this->em->flush();
+            }
         }
+        $this->em->flush();
 
         return true;
     }

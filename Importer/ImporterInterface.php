@@ -3,6 +3,7 @@
 namespace Cmfcmf\Module\MediaModule\Importer;
 
 use Symfony\Component\Form\FormTypeInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 interface ImporterInterface
 {
@@ -34,5 +35,5 @@ interface ImporterInterface
      */
     public function getSettingsForm();
 
-    public function import($formData);
+    public function import($formData, FlashBagInterface $flashBag);
 }
