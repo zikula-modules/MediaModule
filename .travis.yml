@@ -31,10 +31,10 @@ before_install:
 install:
     - composer install
     - zip -qr MediaModule.zip .
-    - wget https://github.com/zikula/core/releases/download/1.4.1/Zikula_Core-1.4.1.build128.tar.gz
-    - tar -xpzf Zikula_Core-1.4.1.build128.tar.gz
-    - rm Zikula_Core-1.4.1.build128.tar.gz
-    - cd Zikula_Core-1.4.1
+    - wget https://github.com/zikula/core/releases/download/1.4.2/Zikula_Core-1.4.2.build166.tar.gz
+    - tar -xpzf Zikula_Core-1.4.2.build166.tar.gz
+    - rm Zikula_Core-1.4.2.build166.tar.gz
+    - cd Zikula_Core-1.4.2
     - php app/console zikula:install:start -n --database_user=root --database_name=zk_test --password=12345678 --email=admin@example.com --router:request_context:host=localhost
     - php app/console zikula:install:finish
     - cd modules
@@ -45,7 +45,7 @@ install:
     - unzip -q ../../../../MediaModule
     - cd  ../../..
     - php app/console bootstrap:bundles
-    - mysql -e "INSERT INTO zk_test.modules (id, name, type, displayname, url, description, directory, version, capabilities, state, securityschema, core_min, core_max) VALUES (NULL, 'CmfcmfMediaModule', '3', 'Media Module', 'collections', '...', 'cmfcmf/media-module', '1.1.1', 'N;', '3', 'N;', '1.4.1', '1.4.99');"
+    - mysql -e "INSERT INTO zk_test.modules (id, name, type, displayname, url, description, directory, version, capabilities, state, securityschema, core_min, core_max) VALUES (NULL, 'CmfcmfMediaModule', '3', 'Media Module', 'collections', '...', 'cmfcmf/media-module', '1.1.1', 'N;', '3', 'N;', '1.4.2', '1.4.99');"
 
 script:
     - php app/console lint:yaml modules/cmfcmf/media-module/Resources
