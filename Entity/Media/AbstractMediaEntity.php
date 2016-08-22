@@ -153,6 +153,15 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     protected $hookedObjectMedia;
 
     /**
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity",
+     *                mappedBy="entity", cascade={"remove", "persist"},
+     *                orphanRemoval=true, fetch="EAGER")
+     *
+     * @var ArrayCollection|MediaCategoryAssignmentEntity[]
+     */
+    private $categoryAssignments;
+
+    /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
      *
@@ -596,5 +605,55 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     public function getVersion()
     {
         return $this->version;
+    }
+
+    /**
+     * Get page category assignments
+     *
+     * @return ArrayCollection|MediaCategoryAssignmentEntity[]
+     */
+    public function getCategoryAssignments()
+    {
+        return $this->categoryAssignments;
+    }
+
+    /**
+     * Set page category assignments
+     *
+     * @param ArrayCollection $assignments
+     */
+    public function setCategoryAssignments(ArrayCollection $assignments)
+    {
+        foreach ($this->categoryAssignments as $categoryAssignment) {
+            if (false === $key = $this->collectionContains($assignments, $categoryAssignment)) {
+                $this->categoryAssignments->removeElement($categoryAssignment);
+            } else {
+                $assignments->remove($key);
+            }
+        }
+        foreach ($assignments as $assignment) {
+            $this->categoryAssignments->add($assignment);
+        }
+    }
+
+    /**
+     * Check if a collection contains an element based only on two criteria (categoryRegistryId, category).
+     * @param ArrayCollection $collection
+     * @param MediaCategoryAssignmentEntity $element
+     * @return bool|int
+     */
+    private function collectionContains(ArrayCollection $collection, MediaCategoryAssignmentEntity $element)
+    {
+        foreach ($collection as $key => $collectionAssignment) {
+            /** @var MediaCategoryAssignmentEntity $collectionAssignment */
+            if ($collectionAssignment->getCategoryRegistryId() == $element->getCategoryRegistryId()
+                && $collectionAssignment->getCategory() == $element->getCategory()
+            ) {
+
+                return $key;
+            }
+        }
+
+        return false;
     }
 }

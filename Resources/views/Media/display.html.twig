@@ -25,6 +25,16 @@
                         {% endif %}
                     </p>
                 {% endif %}
+                {% if entity.categoryAssignments|length > 0 %}
+                    <strong>{{ __('Categories') }}</strong>:
+                    <ul>
+                    {% for assignment in entity.categoryAssignments %}
+                        <li>
+                            {{ assignment.category|cmfcmfmediamodule_categorytitle }}
+                        </li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
                 {% if entity.authorAvatarUrl is not empty %}
                     <img src="{{ entity.authorAvatarUrl }}" class="img img-rounded pull-right" alt="{{ __('Author avatar') }}" width="60" height="60" />
                 {% endif %}

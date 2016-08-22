@@ -123,6 +123,15 @@ class CollectionEntity implements Node, Sluggable
     protected $permissions;
 
     /**
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity",
+     *                mappedBy="entity", cascade={"remove", "persist"},
+     *                orphanRemoval=true, fetch="EAGER")
+     *
+     * @var ArrayCollection|CollectionCategoryAssignmentEntity[]
+     */
+    private $categoryAssignments;
+
+    /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
      *
@@ -711,5 +720,55 @@ class CollectionEntity implements Node, Sluggable
     public function removePermission(AbstractPermissionEntity $permission)
     {
         $this->permissions->removeElement($permission);
+    }
+
+    /**
+     * Get page category assignments
+     *
+     * @return ArrayCollection|CollectionCategoryAssignmentEntity[]
+     */
+    public function getCategoryAssignments()
+    {
+        return $this->categoryAssignments;
+    }
+
+    /**
+     * Set page category assignments
+     *
+     * @param ArrayCollection $assignments
+     */
+    public function setCategoryAssignments(ArrayCollection $assignments)
+    {
+        foreach ($this->categoryAssignments as $categoryAssignment) {
+            if (false === $key = $this->collectionContains($assignments, $categoryAssignment)) {
+                $this->categoryAssignments->removeElement($categoryAssignment);
+            } else {
+                $assignments->remove($key);
+            }
+        }
+        foreach ($assignments as $assignment) {
+            $this->categoryAssignments->add($assignment);
+        }
+    }
+
+    /**
+     * Check if a collection contains an element based only on two criteria (categoryRegistryId, category).
+     * @param ArrayCollection $collection
+     * @param CollectionCategoryAssignmentEntity $element
+     * @return bool|int
+     */
+    private function collectionContains(ArrayCollection $collection, CollectionCategoryAssignmentEntity $element)
+    {
+        foreach ($collection as $key => $collectionAssignment) {
+            /** @var CollectionCategoryAssignmentEntity $collectionAssignment */
+            if ($collectionAssignment->getCategoryRegistryId() == $element->getCategoryRegistryId()
+                && $collectionAssignment->getCategory() == $element->getCategory()
+            ) {
+
+                return $key;
+            }
+        }
+
+        return false;
     }
 }
