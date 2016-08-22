@@ -98,6 +98,24 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     protected $description;
 
     /**
+     * @ORM\Column(type="integer")
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    protected $views;
+
+    /**
+     * @ORM\Column(type="integer")
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    protected $downloads;
+
+    /**
      * @ORM\Column(type="string", nullable=true, length=255)
      * @Assert\Length(max="255")
      *
@@ -198,6 +216,8 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         // Position at the end of the album.
         $this->position = -1;
         $this->extraData = [];
+        $this->views = 0;
+        $this->downloads = 0;
         $this->hookedObjectMedia = new ArrayCollection();
     }
 
@@ -655,5 +675,45 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         }
 
         return false;
+    }
+
+    /**
+     * @param int $views
+     *
+     * @return AbstractMediaEntity
+     */
+    public function setViews($views)
+    {
+        $this->views = $views;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getViews()
+    {
+        return $this->views;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDownloads()
+    {
+        return $this->downloads;
+    }
+
+    /**
+     * @param int $downloads
+     *
+     * @return $this
+     */
+    public function setDownloads($downloads)
+    {
+        $this->downloads = $downloads;
+
+        return $this;
     }
 }

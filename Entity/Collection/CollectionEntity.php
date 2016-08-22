@@ -82,6 +82,24 @@ class CollectionEntity implements Node, Sluggable
     protected $description;
 
     /**
+     * @ORM\Column(type="integer")
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    protected $views;
+
+    /**
+     * @ORM\Column(type="integer")
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    protected $downloads;
+
+    /**
      * @ORM\Column(type="string", nullable=true)
      *
      * No assertions.
@@ -256,8 +274,10 @@ class CollectionEntity implements Node, Sluggable
         $this->media = new ArrayCollection();
         $this->children = new ArrayCollection();
         $this->hookedObjectCollections = new ArrayCollection();
-        $this->defaultTemplate = null;
         $this->permissions = new ArrayCollection();
+        $this->defaultTemplate = null;
+        $this->views = 0;
+        $this->downloads = 0;
     }
 
     /**
@@ -770,5 +790,45 @@ class CollectionEntity implements Node, Sluggable
         }
 
         return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getViews()
+    {
+        return $this->views;
+    }
+
+    /**
+     * @param int $views
+     *
+     * @return $this
+     */
+    public function setViews($views)
+    {
+        $this->views = $views;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDownloads()
+    {
+        return $this->downloads;
+    }
+
+    /**
+     * @param int $downloads
+     *
+     * @return $this
+     */
+    public function setDownloads($downloads)
+    {
+        $this->downloads = $downloads;
+
+        return $this;
     }
 }

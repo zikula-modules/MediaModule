@@ -152,13 +152,14 @@ class CollectionController extends AbstractController
      *
      * @param CollectionEntity $entity
      *
-     * @return array
+     * @return BinaryFileResponse
      */
     public function downloadAction(CollectionEntity $entity)
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)) {
             throw new AccessDeniedException();
         }
+        $em = $this->getDoctrine()->getManager();
 
         \CacheUtil::createLocalDir('CmfcmfMediaModule');
         $dir = \CacheUtil::getLocalDir('CmfcmfMediaModule');
@@ -186,12 +187,19 @@ class CollectionController extends AbstractController
                 }
                 $zip->addFile($mediaType->getOriginalWithWatermark($media, 'path', false), $filename);
                 $hasContent = true;
+
+                $media->setDownloads($media->getDownloads() + 1);
+                $em->merge($media);
             }
         }
         if (!$hasContent) {
             $zip->addFromString('Empty Collection.txt', $this->__('Sorry, the collection appears to be empty or does not have any downloadable files.'));
         }
         $zip->close();
+
+        $entity->setDownloads($entity->getDownloads() + 1);
+        $em->merge($entity);
+        $em->flush();
 
         $response = new BinaryFileResponse($path);
         $response->deleteFileAfterSend(true);
@@ -279,6 +287,7 @@ class CollectionController extends AbstractController
             ->leftJoin('c.children', 'cc')
             ->leftJoin('cc.media', 'm')
         ;
+        /** @var CollectionEntity $entity */
         $entity = $qb->getQuery()->getSingleResult();
 
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
@@ -296,6 +305,11 @@ class CollectionController extends AbstractController
         if (!$collectionTemplateCollection->hasTemplate($template)) {
             throw new NotFoundHttpException();
         }
+
+        $entity->setViews($entity->getViews() + 1);
+        $em = $this->getDoctrine()->getManager();
+        $em->merge($entity);
+        $em->flush();
 
         $templateVars = [
             'collection' => $entity,
