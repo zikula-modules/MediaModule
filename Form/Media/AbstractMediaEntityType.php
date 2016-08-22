@@ -129,6 +129,13 @@ abstract class AbstractMediaEntityType extends AbstractType
 
         $builder
             ->add('collection', 'entity', $collectionOptions)
+            ->add('categoryAssignments', 'Zikula\CategoriesModule\Form\Type\CategoriesType', [
+                'required' => false,
+                'multiple' => true,
+                'module' => 'CmfcmfMediaModule',
+                'entity' => 'AbstractMediaEntity',
+                'entityCategoryClass' => 'Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity',
+            ])
             ->add(
                 'title',
                 isset($options['hiddenFields']) && in_array(

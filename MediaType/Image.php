@@ -14,8 +14,10 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
+use Imagine\Exception\RuntimeException;
+use Imagine\Imagick\Imagine as ImagickImagine;
+use Imagine\Gd\Imagine as GdImagine;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Image extends AbstractFileMediaType implements UploadableMediaTypeInterface
 {
@@ -179,6 +181,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             throw new \InvalidArgumentException('Invalid mode requested.');
         }
 
+        $this->imagineManager->setImagine($this->getImagine());
         $this->imagineManager->setPreset(
             $this->getPreset($entity, $entity->getPath(), $width, $height, $mode, $optimize)
         );
@@ -223,5 +226,14 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     public function getOriginalWithWatermark(AbstractFileEntity $entity, $mode, $optimize = true)
     {
         return $this->getThumbnail($entity, 'original', 'original', $mode, 'outbound', $optimize);
+    }
+
+    private function getImagine()
+    {
+        try {
+            return new ImagickImagine();
+        } catch (RuntimeException $e) {
+            return new GdImagine();
+        }
     }
 }

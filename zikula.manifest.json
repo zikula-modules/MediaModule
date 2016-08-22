@@ -10,7 +10,7 @@
       "media",
       "image"
     ],
-    "semver": "1.1.1",
+    "semver": "1.1.2",
     "dependencies": {
       "zikula/core": ">=1.4.1 <1.5"
     },

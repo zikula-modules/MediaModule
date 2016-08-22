@@ -19,6 +19,7 @@ use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
 use Github\Exception\RuntimeException;
 use Michelf\MarkdownExtra;
 use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\CategoriesModule\Entity\CategoryEntity;
 
 /**
  * Provides some custom Twig extensions.
@@ -82,7 +83,8 @@ class TwigExtension extends \Twig_Extension
                 [$this, 'escapeDescription'],
                 ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('cmfcmfmediamodule_unamefromuid', [$this, 'userNameFromUid']),
-            new \Twig_SimpleFilter('cmfcmfmediamodule_avatarfromuid', [$this, 'avatarFromUid'])
+            new \Twig_SimpleFilter('cmfcmfmediamodule_avatarfromuid', [$this, 'avatarFromUid']),
+            new \Twig_SimpleFilter('cmfcmfmediamodule_categorytitle', [$this, 'categoryTitle'])
         ];
     }
 
@@ -98,6 +100,17 @@ class TwigExtension extends \Twig_Extension
                 [$this, 'newVersionAvailable']),
             new \Twig_SimpleFunction('cmfcmfmediamodule_maxfilesize', [$this, 'maxFileSize'])
         ];
+    }
+
+    public function categoryTitle(CategoryEntity $category)
+    {
+        $lang = \ZLanguage::getLanguageCode();
+        $displayNames = $category->getDisplay_name();
+        if (isset($displayNames[$lang])) {
+            return $displayNames[$lang];
+        }
+
+        return $displayNames['en'];
     }
 
     /**

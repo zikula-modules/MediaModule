@@ -107,6 +107,13 @@ class CollectionType extends AbstractType
                         'help' => $descriptionHelp
                     ]
                 ])
+            ->add('categoryAssignments', 'Zikula\CategoriesModule\Form\Type\CategoriesType', [
+                'required' => false,
+                'multiple' => true,
+                'module' => 'CmfcmfMediaModule',
+                'entity' => 'CollectionEntity',
+                'entityCategoryClass' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity',
+            ])
             ->add(
                 'defaultTemplate',
                 'choice',

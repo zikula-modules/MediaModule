@@ -35,6 +35,7 @@ class ImportController extends AbstractController
     /**
      * @Route("/import/{importer}")
      * @Template()
+     * @Theme("admin")
      *
      * @param Request $request
      * @param $importer
