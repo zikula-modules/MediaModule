@@ -4,7 +4,6 @@ namespace Cmfcmf\Module\MediaModule\Importer;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
-use Gedmo\Uploadable\FileInfo\FileInfoArray;
 use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -98,5 +97,10 @@ class ServerDirectoryImporter extends AbstractImporter
         $this->em->flush();
 
         return true;
+    }
+
+    public function getRestrictions()
+    {
+        return null;
     }
 }

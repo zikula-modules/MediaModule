@@ -29,6 +29,13 @@ interface ImporterInterface
     public function getDescription();
 
     /**
+     * All restrictions of the importer, i.e. things that can't be imported.
+     *
+     * @return string|null
+     */
+    public function getRestrictions();
+
+    /**
      * Checks whether the importer can be used. True if it can, an error message otherwise.
      *
      * @return bool|string

@@ -2,13 +2,8 @@
 
 namespace Cmfcmf\Module\MediaModule\Importer;
 
-use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class DownloadsModuleImporter extends AbstractImporter
@@ -53,5 +48,15 @@ class DownloadsModuleImporter extends AbstractImporter
     public function import($formData, FlashBagInterface $flashBag)
     {
         // @todo
+    }
+
+    /**
+     * All restrictions of the importer, i.e. things that can't be imported.
+     *
+     * @return string|null
+     */
+    public function getRestrictions()
+    {
+        // @TODO: Implement getRestrictions() method.
     }
 }

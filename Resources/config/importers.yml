@@ -21,3 +21,12 @@ services:
       - [setUploadManager, ["@stof_doctrine_extensions.uploadable.manager"]]
     tags:
       - { name: 'cmfcmf_media_module.importer' }
+
+  cmfcmf_media_module.importer.very_simple_downloads_module:
+    parent: cmfcmf_media_module.importer.abstract_service
+    class: Cmfcmf\Module\MediaModule\Importer\VerySimpleDownloadsModuleImporter
+    calls:
+      - [setUploadManager, ["@stof_doctrine_extensions.uploadable.manager"]]
+      - [setUserDataDirectory, ["%datadir%"]]
+    tags:
+      - { name: 'cmfcmf_media_module.importer' }

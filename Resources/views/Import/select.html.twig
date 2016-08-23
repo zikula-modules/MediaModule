@@ -7,13 +7,16 @@
             {% if requirements is same as(true) %}
                 <a href="{{ path('cmfcmfmediamodule_import_execute', {importer: importer.id}) }}" class="list-group-item">
                     <h4 class="list-group-item-heading">{{ importer.title }}</h4>
+                    {% if importer.restrictions %}
+                        <p class="list-group-item-text text-danger">{{ importer.restrictions }}</p>
+                    {% endif %}
                     <p class="list-group-item-text">{{ importer.description }}</p>
                 </a>
             {% else %}
                 <div class="list-group-item list-group-item-warning">
                     <h4 class="list-group-item-heading">{{ importer.title }}</h4>
-                    <p class="list-group-item-text">{{ requirements }}</p>
-                    <p class="list-group-item-text text-muted">{{ importer.description }}</p>
+                    <p class="list-group-item-text text-danger">{{ requirements }}</p>
+                    <p class="list-group-item-text">{{ importer.description }}</p>
                 </div>
             {% endif %}
         {% endfor %}
