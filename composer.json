@@ -23,7 +23,6 @@
         "clue/graph": "0.9.*"
     },
     "require-dev": {
-        "nelmio/alice": "^2.1",
         "graphp/graphviz": "0.2.*"
     },
     "extra": {
