@@ -37,7 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  "twitter"        = "TwitterEntity",
  *  "flickr"         = "FlickrEntity",
  *  "youtube"        = "YouTubeEntity",
- *  "url"            = "WebEntity",
+ *  "url"            = "UrlEntity",
  *  "image"          = "ImageEntity",
  *  "pdf"            = "PdfEntity",
  *  "plaintext"      = "PlaintextEntity",

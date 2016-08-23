@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class FlickrEntity extends WebEntity
+class FlickrEntity extends UrlEntity
 {
     /**
      * @ORM\Column(type="string", length=5)

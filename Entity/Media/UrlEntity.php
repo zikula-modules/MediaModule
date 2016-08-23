@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity()
  */
-class WebEntity extends AbstractMediaEntity
+class UrlEntity extends AbstractMediaEntity
 {
     /**
      * @ORM\Column(type="string")

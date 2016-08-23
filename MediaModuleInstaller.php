@@ -209,7 +209,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             $mediaPrefix . 'AbstractFileEntity',
             $mediaPrefix . 'ImageEntity',
             $mediaPrefix . 'VideoEntity',
-            $mediaPrefix . 'WebEntity',
+            $mediaPrefix . 'UrlEntity',
 
             $mediaPrefix . 'DeezerEntity',
             $mediaPrefix . 'SoundCloudEntity',

@@ -19,6 +19,7 @@ services:
     class: Cmfcmf\Module\MediaModule\Importer\DownloadsModuleImporter
     calls:
       - [setUploadManager, ["@stof_doctrine_extensions.uploadable.manager"]]
+      - [setUserDataDirectory, ["%datadir%"]]
     tags:
       - { name: 'cmfcmf_media_module.importer' }
 

@@ -53,6 +53,9 @@ class ImportController extends AbstractController
             throw new NotFoundHttpException();
         }
         $importer = $importerCollection->getImporter($importer);
+        if ($importer->checkRequirements() !== true) {
+            throw new NotFoundHttpException();
+        }
 
         $importType = new ImportType($importer->getSettingsForm(), $this->get('translator'), $this->get('cmfcmf_media_module.security_manager'));
         $form = $this->createForm($importType);

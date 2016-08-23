@@ -2,16 +2,36 @@
 
 namespace Cmfcmf\Module\MediaModule\Importer;
 
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\UrlEntity;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class DownloadsModuleImporter extends AbstractImporter
 {
+    const DOWNLOADS_QUERY = <<<SQL
+SELECT status, uupdate, title, url, filename, description, ddate, hits, submitter, filesize
+FROM downloads_downloads
+WHERE cid = ?
+SQL;
+    const DOWNLOAD_CATEGORY_QUERY = <<<SQL
+SELECT cid, pid, title, description
+FROM downloads_categories
+ORDER BY pid ASC
+SQL;
     /**
      * @var UploadableManager
      */
     private $uploadManager;
+
+    /**
+     * @var string
+     */
+    private $fileDirectory;
 
     public function getTitle()
     {
@@ -31,11 +51,12 @@ class DownloadsModuleImporter extends AbstractImporter
             $conn->executeQuery('SELECT 1 FROM downloads_categories LIMIT 1');
             $conn->executeQuery('SELECT 1 FROM downloads_downloads LIMIT 1');
         } catch (TableNotFoundException $e) {
-            return $this->translator->trans('Please install the Donwloads Module or import it\'s tables into the database.');
+            return $this->translator->trans('Please install the Downloads Module or import it\'s tables into the database.');
         }
-
-        // @todo
-        return false;
+        $fs = new Filesystem();
+        if (!$fs->exists($this->fileDirectory)) {
+            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->fileDirectory], 'cmfcmfmediamodule');
+        }
 
         return true;
     }
@@ -45,9 +66,57 @@ class DownloadsModuleImporter extends AbstractImporter
         $this->uploadManager = $uploadManager;
     }
 
+    public function setUserDataDirectory($userDataDir)
+    {
+        $this->fileDirectory = $userDataDir . '/Downloads';
+    }
+
     public function import($formData, FlashBagInterface $flashBag)
     {
-        // @todo
+        /** @var CollectionEntity $collection */
+        $rootCollection = $formData['collection'];
+        $pid2CollectionDict = [0 => $rootCollection];
+
+        $conn = $this->em->getConnection();
+        $result = $conn->executeQuery(self::DOWNLOAD_CATEGORY_QUERY);
+        while ($downloadCollection = $result->fetch(\PDO::FETCH_ASSOC)) {
+            $collection = new CollectionEntity();
+            $collection
+                ->setTitle($downloadCollection['title'])
+                ->setDescription($downloadCollection['description'])
+            ;
+            $collection->setParent($pid2CollectionDict[$downloadCollection['pid']]);
+            $pid2CollectionDict[$downloadCollection['cid']] = $collection;
+            $this->em->persist($collection);
+
+            $downloadResult = $conn->executeQuery(self::DOWNLOADS_QUERY, [$downloadCollection['cid']]);
+            while ($download = $downloadResult->fetch(\PDO::FETCH_ASSOC)) {
+                if (!empty($download['filename'])) {
+                    $file = new File($this->fileDirectory . '/' . $download['filename']);
+                    $mediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
+                    $entityClass = $mediaType->getEntityClass();
+                    /** @var AbstractFileEntity $entity */
+                    $entity = new $entityClass();
+                    $this->uploadManager->markEntityToUpload($entity, ImportedFile::fromFile($file));
+                } else {
+                    $entity = new UrlEntity();
+                    $entity->setUrl($download['url']);
+                }
+                $entity
+                    ->setTitle($download['title'])
+                    ->setDescription($download['description'])
+                    ->setCollection($collection)
+                    //->setCreatedUserId()
+                    //->setUpdatedUserId()
+                    ->setCreatedDate(new \DateTime($download['ddate']))
+                    ->setUpdatedDate(new \DateTime($download['uupdate']))
+                ;
+                $this->em->persist($entity);
+            }
+        }
+        $this->em->flush();
+
+        return true;
     }
 
     /**
@@ -57,6 +126,6 @@ class DownloadsModuleImporter extends AbstractImporter
      */
     public function getRestrictions()
     {
-        // @TODO: Implement getRestrictions() method.
+        return $this->translator->trans('The submitter, email, homepage and version properties of downloads are lost. Workflow states are lost and won\'t be imported. All downloads will be visible and active.', [], 'cmfcmfmediamodule');
     }
 }
