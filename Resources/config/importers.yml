@@ -13,3 +13,11 @@ services:
       - [setUploadManager, [@stof_doctrine_extensions.uploadable.manager]]
     tags:
       - { name: 'cmfcmf_media_module.importer' }
+
+  cmfcmf_media_module.importer.downloads_module:
+    parent: cmfcmf_media_module.importer.abstract_service
+    class: Cmfcmf\Module\MediaModule\Importer\DownloadsModuleImporter
+    calls:
+      - [setUploadManager, ["@stof_doctrine_extensions.uploadable.manager"]]
+    tags:
+      - { name: 'cmfcmf_media_module.importer' }

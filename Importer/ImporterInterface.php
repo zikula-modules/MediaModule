@@ -28,6 +28,11 @@ interface ImporterInterface
      */
     public function getDescription();
 
+    /**
+     * Checks whether the importer can be used. True if it can, an error message otherwise.
+     *
+     * @return bool|string
+     */
     public function checkRequirements();
 
     /**
