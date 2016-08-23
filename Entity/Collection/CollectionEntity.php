@@ -275,6 +275,7 @@ class CollectionEntity implements Node, Sluggable
         $this->children = new ArrayCollection();
         $this->hookedObjectCollections = new ArrayCollection();
         $this->permissions = new ArrayCollection();
+        $this->categoryAssignments = new ArrayCollection();
         $this->defaultTemplate = null;
         $this->views = 0;
         $this->downloads = 0;

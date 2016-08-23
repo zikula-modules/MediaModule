@@ -219,6 +219,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         $this->views = 0;
         $this->downloads = 0;
         $this->hookedObjectMedia = new ArrayCollection();
+        $this->categoryAssignments = new ArrayCollection();
     }
 
     public function getImagineId()
