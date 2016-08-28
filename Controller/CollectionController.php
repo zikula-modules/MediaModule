@@ -43,8 +43,11 @@ class CollectionController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(Request $request, CollectionEntity $parent)
+    public function newAction(Request $request, CollectionEntity $parent = null)
     {
+        if ($parent == null) {
+            throw new NotFoundHttpException();
+        }
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
         if (!$securityManager->hasPermission($parent, CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
             throw new AccessDeniedException();
@@ -244,7 +247,7 @@ class CollectionController extends AbstractController
      * @Route("")
      * @Method("GET")
      *
-     * @return array
+     * @return RedirectResponse
      */
     public function displayRootAction()
     {
@@ -260,36 +263,16 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
+     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Method("GET")
      * @Template()
      *
      * @param Request $request
-     * @param         $slug
-     *
+     * @param CollectionEntity $entity
      * @return array
-     *
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function displayAction(Request $request, $slug)
+    public function displayAction(Request $request, CollectionEntity $entity)
     {
-        $qb = $this
-            ->getDoctrine()
-            ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')
-            ->createQueryBuilder('c');
-
-        // Fetching all the media here is necessary because it otherwise does a query per
-        // thumbnail check to see if a thumbnail exists.
-        // @todo Make the thumbnail selectable using an association and fetch it eagerly.
-        $qb->select(['c', 'cc', 'm'])
-            ->where($qb->expr()->eq('c.slug', ':slug'))
-            ->setParameter('slug', $slug)
-            ->leftJoin('c.children', 'cc')
-            ->leftJoin('cc.media', 'm')
-        ;
-        /** @var CollectionEntity $entity */
-        $entity = $qb->getQuery()->getSingleResult();
-
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
         }

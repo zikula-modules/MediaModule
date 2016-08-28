@@ -17,6 +17,7 @@ use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -220,6 +221,17 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         $this->downloads = 0;
         $this->hookedObjectMedia = new ArrayCollection();
         $this->categoryAssignments = new ArrayCollection();
+    }
+
+    /**
+     * @ORM\PreRemove()
+     */
+    public function makeNonPrimaryOnDelete()
+    {
+        $primaryMedium = $this->collection->getPrimaryMedium();
+        if ($primaryMedium && $primaryMedium->getId() == $this->id) {
+            $this->collection->setPrimaryMedium(null);
+        }
     }
 
     public function getImagineId()

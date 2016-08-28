@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection;
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
+use Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
@@ -74,6 +75,7 @@ class CollectionType extends AbstractType
 
         /** @var CollectionEntity $theCollection */
         $theCollection = $options['data'];
+        $securityManager = $this->securityManager;
 
         $builder
             ->add(
@@ -94,7 +96,6 @@ class CollectionType extends AbstractType
         //        ])
         //    ;
         //}
-        $securityManager = $this->securityManager;
 
         $builder
             ->add(
@@ -122,15 +123,15 @@ class CollectionType extends AbstractType
                     'required' => false,
                     'placeholder' => $this->translator->trans('Default', [], 'cmfcmfmediamodule'),
                     'choices' => $this->templateCollection->getCollectionTemplateTitles()
-                ]);
-        if ($this->parent !== null) {
-            $builder->add(
+                ])
+            ->add(
                 'parent',
                 'entity',
                 [
                     'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
-                    'required' => true,
+                    'required' => false,
                     'label' => $this->translator->trans('Parent', [], 'cmfcmfmediamodule'),
+                    'placeholder' => $this->translator->trans('No parent', [], 'cmfcmfmediamodule'),
                     'query_builder' => function (EntityRepository $er) use (
                         $theCollection,
                         $securityManager
@@ -142,8 +143,8 @@ class CollectionType extends AbstractType
                         $qb->orderBy('c.root', 'ASC')
                             ->addOrderBy('c.lft', 'ASC');
                         if ($theCollection->getId() != null) {
-                            // The collection is currently edited. Make sure it's not placed onto
-                            // itself mor one of it's children.
+                            // The collection is currently edited. Make sure it's not placed into
+                            // itself or one of it's children.
                             $childrenQuery = $er->getChildrenQuery($theCollection);
                             $qb
                                 ->andWhere(
@@ -164,34 +165,40 @@ class CollectionType extends AbstractType
                     },
                     'data' => $this->parent,
                     'property' => 'indentedTitle',
-                ]);
-        } else {
-            $builder->add(
-                'parent',
+                ])
+            ->add(
+                'watermark',
                 'entity',
                 [
-                    'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
+                    'class' => 'CmfcmfMediaModule:Watermark\AbstractWatermarkEntity',
                     'required' => false,
-                    'label' => $this->translator->trans('Parent', [], 'cmfcmfmediamodule'),
-                    'data' => $this->parent,
-                    'placeholder' => $this->translator->trans('No parent', [], 'cmfcmfmediamodule'),
-                    'choices' => [],
+                    'label' => $this->translator->trans('Watermark', [], 'cmfcmfmediamodule'),
+                    'data' => $theCollection->getId() !== null ? $theCollection->getWatermark() :
+                        (isset($this->parent) ? $this->parent->getWatermark() : null),
+                    'placeholder' => $this->translator->trans('No watermark', [], 'cmfcmfmediamodule'),
+                    'property' => 'title',
+                ])
+            ->add(
+                'primaryMedium',
+                'entity',
+                [
+                    'class' => 'CmfcmfMediaModule:Media\AbstractMediaEntity',
+                    'required' => false,
+                    'label' => $this->translator->trans('Primary medium', [], 'cmfcmfmediamodule'),
+                    'placeholder' => $this->translator->trans('First medium of collection', [], 'cmfcmfmediamodule'),
+                    'disabled' => $theCollection->getId() == null,
+                    'property' => 'title',
+                    'query_builder' => function (EntityRepository $er) use ($theCollection) {
+                        /** @var MediaRepository $er */
+                        $qb = $er->createQueryBuilder('m');
+                        $qb->where($qb->expr()->eq('m.collection', ':collection'))
+                            ->setParameter('collection', $theCollection->getId());
+
+                        return $qb;
+                    },
                     'attr' => [
-                        'readonly' => true
+                        'help' => $this->translator->trans('The primary medium is used as collection thumbnail. It must be part of the collection.', [], 'cmfcmfmediamodule')
                     ]
                 ]);
-        }
-        $builder->add(
-            'watermark',
-            'entity',
-            [
-                'class' => 'CmfcmfMediaModule:Watermark\AbstractWatermarkEntity',
-                'required' => false,
-                'label' => $this->translator->trans('Watermark', [], 'cmfcmfmediamodule'),
-                'data' => $theCollection->getId() !== null ? $theCollection->getWatermark() :
-                    (isset($this->parent) ? $this->parent->getWatermark() : null),
-                'placeholder' => $this->translator->trans('No watermark', [], 'cmfcmfmediamodule'),
-                'property' => 'title',
-            ]);
     }
 }

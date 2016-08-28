@@ -120,6 +120,15 @@ class CollectionEntity implements Node, Sluggable
     protected $media;
 
     /**
+     * @ORM\OneToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity", fetch="EAGER")
+     *
+     * No assertions.
+     *
+     * @var AbstractMediaEntity
+     **/
+    protected $primaryMedium;
+
+    /**
      * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity",
      *     mappedBy="collection", fetch="EXTRA_LAZY", cascade={"persist"})
      *
@@ -282,6 +291,14 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
+     * @Assert\IsTrue(message="The selected primary medium is not part of the collection!")
+     */
+    public function isPrimaryMediumInMediaCollection()
+    {
+        return $this->primaryMedium === null || $this->media->contains($this->primaryMedium);
+    }
+
+    /**
      * Converts the entity to an array to be used for JsTree.
      *
      * @param MediaTypeCollection     $mediaTypeCollection
@@ -381,15 +398,13 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
+     * @deprecated Use $this->getPrimaryMedium() instead.
+     *
      * @return AbstractMediaEntity|null
      */
     public function getMediaForThumbnail()
     {
-        if ($this->media->count() > 0) {
-            return $this->media->first();
-        }
-
-        return null;
+        return $this->getPrimaryMedium(true);
     }
 
     /**
@@ -831,5 +846,30 @@ class CollectionEntity implements Node, Sluggable
         $this->downloads = $downloads;
 
         return $this;
+    }
+
+    /**
+     * @param AbstractMediaEntity $primaryMedium
+     *
+     * @return CollectionEntity
+     */
+    public function setPrimaryMedium($primaryMedium)
+    {
+        $this->primaryMedium = $primaryMedium;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $useFirstIfNoneSpecified
+     * @return AbstractMediaEntity
+     */
+    public function getPrimaryMedium($useFirstIfNoneSpecified = false)
+    {
+        if ($useFirstIfNoneSpecified && $this->primaryMedium === null && !$this->media->isEmpty()) {
+            return $this->media->first();
+        }
+
+        return $this->primaryMedium;
     }
 }
