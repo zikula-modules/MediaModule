@@ -34,7 +34,7 @@ use Zikula\Core\RouteUrl;
 class CollectionController extends AbstractController
 {
     /**
-     * @Route("/new/{slug}", requirements={"slug" = ".+"}, defaults={"slug" = null})
+     * @Route("/new/{slug}", requirements={"slug" = ".+"})
      * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      * @ParamConverter("parent", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
@@ -43,7 +43,7 @@ class CollectionController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(Request $request, CollectionEntity $parent = null)
+    public function newAction(Request $request, CollectionEntity $parent)
     {
         if ($parent == null) {
             throw new NotFoundHttpException();
