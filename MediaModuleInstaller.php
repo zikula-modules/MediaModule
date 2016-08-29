@@ -72,6 +72,8 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         $this->setVar('lastNewVersionCheck', 0);
         $this->setVar('newVersionAvailable', false);
 
+        $this->createCategoryRegistries();
+
         $this->createUploadDir();
 
         return true;
@@ -140,6 +142,15 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 $this->schemaTool->update(['Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity']);
                 $this->container->get('doctrine.dbal.connection')->executeUpdate("UPDATE `cmfcmfmedia_watermarks` SET `fontColor`='#000000ff',`backgroundColor`='#00000000' WHERE `discr`='text'");
 
+                $this->schemaTool->update([
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity',
+                ]);
+
+                $this->createCategoryRegistries();
+
                 return true;
             default:
                 return false;
@@ -182,9 +193,9 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             $hookObjectPrefix . 'HookedObjectMediaEntity',
             $hookObjectPrefix . 'HookedObjectCollectionEntity',
 
-            $prefix . 'Collection\\CollectionEntity',
+            $prefix . 'Collection\CollectionEntity',
 
-            $prefix . 'License\\LicenseEntity',
+            $prefix . 'License\LicenseEntity',
 
             $permissionPrefix . 'AbstractPermissionEntity',
             $permissionPrefix . 'UserPermissionEntity',
@@ -198,7 +209,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             $mediaPrefix . 'AbstractFileEntity',
             $mediaPrefix . 'ImageEntity',
             $mediaPrefix . 'VideoEntity',
-            $mediaPrefix . 'WebEntity',
+            $mediaPrefix . 'UrlEntity',
 
             $mediaPrefix . 'DeezerEntity',
             $mediaPrefix . 'SoundCloudEntity',
@@ -207,6 +218,9 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             $watermarkPrefix . 'AbstractWatermarkEntity',
             $watermarkPrefix . 'ImageWatermarkEntity',
             $watermarkPrefix . 'TextWatermarkEntity',
+
+            $prefix . 'Collection\CollectionCategoryAssignmentEntity',
+            $prefix . 'Media\MediaCategoryAssignmentEntity'
         ];
     }
 
@@ -338,5 +352,12 @@ TXT;
         $this->entityManager->persist($userPermission);
 
         $this->entityManager->flush();
+    }
+
+    private function createCategoryRegistries()
+    {
+        $categoryID = \CategoryUtil::getCategoryByPath('/__SYSTEM__/Modules/Global')['id'];
+        \CategoryRegistryUtil::insertEntry('CmfcmfMediaModule', 'AbstractMediaEntity', 'Main', $categoryID);
+        \CategoryRegistryUtil::insertEntry('CmfcmfMediaModule', 'CollectionEntity', 'Main', $categoryID);
     }
 }

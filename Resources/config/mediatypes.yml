@@ -9,6 +9,12 @@ services:
     calls:
       - [injectThings, [@service_container, @file_locator, @cmfcmf_media_module.font_collection, %kernel.root_dir%]]
 
+  cmfcmf_media_module.media_type.url:
+    class: Cmfcmf\Module\MediaModule\MediaType\Url
+    parent: cmfcmf_media_module.media_type.abstract_media
+    tags:
+      - { name: cmfcmf_media_module.media_type }
+
   cmfcmf_media_module.media_type.deezer:
     class: Cmfcmf\Module\MediaModule\MediaType\Deezer
     parent: cmfcmf_media_module.media_type.abstract_media

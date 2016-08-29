@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class YouTubeEntity extends WebEntity
+class YouTubeEntity extends UrlEntity
 {
     public function setYouTubeId($youTubeId)
     {

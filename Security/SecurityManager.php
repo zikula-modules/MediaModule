@@ -17,7 +17,6 @@ use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermission
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\PermissionsModule\Api\PermissionApi;
@@ -257,7 +256,7 @@ class SecurityManager
                     'collectionOfPermission.id',
                     // Retrieve the ids of all parent collections + the collection itself.
                     $this->getParentCollectionsQB(
-                        'parentCollectionsOfcollectionOfPermission'
+                        'parentCollectionsOfCollectionOfPermission'
                     )->getDQL()
                 )
             )
@@ -364,7 +363,7 @@ class SecurityManager
                     'collectionOfPermission2.id',
                     // Retrieve the ids of all parent collections + the collection itself.
                     $this->getParentCollectionsQB(
-                        'parentCollectionsOfcollectionOfPermission2'
+                        'parentCollectionsOfCollectionOfPermission2'
                     )->getDQL()
                 )
             )
@@ -459,8 +458,8 @@ class SecurityManager
             ->from('CmfcmfMediaModule:Collection\CollectionEntity', $alias)
             ->where($parentCollectionsQB->expr()->lte("$alias.lft", 'c.lft'))
             ->andWhere($parentCollectionsQB->expr()->gte("$alias.rgt", 'c.rgt'))
-            ->orderBy("$alias.lft", 'ASC')
-            ->andWhere($parentCollectionsQB->expr()->eq("$alias.root", 'c.root'));
+            ->andWhere($parentCollectionsQB->expr()->eq("$alias.root", 'c.root'))
+            ->orderBy("$alias.lft", 'ASC');
 
         return $parentCollectionsQB;
     }

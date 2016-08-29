@@ -12,18 +12,18 @@
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
 
 interface UploadableMediaTypeInterface
 {
     /**
      * Whether or not this media type supports uploading the given file.
      *
-     * @param UploadedFile $file
+     * @param File $file
      *
      * @return int 10 if it perfectly matches, 0 if it can't upload.
      */
-    public function canUpload(UploadedFile $file);
+    public function canUpload(File $file);
 
     /**
      * Whether or not this media type supports uploading the file represented by the file info array.

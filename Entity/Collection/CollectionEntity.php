@@ -82,6 +82,24 @@ class CollectionEntity implements Node, Sluggable
     protected $description;
 
     /**
+     * @ORM\Column(type="integer")
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    protected $views;
+
+    /**
+     * @ORM\Column(type="integer")
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    protected $downloads;
+
+    /**
      * @ORM\Column(type="string", nullable=true)
      *
      * No assertions.
@@ -100,6 +118,15 @@ class CollectionEntity implements Node, Sluggable
      * @var AbstractMediaEntity[]|ArrayCollection
      **/
     protected $media;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity", fetch="EAGER")
+     *
+     * No assertions.
+     *
+     * @var AbstractMediaEntity
+     **/
+    protected $primaryMedium;
 
     /**
      * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity",
@@ -121,6 +148,15 @@ class CollectionEntity implements Node, Sluggable
      * @var AbstractPermissionEntity[]|ArrayCollection
      */
     protected $permissions;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity",
+     *                mappedBy="entity", cascade={"remove", "persist"},
+     *                orphanRemoval=true, fetch="EAGER")
+     *
+     * @var ArrayCollection|CollectionCategoryAssignmentEntity[]
+     */
+    private $categoryAssignments;
 
     /**
      * @ORM\Column(type="integer")
@@ -247,8 +283,19 @@ class CollectionEntity implements Node, Sluggable
         $this->media = new ArrayCollection();
         $this->children = new ArrayCollection();
         $this->hookedObjectCollections = new ArrayCollection();
-        $this->defaultTemplate = null;
         $this->permissions = new ArrayCollection();
+        $this->categoryAssignments = new ArrayCollection();
+        $this->defaultTemplate = null;
+        $this->views = 0;
+        $this->downloads = 0;
+    }
+
+    /**
+     * @Assert\IsTrue(message="The selected primary medium is not part of the collection!")
+     */
+    public function isPrimaryMediumInMediaCollection()
+    {
+        return $this->primaryMedium === null || $this->media->contains($this->primaryMedium);
     }
 
     /**
@@ -351,15 +398,13 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
+     * @deprecated Use $this->getPrimaryMedium() instead.
+     *
      * @return AbstractMediaEntity|null
      */
     public function getMediaForThumbnail()
     {
-        if ($this->media->count() > 0) {
-            return $this->media->first();
-        }
-
-        return null;
+        return $this->getPrimaryMedium(true);
     }
 
     /**
@@ -711,5 +756,122 @@ class CollectionEntity implements Node, Sluggable
     public function removePermission(AbstractPermissionEntity $permission)
     {
         $this->permissions->removeElement($permission);
+    }
+
+    /**
+     * Get page category assignments.
+     *
+     * @return ArrayCollection|CollectionCategoryAssignmentEntity[]
+     */
+    public function getCategoryAssignments()
+    {
+        return $this->categoryAssignments;
+    }
+
+    /**
+     * Set page category assignments.
+     *
+     * @param ArrayCollection $assignments
+     */
+    public function setCategoryAssignments(ArrayCollection $assignments)
+    {
+        foreach ($this->categoryAssignments as $categoryAssignment) {
+            if (false === $key = $this->collectionContains($assignments, $categoryAssignment)) {
+                $this->categoryAssignments->removeElement($categoryAssignment);
+            } else {
+                $assignments->remove($key);
+            }
+        }
+        foreach ($assignments as $assignment) {
+            $this->categoryAssignments->add($assignment);
+        }
+    }
+
+    /**
+     * Check if a collection contains an element based only on two criteria (categoryRegistryId, category).
+     *
+     * @param ArrayCollection                    $collection
+     * @param CollectionCategoryAssignmentEntity $element
+     *
+     * @return bool|int
+     */
+    private function collectionContains(ArrayCollection $collection, CollectionCategoryAssignmentEntity $element)
+    {
+        foreach ($collection as $key => $collectionAssignment) {
+            /** @var CollectionCategoryAssignmentEntity $collectionAssignment */
+            if ($collectionAssignment->getCategoryRegistryId() == $element->getCategoryRegistryId()
+                && $collectionAssignment->getCategory() == $element->getCategory()
+            ) {
+                return $key;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function getViews()
+    {
+        return $this->views;
+    }
+
+    /**
+     * @param int $views
+     *
+     * @return $this
+     */
+    public function setViews($views)
+    {
+        $this->views = $views;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDownloads()
+    {
+        return $this->downloads;
+    }
+
+    /**
+     * @param int $downloads
+     *
+     * @return $this
+     */
+    public function setDownloads($downloads)
+    {
+        $this->downloads = $downloads;
+
+        return $this;
+    }
+
+    /**
+     * @param AbstractMediaEntity $primaryMedium
+     *
+     * @return CollectionEntity
+     */
+    public function setPrimaryMedium($primaryMedium)
+    {
+        $this->primaryMedium = $primaryMedium;
+
+        return $this;
+    }
+
+    /**
+     * @param bool $useFirstIfNoneSpecified
+     *
+     * @return AbstractMediaEntity
+     */
+    public function getPrimaryMedium($useFirstIfNoneSpecified = false)
+    {
+        if ($useFirstIfNoneSpecified && $this->primaryMedium === null && !$this->media->isEmpty()) {
+            return $this->media->first();
+        }
+
+        return $this->primaryMedium;
     }
 }

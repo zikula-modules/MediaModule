@@ -12,6 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Symfony\Component\HttpFoundation\File\File;
 
 class MediaTypeCollection
 {
@@ -46,6 +47,26 @@ class MediaTypeCollection
         return array_filter($this->mediaTypes, function (MediaTypeInterface $mediaType) {
             return $mediaType instanceof UploadableMediaTypeInterface;
         });
+    }
+
+    /**
+     * @param File $file
+     *
+     * @return MediaTypeInterface|UploadableMediaTypeInterface|null
+     */
+    public function getBestUploadableMediaTypeForFile(File $file)
+    {
+        $selectedMediaType = null;
+        $max = 0;
+        foreach ($this->getUploadableMediaTypes() as $mediaType) {
+            $n = $mediaType->canUpload($file);
+            if ($n > $max) {
+                $max = $n;
+                $selectedMediaType = $mediaType;
+            }
+        }
+
+        return $selectedMediaType;
     }
 
     /**

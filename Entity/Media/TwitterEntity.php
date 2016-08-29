@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class TwitterEntity extends WebEntity
+class TwitterEntity extends UrlEntity
 {
     public function setTweetId($tweetId)
     {

@@ -38,7 +38,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\Core\Response\PlainResponse;
 use Zikula\Core\RouteUrl;
-use Zikula\Core\Theme\Annotation\Theme;
+use Zikula\ThemeModule\Engine\Annotation\Theme;
 
 class MediaController extends AbstractController
 {
@@ -633,6 +633,11 @@ class MediaController extends AbstractController
             throw new NotFoundHttpException();
         }
 
+        $em = $this->getDoctrine()->getManager();
+        $entity->setDownloads($entity->getDownloads() + 1);
+        $em->merge($entity);
+        $em->flush();
+
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
         /** @var UploadableMediaTypeInterface $mediaType */
@@ -662,6 +667,11 @@ class MediaController extends AbstractController
         ) {
             throw new AccessDeniedException();
         }
+
+        $entity->setViews($entity->getViews() + 1);
+        $em = $this->getDoctrine()->getManager();
+        $em->merge($entity);
+        $em->flush();
 
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 

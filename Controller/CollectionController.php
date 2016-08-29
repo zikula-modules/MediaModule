@@ -34,7 +34,7 @@ use Zikula\Core\RouteUrl;
 class CollectionController extends AbstractController
 {
     /**
-     * @Route("/new/{slug}", requirements={"slug" = ".+"}, defaults={"slug" = null})
+     * @Route("/new/{slug}", requirements={"slug" = ".+"})
      * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      * @ParamConverter("parent", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
@@ -45,6 +45,9 @@ class CollectionController extends AbstractController
      */
     public function newAction(Request $request, CollectionEntity $parent)
     {
+        if ($parent == null) {
+            throw new NotFoundHttpException();
+        }
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
         if (!$securityManager->hasPermission($parent, CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
             throw new AccessDeniedException();
@@ -152,13 +155,14 @@ class CollectionController extends AbstractController
      *
      * @param CollectionEntity $entity
      *
-     * @return array
+     * @return BinaryFileResponse
      */
     public function downloadAction(CollectionEntity $entity)
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)) {
             throw new AccessDeniedException();
         }
+        $em = $this->getDoctrine()->getManager();
 
         \CacheUtil::createLocalDir('CmfcmfMediaModule');
         $dir = \CacheUtil::getLocalDir('CmfcmfMediaModule');
@@ -186,12 +190,19 @@ class CollectionController extends AbstractController
                 }
                 $zip->addFile($mediaType->getOriginalWithWatermark($media, 'path', false), $filename);
                 $hasContent = true;
+
+                $media->setDownloads($media->getDownloads() + 1);
+                $em->merge($media);
             }
         }
         if (!$hasContent) {
             $zip->addFromString('Empty Collection.txt', $this->__('Sorry, the collection appears to be empty or does not have any downloadable files.'));
         }
         $zip->close();
+
+        $entity->setDownloads($entity->getDownloads() + 1);
+        $em->merge($entity);
+        $em->flush();
 
         $response = new BinaryFileResponse($path);
         $response->deleteFileAfterSend(true);
@@ -236,7 +247,7 @@ class CollectionController extends AbstractController
      * @Route("")
      * @Method("GET")
      *
-     * @return array
+     * @return RedirectResponse
      */
     public function displayRootAction()
     {
@@ -252,35 +263,17 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
+     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Method("GET")
      * @Template()
      *
-     * @param Request $request
-     * @param         $slug
+     * @param Request          $request
+     * @param CollectionEntity $entity
      *
      * @return array
-     *
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function displayAction(Request $request, $slug)
+    public function displayAction(Request $request, CollectionEntity $entity)
     {
-        $qb = $this
-            ->getDoctrine()
-            ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')
-            ->createQueryBuilder('c');
-
-        // Fetching all the media here is necessary because it otherwise does a query per
-        // thumbnail check to see if a thumbnail exists.
-        // @todo Make the thumbnail selectable using an association and fetch it eagerly.
-        $qb->select(['c', 'cc', 'm'])
-            ->where($qb->expr()->eq('c.slug', ':slug'))
-            ->setParameter('slug', $slug)
-            ->leftJoin('c.children', 'cc')
-            ->leftJoin('cc.media', 'm')
-        ;
-        $entity = $qb->getQuery()->getSingleResult();
-
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
         }
@@ -296,6 +289,11 @@ class CollectionController extends AbstractController
         if (!$collectionTemplateCollection->hasTemplate($template)) {
             throw new NotFoundHttpException();
         }
+
+        $entity->setViews($entity->getViews() + 1);
+        $em = $this->getDoctrine()->getManager();
+        $em->merge($entity);
+        $em->flush();
 
         $templateVars = [
             'collection' => $entity,

@@ -37,7 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  "twitter"        = "TwitterEntity",
  *  "flickr"         = "FlickrEntity",
  *  "youtube"        = "YouTubeEntity",
- *  "url"            = "WebEntity",
+ *  "url"            = "UrlEntity",
  *  "image"          = "ImageEntity",
  *  "pdf"            = "PdfEntity",
  *  "plaintext"      = "PlaintextEntity",
@@ -98,6 +98,24 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     protected $description;
 
     /**
+     * @ORM\Column(type="integer")
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    protected $views;
+
+    /**
+     * @ORM\Column(type="integer")
+     *
+     * No assertions.
+     *
+     * @var int
+     */
+    protected $downloads;
+
+    /**
      * @ORM\Column(type="string", nullable=true, length=255)
      * @Assert\Length(max="255")
      *
@@ -153,6 +171,15 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     protected $hookedObjectMedia;
 
     /**
+     * @ORM\OneToMany(targetEntity="Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity",
+     *                mappedBy="entity", cascade={"remove", "persist"},
+     *                orphanRemoval=true, fetch="EAGER")
+     *
+     * @var ArrayCollection|MediaCategoryAssignmentEntity[]
+     */
+    private $categoryAssignments;
+
+    /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
      *
@@ -189,7 +216,21 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         // Position at the end of the album.
         $this->position = -1;
         $this->extraData = [];
+        $this->views = 0;
+        $this->downloads = 0;
         $this->hookedObjectMedia = new ArrayCollection();
+        $this->categoryAssignments = new ArrayCollection();
+    }
+
+    /**
+     * @ORM\PreRemove()
+     */
+    public function makeNonPrimaryOnDelete()
+    {
+        $primaryMedium = $this->collection->getPrimaryMedium();
+        if ($primaryMedium && $primaryMedium->getId() == $this->id) {
+            $this->collection->setPrimaryMedium(null);
+        }
     }
 
     public function getImagineId()
@@ -596,5 +637,96 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     public function getVersion()
     {
         return $this->version;
+    }
+
+    /**
+     * Get page category assignments.
+     *
+     * @return ArrayCollection|MediaCategoryAssignmentEntity[]
+     */
+    public function getCategoryAssignments()
+    {
+        return $this->categoryAssignments;
+    }
+
+    /**
+     * Set page category assignments.
+     *
+     * @param ArrayCollection $assignments
+     */
+    public function setCategoryAssignments(ArrayCollection $assignments)
+    {
+        foreach ($this->categoryAssignments as $categoryAssignment) {
+            if (false === $key = $this->collectionContains($assignments, $categoryAssignment)) {
+                $this->categoryAssignments->removeElement($categoryAssignment);
+            } else {
+                $assignments->remove($key);
+            }
+        }
+        foreach ($assignments as $assignment) {
+            $this->categoryAssignments->add($assignment);
+        }
+    }
+
+    /**
+     * Check if a collection contains an element based only on two criteria (categoryRegistryId, category).
+     *
+     * @param ArrayCollection               $collection
+     * @param MediaCategoryAssignmentEntity $element
+     *
+     * @return bool|int
+     */
+    private function collectionContains(ArrayCollection $collection, MediaCategoryAssignmentEntity $element)
+    {
+        foreach ($collection as $key => $collectionAssignment) {
+            /** @var MediaCategoryAssignmentEntity $collectionAssignment */
+            if ($collectionAssignment->getCategoryRegistryId() == $element->getCategoryRegistryId()
+                && $collectionAssignment->getCategory() == $element->getCategory()
+            ) {
+                return $key;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param int $views
+     *
+     * @return AbstractMediaEntity
+     */
+    public function setViews($views)
+    {
+        $this->views = $views;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getViews()
+    {
+        return $this->views;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDownloads()
+    {
+        return $this->downloads;
+    }
+
+    /**
+     * @param int $downloads
+     *
+     * @return $this
+     */
+    public function setDownloads($downloads)
+    {
+        $this->downloads = $downloads;
+
+        return $this;
     }
 }

@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class DeezerEntity extends WebEntity
+class DeezerEntity extends UrlEntity
 {
     /**
      * @return string

@@ -14,7 +14,7 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
 
 class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
 {
@@ -48,7 +48,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function canUpload(UploadedFile $file)
+    public function canUpload(File $file)
     {
         return in_array($file->getMimeType(), $this->getSupportedMimeTypes()) ? 5 : 0;
     }

@@ -18,6 +18,10 @@ cmfcmfmediamodule_controller_upgrade:
   resource: "@CmfcmfMediaModule/Controller/UpgradeController.php"
   type:     annotation
 
+cmfcmfmediamodule_controller_import:
+  resource: "@CmfcmfMediaModule/Controller/ImportController.php"
+  type:     annotation
+
 cmfcmfmediamodule_controller_watermark:
   resource: "@CmfcmfMediaModule/Controller/WatermarkController.php"
   type:     annotation

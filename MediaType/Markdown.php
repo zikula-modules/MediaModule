@@ -15,6 +15,7 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\MarkdownEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
 use Michelf\MarkdownExtra;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInterface
@@ -66,10 +67,12 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
     /**
      * {@inheritdoc}
      */
-    public function canUpload(UploadedFile $file)
+    public function canUpload(File $file)
     {
-        if ($file->getMimeType() == 'text/plain' && $file->getClientOriginalExtension() == 'md') {
-            return 5;
+        if ($file->getMimeType() == 'text/plain') {
+            if ($file->getExtension() == 'md' || ($file instanceof UploadedFile && $file->getClientOriginalExtension() == 'md')) {
+                return 5;
+            }
         }
 
         return 0;

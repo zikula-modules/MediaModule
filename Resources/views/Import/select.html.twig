@@ -1,0 +1,28 @@
+{% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
+{% block title __('Choose importer') %}
+{% block content %}
+    <div class="list-group">
+        {% for importer in importers %}
+            {% set requirements = importer.checkRequirements %}
+            {% if requirements is same as(true) %}
+                <a href="{{ path('cmfcmfmediamodule_import_execute', {importer: importer.id}) }}" class="list-group-item">
+                    <h4 class="list-group-item-heading">{{ importer.title }}</h4>
+                    {% if importer.restrictions %}
+                        <p class="list-group-item-text text-danger">{{ importer.restrictions }}</p>
+                    {% endif %}
+                    <p class="list-group-item-text">{{ importer.description }}</p>
+                </a>
+            {% else %}
+                <div class="list-group-item list-group-item-warning">
+                    <h4 class="list-group-item-heading">{{ importer.title }}</h4>
+                    <p class="list-group-item-text text-danger">{{ requirements }}</p>
+                    <p class="list-group-item-text">{{ importer.description }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <a href="https://github.com/cmfcmf/MediaModule/issues/new?title=[Importer%20Request]%20XYZ%20Importer&body=I%20would%20like%20to%20import%20files%20from%20XYZ..." class="list-group-item list-group-item-info">
+            <h4 class="list-group-item-heading">{{ __('Don\'t see an importer for your use case?') }}</h4>
+            <p class="list-group-item-text">{{ __('Request it to be added by creating a new issue at GitHub!') }}</p>
+        </a>
+    </div>
+{% endblock %}

@@ -13,7 +13,7 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Metadata\GenericMetadataReader;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\File;
 
 class Video extends AbstractFileMediaType implements UploadableMediaTypeInterface
 {
@@ -117,7 +117,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     /**
      * {@inheritdoc}
      */
-    public function canUpload(UploadedFile $file)
+    public function canUpload(File $file)
     {
         $mimeType = $file->getMimeType();
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {

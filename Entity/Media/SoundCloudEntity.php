@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity()
  */
-class SoundCloudEntity extends WebEntity
+class SoundCloudEntity extends UrlEntity
 {
     /**
      * @return string

@@ -1,6 +1,6 @@
 {
     "name": "cmfcmf/media-module",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "A Zikula 1.4.1+ module to handle all sorts of media.",
     "type": "zikula-module",
     "license": "MIT",
@@ -23,7 +23,6 @@
         "clue/graph": "0.9.*"
     },
     "require-dev": {
-        "nelmio/alice": "^2.1",
         "graphp/graphviz": "0.2.*"
     },
     "extra": {
@@ -37,7 +36,13 @@
                 "admin": {"route": "cmfcmfmediamodule_settings_index"},
                 "user": {"route": "cmfcmfmediamodule_collection_displayroot"},
                 "hook_subscriber": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"},
-                "hook_provider": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"}
+                "hook_provider": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"},
+                "categorizable": {
+                    "entities": [
+                        "Cmfcmf\\Module\\MediaModule\\Entity\\Media\\AbstractMediaEntity",
+                        "Cmfcmf\\Module\\MediaModule\\Entity\\Collection\\CollectionEntity"
+                    ]
+                }
             },
             "securityschema": {
                 "CmfcmfMediaModule::": "::"
