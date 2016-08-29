@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\Importer;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
@@ -13,12 +22,12 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class DownloadsModuleImporter extends AbstractImporter
 {
-    const DOWNLOADS_QUERY = <<<SQL
+    const DOWNLOADS_QUERY = <<<'SQL'
 SELECT status, uupdate, title, url, filename, description, ddate, hits, submitter, filesize
 FROM downloads_downloads
 WHERE cid = ?
 SQL;
-    const DOWNLOAD_CATEGORY_QUERY = <<<SQL
+    const DOWNLOAD_CATEGORY_QUERY = <<<'SQL'
 SELECT cid, pid, title, description
 FROM downloads_categories
 ORDER BY pid ASC

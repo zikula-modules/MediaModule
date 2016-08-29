@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\Importer;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
@@ -75,7 +84,7 @@ class VerySimpleDownloadsModuleImporter extends AbstractImporter
         $categoryRegistry = \CategoryRegistryUtil::getRegisteredModuleCategory('CmfcmfMediaModule', 'AbstractMediaEntity', 'Main');
 
         $conn = $this->em->getConnection();
-        $result = $conn->executeQuery(<<<SQL
+        $result = $conn->executeQuery(<<<'SQL'
 SELECT d.id, d.downloadTitle, d.downloadDescription, d.fileUpload, d.createdUserId, d.updatedUserId, d.createdDate, d.updatedDate, c.categoryId
 FROM vesido_download d
 LEFT JOIN vesido_download_category c ON c.entityId = d.id

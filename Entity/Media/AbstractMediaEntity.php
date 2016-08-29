@@ -17,7 +17,6 @@ use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -641,7 +640,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * Get page category assignments
+     * Get page category assignments.
      *
      * @return ArrayCollection|MediaCategoryAssignmentEntity[]
      */
@@ -651,7 +650,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * Set page category assignments
+     * Set page category assignments.
      *
      * @param ArrayCollection $assignments
      */
@@ -671,8 +670,10 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * Check if a collection contains an element based only on two criteria (categoryRegistryId, category).
-     * @param ArrayCollection $collection
+     *
+     * @param ArrayCollection               $collection
      * @param MediaCategoryAssignmentEntity $element
+     *
      * @return bool|int
      */
     private function collectionContains(ArrayCollection $collection, MediaCategoryAssignmentEntity $element)
@@ -682,7 +683,6 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             if ($collectionAssignment->getCategoryRegistryId() == $element->getCategoryRegistryId()
                 && $collectionAssignment->getCategory() == $element->getCategory()
             ) {
-
                 return $key;
             }
         }

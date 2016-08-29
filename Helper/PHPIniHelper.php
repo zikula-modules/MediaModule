@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Cmfcmf\Module\MediaModule\Helper;
 
@@ -24,6 +32,7 @@ class PHPIniHelper
     /**
      * @param $size
      * @param int $precision
+     *
      * @return string
      *
      * Based on http://stackoverflow.com/a/2510540/2560557
@@ -42,6 +51,7 @@ class PHPIniHelper
      * Converts a PHP filesize like 128M to bytes.
      *
      * @param string $sSize The PHP filesize.
+     *
      * @return int Size in bytes
      *
      * Based on http://stackoverflow.com/a/22500394/2560557

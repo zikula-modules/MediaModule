@@ -267,8 +267,9 @@ class CollectionController extends AbstractController
      * @Method("GET")
      * @Template()
      *
-     * @param Request $request
+     * @param Request          $request
      * @param CollectionEntity $entity
+     *
      * @return array
      */
     public function displayAction(Request $request, CollectionEntity $entity)

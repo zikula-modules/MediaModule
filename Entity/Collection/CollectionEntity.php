@@ -759,7 +759,7 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * Get page category assignments
+     * Get page category assignments.
      *
      * @return ArrayCollection|CollectionCategoryAssignmentEntity[]
      */
@@ -769,7 +769,7 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * Set page category assignments
+     * Set page category assignments.
      *
      * @param ArrayCollection $assignments
      */
@@ -789,8 +789,10 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * Check if a collection contains an element based only on two criteria (categoryRegistryId, category).
-     * @param ArrayCollection $collection
+     *
+     * @param ArrayCollection                    $collection
      * @param CollectionCategoryAssignmentEntity $element
+     *
      * @return bool|int
      */
     private function collectionContains(ArrayCollection $collection, CollectionCategoryAssignmentEntity $element)
@@ -800,7 +802,6 @@ class CollectionEntity implements Node, Sluggable
             if ($collectionAssignment->getCategoryRegistryId() == $element->getCategoryRegistryId()
                 && $collectionAssignment->getCategory() == $element->getCategory()
             ) {
-
                 return $key;
             }
         }
@@ -862,6 +863,7 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param bool $useFirstIfNoneSpecified
+     *
      * @return AbstractMediaEntity
      */
     public function getPrimaryMedium($useFirstIfNoneSpecified = false)
