@@ -78,10 +78,20 @@ class LinkContainer implements LinkContainerInterface
      */
     public function getLinks($type = self::TYPE_ADMIN)
     {
-        if ($type != self::TYPE_ADMIN) {
-            return [];
+        if ($type == self::TYPE_ADMIN) {
+            return $this->adminLinks();
+        } else if ($type == self::TYPE_USER) {
+            return $this->userLinks();
         }
 
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    private function adminLinks()
+    {
         $links = [];
 
         $rootCollection = $this->entityManager
@@ -116,6 +126,53 @@ class LinkContainer implements LinkContainerInterface
                 'url' => $this->router->generate('cmfcmfmediamodule_import_select'),
                 'text' => $this->translator->trans('Import', [], 'cmfcmfmediamodule'),
                 'icon' => 'cloud-download'
+            ];
+        }
+
+        return $links;
+    }
+
+    /**
+     * @return array
+     */
+    private function userLinks()
+    {
+        $links = [];
+
+        $rootCollection = $this->entityManager
+            ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')
+            ->getRootNode()
+        ;
+
+        if ($this->securityManager->hasPermission(
+            $rootCollection,
+            CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)
+        ) {
+            $links[] = [
+                'url' => $this->router->generate('cmfcmfmediamodule_collection_displayroot'),
+                'text' => $this->translator->trans('Collections', [], 'cmfcmfmediamodule'),
+                'icon' => 'folder-o'
+            ];
+        }
+        if ($this->securityManager->hasPermission('watermark', 'moderate')) {
+            $links[] = [
+                'url' => $this->router->generate('cmfcmfmediamodule_watermark_index'),
+                'text' => $this->translator->trans('Watermarks', [], 'cmfcmfmediamodule'),
+                'icon' => 'copyright'
+            ];
+        }
+        if ($this->securityManager->hasPermission('license', 'moderate')) {
+            $links[] = [
+                'url' => $this->router->generate('cmfcmfmediamodule_license_index'),
+                'text' => $this->translator->trans('Licenses', [], 'cmfcmfmediamodule'),
+                'icon' => 'gavel'
+            ];
+        }
+        if ($this->securityManager->hasPermission('settings', 'admin')) {
+            $links[] = [
+                'url' => $this->router->generate('cmfcmfmediamodule_settings_index'),
+                'text' => $this->translator->trans('Backend', [], 'cmfcmfmediamodule'),
+                'icon' => 'cog'
             ];
         }
 

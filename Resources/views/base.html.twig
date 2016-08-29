@@ -1,4 +1,8 @@
-{% block header %}{% endblock %}
+{% block header %}
+    {% if renderRaw is not defined or not renderRaw %}
+        {{ moduleLinks('user', '', 'CmfcmfMediaModule') }}
+    {% endif %}
+{% endblock %}
 
 {% if (renderRaw is not defined or not renderRaw) and breadcrumbs is defined %}
     {% include 'CmfcmfMediaModule::breadcrumbs.html.twig' with {breadcrumbs: breadcrumbs} %}
@@ -27,45 +31,4 @@
 
 {% block content %}{% endblock %}
 
-{% block footer %}
-    {% if renderRaw is not defined or not renderRaw %}
-        <hr />
-        <ul class="list-inline">
-            {% if cmfcmfmediamodule_hasPermission('collection', 'display') %}
-                <li>
-                    <a href="{{ path('cmfcmfmediamodule_collection_displayroot') }}">
-                        {{ __('Collections') }}
-                    </a>
-                </li>
-            {% endif %}
-            {% if cmfcmfmediamodule_hasPermission('media', 'moderate') %}
-                <li>
-                    <a href="{{ path('cmfcmfmediamodule_media_adminlist') }}">
-                        {{ __('Media') }}
-                    </a>
-                </li>
-            {% endif %}
-            {% if cmfcmfmediamodule_hasPermission('watermark', 'moderate') %}
-                <li>
-                    <a href="{{ path('cmfcmfmediamodule_watermark_index') }}">
-                        {{ __('Watermarks') }}
-                    </a>
-                </li>
-            {% endif %}
-            {% if cmfcmfmediamodule_hasPermission('license', 'moderate') %}
-                <li>
-                    <a href="{{ path('cmfcmfmediamodule_license_index') }}">
-                        {{ __('Licenses') }}
-                    </a>
-                </li>
-            {% endif %}
-            {% if cmfcmfmediamodule_hasPermission('settings', 'admin') %}
-                <li>
-                    <a href="{{ path('cmfcmfmediamodule_settings_index') }}">
-                        {{ __('Backend') }}
-                    </a>
-                </li>
-            {% endif %}
-        </ul>
-    {% endif %}
-{% endblock %}
+{% block footer %}{% endblock %}
