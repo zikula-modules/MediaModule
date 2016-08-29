@@ -139,14 +139,22 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $rootCollection
                 );
             case '1.1.1':
+                $connection = $this->entityManager->getConnection();
                 $this->schemaTool->update(['Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity']);
-                $this->container->get('doctrine.dbal.connection')->executeUpdate("UPDATE `cmfcmfmedia_watermarks` SET `fontColor`='#000000ff',`backgroundColor`='#00000000' WHERE `discr`='text'");
+                $connection
+                    ->executeUpdate("UPDATE `cmfcmfmedia_watermarks` SET `fontColor`='#000000ff',`backgroundColor`='#00000000' WHERE `discr`='text'");
+                $connection->executeQuery("DROP TABLE `cmfcmfmedia_permission_restriction`");
+                $connection->executeQuery("DROP TABLE `cmfcmfmedia_permission_permission_restriction`");
 
                 $this->schemaTool->update([
                     'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
                     'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity',
+
+
                     'Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity',
                     'Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\IPRangePermissionEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\PasswordPermissionEntity'
                 ]);
 
                 $this->createCategoryRegistries();

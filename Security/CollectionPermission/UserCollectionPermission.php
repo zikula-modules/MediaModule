@@ -47,7 +47,7 @@ class UserCollectionPermission extends AbstractCollectionPermission
     /**
      * {@inheritdoc}
      */
-    public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
+    public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias, $allPasswordsValid = false)
     {
         if (php_sapi_name() === 'cli') {
             return null;

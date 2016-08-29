@@ -76,7 +76,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
      *
      * @return Expr\Composite
      */
-    public static function whereInSimpleArray(QueryBuilder &$qb, $entity, $type, $value, $field)
+    protected static function whereInSimpleArray(QueryBuilder &$qb, $entity, $type, $value, $field)
     {
         $qb->setParameter($type . '1', $value);
         $qb->setParameter($type . '2', "%," . $value);

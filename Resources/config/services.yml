@@ -59,6 +59,12 @@ services:
     tags:
       - { name: doctrine.event_subscriber }
 
+  cmfcmf_media_module.listener.password_required:
+    class: Cmfcmf\Module\MediaModule\Listener\PasswordRequiredListener
+    arguments: ["@router"]
+    tags:
+      - { name: kernel.event_subscriber }
+
 
   # Link container
   cmfcmf_media_module.container.links:

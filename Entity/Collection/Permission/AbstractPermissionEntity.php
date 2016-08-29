@@ -12,7 +12,6 @@
 namespace Cmfcmf\Module\MediaModule\Entity\Collection\Permission;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
@@ -28,9 +27,10 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\InheritanceType(value="SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr")
  * @ORM\DiscriminatorMap({
- *  "group" = "GroupPermissionEntity",
- *  "user"  = "UserPermissionEntity",
- *  "owner" = "OwnerPermissionEntity"
+ *  "group"    = "GroupPermissionEntity",
+ *  "user"     = "UserPermissionEntity",
+ *  "owner"    = "OwnerPermissionEntity",
+ *  "password" = "PasswordPermissionEntity"
  * })
  */
 abstract class AbstractPermissionEntity implements Sortable
@@ -148,18 +148,6 @@ abstract class AbstractPermissionEntity implements Sortable
     protected $collection;
 
     /**
-     * @ORM\ManyToMany(
-     *     targetEntity="Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity",
-     *     inversedBy="permissions", fetch="EAGER", cascade={"persist"})
-     * @ORM\JoinTable(name="cmfcmfmedia_permission_permission_restriction")
-     *
-     * No assertions.
-     *
-     * @var AbstractPermissionRestrictionEntity[]|ArrayCollection
-     */
-    protected $restrictions;
-
-    /**
      * @ORM\Column(type="integer")
      * @ZK\StandardFields(type="userid", on="create")
      *
@@ -205,7 +193,6 @@ abstract class AbstractPermissionEntity implements Sortable
         $this->goOn = false;
         $this->appliedToSubCollections = true;
         $this->appliedToSelf = true;
-        $this->restrictions = new ArrayCollection();
         $this->locked = false;
     }
 
@@ -448,14 +435,6 @@ abstract class AbstractPermissionEntity implements Sortable
         $this->appliedToSubCollections = $appliedToSubCollections;
 
         return $this;
-    }
-
-    /**
-     * @return Restriction\AbstractPermissionRestrictionEntity[]|ArrayCollection
-     */
-    public function getRestrictions()
-    {
-        return $this->restrictions;
     }
 
     /**

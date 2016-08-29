@@ -19,3 +19,11 @@ services:
     arguments: [@translator]
     tags:
       - { name: cmfcmf_media_module.collection_permission }
+
+  cmfcmf_media_module.collection_permission.password:
+    class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\PasswordCollectionPermission
+    arguments: [@translator]
+    calls:
+      - [setRequestStack, [@request_stack]]
+    tags:
+      - { name: cmfcmf_media_module.collection_permission }

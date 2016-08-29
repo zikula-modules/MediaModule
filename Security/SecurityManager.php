@@ -13,11 +13,13 @@ namespace Cmfcmf\Module\MediaModule\Security;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Exception\PasswordRequiredException;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionCategory;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\PermissionsModule\Api\PermissionApi;
 
@@ -86,6 +88,24 @@ class SecurityManager
         ];
     }
 
+    public function denyAccessUnlessGranted($objectOrType, $action)
+    {
+        if ($this->hasPermission($objectOrType, $action)) {
+            return;
+        }
+
+        if ($objectOrType instanceof AbstractMediaEntity) {
+            $objectOrType = $objectOrType->getCollection();
+        }
+        if ($objectOrType instanceof CollectionEntity) {
+            if ($this->hasCollectionPermission($objectOrType, $action, true)) {
+                throw new PasswordRequiredException($objectOrType, $action);
+            }
+        }
+
+        throw new AccessDeniedException();
+    }
+
     public function hasPermission($objectOrType, $action)
     {
         if (is_object($objectOrType)) {
@@ -130,20 +150,22 @@ class SecurityManager
      *
      * @param CollectionEntity $collection
      * @param                  $permLevel
+     * @param bool             $allPasswordsValid
      *
      * @return bool
      */
-    private function hasCollectionPermission(CollectionEntity $collection, $permLevel)
+    private function hasCollectionPermission(CollectionEntity $collection, $permLevel, $allPasswordsValid = false)
     {
         static $cachedResult = [];
 
-        if (!isset($cachedResult[$permLevel])) {
-            $qb = $this->getCollectionsWithAccessQueryBuilder($permLevel);
-            $cachedResult[$permLevel] = $qb->getQuery()->getArrayResult();
-            $cachedResult[$permLevel] = array_column($cachedResult[$permLevel], 'id');
+        $key = $permLevel . '_' . (int)$allPasswordsValid;
+        if (!isset($cachedResult[$key])) {
+            $qb = $this->getCollectionsWithAccessQueryBuilder($permLevel, $allPasswordsValid);
+            $cachedResult[$key] = $qb->getQuery()->getArrayResult();
+            $cachedResult[$key] = array_column($cachedResult[$key], 'id');
         }
 
-        return in_array($collection->getId(), $cachedResult[$permLevel]);
+        return in_array($collection->getId(), $cachedResult[$key]);
     }
 
     /**
@@ -166,12 +188,13 @@ class SecurityManager
      * $requestedLevel access to. Use "->andWhere" to further strip down the result.
      *
      * @param string $requestedLevel The requested access level.
+     * @param bool   $allPasswordsValid
      *
      * @return QueryBuilder
      */
-    public function getCollectionsWithAccessQueryBuilder($requestedLevel)
+    public function getCollectionsWithAccessQueryBuilder($requestedLevel, $allPasswordsValid = false)
     {
-        return $this->getAccessQueryBuilder($requestedLevel, 'collections');
+        return $this->getAccessQueryBuilder($requestedLevel, 'collections', $allPasswordsValid);
     }
 
     /**
@@ -194,6 +217,7 @@ class SecurityManager
      *                               the CollectionPermissionSecurityTree class.
      * @param string $type           (media|collections) Will either return media joined by collections or
      *                               collections only.
+     * @param bool   $allPasswordsValid
      *
      * @return QueryBuilder Select all collections where there is at least on permission which
      *
@@ -208,7 +232,7 @@ class SecurityManager
      * 6. has a position which is lower or equal to the position of the first permission having
      * goOn = 0 which applies to the collection.
      */
-    private function getAccessQueryBuilder($requestedLevel, $type)
+    private function getAccessQueryBuilder($requestedLevel, $type, $allPasswordsValid = false)
     {
         if (!in_array($type, ['media', 'collections'], true)) {
             throw new \DomainException();
@@ -242,8 +266,7 @@ class SecurityManager
         foreach ($collectionPermissions as $collectionPermission) {
             $currentUserOR->add(
                 $collectionPermission->getApplicablePermissionsExpression(
-                    $firstPositionWithoutGoOnQB,
-                    'p'
+                    $firstPositionWithoutGoOnQB, 'p', $allPasswordsValid
                 )
             );
         }
@@ -350,8 +373,7 @@ class SecurityManager
         foreach ($collectionPermissions as $collectionPermission) {
             $currentUserOR->add(
                 $collectionPermission->getApplicablePermissionsExpression(
-                    $applicablePermissionsQB,
-                    'x'
+                    $applicablePermissionsQB, 'x', $allPasswordsValid
                 )
             );
         }

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction;
+namespace Cmfcmf\Module\MediaModule\Entity\Collection\Permission;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -17,14 +17,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity
  *
- * This allows to set a password.
+ * This allows to set access rights using a password.
  */
-class PasswordPermissionRestrictionEntity extends AbstractPermissionRestrictionEntity
+class PasswordPermissionEntity extends AbstractPermissionEntity
 {
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string")
      *
      * @Assert\NotBlank()
+     * @Assert\NotNull()
      *
      * @var string
      */
@@ -41,7 +42,7 @@ class PasswordPermissionRestrictionEntity extends AbstractPermissionRestrictionE
     /**
      * @param string $password
      *
-     * @return $this
+     * @return PasswordPermissionEntity
      */
     public function setPassword($password)
     {

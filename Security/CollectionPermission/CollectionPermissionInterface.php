@@ -63,7 +63,8 @@ interface CollectionPermissionInterface
      * @param QueryBuilder &$qb
      * @param              $permissionAlias
      *
+     * @param bool $allPasswordsValid
      * @return Expr|null
      */
-    public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias);
+    public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias, $allPasswordsValid = false);
 }

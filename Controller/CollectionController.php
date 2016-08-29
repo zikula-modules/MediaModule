@@ -159,9 +159,9 @@ class CollectionController extends AbstractController
      */
     public function downloadAction(CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)) {
-            throw new AccessDeniedException();
-        }
+        $this->get('cmfcmf_media_module.security_manager')
+            ->denyAccessUnlessGranted($entity, CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION);
+
         $em = $this->getDoctrine()->getManager();
 
         \CacheUtil::createLocalDir('CmfcmfMediaModule');
@@ -244,6 +244,41 @@ class CollectionController extends AbstractController
     }
 
     /**
+     * @Route("/password/{id}/{permLevel}")
+     * @Template()
+     *
+     * @param Request $request
+     * @param CollectionEntity $entity
+     * @param string $permLevel
+     *
+     * @return array|RedirectResponse
+     */
+    public function passwordAction(Request $request, CollectionEntity $entity, $permLevel)
+    {
+        if ($request->query->has('password')) {
+            $password = $request->query->get('password');
+            $session = $request->getSession();
+            $passwords = $session->get('cmfcmfmediamodule_passwords');
+            $passwords[$entity->getId()] = $password;
+            $session->set('cmfcmfmediamodule_passwords', $passwords);
+
+            if ($this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, $permLevel)) {
+                $this->addFlash('status', $this->get('translator')->trans('Wrong password.', [], 'cmfcmfmediamodule'));
+
+                return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
+            } else {
+                $this->addFlash('error', $this->get('translator')->trans('Wrong password.', [], 'cmfcmfmediamodule'));
+            }
+        }
+
+        return [
+            'collection' => $entity,
+            'canLogin' => !\UserUtil::isLoggedIn(),
+            'permLevel' => $permLevel
+        ];
+    }
+
+    /**
      * @Route("")
      * @Method("GET")
      *
@@ -254,9 +289,8 @@ class CollectionController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $rootCollection = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNode();
 
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($rootCollection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
-            throw new AccessDeniedException();
-        }
+        $this->get('cmfcmf_media_module.security_manager')
+            ->denyAccessUnlessGranted($rootCollection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
 
         return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $rootCollection->getSlug()]);
     }
@@ -273,9 +307,8 @@ class CollectionController extends AbstractController
      */
     public function displayAction(Request $request, CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
-            throw new AccessDeniedException();
-        }
+        $this->get('cmfcmf_media_module.security_manager')
+            ->denyAccessUnlessGranted($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
 
         if ($entity->getDefaultTemplate() != null) {
             $defaultTemplate = $entity->getDefaultTemplate();
@@ -326,9 +359,8 @@ class CollectionController extends AbstractController
      */
     public function displayByIdAction(CollectionEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
-            throw new AccessDeniedException();
-        }
+        $this->get('cmfcmf_media_module.security_manager')
+            ->denyAccessUnlessGranted($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
 
         return $this->redirectToRoute(
             'cmfcmfmediamodule_collection_display',
