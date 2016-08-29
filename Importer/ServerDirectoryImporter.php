@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\Importer;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
@@ -57,7 +66,7 @@ class ServerDirectoryImporter extends AbstractImporter
             ->depth($formData['importSettings']['includeSubDirectories'] ? '>=0' : '==0')
             ->files()
         ;
-        $collectionMapping = [];
+        $collectionMapping = ["" => $rootCollection];
         $c = 0;
         /** @var SplFileInfo $finderFile */
         foreach ($finder as $finderFile) {
@@ -71,12 +80,13 @@ class ServerDirectoryImporter extends AbstractImporter
             $entityClass = $selectedMediaType->getEntityClass();
             /** @var AbstractFileEntity $entity */
             $entity = new $entityClass();
-            if ($formData['importSettings']['createSubCollectionsForSubDirectories'] && $finderFile->getRelativePath() != "") {
-                $relativePath = $finderFile->getRelativePath();
+            $relativePath = $finderFile->getRelativePath();
+            if ($formData['importSettings']['createSubCollectionsForSubDirectories'] && $relativePath != "") {
                 if (!isset($collectionMapping[$relativePath])) {
                     $collection = new CollectionEntity();
-                    $collection->setParent($rootCollection);
-                    $collection->setTitle(dirname($finderFile->getRealPath()));
+                    $lastSeparator = strrpos($relativePath, DIRECTORY_SEPARATOR);
+                    $collection->setParent($collectionMapping[substr($relativePath, 0, (int)$lastSeparator)]);
+                    $collection->setTitle(substr($relativePath, $lastSeparator === false ? 0 : $lastSeparator + 1));
                     $this->em->persist($collection);
                     $collectionMapping[$relativePath] = $collection;
                 }
@@ -90,7 +100,7 @@ class ServerDirectoryImporter extends AbstractImporter
             $this->em->persist($entity);
 
             $c++;
-            if ($c % 10 == 0) {
+            if ($c % 50 == 0) {
                 $this->em->flush();
             }
         }

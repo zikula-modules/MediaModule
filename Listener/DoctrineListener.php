@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Cmfcmf\Module\MediaModule\Listener;
 
@@ -42,12 +50,12 @@ class DoctrineListener implements EventSubscriber
     }
 
     /**
-     * @param object           $object
-     * @param object           $uow
-     * @param ClassMetadata    $meta
-     * @param String           $field
-     * @param mixed            $value
-     * @param bool             $notifyPropertyChanged
+     * @param object        $object
+     * @param object        $uow
+     * @param ClassMetadata $meta
+     * @param string        $field
+     * @param mixed         $value
+     * @param bool          $notifyPropertyChanged
      */
     protected function updateField($object, $uow, ClassMetadata $meta, $field, $value, $notifyPropertyChanged = true)
     {

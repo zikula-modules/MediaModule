@@ -1,5 +1,13 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Cmfcmf\Module\MediaModule\Helper;
 
@@ -11,7 +19,7 @@ use Gedmo\Sluggable\SluggableListener;
 class MediaSlugHandler implements SlugHandlerInterface
 {
     /**
-     * Construct the slug handler
+     * Construct the slug handler.
      *
      * @param SluggableListener $sluggable
      */
@@ -22,15 +30,13 @@ class MediaSlugHandler implements SlugHandlerInterface
     /**
      * Callback on slug handlers before the decision
      * is made whether or not the slug needs to be
-     * recalculated
+     * recalculated.
      *
      * @param SluggableAdapter $ea
-     * @param array $config
-     * @param object $object
-     * @param string $slug
-     * @param boolean $needToChangeSlug
-     *
-     * @return void
+     * @param array            $config
+     * @param object           $object
+     * @param string           $slug
+     * @param bool             $needToChangeSlug
      */
     public function onChangeDecision(SluggableAdapter $ea, array &$config, $object, &$slug, &$needToChangeSlug)
     {
@@ -44,35 +50,31 @@ class MediaSlugHandler implements SlugHandlerInterface
     }
 
     /**
-     * Callback on slug handlers right after the slug is built
+     * Callback on slug handlers right after the slug is built.
      *
      * @param SluggableAdapter $ea
-     * @param array $config
-     * @param object $object
-     * @param string $slug
-     *
-     * @return void
+     * @param array            $config
+     * @param object           $object
+     * @param string           $slug
      */
     public function postSlugBuild(SluggableAdapter $ea, array &$config, $object, &$slug)
     {
     }
 
     /**
-     * Callback for slug handlers on slug completion
+     * Callback for slug handlers on slug completion.
      *
      * @param SluggableAdapter $ea
-     * @param array $config
-     * @param object $object
-     * @param string $slug
-     *
-     * @return void
+     * @param array            $config
+     * @param object           $object
+     * @param string           $slug
      */
     public function onSlugCompletion(SluggableAdapter $ea, array &$config, $object, &$slug)
     {
     }
 
     /**
-     * @return boolean whether or not this handler has already urlized the slug
+     * @return bool whether or not this handler has already urlized the slug
      */
     public function handlesUrlization()
     {
@@ -80,9 +82,9 @@ class MediaSlugHandler implements SlugHandlerInterface
     }
 
     /**
-     * Validate handler options
+     * Validate handler options.
      *
-     * @param array $options
+     * @param array         $options
      * @param ClassMetadata $meta
      */
     public static function validate(array $options, ClassMetadata $meta)

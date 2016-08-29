@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\ImportType;
@@ -68,7 +77,7 @@ class ImportController extends AbstractController
                 $this->addFlash('status', $this->__('Media imported successfully.'));
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $form->getData()['collection']->getSlug()]);
-            } else if (is_string($success)) {
+            } elseif (is_string($success)) {
                 $this->addFlash('error', $success);
             } else {
                 $this->addFlash('error', $this->__('An unexpected error occurred while importing.'));
@@ -81,4 +90,3 @@ class ImportController extends AbstractController
         ];
     }
 }
-

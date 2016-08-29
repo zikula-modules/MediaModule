@@ -52,7 +52,7 @@ class SettingsController extends AbstractController
                 'state' => 'success',
                 'message' => $this->getTranslator()->trans('The FileInfo PHP extension is installed.'),
             ];
-        } else if (FileBinaryMimeTypeGuesser::isSupported()) {
+        } elseif (FileBinaryMimeTypeGuesser::isSupported()) {
             $fileInfo = [
                 'for' => $this->getTranslator()->trans('File Upload Mime Type guessing'),
                 'state' => 'success',
@@ -78,7 +78,7 @@ class SettingsController extends AbstractController
         $highMemoryRequired = false;
         try {
             new \Imagine\Imagick\Imagine();
-            
+
             $imagine = [
                 'for' => $this->getTranslator()->trans('Thumbnail generation'),
                 'state' => 'success',
@@ -112,7 +112,7 @@ class SettingsController extends AbstractController
                 }
             }
         }
-        
+
         if ($highMemoryRequired && PHPIniHelper::getMemoryLimit() < 128 * 1024 * 1024) {
             $memoryLimit = [
                 'for' => $this->getTranslator()->trans('Thumbnail generation'),

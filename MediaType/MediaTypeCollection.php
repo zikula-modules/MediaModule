@@ -51,12 +51,13 @@ class MediaTypeCollection
 
     /**
      * @param File $file
+     *
      * @return MediaTypeInterface|UploadableMediaTypeInterface|null
      */
     public function getBestUploadableMediaTypeForFile(File $file)
     {
         $selectedMediaType = null;
-        $max = -1;
+        $max = 0;
         foreach ($this->getUploadableMediaTypes() as $mediaType) {
             $n = $mediaType->canUpload($file);
             if ($n > $max) {

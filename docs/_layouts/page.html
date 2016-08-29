@@ -1,0 +1,37 @@
+---
+layout: default
+---
+{% capture edit_link %}https://github.com/cmfcmf/MediaModule/edit/gh-pages/{{ page.path | remove_first: '/repo/' }}{% endcapture %}
+<div class="demo-container mdl-grid">
+  <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+  <div class="demo-content mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+    <a href="{{ edit_link }}" style="float:right; text-decoration: none;">
+      <i class="material-icons" style="font-size: inherit">edit</i>
+      Edit this page
+    </a>
+    <div class="demo-crumbs mdl-color-text--grey-500">
+      {% assign crumbs = page.url | split: '/' %}
+      {% for crumb in crumbs %}
+        {% if crumb != '' %}
+          {% if forloop.index == 2 %}
+            <a href="{{ '/docs' | prepend: site.baseurl }}">{{ crumb | capitalize }}</a>
+          {% else %}
+            {{ crumb | capitalize | replace: '-',' ' | replace: '_',' ' | remove: '.html' }}
+          {% endif %}
+          {% if forloop.last == false %}
+            &gt;
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    <h1>{{ page.title }}</h1>
+    <p><strong>{{ page.excerpt }}</strong></p>
+    {% capture content_len %}{{ content | size | minus: 1000 }}{% endcapture %}
+    {% if content_len contains '-' %}
+      <div class="alert alert-warning">
+        This entry is very short. Please help by <a href="{{ edit_link }}" class="alert-link">improving it!</a>
+      </div>
+    {% endif %}
+    {{ content }}
+  </div>
+</div>

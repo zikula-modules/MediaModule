@@ -15,7 +15,6 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PdfEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\PlaintextEntity;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInterface
 {
@@ -60,6 +59,9 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 4;
         }
+        if ($mimeType == 'inode/x-empty' && $file->getExtension() == 'txt') {
+            return 4;
+        }
 
         return 0;
     }
@@ -91,7 +93,14 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
      */
     public function mightUpload($mimeType, $size, $name)
     {
-        return in_array($mimeType, $this->getSupportedMimeTypes()) ? 4 : 0;
+        if (in_array($mimeType, $this->getSupportedMimeTypes())) {
+            return 4;
+        }
+        if ($mimeType == 'inode/x-empty' && pathinfo($name, PATHINFO_EXTENSION) == 'txt') {
+            return 4;
+        }
+
+        return 0;
     }
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)

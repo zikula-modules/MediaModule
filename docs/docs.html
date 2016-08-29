@@ -1,0 +1,42 @@
+---
+layout: default
+permalink: /docs/
+---
+<div class="demo-container mdl-grid">
+  <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+  <div class="mdl-cell mdl-cell--8-col">
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+        <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+          <h4 class="mdl-cell mdl-cell--12-col">Documentation for users</h4>
+          {% assign entries = site.docs | sort: "path" %}
+          {% for entry in entries %}
+          {% if entry.url contains '/development/' %}
+          {% else %}
+          <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+            <h5><a href="{{ entry.url | prepend: site.baseurl }}">{{ entry.title }}</a></h5>
+            {{ entry.excerpt }}
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
+      <div class="mdl-card mdl-cell mdl-cell--12-col">
+        <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+          <h4 class="mdl-cell mdl-cell--12-col">Documentation for developers</h4>
+          {% assign entries = site.docs | sort: "path" %}
+          {% for entry in entries %}
+          {% if entry.url contains '/development/' %}
+          <div class="section__text mdl-cell mdl-cell--10-col-desktop mdl-cell--6-col-tablet mdl-cell--3-col-phone">
+            <h5><a href="{{ entry.url | prepend: site.baseurl }}">{{ entry.title }}</a></h5>
+            {{ entry.excerpt }}
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
