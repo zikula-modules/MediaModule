@@ -156,7 +156,7 @@ class ModuleUpgrader
                         )
                     );
                 }
-                $json = json_decode($content);
+                $json = json_decode($content, true);
                 $coreCompat = $json['extra']['zikula']['core-compatibility'];
                 $coreCompatExpr = new expression($coreCompat);
                 if (!$coreCompatExpr->satisfiedBy(new version(\Zikula_Core::VERSION_NUM))) {
