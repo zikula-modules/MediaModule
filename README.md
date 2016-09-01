@@ -1,4 +1,4 @@
-Zikula 1.4.1+ MediaModule by @cmfcmf
+Zikula 1.4.3+ MediaModule by @cmfcmf
 ====================================
 
 [![StyleCI](https://styleci.io/repos/43518681/shield)](https://styleci.io/repos/43518681) 
