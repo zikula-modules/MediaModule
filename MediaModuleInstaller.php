@@ -141,7 +141,10 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             case '1.1.0':
             case '1.1.1':
             case '1.1.2':
-                $this->schemaTool->update(['Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity']);
+                $this->schemaTool->update([
+                    'Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity',
+                    'Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity'
+                ]);
                 $this->entityManager->getConnection()->executeUpdate("UPDATE `cmfcmfmedia_watermarks` SET `fontColor`='#000000ff',`backgroundColor`='#00000000' WHERE `discr`='text'");
 
                 $this->schemaTool->update([

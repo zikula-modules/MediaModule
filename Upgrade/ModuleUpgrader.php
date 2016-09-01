@@ -262,7 +262,7 @@ class ModuleUpgrader
 
         $this->fs->remove($this->cacheFile);
 
-        $this->cacheClearer->clear('symfony');
+        $this->cacheClearer->clear('');
     }
 
     /**
@@ -276,6 +276,8 @@ class ModuleUpgrader
         $worked = \ModUtil::apiFunc('ZikulaExtensionsModule', 'admin', 'upgrade', [
             'id' => \ModUtil::getIdFromName('CmfcmfMediaModule')
         ]);
+
+        $this->cacheClearer->clear('');
 
         if ($worked != true) {
             throw new UpgradeFailedException(
