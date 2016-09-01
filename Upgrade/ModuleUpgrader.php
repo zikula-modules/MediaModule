@@ -209,9 +209,11 @@ class ModuleUpgrader
      * Checks whether a given directory is recursively writable.
      *
      * @param string $dir The directory to check.
+     *
      * @return bool
      */
-    private function is_writable_r($dir) {
+    private function is_writable_r($dir)
+    {
         if (is_dir($dir)) {
             if (is_writable($dir)) {
                 $objects = scandir($dir);
@@ -222,12 +224,12 @@ class ModuleUpgrader
                         }
                     }
                 }
+
                 return true;
             } else {
                 return false;
             }
-
-        } else if (file_exists($dir)) {
+        } elseif (file_exists($dir)) {
             return is_writable($dir);
         }
 
