@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<phpunit bootstrap="./../../../lib/bootstrap.php">
+<phpunit 
+        bootstrap="./../../../lib/bootstrap.php"
+        backupGlobals="false"
+        backupStaticAttributes="false"
+>
     <testsuites>
         <testsuite name="Cmfcmf Media Module">
             <directory>./Tests</directory>
