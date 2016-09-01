@@ -96,6 +96,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             case '1.0.3':
             case '1.0.4':
             case '1.0.5':
+            /** @noinspection PhpMissingBreakStatementInspection */
             case '1.0.6':
                 $this->schemaTool->create([
                     'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity',
@@ -135,6 +136,8 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $this->entityManager->find('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity', 1),
                     $rootCollection
                 );
+            case '1.1.0':
+            case '1.1.1':
 
                 return true;
             default:
