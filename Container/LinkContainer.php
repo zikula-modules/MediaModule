@@ -80,7 +80,7 @@ class LinkContainer implements LinkContainerInterface
     {
         if ($type == self::TYPE_ADMIN) {
             return $this->adminLinks();
-        } else if ($type == self::TYPE_USER) {
+        } elseif ($type == self::TYPE_USER) {
             return $this->userLinks();
         }
 
