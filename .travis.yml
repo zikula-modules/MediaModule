@@ -46,6 +46,7 @@ install:
     - cd  ../../..
     - php app/console bootstrap:bundles
     - mysql -e "INSERT INTO zk_test.modules (id, name, type, displayname, url, description, directory, version, capabilities, state, securityschema, core_min, core_max) VALUES (NULL, 'CmfcmfMediaModule', '3', 'Media Module', 'collections', '...', 'cmfcmf/media-module', '1.1.1', 'N;', '3', 'N;', '1.4.2', '1.4.99');"
+    - php app/console cache:warmup
 
 script:
     - php app/console lint:yaml modules/cmfcmf/media-module/Resources
