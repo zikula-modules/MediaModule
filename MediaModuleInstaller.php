@@ -138,7 +138,9 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $this->entityManager->find('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity', 1),
                     $rootCollection
                 );
+            case '1.1.0':
             case '1.1.1':
+            case '1.1.2':
                 $this->schemaTool->update(['Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity']);
                 $this->container->get('doctrine.dbal.connection')->executeUpdate("UPDATE `cmfcmfmedia_watermarks` SET `fontColor`='#000000ff',`backgroundColor`='#00000000' WHERE `discr`='text'");
 
