@@ -50,7 +50,7 @@ install:
 script:
     - php app/console lint:yaml modules/cmfcmf/media-module/Resources
     - php app/console lint:twig @CmfcmfMediaModule
-    - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist --coverage-text --coverage-clover=coverage.clover
+    - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist --coverage-text --coverage-clover=coverage.clover -v
 
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
