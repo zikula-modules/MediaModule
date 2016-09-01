@@ -15,6 +15,8 @@ use Cmfcmf\Module\MediaModule\Exception\UpgradeFailedException;
 use Github\Exception\RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\TranslatorInterface;
+use vierbergenlars\SemVer\expression;
+use vierbergenlars\SemVer\version;
 use Zikula\Bundle\CoreBundle\CacheClearer;
 
 /**
@@ -90,6 +92,10 @@ class ModuleUpgrader
                 'text' => $this->translator->trans('Downloading new version', [], 'cmfcmfmediamodule'),
                 'icon' => 'fa-download'
             ],
+            'zikula-version-check' => [
+                'text' => $this->translator->trans('Checking installed Zikula version', [], 'cmfcmfmediamodule'),
+                'icon' => 'fa-code-fork'
+            ],
             'extracting' => [
                 'text' => $this->translator->trans('Extracting new version', [], 'cmfcmfmediamodule'),
                 'icon' => 'fa-file-archive-o'
@@ -137,6 +143,33 @@ class ModuleUpgrader
                 $this->downloadNewVersion($asset['browser_download_url']);
 
                 return false;
+            case 'zikula-version-check':
+                $zip = new \ZipArchive();
+                $zip->open($this->cacheFile);
+                $content = $zip->getFromName('composer.json');
+                if ($content === false) {
+                    throw new UpgradeFailedException(
+                        $this->translator->trans(
+                            'Could not read composer.json file from downloaded zip archive.',
+                            [],
+                            'cmfcmfmediamodule'
+                        )
+                    );
+                }
+                $json = json_decode($content);
+                $coreCompat = $json['extra']['zikula']['core-compatibility'];
+                $coreCompatExpr = new expression($coreCompat);
+                if (!$coreCompatExpr->satisfiedBy(new version(\Zikula_Core::VERSION_NUM))) {
+                    throw new UpgradeFailedException(
+                        $this->translator->trans(
+                            'Your installed Core version is not capable of running the upgrade. Please upgrade your core to match %version% first.',
+                            ['%version%' => $coreCompat],
+                            'cmfcmfmediamodule'
+                        )
+                    );
+                }
+
+                return false;
             case 'extracting':
                 $this->extractNewVersion();
 
@@ -152,8 +185,6 @@ class ModuleUpgrader
 
     /**
      * Checks whether the server fulfills all necessary requirements.
-     *
-     * @return bool|string
      */
     private function checkRequirements()
     {
@@ -165,37 +196,48 @@ class ModuleUpgrader
 
     /**
      * Checks whether the permissions for the MediaModule directory are setup correctly.
-     *
-     * @return bool|string
      */
     private function checkPermissions()
     {
-        if (!is_writable($this->moduleDir)) {
+        if (!$this->is_writable_r($this->moduleDir)) {
             throw new UpgradeFailedException(
-                $this->translator->trans('Please make %s writable.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule'));
+                $this->translator->trans('Please make %s and recursively writable.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule'));
         }
-        if (!is_writable($this->moduleDir . '/Controller/MediaController.php')) {
-            throw new UpgradeFailedException(
-                $this->translator->trans(
-                    '%s is writable but it\'s content is not. Please make sure to make it recursively writable.',
-                    ['%s' => $this->moduleDir],
-                    'cmfcmfmediamodule'));
+    }
+
+    /**
+     * Checks whether a given directory is recursively writable.
+     *
+     * @param string $dir The directory to check.
+     * @return bool
+     */
+    private function is_writable_r($dir) {
+        if (is_dir($dir)) {
+            if (is_writable($dir)) {
+                $objects = scandir($dir);
+                foreach ($objects as $object) {
+                    if ($object != "." && $object != "..") {
+                        if (!$this->is_writable_r($dir."/".$object)) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+
+        } else if (file_exists($dir)) {
+            return is_writable($dir);
         }
-        if (!is_writable($this->moduleDir . '/.gitignore')) {
-            throw new UpgradeFailedException(
-                $this->translator->trans(
-                    '%s is writable but some files are not. Please make sure to make it recursively writable. If you already tried, please try "chmod 777 -R media-module" from within the cmfcmf folder.',
-                    ['%s' => $this->moduleDir],
-                    'cmfcmfmediamodule'));
-        }
+
+        return false;
     }
 
     /**
      * Downloads the new version from the given URL.
      *
      * @param string $url
-     *
-     * @return bool
      */
     private function downloadNewVersion($url)
     {
@@ -204,14 +246,9 @@ class ModuleUpgrader
 
     /**
      * Extracts the new version, removes old files and clears the cache.
-     *
-     * @return bool
      */
     private function extractNewVersion()
     {
-        // First check if the module dir really is writable.
-        $this->fs->touch($this->moduleDir . '/.gitignore');
-
         // Delete all the existing files first.
         $this->fs->remove(glob($this->moduleDir . '/*'));
 
@@ -228,8 +265,6 @@ class ModuleUpgrader
 
     /**
      * Executes the upgrade.
-     *
-     * @return bool|string
      */
     private function doUpgrade()
     {
