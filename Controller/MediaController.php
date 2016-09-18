@@ -156,7 +156,13 @@ class MediaController extends AbstractController
             goto edit_error;
         }
 
-        $this->applyProcessHook('media', 'process_edit', $entity->getId(), new RouteUrl('cmfcmfmediamodule_media_display', ['slug' => $entity->getSlug()]));
+        $this->applyProcessHook('media', 'process_edit', $entity->getId(), new RouteUrl(
+            'cmfcmfmediamodule_media_display',
+            [
+                'slug' => $entity->getSlug(),
+                'collectionSlug' => $entity->getCollection()->getSlug()
+            ]
+        ));
 
         $isPopup = $request->query->get('popup', false);
         if ($isPopup) {
@@ -174,7 +180,10 @@ class MediaController extends AbstractController
                 'media',
                 'form_edit',
                 $entity->getId(),
-                new RouteUrl('cmfcmfmediamodule_media_display', ['slug' => $entity->getSlug()])
+                new RouteUrl('cmfcmfmediamodule_media_display', [
+                    'slug' => $entity->getSlug(),
+                    'collectionSlug' => $entity->getCollection()->getSlug()
+                ])
             ),
             'entity' => $entity
         ];
@@ -211,7 +220,10 @@ class MediaController extends AbstractController
                     'media',
                     'process_delete',
                     $entity->getId(),
-                    new RouteUrl('cmfcmfmediamodule_media_display', ['slug' => $entity->getSlug()])
+                    new RouteUrl('cmfcmfmediamodule_media_display', [
+                        'slug' => $entity->getSlug(),
+                        'collectionSlug' => $entity->getCollection()->getSlug()
+                    ])
                 );
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getCollection()->getSlug()]);
@@ -230,7 +242,10 @@ class MediaController extends AbstractController
                 'media',
                 'form_delete',
                 $entity->getId(),
-                new RouteUrl('cmfcmfmediamodule_media_edit', ['slug' => $entity->getSlug(), 'collectionSlug' => $entity->getCollection()->getSlug()])
+                new RouteUrl('cmfcmfmediamodule_media_edit', [
+                    'slug' => $entity->getSlug(),
+                    'collectionSlug' => $entity->getCollection()->getSlug()
+                ])
             )
         ];
     }
@@ -683,7 +698,10 @@ class MediaController extends AbstractController
                 'media',
                 'display_view',
                 $entity->getId(),
-                new RouteUrl('cmfcmfmediamodule_media_display', ['slug' => $entity->getSlug()])
+                new RouteUrl('cmfcmfmediamodule_media_display', [
+                    'slug' => $entity->getSlug(),
+                    'collectionSlug' => $entity->getCollection()->getSlug()
+                ])
             )
         ];
     }
