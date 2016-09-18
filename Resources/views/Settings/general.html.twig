@@ -4,16 +4,4 @@
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ form_end(form) }}
-    <h2>{{ __('Scribite integration') }}</h2>
-    {% if scribiteInstalled %}
-        <div class="alert alert-success">{{ __('It seems like the Scribite / CKEditor integration is working! Make sure you use a "special" or "full" toolbar.') }}</div>
-        {% if not descriptionEscapingStrategyForCollectionOk %}
-            <div class="alert alert-danger">{{ __('You should set "Collection description escaping strategy" to "As is" for Scribite to work properly!') }}</div>
-        {% endif %}
-        {% if not descriptionEscapingStrategyForMediaOk %}
-            <div class="alert alert-danger">{{ __('You should set "Media description escaping strategy" to "As is" for Scribite to work properly!') }}</div>
-        {% endif %}
-    {% else %}
-        <div class="alert alert-info">{{ __('Scribite is not installed.') }}</div>
-    {% endif %}
 {% endblock %}

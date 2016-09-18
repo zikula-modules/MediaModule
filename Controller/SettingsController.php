@@ -208,6 +208,21 @@ class SettingsController extends AbstractController
             }
             $this->addFlash('status', $this->__('Settings saved!'));
         }
+        return [
+            'form' => $form->createView()
+        ];
+    }
+
+    /**
+     * @Route("/scribite", options={"expose" = true})
+     * @Template()
+     * @Theme("admin")
+     *
+     * @return array
+     */
+    public function scribiteAction()
+    {
+        $this->ensurePermission();
 
         $scribiteInstalled = \ModUtil::available('Scribite');
         $descriptionEscapingStrategyForCollectionOk = true;
@@ -232,7 +247,6 @@ class SettingsController extends AbstractController
         }
 
         return [
-            'form' => $form->createView(),
             'scribiteInstalled' => $scribiteInstalled,
             'descriptionEscapingStrategyForCollectionOk' => $descriptionEscapingStrategyForCollectionOk,
             'descriptionEscapingStrategyForMediaOk' => $descriptionEscapingStrategyForMediaOk
