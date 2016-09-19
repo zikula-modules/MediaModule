@@ -1,0 +1,27 @@
+{% extends 'CmfcmfMediaModule:CollectionTemplate:cards.html.twig' %}
+
+{% block media %}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/galleria/galleria-1.4.5.min.js'), 98) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/galleria/themes/classic/galleria.classic.min.js'), 99) }}
+    {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/galleria/themes/classic/galleria.classic.css')) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/galleria.js')) }}
+    <div class="cmfcmfmedia-display-galleria">
+        {% for media in collection.media %}
+            {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
+            {% set bigThumbnail = mediaType.thumbnail(media, 1000, 400, 'url', 'inset') %}
+            {% if bigThumbnail %}
+                <img src="{{ bigThumbnail|e('html_attr') }}" />
+            {% endif %}
+            {% if media.title is not empty %}
+                <h4>
+                    {{ media.title }}
+                </h4>
+            {% endif %}
+            {% if media.attribution is not empty %}
+                <h5>
+                    {{ media.attribution|raw }}
+                </h5>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

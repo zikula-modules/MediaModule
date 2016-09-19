@@ -26,3 +26,9 @@ services:
     parent: cmfcmf_media_module.collection_template.abstract_service
     tags:
       - { name: cmfcmf_media_module.collection_template }
+
+  cmfcmf_media_module.collection_template.galleria:
+    class: Cmfcmf\Module\MediaModule\CollectionTemplate\GalleriaTemplate
+    parent: cmfcmf_media_module.collection_template.abstract_service
+    tags:
+      - { name: cmfcmf_media_module.collection_template }
