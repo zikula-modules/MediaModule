@@ -210,6 +210,9 @@ class MediaController extends AbstractController
 
         if ($request->isMethod('POST')) {
             if ($this->hookValidates('media', 'validate_delete')) {
+                // Save entity id for use in hook event. It is set to null during the entitymanager flush.
+                $id = $entity->getId();
+
                 $em = $this->getDoctrine()->getManager();
                 $em->remove($entity);
                 $em->flush();
@@ -219,7 +222,7 @@ class MediaController extends AbstractController
                 $this->applyProcessHook(
                     'media',
                     'process_delete',
-                    $entity->getId(),
+                    $id,
                     new RouteUrl('cmfcmfmediamodule_media_display', [
                         'slug' => $entity->getSlug(),
                         'collectionSlug' => $entity->getCollection()->getSlug()

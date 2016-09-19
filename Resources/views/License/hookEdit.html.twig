@@ -1,7 +1,7 @@
 <fieldset>
     <legend>{{ __('License') }}</legend>
     <select class="form-control" title="{{ __('Select license') }}" name="cmfcmfmediamodule[license][]" multiple>
-        <option>{{ __('Unknown') }}</option>
+        <option value="">{{ __('Unknown') }}</option>
         {% for license in preferredLicenses %}
             <option value="{{ license.id|e('html_attr') }}"{% if license.id in selectedLicenses %} selected{% endif %}>
                 {{ license.title }}
