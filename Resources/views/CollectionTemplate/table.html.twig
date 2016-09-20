@@ -5,7 +5,6 @@
         <thead>
         <tr>
             <th>{{ __('Title') }}</th>
-            <th>{{ __('Description') }}</th>
             <th>{{ __('License') }}</th>
             <th>{{ __('Author') }}</th>
             <th></th>
@@ -22,20 +21,18 @@
                                 <i class="fa fa-fw fa-folder-o"></i> ..
                             </a>
                         </td>
-                        <td colspan="3">{{ collection.parent|cmfcmfmediamodule_getdescription }}</td>
-                        <td></td>
+                        <td colspan="3"></td>
                     </tr>
                 {% endif %}
             {% endif %}
             {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
             {% for child in collection.children %}
                 {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
-                    <td>
+                    <td colspan="3">
                         <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
                             <i class="fa fa-fw fa-folder-o"></i> {{ child.title }}
                         </a>
                     </td>
-                    <td colspan="3">{{ child|cmfcmfmediamodule_getdescription }}</td>
                     <td class="text-right">
                         <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
                             <i class="fa fa-search"></i> {{ __('View collection') }}
@@ -54,12 +51,13 @@
                     {% if viewMediaPermission %}
                         <a href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
                     {% endif %}
+                            {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
+                            <i class="fa fa-fw {{ mediaType.icon }}"></i>
                         {{ media.title }}
                     {% if viewMediaPermission %}
                         </a>
                     {% endif %}
                 </td>
-                <td>{{ media|cmfcmfmediamodule_getdescription }}</td>
                 <td>
                     {% if media.license is not null %}
                         {% if media.license.url is not null %}
@@ -98,7 +96,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="5" class="text-center warning">{{ __('This collection does not contain media!') }}</td>
+                <td colspan="4" class="text-center warning">{{ __('This collection does not contain media!') }}</td>
             </tr>
         {% endfor %}
         </tbody>

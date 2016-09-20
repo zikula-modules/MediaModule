@@ -43,7 +43,9 @@ class LicenseController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
         /** @var LicenseEntity[] $entities */
-        $entities = $em->getRepository('CmfcmfMediaModule:License\LicenseEntity')->findBy([], ['id' => 'ASC']);
+        $entities = $em->getRepository('CmfcmfMediaModule:License\LicenseEntity')->findBy([], [
+            'outdated' => 'ASC', 'id' => 'ASC'
+        ]);
 
         return ['entities' => $entities];
     }

@@ -208,6 +208,7 @@ class SettingsController extends AbstractController
             }
             $this->addFlash('status', $this->__('Settings saved!'));
         }
+
         return [
             'form' => $form->createView()
         ];

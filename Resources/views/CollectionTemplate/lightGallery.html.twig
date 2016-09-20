@@ -10,7 +10,7 @@
         {% for media in collection.media %}
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
             {% set thumbnail = mediaType.thumbnail(media, 200, 150, 'url', 'outbound') %}
-            <a href="{{ media.url }}" data-sub-html=".caption" class="col-xs-6 col-sm-6 col-md-4 col-lg-3" data-download-url="
+            <a href="{{ mediaType.originalWithWatermark(media, 'url') }}" data-sub-html=".caption" class="col-xs-6 col-sm-6 col-md-4 col-lg-3" data-download-url="
                 {%- if media.downloadAllowed is defined and media.downloadAllowed -%}
                     {{- path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') -}}
                 {%- else -%}

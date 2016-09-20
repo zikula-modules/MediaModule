@@ -265,6 +265,10 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         foreach ($ccVersions as $version) {
             foreach ($ccNames as $id => $name) {
+                if ($id == 'CC-BY-NC-ND' && $version == '1.0') {
+                    // The license image somehow does not exist.
+                    continue;
+                }
                 $urlId = strtolower(substr($id, 3));
                 $license = new LicenseEntity("$id-$version");
                 $license
