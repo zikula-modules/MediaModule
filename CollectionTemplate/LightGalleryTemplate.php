@@ -12,7 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
 /**
- * Displays a light gallery http://sachinchoolur.github.io/lightGallery/
+ * Displays a light gallery http://sachinchoolur.github.io/lightGallery/.
  */
 class LightGalleryTemplate extends AbstractTemplate
 {

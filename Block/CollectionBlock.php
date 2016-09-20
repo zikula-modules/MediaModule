@@ -1,16 +1,12 @@
 <?php
-/**
- * Copyright Pages Team 2015
+
+/*
+ * This file is part of the MediaModule for Zikula.
  *
- * This work is contributed to the Zikula Foundation under one or more
- * Contributor Agreements and licensed to You under the following license:
+ * (c) Christian Flach <hi@christianflach.de>
  *
- * @license GNU/LGPLv3 (or at your option, any later version)
- * @package Pages
- * @link https://github.com/zikula-modules/Pages
- *
- * Please see the NOTICE file distributed with this source code for further
- * information regarding copyright and licensing
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Cmfcmf\Module\MediaModule\Block;
@@ -23,8 +19,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\BlocksModule\AbstractBlockHandler;
 
 /**
- * Class PageBlock
- * @package Zikula\PagesModule\Block
+ * Class PageBlock.
  */
 class CollectionBlock extends AbstractBlockHandler
 {
@@ -58,6 +53,7 @@ class CollectionBlock extends AbstractBlockHandler
         $this->twig = $container->get('twig');
         $this->translator = $container->get('translator');
     }
+
     /**
      * Display block.
      *

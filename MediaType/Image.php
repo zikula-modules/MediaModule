@@ -14,9 +14,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
-use Imagine\Exception\RuntimeException;
-use Imagine\Imagick\Imagine as ImagickImagine;
-use Imagine\Gd\Imagine as GdImagine;
 use Symfony\Component\HttpFoundation\File\File;
 
 class Image extends AbstractFileMediaType implements UploadableMediaTypeInterface
