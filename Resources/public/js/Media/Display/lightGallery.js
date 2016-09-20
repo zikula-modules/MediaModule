@@ -1,6 +1,8 @@
 (function ($) {
-    $('.cmfcmfmedia-display-lightgallery').lightGallery({
-        thumbnail: true,
-        subHtmlSelectorRelative: true
-    });
+    $(function () {
+        $('.cmfcmfmedia-display-lightgallery').lightGallery({
+            thumbnail: false,
+            subHtmlSelectorRelative: true
+        });
+    })
 })(jQuery);
