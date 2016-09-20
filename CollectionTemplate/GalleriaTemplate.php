@@ -12,7 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
 /**
- * Displays a Galleria image slider https://galleria.io/
+ * Displays a Galleria image slider https://galleria.io/.
  */
 class GalleriaTemplate extends AbstractTemplate
 {
