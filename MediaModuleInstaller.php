@@ -175,6 +175,9 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         $this->delVars();
 
+        \CategoryRegistryUtil::deleteEntry('CmfcmfMediaModule');
+        \CategoryRegistryUtil::deleteEntry('CmfcmfMediaModule');
+
         return true;
     }
 
