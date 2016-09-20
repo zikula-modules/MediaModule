@@ -46,6 +46,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *  "file"           = "AbstractFileEntity",
  *  "video"          = "VideoEntity",
  *  "audio"          = "AudioEntity",
+ *  "unknown"        = "UnknownEntity",
  * })
  */
 abstract class AbstractMediaEntity implements Sluggable, Sortable

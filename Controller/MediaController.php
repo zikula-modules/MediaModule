@@ -668,7 +668,7 @@ class MediaController extends AbstractController
     }
 
     /**
-     * @Route("/show/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"}, options={"expose" = true})
+     * @Route("/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"}, options={"expose" = true})
      * @Method("GET")
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template()

@@ -88,3 +88,9 @@ services:
     parent: cmfcmf_media_module.media_type.abstract_file
     tags:
       - { name: cmfcmf_media_module.media_type }
+
+  cmfcmf_media_module.media_type.unknown:
+    class: Cmfcmf\Module\MediaModule\MediaType\Unknown
+    parent: cmfcmf_media_module.media_type.abstract_file
+    tags:
+      - { name: cmfcmf_media_module.media_type }
