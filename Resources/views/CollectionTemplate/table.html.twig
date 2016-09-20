@@ -1,63 +1,5 @@
 {% include 'CmfcmfMediaModule::util.html.twig' %}
 
-{% set hasParentOrChildCollection = false %}
-{% if showChildCollections %}
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead>
-            <tr>
-                <th>{{ __('Title') }}</th>
-                <th>{{ __('Description') }}</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if collection.parent is not null %}
-                {% set parentCollectionPermission = cmfcmfmediamodule_hasPermission(collection.parent, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
-                {% if parentCollectionPermission %}
-                    {% set hasParentOrChildCollection = true %}
-                    <tr class="active">
-                        <td>
-                            <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: collection.parent.slug})|e('html_attr') }}">
-                                {{ __('Parent collection') }}
-                            </a>
-                        </td>
-                        <td>{{ collection.parent|cmfcmfmediamodule_getdescription }}</td>
-                        <td></td>
-                    </tr>
-                {% endif %}
-            {% endif %}
-            {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
-            {% for child in collection.children %}
-                {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
-                    {% set hasParentOrChildCollection = true %}
-                    <td>
-                        <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
-                            {{ child.title }}
-                        </a>
-                    </td>
-                    <td>{{ child|cmfcmfmediamodule_getdescription }}</td>
-                    <td class="text-right">
-                        <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
-                            <i class="fa fa-search"></i> {{ __('View collection') }}
-                        </a>
-                    </td>
-                {% endif %}
-            {% endfor %}
-            {% if not hasParentOrChildCollection %}
-                <tr class="warning">
-                    <td colspan="3">{{ __('No more sub collections.') }}</td>
-                </tr>
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
-{% endif %}
-
-{% if hasParentOrChildCollection %}
-    <h2>{{ __('Media') }}</h2>
-{% endif %}
-
 <div class="table-responsive">
     <table class="table table-hover">
         <thead>
@@ -70,6 +12,39 @@
         </tr>
         </thead>
         <tbody>
+        {% if showChildCollections %}
+            {% if collection.parent is not null %}
+                {% set parentCollectionPermission = cmfcmfmediamodule_hasPermission(collection.parent, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
+                {% if parentCollectionPermission %}
+                    <tr class="active">
+                        <td>
+                            <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: collection.parent.slug})|e('html_attr') }}">
+                                <i class="fa fa-fw fa-folder-o"></i> ..
+                            </a>
+                        </td>
+                        <td colspan="3">{{ collection.parent|cmfcmfmediamodule_getdescription }}</td>
+                        <td></td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+            {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
+            {% for child in collection.children %}
+                {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
+                    <td>
+                        <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
+                            <i class="fa fa-fw fa-folder-o"></i> {{ child.title }}
+                        </a>
+                    </td>
+                    <td colspan="3">{{ child|cmfcmfmediamodule_getdescription }}</td>
+                    <td class="text-right">
+                        <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
+                            <i class="fa fa-search"></i> {{ __('View collection') }}
+                        </a>
+                    </td>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        {# Media #}
         {% set viewMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS')) %}
         {% set downloadMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
         {% set editMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
@@ -123,7 +98,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">{{ __('This collection is currently empty!') }}</td>
+                <td colspan="5" class="text-center warning">{{ __('This collection does not contain media!') }}</td>
             </tr>
         {% endfor %}
         </tbody>
