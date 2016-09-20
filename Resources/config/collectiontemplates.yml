@@ -32,3 +32,9 @@ services:
     parent: cmfcmf_media_module.collection_template.abstract_service
     tags:
       - { name: cmfcmf_media_module.collection_template }
+
+  cmfcmf_media_module.collection_template.lightgallery:
+    class: Cmfcmf\Module\MediaModule\CollectionTemplate\LightGalleryTemplate
+    parent: cmfcmf_media_module.collection_template.abstract_service
+    tags:
+      - { name: cmfcmf_media_module.collection_template }

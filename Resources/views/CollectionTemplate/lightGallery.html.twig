@@ -1,0 +1,25 @@
+{% extends 'CmfcmfMediaModule:CollectionTemplate:cards.html.twig' %}
+
+{% block media %}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/lightGallery/js/lightgallery-all.min.js'), 98) }}
+    {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/lightGallery/css/lightgallery.min.css')) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/lightGallery.js')) }}
+
+    <div class="cmfcmfmedia-display-lightgallery">
+        {% for media in collection.media %}
+            {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
+            {% set thumbnail = mediaType.thumbnail(media, 200, 150, 'url', 'outbound') %}
+            <a href="{{ media.url }}" data-sub-html=".caption">
+                <img src="{{ thumbnail|e('html_attr') }}" />
+                <div class="caption">
+                    {% if media.title is not empty %}
+                        <h4>{{ media.title }}</h4>
+                    {% endif %}
+                    {% if media.attribution is not empty %}
+                        <p>{{ media.attribution|raw }}</p>
+                    {% endif %}
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% endblock %}
