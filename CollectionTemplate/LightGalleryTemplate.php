@@ -21,6 +21,21 @@ class LightGalleryTemplate extends AbstractTemplate
      */
     public function getTitle()
     {
-        return $this->translator->trans('Light gallery', [], 'cmfcmfmediamodule');
+        return $this->translator->trans('Light gallery image grid', [], 'cmfcmfmediamodule');
+    }
+
+    public function getSettingsForm()
+    {
+        return 'Cmfcmf\Module\MediaModule\Form\CollectionTemplate\LightGalleryType';
+    }
+
+    public function getDefaultOptions()
+    {
+        return [
+            'thumbHeight' => 150,
+            'thumbWidth' => 200,
+            'showTitleBelowThumbs' => false,
+            'showAttributionBelowThumbs' => true
+        ];
     }
 }

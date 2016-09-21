@@ -202,8 +202,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         switch ($size) {
             default:
             case 'full':
-                // @todo Should be original size
-                $code = $this->getThumbnail($entity, 1000, 1000, 'html', 'inset');
+                $code = $this->getOriginalWithWatermark($entity, 'html');
                 break;
             case 'medium':
                 $code = $this->getThumbnail($entity, 550, 350, 'html', 'inset');

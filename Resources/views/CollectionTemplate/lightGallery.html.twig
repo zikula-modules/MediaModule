@@ -6,11 +6,11 @@
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/lightGallery.js')) }}
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/Display/lightGallery.css')) }}
 
-    <div class="cmfcmfmedia-display-lightgallery row">
+    <div class="cmfcmfmedia-display-lightgallery" style="display: flex; flex-wrap: wrap; justify-content: space-around">
         {% for media in collection.media %}
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
-            {% set thumbnail = mediaType.thumbnail(media, 200, 150, 'url', 'outbound') %}
-            <a href="{{ mediaType.originalWithWatermark(media, 'url') }}" data-sub-html=".caption" class="col-xs-6 col-sm-6 col-md-4 col-lg-3" data-download-url="
+            {% set thumbnail = mediaType.thumbnail(media, options.thumbWidth, options.thumbHeight, 'url', options.thumbMode) %}
+            <a href="{{ mediaType.originalWithWatermark(media, 'url') }}" style="margin: 4px" data-sub-html=".caption" data-download-url="
                 {%- if media.downloadAllowed is defined and media.downloadAllowed -%}
                     {{- path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') -}}
                 {%- else -%}
@@ -20,10 +20,10 @@
                 <img src="{{ thumbnail|e('html_attr') }}" class="img-responsive" />
                 <div class="caption">
                     {% if media.title is not empty %}
-                        <h4>{{ media.title }}</h4>
+                        <h4{% if not options.showTitleBelowThumbs %} class="hidden"{% endif %}>{{ media.title }}</h4>
                     {% endif %}
                     {% if media.attribution is not empty %}
-                        <p>{{ media.attribution|raw }}</p>
+                        <p{% if not options.showAttributionBelowThumbs %} class="hidden"{% endif %}>{{ media.attribution('raw') }}</p>
                     {% endif %}
                 </div>
             </a>

@@ -13,6 +13,7 @@ namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 interface TemplateInterface
@@ -23,13 +24,15 @@ interface TemplateInterface
      * @param CollectionEntity    $collectionEntity     The collection to render.
      * @param MediaTypeCollection $mediaTypeCollection  A collection of media types.
      * @param bool                $showChildCollections Whether or not to show child collections.
+     * @param array               $options              Collection template specific option array.
      *
      * @return Response
      */
     public function render(
         CollectionEntity $collectionEntity,
         MediaTypeCollection $mediaTypeCollection,
-        $showChildCollections
+        $showChildCollections,
+        array $options
     );
 
     /**
@@ -47,4 +50,18 @@ interface TemplateInterface
      * @return string
      */
     public function getTitle();
+
+    /**
+     * A settings form with additional settings. It will be displayed if the template is selected.
+     *
+     * @return string|FormInterface|null
+     */
+    public function getSettingsForm();
+
+    /**
+     * Default form options.
+     *
+     * @return array
+     */
+    public function getDefaultOptions();
 }

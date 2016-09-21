@@ -75,12 +75,29 @@ abstract class AbstractTemplate implements TemplateInterface
     /**
      * {@inheritdoc}
      */
-    public function render(CollectionEntity $collectionEntity, MediaTypeCollection $mediaTypeCollection, $showChildCollections)
+    public function render(CollectionEntity $collectionEntity, MediaTypeCollection $mediaTypeCollection, $showChildCollections, array $options)
     {
         return $this->renderEngine->render($this->getTemplate(), [
             'collection' => $collectionEntity,
             'mediaTypeCollection' => $mediaTypeCollection,
-            'showChildCollections' => $showChildCollections
+            'showChildCollections' => $showChildCollections,
+            'options' => $options
         ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSettingsForm()
+    {
+        return null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefaultOptions()
+    {
+        return [];
     }
 }

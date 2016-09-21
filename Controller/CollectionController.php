@@ -283,12 +283,15 @@ class CollectionController extends AbstractController
         } else {
             $defaultTemplate = \ModUtil::getVar('CmfcmfMediaModule', 'defaultCollectionTemplate');
         }
-
         $template = $request->query->get('template', $defaultTemplate);
-        $collectionTemplateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
-        if (!$collectionTemplateCollection->hasTemplate($template)) {
+
+        $selectedTemplateFactory = $this->get('cmfcmf_media_module.collection_template.selected_factory');
+        try {
+            $selectedTemplate = $selectedTemplateFactory->fromDB($template);
+        } catch (\DomainException $e) {
             throw new NotFoundHttpException();
         }
+
 
         $entity->setViews($entity->getViews() + 1);
         $em = $this->getDoctrine()->getManager();
@@ -309,10 +312,11 @@ class CollectionController extends AbstractController
         );
         $templateVars['renderRaw'] = $isHook = $request->query->get('isHook', false);
 
-        $templateVars['content'] = $collectionTemplateCollection->getCollectionTemplate($template)->render(
+        $templateVars['content'] = $selectedTemplate->getTemplate()->render(
             $entity,
             $this->get('cmfcmf_media_module.media_type_collection'),
-            !$isHook
+            !$isHook,
+            $selectedTemplate->getOptions()
         );
 
         return $this->render('CmfcmfMediaModule:Collection:display.html.twig', $templateVars);

@@ -39,6 +39,67 @@
     </script>
 {%- endblock -%}
 
+{%- block cmfcmfmediamodule_collectiontemplate_widget -%}
+    {{ form_row(form.template) }}
+    {{ form_row(form.options) }}
+
+    <script>
+        (function ($) {
+            function findCsrfTokenId($field) {
+                return $field.closest('form').find('input[id$=\'_token\']').attr('id');
+            }
+            function createNoOptionsMessage() {
+                var noOptionsMessage = "{{ 'There are no options for this collection template.'|trans }}";
+                $options.html('<div class="alert alert-info">' + noOptionsMessage + '</div>');
+            }
+
+            var prefix = "{{ form.vars.id|e('js') }}";
+            var $template = $('#' + prefix + '_template');
+            var $options = $('#' + prefix + '_options');
+
+            var csrfTokenId = findCsrfTokenId($template);
+            var $csrf = $('#' + csrfTokenId);
+
+            if ($options.children().length == 0) {
+                createNoOptionsMessage();
+            }
+
+            $template.change(function() {
+                // ... retrieve the corresponding form.
+                var $form = $(this).closest('form');
+                // Simulate form data, but only include the selected sport value.
+                var data = {};
+                data[$template.attr('name')] = $template.val();
+                data[$csrf.attr('name')] = $csrf.val();
+
+                $template.attr('disabled', true);
+
+                // Submit data via AJAX to the form's action path.
+                $.ajax({
+                    url : $form.attr('action'),
+                    type: $form.attr('method'),
+                    data : data,
+                    success: function(html) {
+                        // Replace current options with the returned ones from the AJAX response
+                        // or display an info message that there aren't any options.
+                        var $newOptions = $(html).find('#' + prefix + '_options');
+                        if ($newOptions.children().length > 0) {
+                            $options.replaceWith($newOptions);
+                            $options = $newOptions;
+                        } else {
+                            createNoOptionsMessage();
+                        }
+                        // Also update CSRF field.
+                        $csrf.val($(html).find('#' + csrfTokenId).val());
+                    }
+                }).always(function () {
+                    $template.attr('disabled', false);
+                });
+            });
+        })(jQuery);
+    </script>
+{%- endblock -%}
+
 {% block cmfcmfmediamodule_permission_widget %}
     {{ pageAddAsset('javascript',  zasset('@CmfcmfMediaModule:js/Collection/Permission/New.js')) }}
     <div class="table-responsive">

@@ -115,15 +115,7 @@ class CollectionType extends AbstractType
                 'entity' => 'CollectionEntity',
                 'entityCategoryClass' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity',
             ])
-            ->add(
-                'defaultTemplate',
-                'choice',
-                [
-                    'label' => $this->translator->trans('Template', [], 'cmfcmfmediamodule'),
-                    'required' => false,
-                    'placeholder' => $this->translator->trans('Default', [], 'cmfcmfmediamodule'),
-                    'choices' => $this->templateCollection->getCollectionTemplateTitles()
-                ])
+            ->add('defaultTemplate', 'cmfcmfmediamodule_collectiontemplate')
             ->add(
                 'parent',
                 'entity',

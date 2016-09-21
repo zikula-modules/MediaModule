@@ -81,7 +81,8 @@ class CollectionBlock extends AbstractBlockHandler
         $content = $this->get('cmfcmf_media_module.collection_template_collection')->getCollectionTemplate($properties['template'])->render(
             $collection,
             $this->get('cmfcmf_media_module.media_type_collection'),
-            isset($properties['showChildCollections']) ? $properties['showChildCollections'] : false
+            isset($properties['showChildCollections']) ? $properties['showChildCollections'] : false,
+            [] // @todo pass template options
         );
 
         $hook = '';

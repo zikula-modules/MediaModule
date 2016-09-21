@@ -59,11 +59,11 @@ class SettingsType extends SymfonyAbstractType
                     'raw' => $this->translator->trans('As is - use with editors like Scribite', [], 'cmfcmfmediamodule'),
                 ]
             ])
-            ->add('defaultCollectionTemplate', 'choice', [
+            ->add('defaultCollectionTemplate', 'cmfcmfmediamodule_collectiontemplate', [
                 'label' => $this->translator->trans('Default collection template', [], 'cmfcmfmediamodule'),
                 'required' => true,
+                'allowDefaultTemplate' => false,
                 'data' => \ModUtil::getVar('CmfcmfMediaModule', 'defaultCollectionTemplate'),
-                'choices' => $this->templates
             ])
             // @todo Allow to edit slugs.
             //->add('slugEditable', 'checkbox', [

@@ -40,6 +40,15 @@ services:
       tags:
           - { name: form.type, alias: cmfcmfmediamodule_permission }
 
+  cmfcmf_media_module.form.type.collection_template:
+      class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType
+      arguments:
+          - "@translator"
+          - "@cmfcmf_media_module.collection_template_collection"
+          - "@cmfcmf_media_module.collection_template.selected_factory"
+      tags:
+          - { name: form.type, alias: cmfcmfmediamodule_collectiontemplate }
+
 
   # Listeners
   cmfcmf_media_module.listener.module:
@@ -79,6 +88,11 @@ services:
     class: Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection
     lazy: true
 
+
+  # Selected collection template factory
+  cmfcmf_media_module.collection_template.selected_factory:
+    class: Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory
+    arguments: ["@cmfcmf_media_module.collection_template_collection"]
 
   # Twig extension
   cmfcmf_media_module.twig_extension:

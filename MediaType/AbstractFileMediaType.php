@@ -117,14 +117,6 @@ abstract class AbstractFileMediaType extends AbstractMediaType
 
         $imagine = $this->imagineManager->getImagine();
 
-        // Check whether the image is big enough to be watermarked.
-        if ($watermark->getMinSizeX() !== null && $width < $watermark->getMinSizeX()) {
-            return $transformation;
-        }
-        if ($watermark->getMinSizeY() !== null && $height < $watermark->getMinSizeY()) {
-            return $transformation;
-        }
-
         // Generate the watermark image. It will already be correctly sized
         // for the thumbnail.
         if ($mode == 'outbound') {
@@ -142,6 +134,15 @@ abstract class AbstractFileMediaType extends AbstractMediaType
         } else {
             throw new \LogicException();
         }
+
+        // Check whether the image is big enough to be watermarked.
+        if ($watermark->getMinSizeX() !== null && $wWidth < $watermark->getMinSizeX()) {
+            return $transformation;
+        }
+        if ($watermark->getMinSizeY() !== null && $wHeight < $watermark->getMinSizeY()) {
+            return $transformation;
+        }
+
         $watermarkImage = $watermark->getImagineImage($imagine, $this->fontCollection, $wWidth, $wHeight);
         $watermarkSize = $watermarkImage->getSize();
 
@@ -156,11 +157,40 @@ abstract class AbstractFileMediaType extends AbstractMediaType
             $y += $wHeight - $watermarkSize->getHeight();
         }
 
-        // If the watermark still exceeds the image's width or height, do
-        // not watermark the image.
-        // @todo Probably resize watermark instead?
+        // If the watermark still exceeds the image's width or height, resize the watermark.
         if ($x < 0 || $y < 0 || $x + $watermarkSize->getWidth() > $wWidth || $y + $watermarkSize->getHeight() > $wHeight) {
-            return $transformation;
+            $xOffset = 0;
+            if ($x < 0) {
+                $xOffset = $x * -1;
+            }
+            $yOffset = 0;
+            if ($y < 0) {
+                $yOffset = $y * -1;
+            }
+
+            $ratios = [
+                ($watermarkSize->getWidth() - $xOffset) / $watermarkSize->getWidth(),
+                ($watermarkSize->getHeight() - $yOffset) / $watermarkSize->getHeight()
+            ];
+            $watermarkSize = $watermarkSize->scale(min($ratios));
+            $watermarkImage->resize($watermarkSize);
+
+            $x = $watermark->getPositionX() + $wWidth - $watermarkSize->getWidth();
+            $y = $watermark->getPositionY() + $wHeight - $watermarkSize->getHeight();
+
+            $xOffset = 0;
+            if ($x + $watermarkSize->getWidth() > $wWidth) {
+                $xOffset = $x + $watermarkSize->getWidth() - $wWidth;
+            }
+            $yOffset = 0;
+            if ($y + $watermarkSize->getHeight() > $wHeight) {
+                $yOffset = $y + $watermarkSize->getHeight() - $wHeight;
+            }
+            $ratios = [
+                ($watermarkSize->getWidth() - $xOffset) / $watermarkSize->getWidth(),
+                ($watermarkSize->getHeight() - $yOffset) / $watermarkSize->getHeight()
+            ];
+            $watermarkImage->resize($watermarkSize->scale(min($ratios)));
         }
 
         $point = new \Imagine\Image\Point($x, $y);

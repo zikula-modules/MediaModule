@@ -1,7 +1,9 @@
 (function ($) {
     $(function () {
-        Galleria.run('.cmfcmfmedia-display-galleria', {
-            height: 400
+        $('.cmfcmfmedia-display-galleria').each(function () {
+            Galleria.run($(this), {
+                height: $(this).data('height')
+            });
         });
     });
 })(jQuery);

@@ -23,4 +23,16 @@ class GalleriaTemplate extends AbstractTemplate
     {
         return $this->translator->trans('Galleria image slider', [], 'cmfcmfmediamodule');
     }
+
+    public function getSettingsForm()
+    {
+        return 'Cmfcmf\Module\MediaModule\Form\CollectionTemplate\GalleriaType';
+    }
+
+    public function getDefaultOptions()
+    {
+        return [
+            'height' => 400,
+        ];
+    }
 }
