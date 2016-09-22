@@ -35,14 +35,14 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        $enableYouTubeUpload = !empty(\ModUtil::getVar('CmfcmfMediaModule', 'googleApiOAuthClientID'))
-            && !empty(\ModUtil::getVar('CmfcmfMediaModule', 'googleApiOAuthClientSecret'));
+        $clientID = \ModUtil::getVar('CmfcmfMediaModule', 'googleApiOAuthClientID');
+        $clientSecret = \ModUtil::getVar('CmfcmfMediaModule', 'googleApiOAuthClientSecret');
 
         return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:fullpage.html.twig', [
             'entity' => $entity,
             'width' => '100%',
             'height' => '400',
-            'enableYouTubeUpload' => $enableYouTubeUpload
+            'enableYouTubeUpload' => !empty($clientID) && !empty($clientSecret)
         ]);
     }
 
