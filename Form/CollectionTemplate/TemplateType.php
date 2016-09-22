@@ -57,7 +57,7 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
 
         $builder->add('template', 'choice', [
             'label' => $this->translator->trans('Template', [], 'cmfcmfmediamodule'),
-            'required' => true,
+            'required' => !$options['allowDefaultTemplate'],
             'placeholder' => $options['allowDefaultTemplate'] ? $this->translator->trans('Default', [], 'cmfcmfmediamodule') : false,
             'choices' => $this->templateCollection->getCollectionTemplateTitles()
         ])->add('options', 'form', [
