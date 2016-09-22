@@ -187,6 +187,13 @@ END;
             }
 
             $request->getSession()->set('cmfcmfmediamodule_youtube_oauth_token', $client->getAccessToken());
+
+            $this->addFlash('status', $this->get('translator')->trans('Your video was successfully uploaded.', [], 'cmfcmfmediamodule'));
+
+            return $this->redirectToRoute('cmfcmfmediamodule_media_display', [
+                'slug' => $entity->getSlug(),
+                'collectionSlug' => $entity->getCollection()->getSlug()
+            ]);
         }
     }
 
