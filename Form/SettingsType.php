@@ -201,12 +201,14 @@ class SettingsType extends SymfonyAbstractType
                 if (null === $modelData) {
                     return null;
                 }
+
                 return $em->find('CmfcmfMediaModule:License\LicenseEntity', $modelData);
             }, function ($viewData) {
                 /** @var null|LicenseEntity $viewData */
                 if (null === $viewData) {
                     return null;
                 }
+
                 return $viewData->getId();
             }));
     }
