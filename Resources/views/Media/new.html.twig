@@ -152,7 +152,7 @@
                             </div>
                             {% for mediaType in webMediaTypes %}
                                 <div class="tab-pane" id="cmfcmfmedia-web-provider-{{ mediaType.alias }}">
-                                    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/MediaType/' ~ mediaType.alias|capitalize ~ '/WebCreation.js')) }}
+                                    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/MediaType/' ~ mediaType.alias[:1]|upper ~ mediaType.alias[1:] ~ '/WebCreation.js')) }}
                                     <form method="post" action="{{ path('cmfcmfmediamodule_media_create', {type: 'web', mediaType: mediaType.alias, popup: isPopup }) }}">
                                         <input type="hidden" value="1" name="init" />
                                         <input type="hidden" name="settings" id="cmfcmfmedia-web-mediatype-{{ mediaType.alias }}-settings" />
