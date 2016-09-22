@@ -28,7 +28,6 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\EventListener\ResponseListener;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
@@ -42,7 +41,7 @@ class MediaTypeController extends AbstractController
      * @ParamConverter()
      *
      * @param VideoEntity $entity
-     * @param Request $request
+     * @param Request     $request
      *
      * @return Response
      */
@@ -89,7 +88,7 @@ class MediaTypeController extends AbstractController
             $client->authenticate($request->query->get('code'));
             $request->getSession()->set('cmfcmfmediamodule_youtube_oauth_token', $client->getAccessToken());
         }
-            
+
         if ($request->getSession()->has('cmfcmfmediamodule_youtube_oauth_token')) {
             $client->setAccessToken($request->getSession()->get('cmfcmfmediamodule_youtube_oauth_token'));
         }
@@ -118,7 +117,7 @@ END;
                 ]);
             }
 
-            try{
+            try {
                 $videoPath = $entity->getPath();
 
                 // Create a snippet with title, description, tags and category ID
@@ -171,8 +170,6 @@ END;
 
                 // If you want to make other calls after the file upload, set setDefer back to false
                 $client->setDefer(false);
-
-
             } catch (Google_Service_Exception $e) {
                 $this->addFlash('error', $this->get('translator')->trans('A Google service error occurred: %error%', ['%error%' => $e->getMessage()], 'cmfcmfmediamodule'));
 
@@ -217,6 +214,7 @@ END;
 
     /**
      * @param VideoEntity $entity
+     *
      * @return Google_Service_YouTube_VideoSnippet
      */
     private function createVideoSnippet(VideoEntity $entity)

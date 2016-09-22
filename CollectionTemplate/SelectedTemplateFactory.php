@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
 class SelectedTemplateFactory
@@ -34,6 +43,7 @@ class SelectedTemplateFactory
         if (count($options) == 0) {
             $options = $template->getDefaultOptions();
         }
+
         return new SelectedTemplate($template, $options);
     }
 

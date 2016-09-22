@@ -27,7 +27,7 @@ class SettingsType extends SymfonyAbstractType
      * @var TranslatorInterface
      */
     private $translator;
-    
+
     /**
      * @var VariableApi
      */
