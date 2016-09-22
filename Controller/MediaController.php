@@ -387,7 +387,7 @@ class MediaController extends AbstractController
             }
         }
         usort($matches, function ($a, $b) {
-            return $a['score'] - $b['score'];
+            return $b['score'] - $a['score'];
         });
 
         return new JsonResponse($matches);
