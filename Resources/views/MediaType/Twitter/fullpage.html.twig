@@ -1,5 +1,5 @@
 <blockquote class="twitter-tweet">
-    <a href="https://twitter.com/jack/status/{{ entity.tweetId|e('html_attr') }}">
+    <a href="{{ entity.url|e('html_attr') }}">
         {% if placeholder is defined %}
             {{ placeholder }}
         {% else %}
