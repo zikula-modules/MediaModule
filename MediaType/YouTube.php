@@ -124,7 +124,8 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
         $response = $youtube->search->listSearch('id,snippet', [
             'q' => $q,
-            'maxResults' => 50
+            'maxResults' => 50,
+            'type' => $dropdownValue
         ]);
 
         $result = [

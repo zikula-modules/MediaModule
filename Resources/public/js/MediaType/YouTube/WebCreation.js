@@ -10,9 +10,9 @@
             ],
             {
                 everything: 'Everything',
-                videos: 'Videos',
-                channels: 'Channels',
-                playlists: 'Playlists'
+                video: 'Videos',
+                channel: 'Channels',
+                playlist: 'Playlists'
             },
             'Search for videos, channels and playlists'
         );
