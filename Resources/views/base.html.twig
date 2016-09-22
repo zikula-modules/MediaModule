@@ -19,6 +19,8 @@
     {% endif %}
 {% endblock %}
 
+{% block above_title %}{% endblock %}
+
 {% set title = block('title') %}
 {% if title|trim is not empty %}
     <h1>{% block title %}{% endblock %}</h1>

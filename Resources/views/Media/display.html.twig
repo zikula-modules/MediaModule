@@ -1,4 +1,7 @@
 {% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% block above_title %}
+    {% include 'CmfcmfMediaModule:Search:search.html.twig' %}
+{% endblock %}
 {% block title %}
     {{ entity.title }}
 {% endblock %}
