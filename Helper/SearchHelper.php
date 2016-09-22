@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Cmfcmf\Module\MediaModule\Helper;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
@@ -11,10 +20,11 @@ use Zikula\SearchModule\AbstractSearchable;
 class SearchHelper extends AbstractSearchable
 {
     /**
-     * get the UI options for search form
+     * get the UI options for search form.
      *
-     * @param boolean $active if the module should be checked as active
+     * @param bool       $active  if the module should be checked as active
      * @param array|null $modVars module form vars as previously set
+     *
      * @return string
      */
     public function getOptions($active, $modVars = null)
@@ -24,11 +34,12 @@ class SearchHelper extends AbstractSearchable
     }
 
     /**
-     * Get the search results
+     * Get the search results.
      *
-     * @param array $words array of words to search for
-     * @param string $searchType AND|OR|EXACT
-     * @param array|null $modVars module form vars passed though
+     * @param array      $words      array of words to search for
+     * @param string     $searchType AND|OR|EXACT
+     * @param array|null $modVars    module form vars passed though
+     *
      * @return array
      */
     public function getResults(array $words, $searchType = 'AND', $modVars = null)
