@@ -294,15 +294,17 @@ class CollectionController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        // Use query builder to update view count and thus avoid locking problems and race conditions.
-        /** @var EntityManagerInterface $em */
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-        $qb->update('CmfcmfMediaModule:Collection\CollectionEntity', 'c')
-            ->where($qb->expr()->eq('c.id', ':id'))
-            ->set('c.views', 'c.views + 1')
-            ->setParameter('id', $entity->getId())
-            ->getQuery()->execute();
+        if ($this->getVar('enableCollectionViewCounter', false)) {
+            // Use query builder to update view count and thus avoid locking problems and race conditions.
+            /** @var EntityManagerInterface $em */
+            $em = $this->getDoctrine()->getManager();
+            $qb = $em->createQueryBuilder();
+            $qb->update('CmfcmfMediaModule:Collection\CollectionEntity', 'c')
+                ->where($qb->expr()->eq('c.id', ':id'))
+                ->set('c.views', 'c.views + 1')
+                ->setParameter('id', $entity->getId())
+                ->getQuery()->execute();
+        }
 
         $templateVars = [
             'collection' => $entity,

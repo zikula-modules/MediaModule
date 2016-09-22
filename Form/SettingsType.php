@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Form;
 use Symfony\Component\Form\AbstractType as SymfonyAbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\ExtensionsModule\Api\VariableApi;
 
 class SettingsType extends SymfonyAbstractType
 {
@@ -26,11 +27,17 @@ class SettingsType extends SymfonyAbstractType
      * @var TranslatorInterface
      */
     private $translator;
+    
+    /**
+     * @var VariableApi
+     */
+    private $variableApi;
 
-    public function __construct(TranslatorInterface $translator, array $templates)
+    public function __construct(TranslatorInterface $translator, VariableApi $variableApi, array $templates)
     {
         $this->templates = $templates;
         $this->translator = $translator;
+        $this->variableApi = $variableApi;
     }
 
     /**
@@ -42,7 +49,7 @@ class SettingsType extends SymfonyAbstractType
             ->add('descriptionEscapingStrategyForCollection', 'choice', [
                 'label' => $this->translator->trans('Collection description escaping strategy', [], 'cmfcmfmediamodule'),
                 'required' => true,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection'),
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection'),
                 'choices' => [
                     'text' => $this->translator->trans('Safe - no HTML permitted, only plain text', [], 'cmfcmfmediamodule'),
                     'markdown' => $this->translator->trans('MarkDown', [], 'cmfcmfmediamodule'),
@@ -52,7 +59,7 @@ class SettingsType extends SymfonyAbstractType
             ->add('descriptionEscapingStrategyForMedia', 'choice', [
                 'label' => $this->translator->trans('Media description escaping strategy', [], 'cmfcmfmediamodule'),
                 'required' => true,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'descriptionEscapingStrategyForMedia'),
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForMedia'),
                 'choices' => [
                     'text' => $this->translator->trans('Safe - no HTML permitted, only plain text', [], 'cmfcmfmediamodule'),
                     'markdown' => $this->translator->trans('MarkDown', [], 'cmfcmfmediamodule'),
@@ -63,18 +70,34 @@ class SettingsType extends SymfonyAbstractType
                 'label' => $this->translator->trans('Default collection template', [], 'cmfcmfmediamodule'),
                 'required' => true,
                 'allowDefaultTemplate' => false,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'defaultCollectionTemplate'),
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'defaultCollectionTemplate'),
             ])
             // @todo Allow to edit slugs.
             //->add('slugEditable', 'checkbox', [
             //    'label' => $this->translator->trans('Make slugs editable', [], 'cmfcmfmediamodule'),
-            //    'data' => \ModUtil::getVar('CmfcmfMediaModule', 'slugEditable')
+            //    'data' => $this->variableApi->get('CmfcmfMediaModule', 'slugEditable')
             //])
+            ->add('enableMediaViewCounter', 'checkbox', [
+                'label' => $this->translator->trans('Enable media view counter', [], 'cmfcmfmediamodule'),
+                'required' => false,
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'enableMediaViewCounter', false),
+                'attr' => [
+                    'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.')
+                ]
+            ])
+            ->add('enableCollectionViewCounter', 'checkbox', [
+                'label' => $this->translator->trans('Enable collection view counter', [], 'cmfcmfmediamodule'),
+                'required' => false,
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'enableCollectionViewCounter', false),
+                'attr' => [
+                    'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.')
+                ]
+            ])
             ->add('soundCloudApiKey', 'text', [
                 'label' => $this->translator->trans('SoundCloud "Client ID"', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'soundCloudApiKey'),
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey'),
                 'attr' => [
                     'help' => $this->translator->trans('Go to http://soundcloud.com/you/apps/new and create a new application. The name doesn\'t matter. In the next screen, enter the url of your Zikula installation at "Website of your App" and leave "Redirect URI for Authentication" empty. Then save and paste the "Client ID" here.', [], 'cmfcmfmediamodule')
                 ]
@@ -84,7 +107,7 @@ class SettingsType extends SymfonyAbstractType
             //    'label' => $this->translator->trans('Flickr API Client Key', [], 'cmfcmfmediamodule'),
             //    'required' => false,
             //    'empty_data' => null,
-            //    'data' => \ModUtil::getVar('CmfcmfMediaModule', 'flickrApiKey'),
+            //    'data' => $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey'),
             //    'attr' => [
             //        'help' => $this->translator->trans('Go to https://www.flickr.com/services/apps/create/apply and create a new application. The name doesn\'t matter. Paste the "Key" here (not the "secret key", [], 'cmfcmfmediamodule').')
             //    ]
@@ -93,16 +116,34 @@ class SettingsType extends SymfonyAbstractType
                 'label' => $this->translator->trans('Google API Developer Key', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'googleApiKey'),
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey'),
                 'attr' => [
                     'help' => $this->translator->trans('Go to https://console.developers.google.com/project and create a new project. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> API-Key -> Server-Key". Again, the name does\'t matter. Then paste the API key here.', [], 'cmfcmfmediamodule')
+                ]
+            ])
+            ->add('googleApiOAuthClientID', 'text', [
+                'label' => $this->translator->trans('Google API OAuth2 Client ID', [], 'cmfcmfmediamodule'),
+                'required' => false,
+                'empty_data' => null,
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiOAuthClientID'),
+                'attr' => [
+                    'help' => $this->translator->trans('Go to https://console.developers.google.com/project and create a new project. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> OAuth-Client-ID -> Webapplication". Again, the name does\'t matter. Then paste the Client-ID here.', [], 'cmfcmfmediamodule')
+                ]
+            ])
+            ->add('googleApiOAuthClientSecret', 'text', [
+                'label' => $this->translator->trans('Google API OAuth2 Client Secret', [], 'cmfcmfmediamodule'),
+                'required' => false,
+                'empty_data' => null,
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiOAuthClientSecret'),
+                'attr' => [
+                    'help' => $this->translator->trans('Use the OAuth Client-Secret you got when creating your OAuth Client-ID.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('twitterApiKey', 'text', [
                 'label' => $this->translator->trans('Twitter API Consumer Key', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiKey'),
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey'),
                 'attr' => [
                     'help' => $this->translator->trans('Go to https://apps.twitter.com/ and create a new application. The name doesn\'t matter and "Callback URL" should be empty. Then go to "Keys and Access Tokens". At the bottom, click at "Create my access token".', [], 'cmfcmfmediamodule')
                 ]
@@ -111,19 +152,19 @@ class SettingsType extends SymfonyAbstractType
                 'label' => $this->translator->trans('Twitter API Secret', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiSecret')
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret')
             ])
             ->add('twitterApiAccessToken', 'text', [
                 'label' => $this->translator->trans('Twitter API Access Token', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessToken')
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken')
             ])
             ->add('twitterApiAccessTokenSecret', 'text', [
                 'label' => $this->translator->trans('Twitter API Access Token Secret', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
-                'data' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessTokenSecret')
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret')
             ])
             ->add('save', 'submit', [
                 'label' => $this->translator->trans('Save', [], 'cmfcmfmediamodule'),

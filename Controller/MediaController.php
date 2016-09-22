@@ -687,15 +687,17 @@ class MediaController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        // Use query builder to update view count and thus avoid locking problems and race conditions.
-        /** @var EntityManagerInterface $em */
-        $em = $this->getDoctrine()->getManager();
-        $qb = $em->createQueryBuilder();
-        $qb->update('CmfcmfMediaModule:Media\AbstractMediaEntity', 'm')
-            ->where($qb->expr()->eq('m.id', ':id'))
-            ->set('m.views', 'm.views + 1')
-            ->setParameter('id', $entity->getId())
-            ->getQuery()->execute();
+        if ($this->getVar('enableMediaViewCounter', false)) {
+            // Use query builder to update view count and thus avoid locking problems and race conditions.
+            /** @var EntityManagerInterface $em */
+            $em = $this->getDoctrine()->getManager();
+            $qb = $em->createQueryBuilder();
+            $qb->update('CmfcmfMediaModule:Media\AbstractMediaEntity', 'm')
+                ->where($qb->expr()->eq('m.id', ':id'))
+                ->set('m.views', 'm.views + 1')
+                ->setParameter('id', $entity->getId())
+                ->getQuery()->execute();
+        }
 
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
@@ -703,6 +705,7 @@ class MediaController extends AbstractController
             'mediaType' => $mediaTypeCollection->getMediaTypeFromEntity($entity),
             'entity' => $entity,
             'breadcrumbs' =>  $entity->getCollection()->getBreadcrumbs($this->get('router'), true),
+            'views' => $this->getVar('enableMediaViewCounter', false) ? $entity->getViews() : '-1',
             'hook' => $this->getDisplayHookContent(
                 'media',
                 'display_view',

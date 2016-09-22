@@ -2,3 +2,9 @@
     <source src="{{ entity.url|e('html_attr') }}" type="{{ entity.mimeType|e('html_attr') }}">
     {{ __('Your browser does not support the audio element.') }}
 </video>
+
+{% if enableYouTubeUpload and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
+    <a href="{{ path('cmfcmfmediamodule_mediatype_youtubeupload', {id: entity.id}) }}" class="btn btn-sm btn-default" style="background: #cd201f; color: white">
+        <i class="fa fa-youtube"></i> Upload to YouTube
+    </a>
+{% endif %}

@@ -21,7 +21,7 @@
                         {% endif %}
                             {{ entity.license.title }}
                         {% if entity.license.url is not null %}
-                            </a
+                            </a>
                         {% endif %}
                     </p>
                 {% endif %}
@@ -48,6 +48,9 @@
                     <strong>{{ __('Added by') }}</strong>: {{ entity.createdUserId|cmfcmfmediamodule_unamefromuid }}
                     {{ __('at ') }} {{ entity.createdDate.format('d.m.Y H:i') }} <!-- @todo Internationalize -->
                     <img src="{{ entity.createdUserId|cmfcmfmediamodule_avatarfromuid }}" class="img img-rounded pull-right" alt="" width="60" height="60" />
+                    {% if views >= 0 %}
+                        <strong>{{ __('Views') }}</strong>: {{ views }}
+                    {% endif %}
                     <div class="clearfix"></div>
                 </p>
             </div>

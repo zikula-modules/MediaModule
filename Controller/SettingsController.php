@@ -194,17 +194,20 @@ class SettingsController extends AbstractController
         $collectionTemplateCollection = $this->get(
             'cmfcmf_media_module.collection_template_collection');
         $translator = $this->get('translator');
+        $variableApi = $this->get('zikula_extensions_module.api.variable');
 
-        $form = $this->createForm(
-            new SettingsType(
-                $translator,
-                $collectionTemplateCollection->getCollectionTemplateTitles()));
+        $form = $this->createForm(new SettingsType(
+            $translator,
+            $variableApi,
+            $collectionTemplateCollection->getCollectionTemplateTitles()
+            )
+        );
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $data = $form->getData();
             foreach ($data as $name => $value) {
-                \ModUtil::setVar('CmfcmfMediaModule', $name, $value);
+                $variableApi->set('CmfcmfMediaModule', $name, $value);
             }
             $this->addFlash('status', $this->__('Settings saved!'));
         }
