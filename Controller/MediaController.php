@@ -20,6 +20,7 @@ use Cmfcmf\Module\MediaModule\MediaType\PasteMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\WebMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -686,10 +687,15 @@ class MediaController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $entity->setViews($entity->getViews() + 1);
+        // Use query builder to update view count and thus avoid locking problems and race conditions.
+        /** @var EntityManagerInterface $em */
         $em = $this->getDoctrine()->getManager();
-        $em->merge($entity);
-        $em->flush();
+        $qb = $em->createQueryBuilder();
+        $qb->update('CmfcmfMediaModule:Media\AbstractMediaEntity', 'm')
+            ->where($qb->expr()->eq('m.id', ':id'))
+            ->set('m.views', 'm.views + 1')
+            ->setParameter('id', $entity->getId())
+            ->getQuery()->execute();
 
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 

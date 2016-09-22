@@ -16,6 +16,8 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Form\Collection\CollectionType;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -292,11 +294,15 @@ class CollectionController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-
-        $entity->setViews($entity->getViews() + 1);
+        // Use query builder to update view count and thus avoid locking problems and race conditions.
+        /** @var EntityManagerInterface $em */
         $em = $this->getDoctrine()->getManager();
-        $em->merge($entity);
-        $em->flush();
+        $qb = $em->createQueryBuilder();
+        $qb->update('CmfcmfMediaModule:Collection\CollectionEntity', 'c')
+            ->where($qb->expr()->eq('c.id', ':id'))
+            ->set('c.views', 'c.views + 1')
+            ->setParameter('id', $entity->getId())
+            ->getQuery()->execute();
 
         $templateVars = [
             'collection' => $entity,
