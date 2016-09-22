@@ -34,6 +34,7 @@ class LightGalleryTemplate extends AbstractTemplate
         return [
             'thumbHeight' => 150,
             'thumbWidth' => 200,
+            'thumbMode' => 'inset',
             'showTitleBelowThumbs' => false,
             'showAttributionBelowThumbs' => true
         ];
