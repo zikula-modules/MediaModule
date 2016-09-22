@@ -18,8 +18,10 @@ use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Form\DataTransformer\ArrayToJsonTransformer;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
+use Zikula\ExtensionsModule\Api\VariableApi;
 
 /**
  * Provides some convenience methods for all media form types.
@@ -46,8 +48,20 @@ abstract class AbstractMediaEntityType extends AbstractType
      */
     private $securityManager;
 
+    /**
+     * @var VariableApi
+     */
+    private $variableApi;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
     public function __construct(
         SecurityManager $securityManager,
+        VariableApi $variableApi,
+        EntityManagerInterface $em,
         $isCreation = false,
         CollectionEntity $parent = null,
         $allowTemporaryUploadCollection = false
@@ -56,6 +70,8 @@ abstract class AbstractMediaEntityType extends AbstractType
         $this->isCreation = $isCreation;
         $this->parent = $parent;
         $this->allowTemporaryUploadCollection = $allowTemporaryUploadCollection;
+        $this->variableApi = $variableApi;
+        $this->em = $em;
     }
 
     /**
@@ -65,7 +81,7 @@ abstract class AbstractMediaEntityType extends AbstractType
     {
         parent::buildForm($builder, $options);
 
-        $escapingStrategy = \ModUtil::getVar(
+        $escapingStrategy = $this->variableApi->get(
             'CmfcmfMediaModule',
             'descriptionEscapingStrategyForMedia');
         switch ($escapingStrategy) {
@@ -127,6 +143,11 @@ abstract class AbstractMediaEntityType extends AbstractType
             $collectionOptions['data'] = $this->parent;
         }
 
+        $defaultLicense = $this->variableApi->get('CmfcmfMediaModule', 'defaultLicense', null);
+        if (null !== $defaultLicense) {
+            $defaultLicense = $this->em->find('CmfcmfMediaModule:License\LicenseEntity', $defaultLicense);
+        }
+
         $builder
             ->add('collection', 'entity', $collectionOptions)
             ->add('categoryAssignments', 'Zikula\CategoriesModule\Form\Type\CategoriesType', [
@@ -166,7 +187,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                     'preferred_choices' => function (LicenseEntity $license) {
                         return !$license->isOutdated();
                     },
-                    'data' => \ModUtil::getVar('CmfcmfMediaModule', 'defaultLicense'),
+                    'data' => $defaultLicense,
                     'query_builder' => function (EntityRepository $er) {
                         return $er->createQueryBuilder('l')
                             ->orderBy('l.title', 'ASC')

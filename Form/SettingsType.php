@@ -15,6 +15,7 @@ use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType as SymfonyAbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\ExtensionsModule\Api\VariableApi;
@@ -81,9 +82,7 @@ class SettingsType extends SymfonyAbstractType
             ->add('defaultLicense', 'entity', [
                 'label' => $this->translator->trans('Default license', [], 'cmfcmfmediamodule'),
                 'required' => false,
-                // @todo This does not work. I am stupid I suppose.
-                // @todo Note to self: Download the Symfony Docs.
-                'data' => $em->getReference('CmfcmfMediaModule:License\LicenseEntity', \ModUtil::getVar('CmfcmfMediaModule', 'defaultLicense')),
+                'data' => $this->variableApi->get('CmfcmfMediaModule', 'defaultLicense', null),
                 'class' => 'CmfcmfMediaModule:License\LicenseEntity',
                 'preferred_choices' => function (LicenseEntity $license) {
                     return !$license->isOutdated();
@@ -92,6 +91,7 @@ class SettingsType extends SymfonyAbstractType
                     return $er->createQueryBuilder('l')
                         ->orderBy('l.title', 'ASC');
                 },
+                'empty_data' => null,
                 'placeholder' => $this->translator->trans('Unknown', [], 'cmfcmfmediamodule'),
                 'property' => 'title',
             ])
@@ -196,6 +196,19 @@ class SettingsType extends SymfonyAbstractType
                 ]
             ])
         ;
+        $builder->get('defaultLicense')
+            ->addModelTransformer(new CallbackTransformer(function ($modelData) use ($em) {
+                if (null === $modelData) {
+                    return null;
+                }
+                return $em->find('CmfcmfMediaModule:License\LicenseEntity', $modelData);
+            }, function ($viewData) {
+                /** @var null|LicenseEntity $viewData */
+                if (null === $viewData) {
+                    return null;
+                }
+                return $viewData->getId();
+            }));
     }
 
     /**
