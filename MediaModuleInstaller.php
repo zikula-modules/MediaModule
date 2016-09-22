@@ -71,6 +71,8 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         $this->setVar('slugEditable', true);
         $this->setVar('lastNewVersionCheck', 0);
         $this->setVar('newVersionAvailable', false);
+        $this->setVar('enableMediaViewCounter', false);
+        $this->setVar('enableCollectionViewCounter', false);
 
         $this->createCategoryRegistries();
 
