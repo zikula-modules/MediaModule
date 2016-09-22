@@ -175,8 +175,8 @@ abstract class AbstractFileMediaType extends AbstractMediaType
             $watermarkSize = $watermarkSize->scale(min($ratios));
             $watermarkImage->resize($watermarkSize);
 
-            $x = $watermark->getPositionX() + $wWidth - $watermarkSize->getWidth();
-            $y = $watermark->getPositionY() + $wHeight - $watermarkSize->getHeight();
+            $x = round($watermark->getPositionX() + $wWidth - $watermarkSize->getWidth());
+            $y = round($watermark->getPositionY() + $wHeight - $watermarkSize->getHeight());
 
             $xOffset = 0;
             if ($x + $watermarkSize->getWidth() > $wWidth) {
