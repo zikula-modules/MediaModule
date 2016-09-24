@@ -4,7 +4,7 @@
     {% endif %}
 {% endblock %}
 
-{% if (renderRaw is not defined or not renderRaw) and breadcrumbs is defined %}
+{% if (renderRaw is not defined or not renderRaw) and breadcrumbs is defined and cmfcmfmediamodule_feature('breadcrumbs') %}
     {% include 'CmfcmfMediaModule::breadcrumbs.html.twig' with {breadcrumbs: breadcrumbs} %}
 {% endif %}
 

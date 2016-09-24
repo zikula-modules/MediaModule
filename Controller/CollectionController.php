@@ -55,8 +55,9 @@ class CollectionController extends AbstractController
         }
 
         $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
+        $checker = $this->get('cmfcmf_media_module.feature_checker');
         $entity = new CollectionEntity();
-        $form = new CollectionType($templateCollection, $parent, $securityManager);
+        $form = new CollectionType($templateCollection, $parent, $securityManager, $checker);
         $form->setTranslator($this->get('translator'));
         $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
@@ -107,7 +108,8 @@ class CollectionController extends AbstractController
         }
 
         $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
-        $form = new CollectionType($templateCollection, $entity->getParent(), $securityManager);
+        $checker = $this->get('cmfcmf_media_module.feature_checker');
+        $form = new CollectionType($templateCollection, $entity->getParent(), $securityManager, $checker);
         $form->setTranslator($this->get('translator'));
         $form = $this->createForm($form, $entity);
         $form->handleRequest($request);

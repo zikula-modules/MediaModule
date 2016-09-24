@@ -258,6 +258,22 @@ class SettingsController extends AbstractController
     }
 
     /**
+     * @Route("/features")
+     * @Template()
+     * @Theme("admin")
+     *
+     * @return array
+     */
+    public function featuresAction()
+    {
+        $this->ensurePermission();
+
+        return [
+            'features' => $this->get('cmfcmf_media_module.feature_checker')->getFeaturesForTemplate()
+        ];
+    }
+
+    /**
      * Ensures the user has permission to view and update settings.
      */
     private function ensurePermission()

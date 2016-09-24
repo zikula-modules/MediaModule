@@ -13,6 +13,7 @@ namespace Cmfcmf\Module\MediaModule\Twig;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Feature\Checker;
 use Cmfcmf\Module\MediaModule\Helper\PHPIniHelper;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
@@ -52,24 +53,32 @@ class TwigExtension extends \Twig_Extension
     private $translator;
 
     /**
-     * @param MarkdownExtra          $markdownExtra
+     * @var Checker
+     */
+    private $checker;
+
+    /**
+     * @param MarkdownExtra $markdownExtra
      * @param \Zikula_HookDispatcher $hookDispatcher
-     * @param SecurityManager        $securityManager
-     * @param VersionChecker         $versionChecker
-     * @param TranslatorInterface    $translator
+     * @param SecurityManager $securityManager
+     * @param VersionChecker $versionChecker
+     * @param TranslatorInterface $translator
+     * @param Checker $checker
      */
     public function __construct(
         MarkdownExtra $markdownExtra,
         \Zikula_HookDispatcher $hookDispatcher,
         SecurityManager $securityManager,
         VersionChecker $versionChecker,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        Checker $checker
     ) {
         $this->markdownExtra = $markdownExtra;
         $this->hookDispatcher = $hookDispatcher;
         $this->securityManager = $securityManager;
         $this->versionChecker = $versionChecker;
         $this->translator = $translator;
+        $this->checker = $checker;
     }
 
     /**
@@ -98,7 +107,8 @@ class TwigExtension extends \Twig_Extension
             new \Twig_SimpleFunction(
                 'cmfcmfmediamodule_newversionavailable',
                 [$this, 'newVersionAvailable']),
-            new \Twig_SimpleFunction('cmfcmfmediamodule_maxfilesize', [$this, 'maxFileSize'])
+            new \Twig_SimpleFunction('cmfcmfmediamodule_maxfilesize', [$this, 'maxFileSize']),
+            new \Twig_SimpleFunction('cmfcmfmediamodule_feature', [$this, 'featureEnabled'])
         ];
     }
 
@@ -259,6 +269,11 @@ class TwigExtension extends \Twig_Extension
     public function maxFileSize()
     {
         return PHPIniHelper::getMaxUploadSize();
+    }
+
+    public function featureEnabled($featureId)
+    {
+        return $this->checker->isEnabled($featureId);
     }
 
     /**

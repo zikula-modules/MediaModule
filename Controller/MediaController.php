@@ -112,9 +112,10 @@ class MediaController extends AbstractController
 
         $variableApi = $this->get('zikula_extensions_module.api.variable');
         $mediaType = $this->get('cmfcmf_media_module.media_type_collection')->getMediaTypeFromEntity($entity);
+        $checker = $this->get('cmfcmf_media_module.feature_checker');
         $form = $mediaType->getFormTypeClass();
         /** @var AbstractType $form */
-        $form = new $form($securityManager, $variableApi, $em, false, $parent);
+        $form = new $form($securityManager, $variableApi, $checker, $em, false, $parent);
         $form->setTranslator($this->get('translator'));
         /** @var \Symfony\Component\Form\Form $form */
         $form = $this->createForm($form, $entity, $mediaType->getFormOptions($entity));
@@ -308,6 +309,7 @@ class MediaController extends AbstractController
 
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
         $variableApi = $this->get('zikula_extensions_module.api.variable');
+        $checker = $this->get('cmfcmf_media_module.feature_checker');
         $em = $this->getDoctrine()->getManager();
 
         $init = $request->request->get('init', false);
@@ -316,7 +318,7 @@ class MediaController extends AbstractController
 
         $form = $mediaType->getFormTypeClass();
         /** @var AbstractType $form */
-        $form = new $form($securityManager, $variableApi, $em, true);
+        $form = new $form($securityManager, $variableApi, $checker, $em, true);
         $form->setTranslator($this->get('translator'));
         $form = $this->createForm($form, $entity, $mediaType->getFormOptions($entity));
         /** @var \Symfony\Component\Form\Form $form */
@@ -568,9 +570,10 @@ class MediaController extends AbstractController
             $entity = new $entity();
 
             $variableApi = $this->get('zikula_extensions_module.api.variable');
+            $checker = $this->get('cmfcmf_media_module.feature_checker');
             $form = $selectedMediaType->getFormTypeClass();
             /** @var AbstractType $form */
-            $form = new $form($securityManager, $variableApi, $em, true, null, true);
+            $form = new $form($securityManager, $variableApi, $checker, $em, true, null, true);
             $form->setTranslator($this->get('translator'));
             /** @var \Symfony\Component\Form\Form $form */
             $form = $this->createForm($form, $entity, ['csrf_protection' => false]);

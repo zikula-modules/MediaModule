@@ -1,0 +1,12 @@
+{% extends 'CmfcmfMediaModule:Settings:settings.html.twig' %}
+{% block settings_content %}
+    <ul class="list-group">
+        {% for feature in features %}
+            <li class="list-group-item list-group-item-{{ feature.enabled ? 'success' : 'danger' }}">
+                <h4 class="list-group-item-heading">{{ feature.id }}</h4>
+                <p class="list-group-item-text">{{ feature.description }}</p>
+                <p class="list-group-item-text text-muted"><code>CmfcmfMediaModule:feature: :{{ feature.id }}: {{ feature.enabled ? 'ACCESS_OVERVIEW' : 'ACCESS_NONE' }}</code></p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

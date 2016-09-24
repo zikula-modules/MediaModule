@@ -55,7 +55,7 @@
                     <i class="fa fa-edit"></i> {{ __('Edit collection') }}
                 </a>
             {% endif %}
-            {% if editCollectionPermission %}
+            {% if cmfcmfmediamodule_feature('viewPermissions') and editCollectionPermission %}
                 <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
                     <i class="fa fa-user-secret"></i>
                     {% if changePermissionsPermission %}

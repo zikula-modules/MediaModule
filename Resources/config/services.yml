@@ -5,6 +5,12 @@ imports:
   - { resource: 'importers.yml' }
 
 services:
+  # Feature checker
+  cmfcmf_media_module.feature_checker:
+    class: Cmfcmf\Module\MediaModule\Feature\Checker
+    arguments: ["@cmfcmf_media_module.security_manager", "@zikula_extensions_module.api.variable"]
+
+
   # Security management
   cmfcmf_media_module.security_manager:
     class: Cmfcmf\Module\MediaModule\Security\SecurityManager
@@ -97,7 +103,7 @@ services:
   # Twig extension
   cmfcmf_media_module.twig_extension:
     class: Cmfcmf\Module\MediaModule\Twig\TwigExtension
-    arguments: [@markdown_extra_parser, @hook_dispatcher, @cmfcmf_media_module.security_manager, @cmfcmf_media_module.upgrade.version_checker, @translator]
+    arguments: [@markdown_extra_parser, @hook_dispatcher, @cmfcmf_media_module.security_manager, @cmfcmf_media_module.upgrade.version_checker, @translator, "@cmfcmf_media_module.feature_checker"]
     public: false
     tags:
       - { name: twig.extension }

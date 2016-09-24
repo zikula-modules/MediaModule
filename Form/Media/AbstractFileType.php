@@ -22,16 +22,16 @@ class AbstractFileType extends AbstractMediaEntityType
     {
         parent::buildForm($builder, $options);
 
-        $builder
-            ->add('file', 'file', [
-                'label' => $this->translator->trans('Change file', [], 'cmfcmfmediamodule'),
-                'mapped' => false,
-                'required' => false
-            ])
-            ->add('downloadAllowed', 'checkbox', [
+        $builder->add('file', 'file', [
+            'label' => $this->translator->trans('Change file', [], 'cmfcmfmediamodule'),
+            'mapped' => false,
+            'required' => false
+        ]);
+        if ($this->checker->isEnabled('mediaDownloadToggable')) {
+            $builder->add('downloadAllowed', 'checkbox', [
                 'required' => false,
                 'label' => $this->translator->trans('Allow download', [], 'cmfcmfmediamodule')
-            ])
-        ;
+            ]);
+        }
     }
 }

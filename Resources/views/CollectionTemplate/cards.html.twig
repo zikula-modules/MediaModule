@@ -44,7 +44,7 @@
 {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
 {% set editMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
 
-{% if editMediaPermission or editCollectionPermission %}
+{% if cmfcmfmediamodule_feature("sortable") and (editMediaPermission or editCollectionPermission) %}
     <button class="btn btn-default btn-sm" type="button" autocomplete="off" id="cmfcmfmedia-sortable-btn">
         <i class="fa fa-sort"></i> {{ 'Sort items'|trans }}
     </button>

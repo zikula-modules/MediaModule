@@ -15,6 +15,7 @@ use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository;
+use Cmfcmf\Module\MediaModule\Feature\Checker;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
@@ -39,14 +40,21 @@ class CollectionType extends AbstractType
      */
     private $securityManager;
 
+    /**
+     * @var Checker
+     */
+    private $checker;
+
     public function __construct(
         TemplateCollection $templateCollection,
         CollectionEntity $parent = null,
-        SecurityManager $securityManager
+        SecurityManager $securityManager,
+        Checker $checker
     ) {
         $this->parent = $parent;
         $this->templateCollection = $templateCollection;
         $this->securityManager = $securityManager;
+        $this->checker = $checker;
     }
 
     /**
@@ -77,13 +85,9 @@ class CollectionType extends AbstractType
         $theCollection = $options['data'];
         $securityManager = $this->securityManager;
 
-        $builder
-            ->add(
-                'title',
-                'text',
-                [
-                    'label' => $this->translator->trans('Title', [], 'cmfcmfmediamodule')
-                ]);
+        $builder->add('title', 'text', [
+            'label' => $this->translator->trans('Title', [], 'cmfcmfmediamodule')
+        ]);
         // If enabled, breaks slug generation of children when the slug is changed.
         //if (\ModUtil::getVar('CmfcmfMediaModule', 'slugEditable')) {
         //    $builder
@@ -97,8 +101,8 @@ class CollectionType extends AbstractType
         //    ;
         //}
 
-        $builder
-            ->add(
+        if ($this->checker->isEnabled('collectionDescription')) {
+            $builder->add(
                 'description',
                 'textarea',
                 [
@@ -107,90 +111,90 @@ class CollectionType extends AbstractType
                     'attr' => [
                         'help' => $descriptionHelp
                     ]
-                ])
-            ->add('categoryAssignments', 'Zikula\CategoriesModule\Form\Type\CategoriesType', [
+            ]);
+        }
+        if ($this->checker->isEnabled('collectionCategories')) {
+            $builder->add('categoryAssignments', 'Zikula\CategoriesModule\Form\Type\CategoriesType', [
                 'required' => false,
                 'multiple' => true,
                 'module' => 'CmfcmfMediaModule',
                 'entity' => 'CollectionEntity',
                 'entityCategoryClass' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity',
-            ])
-            ->add('defaultTemplate', 'cmfcmfmediamodule_collectiontemplate')
-            ->add(
-                'parent',
-                'entity',
-                [
-                    'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
-                    'required' => false,
-                    'label' => $this->translator->trans('Parent', [], 'cmfcmfmediamodule'),
-                    'placeholder' => $this->translator->trans('No parent', [], 'cmfcmfmediamodule'),
-                    'query_builder' => function (EntityRepository $er) use (
-                        $theCollection,
-                        $securityManager
-                    ) {
-                        /** @var CollectionRepository $er */
-                        $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
-                            CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
-                        );
-                        $qb->orderBy('c.root', 'ASC')
-                            ->addOrderBy('c.lft', 'ASC');
-                        if ($theCollection->getId() != null) {
-                            // The collection is currently edited. Make sure it's not placed into
-                            // itself or one of it's children.
-                            $childrenQuery = $er->getChildrenQuery($theCollection);
-                            $qb
-                                ->andWhere(
-                                    $qb->expr()->notIn(
-                                        'c.id',
-                                        $childrenQuery->getDQL()
-                                    )
-                                )
-                                ->andWhere($qb->expr()->neq('c.id', ':id'))
-                                ->setParameter('id', $theCollection->getId())
-                            ;
-                            $childrenQuery->getParameters()->forAll(function ($key, Parameter $parameter) use ($qb) {
-                                $qb->setParameter($parameter->getName(), $parameter->getValue());
-                            });
-                        }
+            ]);
+        }
+        if ($this->checker->isEnabled('collectionTemplate')) {
+            $builder->add('defaultTemplate', 'cmfcmfmediamodule_collectiontemplate');
+        }
+        $builder->add('parent', 'entity', [
+            'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
+            'required' => false,
+            'label' => $this->translator->trans('Parent', [], 'cmfcmfmediamodule'),
+            'placeholder' => $this->translator->trans('No parent', [], 'cmfcmfmediamodule'),
+            'query_builder' => function (EntityRepository $er) use (
+                $theCollection,
+                $securityManager
+            ) {
+                /** @var CollectionRepository $er */
+                $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
+                    CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS
+                );
+                $qb->orderBy('c.root', 'ASC')
+                    ->addOrderBy('c.lft', 'ASC');
+                if ($theCollection->getId() != null) {
+                    // The collection is currently edited. Make sure it's not placed into
+                    // itself or one of it's children.
+                    $childrenQuery = $er->getChildrenQuery($theCollection);
+                    $qb
+                        ->andWhere(
+                            $qb->expr()->notIn(
+                                'c.id',
+                                $childrenQuery->getDQL()
+                            )
+                        )
+                        ->andWhere($qb->expr()->neq('c.id', ':id'))
+                        ->setParameter('id', $theCollection->getId())
+                    ;
+                    $childrenQuery->getParameters()->forAll(function ($key, Parameter $parameter) use ($qb) {
+                        $qb->setParameter($parameter->getName(), $parameter->getValue());
+                    });
+                }
 
-                        return $qb;
-                    },
-                    'data' => $this->parent,
-                    'property' => 'indentedTitle',
-                ])
-            ->add(
-                'watermark',
-                'entity',
-                [
-                    'class' => 'CmfcmfMediaModule:Watermark\AbstractWatermarkEntity',
-                    'required' => false,
-                    'label' => $this->translator->trans('Watermark', [], 'cmfcmfmediamodule'),
-                    'data' => $theCollection->getId() !== null ? $theCollection->getWatermark() :
-                        (isset($this->parent) ? $this->parent->getWatermark() : null),
-                    'placeholder' => $this->translator->trans('No watermark', [], 'cmfcmfmediamodule'),
-                    'property' => 'title',
-                ])
-            ->add(
-                'primaryMedium',
-                'entity',
-                [
-                    'class' => 'CmfcmfMediaModule:Media\AbstractMediaEntity',
-                    'required' => false,
-                    'label' => $this->translator->trans('Primary medium', [], 'cmfcmfmediamodule'),
-                    'placeholder' => $this->translator->trans('First medium of collection', [], 'cmfcmfmediamodule'),
-                    'disabled' => $theCollection->getId() == null,
-                    'property' => 'title',
-                    'query_builder' => function (EntityRepository $er) use ($theCollection) {
-                        /** @var MediaRepository $er */
-                        $qb = $er->createQueryBuilder('m');
-                        $qb->where($qb->expr()->eq('m.collection', ':collection'))
-                            ->setParameter('collection', $theCollection->getId());
+                return $qb;
+            },
+            'data' => $this->parent,
+            'property' => 'indentedTitle',
+        ]);
+        if ($this->checker->isEnabled('collectionWatermarks')) {
+            $builder->add('watermark', 'entity', [
+                'class' => 'CmfcmfMediaModule:Watermark\AbstractWatermarkEntity',
+                'required' => false,
+                'label' => $this->translator->trans('Watermark', [], 'cmfcmfmediamodule'),
+                'data' => $theCollection->getId() !== null ? $theCollection->getWatermark() :
+                    (isset($this->parent) ? $this->parent->getWatermark() : null),
+                'placeholder' => $this->translator->trans('No watermark', [], 'cmfcmfmediamodule'),
+                'property' => 'title',
+            ]);
+        }
+        if ($this->checker->isEnabled('collectionPrimaryMedium')) {
+            $builder->add('primaryMedium', 'entity', [
+                'class' => 'CmfcmfMediaModule:Media\AbstractMediaEntity',
+                'required' => false,
+                'label' => $this->translator->trans('Primary medium', [], 'cmfcmfmediamodule'),
+                'placeholder' => $this->translator->trans('First medium of collection', [], 'cmfcmfmediamodule'),
+                'disabled' => $theCollection->getId() == null,
+                'property' => 'title',
+                'query_builder' => function (EntityRepository $er) use ($theCollection) {
+                    /** @var MediaRepository $er */
+                    $qb = $er->createQueryBuilder('m');
+                    $qb->where($qb->expr()->eq('m.collection', ':collection'))
+                        ->setParameter('collection', $theCollection->getId());
 
-                        return $qb;
-                    },
-                    'attr' => [
-                        'help' => $this->translator->trans('The primary medium is used as collection thumbnail. It must be part of the collection.', [], 'cmfcmfmediamodule')
-                    ]
-                ]);
+                    return $qb;
+                },
+                'attr' => [
+                    'help' => $this->translator->trans('The primary medium is used as collection thumbnail. It must be part of the collection.', [], 'cmfcmfmediamodule')
+                ]
+            ]);
+        }
     }
 }
