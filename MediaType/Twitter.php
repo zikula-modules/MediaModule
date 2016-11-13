@@ -22,7 +22,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('Twitter', [], $this->domain);
+        return $this->translator->trans('Twitter', [], 'cmfcmfmediamodule');
     }
 
     public function isEnabled()
@@ -66,7 +66,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
         $entity
             ->setTweetId($tweetId)
-            ->setTitle($this->translator->trans('Tweet by: ', [], $this->domain) . $tweetInfo['user']['name'])
+            ->setTitle($this->translator->trans('Tweet by: ', [], 'cmfcmfmediamodule') . $tweetInfo['user']['name'])
             ->setAuthor($tweetInfo['user']['name'])
             ->setAuthorUrl('https://twitter.com/' . $tweetInfo['user']['screen_name'])
             ->setAuthorAvatarUrl($tweetInfo['user']['profile_image_url_https'])
@@ -113,7 +113,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         return '<div>' . $this->renderEngine->render('CmfcmfMediaModule:MediaType/Twitter:fullpage.html.twig', [
             'entity' => $entity,
             'usePageAddAsset' => false,
-            'placeholder' => $this->translator->trans('This is where the Tweet will appear.', [], $this->domain)
+            'placeholder' => $this->translator->trans('This is where the Tweet will appear.', [], 'cmfcmfmediamodule')
         ]) . '</div><p></p>';
     }
 
@@ -162,15 +162,15 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
             $results['results'][] = [
                 [
                     'tweetId' => $status['id'],
-                    'title' => $this->translator->trans('Tweet by: ', [], $this->domain) . $status['user']['name'],
+                    'title' => $this->translator->trans('Tweet by: ', [], 'cmfcmfmediamodule') . $status['user']['name'],
                     'author' => $status['user']['name'],
                     'authorUrl' => 'https://twitter.com/' . $status['user']['screen_name'],
                     'authorAvatarUrl' => $status['user']['profile_image_url_https'],
                     'url' => 'https://twitter.com/' . $status['user']['screen_name'] . '/status/' . $status['id']
                 ],
                 $status['user']['profile_image_url_https'],
-                $status['user']['name'] . "\n" . $this->translator->trans('Followers: ', [], $this->domain) . $status['user']['followers_count'],
-                $this->translator->trans('Tweet', [], $this->domain),
+                $status['user']['name'] . "\n" . $this->translator->trans('Followers: ', [], 'cmfcmfmediamodule') . $status['user']['followers_count'],
+                $this->translator->trans('Tweet', [], 'cmfcmfmediamodule'),
                 $status['text']
             ];
         }
@@ -225,8 +225,8 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 //            $results['results'][] = [
 //                ['special stuff'],
 //                $user['profile_image_url_https'],
-//                $user['name'] . "\n" . $this->translator->trans('Followers: ', [], $this->domain) . $user['followers_count'],
-//                $this->translator->trans('Profile', [], $this->domain),
+//                $user['name'] . "\n" . $this->translator->trans('Followers: ', [], 'cmfcmfmediamodule') . $user['followers_count'],
+//                $this->translator->trans('Profile', [], 'cmfcmfmediamodule'),
 //                $user['description']
 //            ];
 //        }

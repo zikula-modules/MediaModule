@@ -24,11 +24,6 @@ abstract class AbstractImporter implements ImporterInterface
     protected $translator;
 
     /**
-     * @var
-     */
-    protected $domain;
-
-    /**
      * @var FormFactory
      */
     protected $formFactory;
@@ -43,11 +38,10 @@ abstract class AbstractImporter implements ImporterInterface
      */
     protected $em;
 
-    public function __construct(TranslatorInterface $translator, FormFactory $formFactory, MediaTypeCollection $mediaTypeCollection, EntityManagerInterface $em, $domain)
+    public function __construct(TranslatorInterface $translator, FormFactory $formFactory, MediaTypeCollection $mediaTypeCollection, EntityManagerInterface $em)
     {
         $this->translator = $translator;
         $this->formFactory = $formFactory;
-        $this->domain = $domain;
         $this->mediaTypeCollection = $mediaTypeCollection;
         $this->em = $em;
     }

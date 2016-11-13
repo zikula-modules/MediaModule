@@ -28,12 +28,12 @@ class ServerDirectoryImporter extends AbstractImporter
 
     public function getTitle()
     {
-        return $this->translator->trans('Server directory', [], $this->domain);
+        return $this->translator->trans('Server directory', [], 'cmfcmfmediamodule');
     }
 
     public function getDescription()
     {
-        return $this->translator->trans('Import files from a directory on the server. Use another importer if possible.', [], $this->domain);
+        return $this->translator->trans('Import files from a directory on the server. Use another importer if possible.', [], 'cmfcmfmediamodule');
     }
 
     public function checkRequirements()

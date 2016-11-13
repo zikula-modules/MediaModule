@@ -49,7 +49,7 @@ SQL;
 
     public function getDescription()
     {
-        return $this->translator->trans('Import files from the Downloads Module.', [], $this->domain);
+        return $this->translator->trans('Import files from the Downloads Module.', [], 'cmfcmfmediamodule');
     }
 
     public function checkRequirements()

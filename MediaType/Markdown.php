@@ -30,7 +30,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('Markdown', [], $this->domain);
+        return $this->translator->trans('Markdown', [], 'cmfcmfmediamodule');
     }
 
     /**

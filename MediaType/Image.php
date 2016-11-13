@@ -23,7 +23,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('Image', [], $this->domain);
+        return $this->translator->trans('Image', [], 'cmfcmfmediamodule');
     }
 
     /**
@@ -49,7 +49,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         $meta = [];
         if (isset($data['resolution_x']) && isset($data['resolution_y'])) {
             $meta[] = [
-                'title' => $this->translator->trans('Resolution', [], $this->domain),
+                'title' => $this->translator->trans('Resolution', [], 'cmfcmfmediamodule'),
                 'value' => $data['resolution_x'] . ' x ' . $data['resolution_y']
             ];
         }
@@ -57,13 +57,13 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             if (isset($data['exif']['IFD0'])) {
                 if (isset($data['exif']['IFD0']['Model'])) {
                     $meta[] = [
-                        'title' => $this->translator->trans('Camera', [], $this->domain),
+                        'title' => $this->translator->trans('Camera', [], 'cmfcmfmediamodule'),
                         'value' => $data['exif']['IFD0']['Model']
                     ];
                 }/*
                 if (isset($data['exif']['IFD0']['Orientation'])) {
                     $meta[] = [
-                        'title' => $this->translator->trans('Orientation', [], $this->domain),
+                        'title' => $this->translator->trans('Orientation', [], 'cmfcmfmediamodule'),
                         'value' => $data['exif']['IFD0']['Orientation'] // @todo Convert to readable output
                     ];
                 }*/
@@ -71,39 +71,39 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             if (isset($data['exif']['EXIF'])) {
                 if (isset($data['exif']['EXIF']['FNumber'])) {
                     $meta[] = [
-                        'title' => $this->translator->trans('Aperture', [], $this->domain),
+                        'title' => $this->translator->trans('Aperture', [], 'cmfcmfmediamodule'),
                         'value' => "f/" . $data['exif']['EXIF']['FNumber']
                     ];
                 }
                 if (isset($data['exif']['EXIF']['ISOSpeedRatings'])) {
                     $meta[] = [
-                        'title' => $this->translator->trans('ISO value', [], $this->domain),
+                        'title' => $this->translator->trans('ISO value', [], 'cmfcmfmediamodule'),
                         'value' => $data['exif']['EXIF']['ISOSpeedRatings']
                     ];
                 }
                 if (isset($data['exif']['EXIF']['ShutterSpeedValue'])) {
                     $meta[] = [
-                        'title' => $this->translator->trans('Shutter speed', [], $this->domain),
+                        'title' => $this->translator->trans('Shutter speed', [], 'cmfcmfmediamodule'),
                         'value' => "f/" . $data['exif']['EXIF']['ShutterSpeedValue']
                     ];
                 }
                 if (isset($data['exif']['EXIF']['Flash'])) {
                     $meta[] = [
-                        'title' => $this->translator->trans('Flash', [], $this->domain),
+                        'title' => $this->translator->trans('Flash', [], 'cmfcmfmediamodule'),
                         'value' => $this->didFlashFire($data['exif']['EXIF']['Flash'])
-                            ? $this->translator->trans('on', [], $this->domain)
-                            : $this->translator->trans('off', [], $this->domain)
+                            ? $this->translator->trans('on', [], 'cmfcmfmediamodule')
+                            : $this->translator->trans('off', [], 'cmfcmfmediamodule')
                     ];
                 }
                 if (isset($data['exif']['EXIF']['FocalLength'])) {
                     $meta[] = [
-                        'title' => $this->translator->trans('Focal length', [], $this->domain),
+                        'title' => $this->translator->trans('Focal length', [], 'cmfcmfmediamodule'),
                         'value' => $data['exif']['EXIF']['FocalLength'] . " mm"
                     ];
                 }
                 if (isset($data['exif']['EXIF']['MeteringMode'])) {
                     $meta[] = [
-                        'title' => $this->translator->trans('Metering mode', [], $this->domain),
+                        'title' => $this->translator->trans('Metering mode', [], 'cmfcmfmediamodule'),
                         'value' => $this->convertMeteringMode($data['exif']['EXIF']['MeteringMode'])
                     ];
                 }

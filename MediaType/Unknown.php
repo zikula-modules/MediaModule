@@ -22,7 +22,7 @@ class Unknown extends AbstractFileMediaType implements UploadableMediaTypeInterf
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('File', [], $this->domain);
+        return $this->translator->trans('File', [], 'cmfcmfmediamodule');
     }
 
     /**

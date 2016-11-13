@@ -16,8 +16,8 @@ require_once __DIR__ . '/../../../../vendor/autoload.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once 'Translator.php';
 
-$graph = CollectionPermissionSecurityTree::createGraph(new Translator(), '');
-$categories = CollectionPermissionSecurityTree::getCategories(new Translator(), '');
+$graph = CollectionPermissionSecurityTree::createGraph(new Translator());
+$categories = CollectionPermissionSecurityTree::getCategories(new Translator());
 
 /** @var \Fhaculty\Graph\Vertex $vertex */
 foreach ($graph->getVertices() as $vertex) {

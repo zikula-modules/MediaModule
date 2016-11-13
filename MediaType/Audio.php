@@ -23,7 +23,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('Audio', [], $this->domain);
+        return $this->translator->trans('Audio', [], 'cmfcmfmediamodule');
     }
 
     /**
@@ -45,7 +45,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         $extraData = $entity->getExtraData();
         if (isset($extraData['title'][0])) {
             $meta[] = [
-                'title' => $this->translator->trans('Title', [], $this->domain),
+                'title' => $this->translator->trans('Title', [], 'cmfcmfmediamodule'),
                 'value' => $extraData['title'][0]
             ];
         }
@@ -55,37 +55,37 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
                 $album .= " ({$extraData['year'][0]})";
             }
             $meta[] = [
-                'title' => $this->translator->trans('Album', [], $this->domain),
+                'title' => $this->translator->trans('Album', [], 'cmfcmfmediamodule'),
                 'value' => $album
             ];
         }
         if (isset($extraData['playtime_seconds'])) {
             $meta[] = [
-                'title' => $this->translator->trans('Duration', [], $this->domain),
+                'title' => $this->translator->trans('Duration', [], 'cmfcmfmediamodule'),
                 'value' => $this->formatDuration($extraData['playtime_seconds'])
             ];
         }
         if (isset($extraData['track_number'][0])) {
             $meta[] = [
-                'title' => $this->translator->trans('Track number', [], $this->domain),
+                'title' => $this->translator->trans('Track number', [], 'cmfcmfmediamodule'),
                 'value' => $extraData['track_number'][0]
             ];
         }
         if (isset($extraData['publisher'][0])) {
             $meta[] = [
-                'title' => $this->translator->trans('Publisher', [], $this->domain),
+                'title' => $this->translator->trans('Publisher', [], 'cmfcmfmediamodule'),
                 'value' => $extraData['publisher'][0]
             ];
         }
         if (isset($extraData['band'][0])) {
             $meta[] = [
-                'title' => $this->translator->trans('Band', [], $this->domain),
+                'title' => $this->translator->trans('Band', [], 'cmfcmfmediamodule'),
                 'value' => $extraData['band'][0]
             ];
         }
         if (isset($extraData['genre'][0])) {
             $meta[] = [
-                'title' => $this->translator->trans('Genre', [], $this->domain),
+                'title' => $this->translator->trans('Genre', [], 'cmfcmfmediamodule'),
                 'value' => $extraData['genre'][0]
             ];
         }
@@ -94,19 +94,19 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
             if (isset($audio['channels'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Channels', [], $this->domain),
+                    'title' => $this->translator->trans('Channels', [], 'cmfcmfmediamodule'),
                     'value' => $audio['channels']
                 ];
             }
             if (isset($audio['sample_rate'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Sample rate', [], $this->domain),
+                    'title' => $this->translator->trans('Sample rate', [], 'cmfcmfmediamodule'),
                     'value' => $audio['sample_rate']
                 ];
             }
             if (isset($audio['bitrate'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Bit rate', [], $this->domain),
+                    'title' => $this->translator->trans('Bit rate', [], 'cmfcmfmediamodule'),
                     'value' => $audio['bitrate']
                 ];
             }
@@ -179,6 +179,6 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
         $time = "$minutes:$seconds";
 
-        return $this->translator->trans("%s min", ['%s' => $time], $this->domain);
+        return $this->translator->trans("%s min", ['%s' => $time], 'cmfcmfmediamodule');
     }
 }

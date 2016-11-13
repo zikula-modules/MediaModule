@@ -21,7 +21,7 @@ class Url extends AbstractMediaType implements PasteMediaTypeInterface
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('Url', [], $this->domain);
+        return $this->translator->trans('Url', [], 'cmfcmfmediamodule');
     }
 
     public function isEnabled()

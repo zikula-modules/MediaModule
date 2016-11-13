@@ -36,11 +36,6 @@ class SecurityManager
     private $permissionApi;
 
     /**
-     * @var string
-     */
-    private $domain;
-
-    /**
      * @var CollectionPermissionSecurityTree
      */
     private $collectionSecurityGraph;
@@ -68,7 +63,6 @@ class SecurityManager
     ) {
         $this->translator = $translator;
         $this->permissionApi = $permissionApi;
-        $this->domain = 'cmfcmfmediamodule';
         $this->em = $em;
         $this->collectionPermissionContainer = $collectionPermissionContainer;
 
@@ -153,8 +147,7 @@ class SecurityManager
     {
         if (!$this->collectionSecurityGraph) {
             $this->collectionSecurityGraph = CollectionPermissionSecurityTree::createGraph(
-                $this->translator,
-                $this->domain
+                $this->translator
             );
         }
 
@@ -440,7 +433,7 @@ class SecurityManager
      */
     public function getCollectionSecurityCategories()
     {
-        return CollectionPermissionSecurityTree::getCategories($this->translator, $this->domain);
+        return CollectionPermissionSecurityTree::getCategories($this->translator);
     }
 
     /**

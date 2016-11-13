@@ -22,7 +22,7 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('File archive', [], $this->domain);
+        return $this->translator->trans('File archive', [], 'cmfcmfmediamodule');
     }
 
     /**
@@ -45,7 +45,7 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
         $meta = [];
         if ($entity->getNumberOfFiles() !== false) {
             $meta[] = [
-                'title' => $this->translator->trans('Contained files', [], $this->domain),
+                'title' => $this->translator->trans('Contained files', [], 'cmfcmfmediamodule'),
                 'value' => $entity->getNumberOfFiles()
             ];
         }

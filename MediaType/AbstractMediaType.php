@@ -30,18 +30,12 @@ abstract class AbstractMediaType implements MediaTypeInterface
     protected $translator;
 
     /**
-     * @var string
-     */
-    protected $domain;
-
-    /**
      * @var VariableApi
      */
     private $variableApi;
 
     public function __construct(EngineInterface $renderEngine, TranslatorInterface $translator, VariableApi $variableApi)
     {
-        $this->domain = 'cmfcmfmediamodule'; // @todo Remove!
         $this->renderEngine = $renderEngine;
         $this->translator = $translator;
         $this->variableApi = $variableApi;

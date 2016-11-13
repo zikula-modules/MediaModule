@@ -22,7 +22,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('Deezer', [], $this->domain);
+        return $this->translator->trans('Deezer', [], 'cmfcmfmediamodule');
     }
 
     /**

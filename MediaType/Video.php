@@ -22,7 +22,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('Video', [], $this->domain);
+        return $this->translator->trans('Video', [], 'cmfcmfmediamodule');
     }
 
     /**
@@ -52,25 +52,25 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         $extraData = $entity->getExtraData();
         if (isset($extraData['title'][0])) {
             $meta[] = [
-                'title' => $this->translator->trans('Title', [], $this->domain),
+                'title' => $this->translator->trans('Title', [], 'cmfcmfmediamodule'),
                 'value' => $extraData['title'][0]
             ];
         }
         if (isset($extraData['creation_date'][0])) {
             $meta[] = [
-                'title' => $this->translator->trans('Year', [], $this->domain),
+                'title' => $this->translator->trans('Year', [], 'cmfcmfmediamodule'),
                 'value' => $extraData['creation_date'][0]
             ];
         }
         if (isset($extraData['genre'][0])) {
             $meta[] = [
-                'title' => $this->translator->trans('Genre', [], $this->domain),
+                'title' => $this->translator->trans('Genre', [], 'cmfcmfmediamodule'),
                 'value' => $extraData['genre'][0]
             ];
         }
         if (isset($extraData['playtime_seconds'])) {
             $meta[] = [
-                'title' => $this->translator->trans('Duration', [], $this->domain),
+                'title' => $this->translator->trans('Duration', [], 'cmfcmfmediamodule'),
                 'value' => $this->formatDuration($extraData['playtime_seconds'])
             ];
         }
@@ -79,19 +79,19 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
             if (isset($video['resolution_x']) && isset($video['resolution_y'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Resolution', [], $this->domain),
+                    'title' => $this->translator->trans('Resolution', [], 'cmfcmfmediamodule'),
                     'value' => $video['resolution_x'] . " x " . $video['resolution_y']
                 ];
             }
             if (isset($video['frame_rate'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Frame rate', [], $this->domain),
+                    'title' => $this->translator->trans('Frame rate', [], 'cmfcmfmediamodule'),
                     'value' => (int)$video['frame_rate']
                 ];
             }
             if (isset($video['bitrate'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Video bit rate', [], $this->domain),
+                    'title' => $this->translator->trans('Video bit rate', [], 'cmfcmfmediamodule'),
                     'value' => (int)$video['bitrate']
                 ];
             }
@@ -101,19 +101,19 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
             if (isset($audio['channels'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Audio channels', [], $this->domain),
+                    'title' => $this->translator->trans('Audio channels', [], 'cmfcmfmediamodule'),
                     'value' => $audio['channels']
                 ];
             }
             if (isset($audio['sample_rate'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Audio sample rate', [], $this->domain),
+                    'title' => $this->translator->trans('Audio sample rate', [], 'cmfcmfmediamodule'),
                     'value' => $audio['sample_rate']
                 ];
             }
             if (isset($audio['bitrate'])) {
                 $meta[] = [
-                    'title' => $this->translator->trans('Audio bit rate', [], $this->domain),
+                    'title' => $this->translator->trans('Audio bit rate', [], 'cmfcmfmediamodule'),
                     'value' => $audio['bitrate']
                 ];
             }
@@ -198,6 +198,6 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
         $time = "$minutes:$seconds";
 
-        return $this->translator->trans("%s min", ['%s' => $time], $this->domain);
+        return $this->translator->trans("%s min", ['%s' => $time], 'cmfcmfmediamodule');
     }
 }

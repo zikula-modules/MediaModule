@@ -23,7 +23,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
      */
     public function getDisplayName()
     {
-        return $this->translator->trans('Plaintext', [], $this->domain);
+        return $this->translator->trans('Plaintext', [], 'cmfcmfmediamodule');
     }
 
     /**
