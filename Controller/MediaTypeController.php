@@ -57,7 +57,7 @@ class MediaTypeController extends AbstractController
         if (empty($clientID) || empty($clientSecret)) {
             if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('settings', 'admin')) {
                 $this->addFlash('warning',
-                    $this->get('translator')->trans('You need to add Google client ID and secret to use this feature!'));
+                    $this->get('translator')->trans('You need to add Google client ID and secret to use this feature!', [], 'cmfcmfmediamodule'));
             }
 
             return $this->redirectToRoute('cmfcmfmediamodule_media_display', [

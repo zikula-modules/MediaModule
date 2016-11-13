@@ -1,248 +1,201 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2016-11-13 15:44+0100\n"
-"PO-Revision-Date: 2016-11-13 16:03+0100\n"
-"Language-Team: EMAIL@ADDRESS\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2016-11-13 14:42+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.11\n"
-"Last-Translator: Christian Flach <cmfcmf.flach@gmail.com>\n"
-"Language: de_DE\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
 
 # Desc: /{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_collection_display"
-msgstr "/{slug}"
-
+msgstr ""
 # Desc: /show-by-id/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_collection_displaybyid"
-msgstr "/nach-id/{id}"
-
+msgstr ""
 # Desc: /
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_collection_displayroot"
-msgstr "/"
-
+msgstr ""
 # Desc: /download/{slug}.zip
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_collection_download"
-msgstr "/herunterladen/{slug}.zip"
-
+msgstr ""
 # Desc: /edit/{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_collection_edit"
-msgstr "/bearbeiten/{slug}"
-
+msgstr ""
 # Desc: /new/{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_collection_new"
-msgstr "/erstellen/{slug}"
-
+msgstr ""
 # Desc: /ajax/reorder
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_collection_reorder"
-msgstr "/ajax/umsortieren"
-
+msgstr ""
 # Desc: /finder/ajax/find
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_finder_ajaxfind"
-msgstr "/finder/ajax/finden"
-
+msgstr ""
 # Desc: /finder/choose
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_finder_choosemethod"
-msgstr "/finder/wählen"
-
+msgstr ""
 # Desc: /finder/ajax/get-collections/{parentId}/{hookedObjectId}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_finder_getcollections"
-msgstr "/finder/ajax/sammlungen/{parentId}/{hookedObjectId}"
-
+msgstr ""
 # Desc: /finder/popup/choose/collection
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_finder_popupchoosecollections"
-msgstr "/finder/popup/waehlen/sammlung"
-
+msgstr ""
 # Desc: /finder/popup/choose/media
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_finder_popupchoosemedia"
-msgstr "/finder/popup/waehlen/medien"
-
+msgstr ""
 # Desc: /import/{importer}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_import_execute"
-msgstr "/importieren/{importer}"
-
+msgstr ""
 # Desc: /import
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_import_select"
-msgstr "/importieren"
-
+msgstr ""
 # Desc: /licenses/delete/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_license_delete"
-msgstr "/lizenzen/loeschen/{id}"
-
+msgstr ""
 # Desc: /licenses/edit/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_license_edit"
-msgstr "/lizenzen/bearbeiten/{id}"
-
+msgstr ""
 # Desc: /licenses/
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_license_index"
-msgstr "/lizenzen"
-
+msgstr ""
 # Desc: /licenses/new
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_license_new"
-msgstr "/lizenzen/erstellen"
-
+msgstr ""
 # Desc: /admin/media-list/{page}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_adminlist"
-msgstr "/admin/medien-liste/{page}"
-
+msgstr ""
 # Desc: /media/create/{type}/{mediaType}/{collection}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_create"
-msgstr "/media/erstellen/{type}/{mediaType}/{collection}"
-
+msgstr ""
 # Desc: /delete/{collectionSlug}/f/{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_delete"
-msgstr "/loeschen/{collectionSlug}/f/{slug}"
-
+msgstr ""
 # Desc: /{collectionSlug}/f/{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_display"
-msgstr "/{collectionSlug}/f/{slug}"
-
+msgstr ""
 # Desc: /download/{collectionSlug}/f/{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_download"
-msgstr "/herunterladen/{collectionSlug}/f/{slug}"
-
+msgstr ""
 # Desc: /edit/{collectionSlug}/f/{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_edit"
-msgstr "/bearbeiten/{collectionSlug}/f/{slug}"
-
+msgstr ""
 # Desc: /media/ajax/get-media-type
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_getmediatypefromfile"
-msgstr "/medien/ajax/medien-typ"
-
+msgstr ""
 # Desc: /media/ajax/matches-paste
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_matchespaste"
-msgstr "/medien/ajax/matches-paste"
-
+msgstr ""
 # Desc: /media/new
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_new"
-msgstr "/medien/erstellen"
-
+msgstr ""
 # Desc: /media/popup-embed/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_popupembed"
-msgstr "/medien/popup-einbettung/{id}"
-
+msgstr ""
 # Desc: /media/ajax/reorder
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_reorder"
-msgstr "/medien/ajax/umsortieren"
-
+msgstr ""
 # Desc: /media/upload
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_upload"
-msgstr "/medien/hochladen"
-
+msgstr ""
 # Desc: /media/ajax/creation-results/web/{mediaType}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_media_webcreationajaxresults"
-msgstr "/medien/ajax/erstellungs-ergebnisse/web/{mediaType}"
-
+msgstr ""
 # Desc: /media-types/youtube/upload/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_mediatype_youtubeupload"
-msgstr "/medien-typen/youtube/upload/{id}"
-
+msgstr ""
 # Desc: /permissions/delete/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_permission_delete"
-msgstr "/zugriffsrechte/löschen/{id}"
-
+msgstr ""
 # Desc: /permissions/edit/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_permission_edit"
-msgstr "/zugriffsrechte/bearbeiten/{id}"
-
+msgstr ""
 # Desc: /permissions/new/{type}/{collection}/{afterPermission}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_permission_new"
-msgstr "/zugriffsrechte/erstellen/{type}/{collection}/{afterPermission}"
-
+msgstr ""
 # Desc: /permissions/ajax/reorder/{permissionId}/{permissionVersion}/{newIndex}.json
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_permission_reorder"
-msgstr "/zugriffsrechte/ajax/umsortieren/{permissionId}/{permissionVersion}/{newIndex}.json"
-
+msgstr ""
 # Desc: /permissions/show/{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_permission_view"
-msgstr "/zugriffsrechte/anzeigen/{slug}"
-
+msgstr ""
 # Desc: /settings/general
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_settings_general"
-msgstr "/einstellungen/allgemeines"
-
+msgstr ""
 # Desc: /settings/
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_settings_index"
-msgstr "/einstellungen"
-
+msgstr ""
 # Desc: /settings/requirements
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_settings_requirements"
-msgstr "/einstellungen/anforderungen"
-
+msgstr ""
 # Desc: /settings/scribite
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_settings_scribite"
-msgstr "/einstellungen/scribite"
-
+msgstr ""
 # Desc: /settings/upgrade/ajax/{step}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_upgrade_ajax"
-msgstr "/einstellungen/aktualisieren/ajax/{step}"
-
+msgstr ""
 # Desc: /settings/upgrade
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_upgrade_doupgrade"
-msgstr "/einstellungen/aktualisieren"
-
+msgstr ""
 # Desc: /watermarks/delete/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_watermark_delete"
-msgstr "/wasserzeichen/loeschen/{id}"
-
+msgstr ""
 # Desc: /watermarks/edit/{id}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_watermark_edit"
-msgstr "/wasserzeichen/bearbeiten/{id}"
-
+msgstr ""
 # Desc: /watermarks/
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_watermark_index"
-msgstr "/wasserzeichen"
-
+msgstr ""
 # Desc: /watermarks/new/{type}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_watermark_new"
-msgstr "/wasserzeichen/erstellen/{type}"
+msgstr ""

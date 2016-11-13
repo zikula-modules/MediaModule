@@ -48,30 +48,30 @@ class SettingsController extends AbstractController
 
         if (FileinfoMimeTypeGuesser::isSupported()) {
             $fileInfo = [
-                'for' => $this->getTranslator()->trans('File Upload Mime Type guessing'),
+                'for' => $this->getTranslator()->trans('File Upload Mime Type guessing', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('The FileInfo PHP extension is installed.'),
+                'message' => $this->getTranslator()->trans('The FileInfo PHP extension is installed.', [], 'cmfcmfmediamodule'),
             ];
         } elseif (FileBinaryMimeTypeGuesser::isSupported()) {
             $fileInfo = [
-                'for' => $this->getTranslator()->trans('File Upload Mime Type guessing'),
+                'for' => $this->getTranslator()->trans('File Upload Mime Type guessing', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('Unix System detected. The file command will be used.'),
+                'message' => $this->getTranslator()->trans('Unix System detected. The file command will be used.', [], 'cmfcmfmediamodule'),
             ];
         } else {
             $fileInfo = [
-                'for' => $this->getTranslator()->trans('File Upload Mime Type guessing'),
+                'for' => $this->getTranslator()->trans('File Upload Mime Type guessing', [], 'cmfcmfmediamodule'),
                 'state' => 'danger',
-                'message' => $this->getTranslator()->trans('You must either enable the PHP FileInfo extension or switch to a Unix system.'),
+                'message' => $this->getTranslator()->trans('You must either enable the PHP FileInfo extension or switch to a Unix system.', [], 'cmfcmfmediamodule'),
             ];
         }
         $maxUploadSize = PHPIniHelper::getMaxUploadSize();
         $uploadSize = [
-            'for' => $this->getTranslator()->trans('File Uploads'),
+            'for' => $this->getTranslator()->trans('File Uploads', [], 'cmfcmfmediamodule'),
             'state' => $maxUploadSize >= 20 * 1000 * 1000 ? 'success' : 'warning',
             'message' => $this->getTranslator()->trans(
                 'You can upload files of at most %size%. Consider raising "upload_max_filesize" and "post_max_size" in your php.ini file to upload larger files.',
-                ['%size%' => PHPIniHelper::formatFileSize($maxUploadSize)]),
+                ['%size%' => PHPIniHelper::formatFileSize($maxUploadSize)], 'cmfcmfmediamodule'),
         ];
 
 
@@ -80,18 +80,18 @@ class SettingsController extends AbstractController
             new \Imagine\Imagick\Imagine();
 
             $imagine = [
-                'for' => $this->getTranslator()->trans('Thumbnail generation'),
+                'for' => $this->getTranslator()->trans('Thumbnail generation', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('The Imagick PHP extension is installed.'),
+                'message' => $this->getTranslator()->trans('The Imagick PHP extension is installed.', [], 'cmfcmfmediamodule'),
             ];
         } catch (\Imagine\Exception\RuntimeException $e) {
             try {
                 new \Imagine\Gmagick\Imagine();
 
                 $imagine = [
-                    'for' => $this->getTranslator()->trans('Thumbnail generation'),
+                    'for' => $this->getTranslator()->trans('Thumbnail generation', [], 'cmfcmfmediamodule'),
                     'state' => 'success',
-                    'message' => $this->getTranslator()->trans('The Gmagick PHP extension is installed.'),
+                    'message' => $this->getTranslator()->trans('The Gmagick PHP extension is installed.', [], 'cmfcmfmediamodule'),
                 ];
             } catch (\Imagine\Exception\RuntimeException $e) {
                 try {
@@ -99,15 +99,15 @@ class SettingsController extends AbstractController
 
                     $highMemoryRequired = true;
                     $imagine = [
-                        'for' => $this->getTranslator()->trans('Thumbnail generation'),
+                        'for' => $this->getTranslator()->trans('Thumbnail generation', [], 'cmfcmfmediamodule'),
                         'state' => 'warning',
-                        'message' => $this->getTranslator()->trans('You only have the Gd Image processing extension installed. You will need to install the Imagick extension (recommended) or, at last resort, raise your PHP memory limit to _at least_ 256MB !'),
+                        'message' => $this->getTranslator()->trans('You only have the Gd Image processing extension installed. You will need to install the Imagick extension (recommended) or, at last resort, raise your PHP memory limit to _at least_ 256MB !', [], 'cmfcmfmediamodule'),
                     ];
                 } catch (\Imagine\Exception\RuntimeException $e) {
                     $imagine = [
-                        'for' => $this->getTranslator()->trans('Thumbnail generation'),
+                        'for' => $this->getTranslator()->trans('Thumbnail generation', [], 'cmfcmfmediamodule'),
                         'state' => 'danger',
-                        'message' => $this->getTranslator()->trans('No image processing extension installed. You must install the Imagick, Gmagick or, at the very least, Gd extension!'),
+                        'message' => $this->getTranslator()->trans('No image processing extension installed. You must install the Imagick, Gmagick or, at the very least, Gd extension!', [], 'cmfcmfmediamodule'),
                     ];
                 }
             }
@@ -115,55 +115,55 @@ class SettingsController extends AbstractController
 
         if ($highMemoryRequired && PHPIniHelper::getMemoryLimit() < 128 * 1024 * 1024) {
             $memoryLimit = [
-                'for' => $this->getTranslator()->trans('Thumbnail generation'),
+                'for' => $this->getTranslator()->trans('Thumbnail generation', [], 'cmfcmfmediamodule'),
                 'state' => 'warning',
-                'message' => $this->getTranslator()->trans('Your memory limit is below 128MB. Please consider rising it to avoid issues with thumbnail generation.'),
+                'message' => $this->getTranslator()->trans('Your memory limit is below 128MB. Please consider rising it to avoid issues with thumbnail generation.', [], 'cmfcmfmediamodule'),
             ];
         } else {
             $memoryLimit = [
-                'for' => $this->getTranslator()->trans('Thumbnail generation'),
+                'for' => $this->getTranslator()->trans('Thumbnail generation', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('Your memory limit is high enough for thumbnail generation.'),
+                'message' => $this->getTranslator()->trans('Your memory limit is high enough for thumbnail generation.', [], 'cmfcmfmediamodule'),
             ];
         }
 
         if (class_exists('ZipArchive')) {
             $zip = [
-                'for' => $this->getTranslator()->trans('Module upgrade and ZIP content preview'),
+                'for' => $this->getTranslator()->trans('Module upgrade and ZIP content preview', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('The ZIP PHP extension is installed.'),
+                'message' => $this->getTranslator()->trans('The ZIP PHP extension is installed.', [], 'cmfcmfmediamodule'),
             ];
         } else {
             $zip = [
-                'for' => $this->getTranslator()->trans('Module upgrade and ZIP content preview'),
+                'for' => $this->getTranslator()->trans('Module upgrade and ZIP content preview', [], 'cmfcmfmediamodule'),
                 'state' => 'danger',
-                'message' => $this->getTranslator()->trans('The ZIP PHP extension is missing.'),
+                'message' => $this->getTranslator()->trans('The ZIP PHP extension is missing.', [], 'cmfcmfmediamodule'),
             ];
         }
         if (extension_loaded('curl')) {
             $curl = [
-                'for' => $this->getTranslator()->trans('Module upgrade'),
+                'for' => $this->getTranslator()->trans('Module upgrade', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('The CURL PHP extension is installed.'),
+                'message' => $this->getTranslator()->trans('The CURL PHP extension is installed.', [], 'cmfcmfmediamodule'),
             ];
         } else {
             $curl = [
-                'for' => $this->getTranslator()->trans('Module upgrade'),
+                'for' => $this->getTranslator()->trans('Module upgrade', [], 'cmfcmfmediamodule'),
                 'state' => 'danger',
-                'message' => $this->getTranslator()->trans('The CURL PHP extension is missing.'),
+                'message' => $this->getTranslator()->trans('The CURL PHP extension is missing.', [], 'cmfcmfmediamodule'),
             ];
         }
         if (class_exists('PharData')) {
             $phar = [
-                'for' => $this->getTranslator()->trans('TAR archive content preview'),
+                'for' => $this->getTranslator()->trans('TAR archive content preview', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
-                'message' => $this->getTranslator()->trans('The Phar PHP extension is installed.'),
+                'message' => $this->getTranslator()->trans('The Phar PHP extension is installed.', [], 'cmfcmfmediamodule'),
             ];
         } else {
             $phar = [
-                'for' => $this->getTranslator()->trans('TAR archive content preview'),
+                'for' => $this->getTranslator()->trans('TAR archive content preview', [], 'cmfcmfmediamodule'),
                 'state' => 'warning',
-                'message' => $this->getTranslator()->trans('The Phar PHP extension is missing.'),
+                'message' => $this->getTranslator()->trans('The Phar PHP extension is missing.', [], 'cmfcmfmediamodule'),
             ];
         }
 
