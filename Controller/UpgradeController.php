@@ -12,6 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Exception\UpgradeFailedException;
+use Cmfcmf\Module\MediaModule\Exception\UpgradeNotRequiredException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -65,14 +66,21 @@ class UpgradeController extends AbstractController
         try {
             $upgradeDone = $upgrader->upgrade($step, $versionChecker);
             if ($upgradeDone) {
-                \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', false);
-                \ModUtil::setVar('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
+                $this->resetUpgradeMessage();
             }
 
             return new JsonResponse([
                 'proceed' => true,
                 'message' => null,
                 'done' => $upgradeDone
+            ]);
+        } catch (UpgradeNotRequiredException $e) {
+            $this->resetUpgradeMessage();
+
+            return new JsonResponse([
+                'proceed' => false,
+                'message' => $e->getMessage(),
+                'done' => false
             ]);
         } catch (UpgradeFailedException $e) {
             return new JsonResponse([
@@ -90,5 +98,11 @@ class UpgradeController extends AbstractController
                 'done' => false
             ]);
         }
+    }
+
+    private function resetUpgradeMessage()
+    {
+        \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', false);
+        \ModUtil::setVar('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
     }
 }
