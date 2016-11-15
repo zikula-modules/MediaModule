@@ -1,6 +1,6 @@
 <video width="{{ width|e('html_attr') }}" height="{{ height|e('html_attr') }}" controls>
     <source src="{{ entity.url|e('html_attr') }}" type="{{ entity.mimeType|e('html_attr') }}">
-    {{ __('Your browser does not support the audio element.') }}
+    {{ __('Your browser does not support the video element.') }}
 </video>
 
 {% if enableYouTubeUpload and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
