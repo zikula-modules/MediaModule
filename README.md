@@ -41,6 +41,12 @@ If you do so, it's going to break URLs.
 ## Talk to me!
 If you find a bug or have problems, please [create an issue](https://github.com/cmfcmf/MediaModule/issues/new)!
 
+## Extracting translations
+Add `require_once __DIR__ . '/../modules/cmfcmf/media-module/vendor/autoload.php;` to `src/app/autoload.php` and then run
+```
+php app/console translation:extract --enable-extractor=jms_i18n_routing --dir ./modules/cmfcmf/media-module --exclude-dir vendor --output-dir ./modules/cmfcmf/media-module/Resources/translations --keep --output-format=pot de
+```
+
 ## License and module development
 
 The code is MIT licensed, see the `License.md` file for further information.
