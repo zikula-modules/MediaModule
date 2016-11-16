@@ -13,7 +13,7 @@ fi
 rev=$(git rev-parse --short HEAD)
 
 mkdir tmp-deploy
-cp ../MediaModule.zip tmp-deploy/MediaModule.zip
+cp ../release/MediaModule.zip tmp-deploy/MediaModule.zip
 cd tmp-deploy
 
 git init
@@ -23,7 +23,7 @@ git config user.email "travis@christianflach.de"
 git remote add upstream "https://$GH_TOKEN@github.com/cmfcmf/MediaModule.git"
 git checkout -b dev-builds
 git add .
-git commit -m "Deploy current master version (${rev})."
+git commit -m "Deploy current master version (${rev}). [ci skip]"
 git push -f --set-upstream upstream dev-builds
 
 cd ..
