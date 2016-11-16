@@ -11,6 +11,8 @@ Zikula 1.4.3+ MediaModule by @cmfcmf
 1. **Download the module from https://github.com/cmfcmf/MediaModule/releases/latest.**
 2. Install to `modules/cmfcmf/media-module` (but other locations should work aswell!).
 
+If you want to test the current version (potentially unstable!), download it from here: https://github.com/cmfcmf/MediaModule/raw/dev-builds/MediaModule.zip
+
 **Downloading directly from master would require you to execute `composer install --no-dev`.**
 
 ## Information
