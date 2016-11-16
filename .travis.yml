@@ -26,7 +26,7 @@ before_install:
 install:
     - composer install
     - zip -qr MediaModule.zip .
-    - wget https://github.com/zikula/core/releases/download/1.4.3-rc3/Zikula_Core-1.4.3.build183.tar.gz
+    - wget https://github.com/zikula/core/releases/download/1.4.3/Zikula_Core-1.4.3.build183.tar.gz
     - tar -xpzf Zikula_Core-1.4.3.build183.tar.gz
     - rm Zikula_Core-1.4.3.build183.tar.gz
     - cd Zikula_Core-1.4.3
