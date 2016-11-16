@@ -62,7 +62,7 @@ before_deploy:
     - composer install --no-dev --prefer-dist
     - rm auth.json
     - zip -qr MediaModule.zip .
-    - cd ../mediamodule
+    - cd ../Zikula_Core-1.4.3
 
 deploy:
   - provider: releases
