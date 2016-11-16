@@ -24,13 +24,13 @@ before_install:
     - mysql -e 'create database zk_test;'
 
 install:
-    - composer require ext-mbstring # Needed for Heroku
     - composer install
     - zip -qr MediaModule.zip .
     - wget https://github.com/zikula/core/releases/download/1.4.3-rc2/Zikula_Core-1.4.3.build178.tar.gz
     - tar -xpzf Zikula_Core-1.4.3.build178.tar.gz
     - rm Zikula_Core-1.4.3.build178.tar.gz
     - cd Zikula_Core-1.4.3
+    - composer require ext-mbstring # Needed for Heroku
     - php app/console zikula:install:start -n --database_user=root --database_name=zk_test --password=12345678 --email=admin@example.com --router:request_context:host=localhost
     - php app/console zikula:install:finish
     - cd modules
