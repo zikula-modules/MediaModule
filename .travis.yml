@@ -63,10 +63,23 @@ before_deploy:
     - zip -qr MediaModule.zip .
 
 deploy:
-  provider: releases
-  api_key:
-    secure: "LVvn+d8ULh08ctwn+VF+nD6mDf3vI1sDXAkTIzA8YNVwCNeR9oOLKBtMCDGeZ6bIn72BNYAn/o4UCkowfFHXE18XkXKYZUjbbXfMQJKxNLDM9gYRrHZNl+Ha9njY6ZmZCSczaRC5WqHsJfHFpbi8BrqQ0wLbk/xG0N089WLxx+jHvmH5sdZKPelrcgrTXsjMIwCGqJxDtfj8OTDOJVk8U3G7Rq9xfJHhnsEv10H9OBY+SIN1jfARnNQv5I6XkaBmWXSUfrIdReEKJOj7DB/Yp3SjuC+TElKv3gJwHawa/nBd4GV0SQUClQuc85RtSf69ZW31Yt4i43bdduICGgdlIMKKoiHzQiesTXEPjbcEvJKkaI+f/qQVyk8U3+G3Z6SMNHYn5M1j4KyAQMRWvovD+G8EVSLsf8wTtqnDP5VO0DoNO8q516IbdWMqwin6/nLpp5Ys3bsBQmUrw8uC7RZoTulevJpojWknntgv9D/SCHFjPN1L9p2kzDEbktqVLXqkpYFe4YkALLnuZq0BDdP2VtGUUXjngIERw//2LN+eNPQtANloeyq601fTyMn51HSy2cby8D6aI5v1rX+/tO8H1wl+rRWLfHkIKeUvfRzjIc8nR0TQLB5qXkA8oHyVEgeF+M0VQYVW5pBlt8PUk0i1AFzUXZ5LdCZVwyWK2DVuovQ="
-  file: MediaModule.zip
-  on:
-    tags: true
-    repo: cmfcmf/MediaModule
+  - provider: releases
+    api_key:
+      secure: "LVvn+d8ULh08ctwn+VF+nD6mDf3vI1sDXAkTIzA8YNVwCNeR9oOLKBtMCDGeZ6bIn72BNYAn/o4UCkowfFHXE18XkXKYZUjbbXfMQJKxNLDM9gYRrHZNl+Ha9njY6ZmZCSczaRC5WqHsJfHFpbi8BrqQ0wLbk/xG0N089WLxx+jHvmH5sdZKPelrcgrTXsjMIwCGqJxDtfj8OTDOJVk8U3G7Rq9xfJHhnsEv10H9OBY+SIN1jfARnNQv5I6XkaBmWXSUfrIdReEKJOj7DB/Yp3SjuC+TElKv3gJwHawa/nBd4GV0SQUClQuc85RtSf69ZW31Yt4i43bdduICGgdlIMKKoiHzQiesTXEPjbcEvJKkaI+f/qQVyk8U3+G3Z6SMNHYn5M1j4KyAQMRWvovD+G8EVSLsf8wTtqnDP5VO0DoNO8q516IbdWMqwin6/nLpp5Ys3bsBQmUrw8uC7RZoTulevJpojWknntgv9D/SCHFjPN1L9p2kzDEbktqVLXqkpYFe4YkALLnuZq0BDdP2VtGUUXjngIERw//2LN+eNPQtANloeyq601fTyMn51HSy2cby8D6aI5v1rX+/tO8H1wl+rRWLfHkIKeUvfRzjIc8nR0TQLB5qXkA8oHyVEgeF+M0VQYVW5pBlt8PUk0i1AFzUXZ5LdCZVwyWK2DVuovQ="
+    file: MediaModule.zip
+    on:
+      tags: true
+      repo: cmfcmf/MediaModule
+  - provider: heroku
+    api_key:
+      secure: "TODO"
+    app: mediamodule
+    on: master
+    run:
+      - echo TEST
+      - restart
+    skip_cleanup: true
+    
+  
+  
+  
