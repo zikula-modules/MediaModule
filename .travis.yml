@@ -30,7 +30,7 @@ install:
     - tar -xpzf Zikula_Core-1.4.3.build178.tar.gz
     - rm Zikula_Core-1.4.3.build178.tar.gz
     - cd Zikula_Core-1.4.3
-    - composer require ext-mbstring "*" # Needed for Heroku
+    - echo '{"require": {"ext-mbstring": "*"}}' > composer.json # Needed for Heroku
     - php app/console zikula:install:start -n --database_user=root --database_name=zk_test --password=12345678 --email=admin@example.com --router:request_context:host=localhost
     - php app/console zikula:install:finish
     - cd modules
