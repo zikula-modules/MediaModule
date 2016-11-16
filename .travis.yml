@@ -52,6 +52,9 @@ after_script:
     - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 before_deploy:
+# ZIP everything to build a Zikula package ready for testing.
+    - zip -qr ZikulaMM.zip .
+# Build the module itself.
     - cd ..
     - mkdir release
     - cd release
@@ -76,7 +79,8 @@ deploy:
     app: mediamodule
     on: master
     run:
-      - echo TEST
+      - ls
+      - pwd
       - restart
     skip_cleanup: true
     
