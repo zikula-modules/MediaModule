@@ -24,6 +24,7 @@ before_install:
     - mysql -e 'create database zk_test;'
 
 install:
+    - composer require ext-mbstring # Needed for Heroku
     - composer install
     - zip -qr MediaModule.zip .
     - wget https://github.com/zikula/core/releases/download/1.4.3-rc2/Zikula_Core-1.4.3.build178.tar.gz
