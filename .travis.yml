@@ -47,9 +47,8 @@ script:
     - php app/console lint:twig @CmfcmfMediaModule
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist --coverage-text --coverage-clover=coverage.clover -v
 
-after_script:
-    - wget https://scrutinizer-ci.com/ocular.phar
-    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+after_success:
+    - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && test $TRAVIS_PHP_VERSION == "5.6" && ../deployment/deploy-master-to-github.sh
 
 before_deploy:
     - cd ..
@@ -83,7 +82,10 @@ deploy:
 #      - pwd
 #      - restart
 #    skip_cleanup: true
-    
+
+after_script:
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
   
   
   
