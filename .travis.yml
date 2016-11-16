@@ -48,7 +48,7 @@ script:
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist --coverage-text --coverage-clover=coverage.clover -v
 
 after_success:
-    - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && test $TRAVIS_PHP_VERSION == "5.6" && ../deployment/deploy-master-to-github.sh
+    - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && test $TRAVIS_PHP_VERSION == "5.6" && bash ../deployment/deploy-master-to-github.sh
 
 before_deploy:
     - cd ..
