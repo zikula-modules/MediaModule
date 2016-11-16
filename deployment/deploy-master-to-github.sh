@@ -15,7 +15,7 @@ rev=$(git rev-parse --short HEAD)
 pwd
 ls
 mkdir tmp-deploy
-cp MediaModule.zip tmp-deploy/MediaModule.zip
+cp ../MediaModule.zip tmp-deploy/MediaModule.zip
 cd tmp-deploy
 pwd
 ls
