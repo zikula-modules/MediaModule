@@ -159,6 +159,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
                 $this->createCategoryRegistries();
             case '1.2.0':
+            case '1.2.1':
                 return true;
             default:
                 return false;
