@@ -236,36 +236,35 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     public function getImagineId()
     {
-        return "media-{$this->id}";
+        return 'media-' . $this->id;
     }
 
     public function getAttribution($format = 'html')
     {
-        if ($this->author === null && $this->authorUrl === null) {
+        if (null === $this->author && null === $this->authorUrl) {
             return null;
         }
-        $dom = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
 
         if ($format == 'html') {
-            if ($this->authorUrl === null) {
+            if (null === $this->authorUrl) {
                 $author = htmlentities($this->author);
-            } elseif ($this->author === null) {
+            } elseif (null === $this->author) {
                 $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->authorUrl) . '</a>';
             } else {
                 $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->author) . '</a>';
             }
         } elseif ($format == 'raw') {
-            $author = "";
-            if ($this->author !== null) {
-                $author .= $this->author . " ";
+            $author = '';
+            if (null !== $this->author) {
+                $author .= $this->author . ' ';
             }
-            if ($this->authorUrl !== null) {
-                $author .= "(" . $this->authorUrl . ")";
+            if (null !== $this->authorUrl) {
+                $author .= '(' . $this->authorUrl . ')';
             }
             $author = trim($author);
         }
 
-        return __f('By %s', [$author], $dom);
+        return __f('By %s', [$author], 'cmfcmfmediamodule');
     }
 
     /**

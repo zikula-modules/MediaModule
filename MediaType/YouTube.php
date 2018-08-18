@@ -27,7 +27,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     public function isEnabled()
     {
-        return \ModUtil::getVar('CmfcmfMediaModule', 'googleApiKey') != "";
+        return $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey') != '';
     }
 
     /**
@@ -238,7 +238,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
         $client = new \Google_Client();
         $client->setApplicationName('Zikula Media Module by @cmfcmf');
-        $client->setDeveloperKey(\ModUtil::getVar('CmfcmfMediaModule', 'googleApiKey'));
+        $client->setDeveloperKey($this->variableApi->get('CmfcmfMediaModule', 'googleApiKey'));
 
         return new \Google_Service_YouTube($client);
     }

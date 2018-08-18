@@ -50,6 +50,13 @@ abstract class AbstractHookHandler
      */
     protected $translator;
 
+    /**
+     * @param EntityManagerInterface $entityManager
+     * @param RequestStack           $requestStack
+     * @param EngineInterface        $renderEngine
+     * @param SecurityManager        $securityManager
+     * @param TranslatorInterface    $translator
+     */
     public function __construct(
         EntityManagerInterface $entityManager,
         RequestStack $requestStack,

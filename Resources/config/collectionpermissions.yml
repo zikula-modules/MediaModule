@@ -1,21 +1,21 @@
 services:
-  cmfcmf_media_module.collection_permission.container:
-    class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer
+    cmfcmf_media_module.collection_permission.container:
+        class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer
 
-  cmfcmf_media_module.collection_permission.user:
-    class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\UserCollectionPermission
-    arguments: [@translator]
-    tags:
-      - { name: cmfcmf_media_module.collection_permission }
+    cmfcmf_media_module.collection_permission.user:
+        class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\UserCollectionPermission
+        arguments:
+            - '@translator'
+        tags: ['cmfcmf_media_module.collection_permission']
 
-  cmfcmf_media_module.collection_permission.group:
-    class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\GroupCollectionPermission
-    arguments: [@translator]
-    tags:
-      - { name: cmfcmf_media_module.collection_permission }
+    cmfcmf_media_module.collection_permission.group:
+        class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\GroupCollectionPermission
+        arguments:
+            - '@translator'
+        tags: ['cmfcmf_media_module.collection_permission']
 
-  cmfcmf_media_module.collection_permission.owner:
-    class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\OwnerCollectionPermission
-    arguments: [@translator]
-    tags:
-      - { name: cmfcmf_media_module.collection_permission }
+    cmfcmf_media_module.collection_permission.owner:
+        class: Cmfcmf\Module\MediaModule\Security\CollectionPermission\OwnerCollectionPermission
+        arguments:
+            - '@translator'
+        tags: ['cmfcmf_media_module.collection_permission']

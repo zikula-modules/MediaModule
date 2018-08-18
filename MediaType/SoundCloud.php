@@ -27,7 +27,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
 
     public function isEnabled()
     {
-        return \ModUtil::getVar('CmfcmfMediaModule', 'soundCloudApiKey', '') != "";
+        return $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey', '') != '';
     }
 
     /**
@@ -87,7 +87,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
     public function getWebCreationTemplateArguments()
     {
         return [
-            'clientId' => \ModUtil::getVar('CmfcmfMediaModule', 'soundCloudApiKey')
+            'clientId' => $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey')
         ];
     }
 

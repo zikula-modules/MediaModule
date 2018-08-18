@@ -15,7 +15,7 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
-use Zikula\ExtensionsModule\Api\VariableApi;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
 abstract class AbstractMediaType implements MediaTypeInterface
 {
@@ -30,12 +30,20 @@ abstract class AbstractMediaType implements MediaTypeInterface
     protected $translator;
 
     /**
-     * @var VariableApi
+     * @var VariableApiInterface
      */
-    private $variableApi;
+    protected $variableApi;
 
-    public function __construct(EngineInterface $renderEngine, TranslatorInterface $translator, VariableApi $variableApi)
-    {
+    /**
+     * @param EngineInterface      $renderEngine
+     * @param TranslatorInterface  $translator
+     * @param VariableApiInterface $variableApi
+     */
+    public function __construct(
+        EngineInterface $renderEngine,
+        TranslatorInterface $translator,
+        VariableApiInterface $variableApi
+    ) {
         $this->renderEngine = $renderEngine;
         $this->translator = $translator;
         $this->variableApi = $variableApi;

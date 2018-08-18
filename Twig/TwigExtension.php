@@ -18,8 +18,11 @@ use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
 use Github\Exception\RuntimeException;
 use Michelf\MarkdownExtra;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcher;
 use Zikula\CategoriesModule\Entity\CategoryEntity;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
 /**
  * Provides some custom Twig extensions.
@@ -32,7 +35,7 @@ class TwigExtension extends \Twig_Extension
     private $markdownExtra;
 
     /**
-     * @var \Zikula_HookDispatcher
+     * @var HookDispatcher
      */
     private $hookDispatcher;
 
@@ -52,24 +55,40 @@ class TwigExtension extends \Twig_Extension
     private $translator;
 
     /**
-     * @param MarkdownExtra          $markdownExtra
-     * @param \Zikula_HookDispatcher $hookDispatcher
-     * @param SecurityManager        $securityManager
-     * @param VersionChecker         $versionChecker
-     * @param TranslatorInterface    $translator
+     * @var VariableApiInterface
+     */
+    private $variableApi;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * @param MarkdownExtra        $markdownExtra
+     * @param HookDispatcher       $hookDispatcher
+     * @param SecurityManager      $securityManager
+     * @param VersionChecker       $versionChecker
+     * @param TranslatorInterface  $translator
+     * @param VariableApiInterface $variableApi
+     * @param RequestStack         $requestStack
      */
     public function __construct(
         MarkdownExtra $markdownExtra,
-        \Zikula_HookDispatcher $hookDispatcher,
+        HookDispatcher $hookDispatcher,
         SecurityManager $securityManager,
         VersionChecker $versionChecker,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        VariableApiInterface $variableApi,
+        RequestStack $requestStack
     ) {
         $this->markdownExtra = $markdownExtra;
         $this->hookDispatcher = $hookDispatcher;
         $this->securityManager = $securityManager;
         $this->versionChecker = $versionChecker;
         $this->translator = $translator;
+        $this->variableApi = $variableApi;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -78,10 +97,7 @@ class TwigExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter(
-                'cmfcmfmediamodule_getdescription',
-                [$this, 'escapeDescription'],
-                ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('cmfcmfmediamodule_getdescription', [$this, 'escapeDescription'], ['is_safe' => ['html']]),
             new \Twig_SimpleFilter('cmfcmfmediamodule_unamefromuid', [$this, 'userNameFromUid']),
             new \Twig_SimpleFilter('cmfcmfmediamodule_avatarfromuid', [$this, 'avatarFromUid']),
             new \Twig_SimpleFilter('cmfcmfmediamodule_categorytitle', [$this, 'categoryTitle'])
@@ -95,22 +111,16 @@ class TwigExtension extends \Twig_Extension
     {
         return [
             new \Twig_SimpleFunction('cmfcmfmediamodule_hasPermission', [$this, 'hasPermission']),
-            new \Twig_SimpleFunction(
-                'cmfcmfmediamodule_newversionavailable',
-                [$this, 'newVersionAvailable']),
+            new \Twig_SimpleFunction('cmfcmfmediamodule_newversionavailable', [$this, 'newVersionAvailable']),
             new \Twig_SimpleFunction('cmfcmfmediamodule_maxfilesize', [$this, 'maxFileSize'])
         ];
     }
 
     public function categoryTitle(CategoryEntity $category)
     {
-        $lang = \ZLanguage::getLanguageCode();
-        $displayNames = $category->getDisplay_name();
-        if (isset($displayNames[$lang])) {
-            return $displayNames[$lang];
-        }
+        $locale = $this->requestStack->getCurrentRequest()->getLocale();
 
-        return $displayNames['en'];
+        return $category->getDisplay_name($locale);
     }
 
     /**
@@ -120,19 +130,19 @@ class TwigExtension extends \Twig_Extension
      */
     public function newVersionAvailable()
     {
-        $lastNewVersionCheck = \ModUtil::getVar('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
+        $lastNewVersionCheck = $this->variableApi->get('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
         $currentVersion = \ModUtil::getInfoFromName('CmfcmfMediaModule')['version'];
         if (time() > $lastNewVersionCheck + 24 * 60 * 60) {
             // Last version check older than a day.
             $this->checkForNewVersion($currentVersion);
         }
 
-        $newVersionAvailable = \ModUtil::getVar('CmfcmfMediaModule', 'newVersionAvailable', false);
+        $newVersionAvailable = $this->variableApi->get('CmfcmfMediaModule', 'newVersionAvailable', false);
         if ($newVersionAvailable != false) {
             if ($newVersionAvailable == $currentVersion) {
                 // Somehow the user manually upgraded the module.
                 // Remove "Install new version" popup.
-                \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', false);
+                $this->variableApi->set('CmfcmfMediaModule', 'newVersionAvailable', false);
             } else {
                 return $newVersionAvailable;
             }
@@ -153,7 +163,7 @@ class TwigExtension extends \Twig_Extension
             return;
         }
 
-        \ModUtil::setVar('CmfcmfMediaModule', 'lastNewVersionCheck', time());
+        $this->variableApi->set('CmfcmfMediaModule', 'lastNewVersionCheck', time());
         try {
             if (!$this->versionChecker->checkRateLimit()) {
                 // The remaining rate limit isn't high enough.
@@ -161,7 +171,7 @@ class TwigExtension extends \Twig_Extension
             }
             $release = $this->versionChecker->getReleaseToUpgradeTo($currentVersion);
             if ($release !== false) {
-                \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', $release['tag_name']);
+                $this->variableApi->set('CmfcmfMediaModule', 'newVersionAvailable', $release['tag_name']);
             }
         } catch (RuntimeException $e) {
             // Something went wrong with the GitHub API. Fail silently.
@@ -180,14 +190,10 @@ class TwigExtension extends \Twig_Extension
         $strategy = null;
         $hookName = null;
         if ($entity instanceof CollectionEntity) {
-            $strategy = \ModUtil::getVar(
-                'CmfcmfMediaModule',
-                'descriptionEscapingStrategyForCollection');
+            $strategy = $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection');
             $hookName = 'collections';
         } elseif ($entity instanceof AbstractMediaEntity) {
-            $strategy = \ModUtil::getVar(
-                'CmfcmfMediaModule',
-                'descriptionEscapingStrategyForMedia');
+            $strategy = $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForMedia');
             $hookName = 'media';
         } else {
             throw new \LogicException();

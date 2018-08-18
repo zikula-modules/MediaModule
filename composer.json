@@ -1,7 +1,7 @@
 {
     "name": "cmfcmf/media-module",
-    "version": "1.2.2",
-    "description": "A Zikula 1.4.3+ module to handle all sorts of media.",
+    "version": "1.3.0",
+    "description": "A Zikula 2 module to handle all sorts of media.",
     "type": "zikula-module",
     "license": "MIT",
     "authors": [
@@ -15,11 +15,11 @@
         "psr-4": { "Cmfcmf\\Module\\MediaModule\\": "" }
     },
     "require": {
-        "php": ">5.4.1",
-        "james-heinrich/getid3": "~1.9.9",
-        "knplabs/github-api": "~1.5",
-        "j7mbo/twitter-api-php": "~1.0.5",
-        "google/apiclient": "~1.1.5",
+        "php": ">=5.5.9",
+        "james-heinrich/getid3": "1.*",
+        "knplabs/github-api": "1.*",
+        "j7mbo/twitter-api-php": "1.*",
+        "google/apiclient": "2.*",
         "clue/graph": "0.9.*"
     },
     "require-dev": {
@@ -28,7 +28,7 @@
     "extra": {
         "zikula": {
             "class": "Cmfcmf\\Module\\MediaModule\\CmfcmfMediaModule",
-            "core-compatibility": ">=1.4.3",
+            "core-compatibility": ">=2.0.0",
             "displayname": "MediaModule",
             "url": "media",
             "oldnames": [],
@@ -52,7 +52,7 @@
     },
     "config": {
         "platform": {
-            "php": "5.4.2"
+            "php": "5.5.9"
         }
     }
 }

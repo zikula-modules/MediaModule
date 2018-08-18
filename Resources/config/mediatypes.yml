@@ -1,96 +1,85 @@
 services:
-  cmfcmf_media_module.media_type.abstract_media:
-    abstract: true
-    arguments: ["@templating", "@translator", "@zikula_extensions_module.api.variable"]
+    cmfcmf_media_module.media_type.abstract_media:
+        abstract: true
+        arguments:
+            - '@templating'
+            - '@translator'
+            - '@zikula_extensions_module.api.variable'
 
-  cmfcmf_media_module.media_type.abstract_file:
-    parent: cmfcmf_media_module.media_type.abstract_media
-    abstract: true
-    calls:
-      - [injectThings, [@service_container, @file_locator, @cmfcmf_media_module.font_collection, %kernel.root_dir%]]
+    cmfcmf_media_module.media_type.abstract_file:
+        parent: cmfcmf_media_module.media_type.abstract_media
+        abstract: true
+        calls:
+            - [injectThings, ['@service_container', '@file_locator', '@cmfcmf_media_module.font_collection', '%kernel.root_dir%']]
 
-  cmfcmf_media_module.media_type.url:
-    class: Cmfcmf\Module\MediaModule\MediaType\Url
-    parent: cmfcmf_media_module.media_type.abstract_media
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.url:
+        class: Cmfcmf\Module\MediaModule\MediaType\Url
+        parent: cmfcmf_media_module.media_type.abstract_media
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.deezer:
-    class: Cmfcmf\Module\MediaModule\MediaType\Deezer
-    parent: cmfcmf_media_module.media_type.abstract_media
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.deezer:
+        class: Cmfcmf\Module\MediaModule\MediaType\Deezer
+        parent: cmfcmf_media_module.media_type.abstract_media
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.sound_cloud:
-    class: Cmfcmf\Module\MediaModule\MediaType\SoundCloud
-    parent: cmfcmf_media_module.media_type.abstract_media
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.sound_cloud:
+        class: Cmfcmf\Module\MediaModule\MediaType\SoundCloud
+        parent: cmfcmf_media_module.media_type.abstract_media
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.flickr:
-    class: Cmfcmf\Module\MediaModule\MediaType\Flickr
-    parent: cmfcmf_media_module.media_type.abstract_media
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.flickr:
+        class: Cmfcmf\Module\MediaModule\MediaType\Flickr
+        parent: cmfcmf_media_module.media_type.abstract_media
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.you_tube:
-    class: Cmfcmf\Module\MediaModule\MediaType\YouTube
-    parent: cmfcmf_media_module.media_type.abstract_media
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.you_tube:
+        class: Cmfcmf\Module\MediaModule\MediaType\YouTube
+        parent: cmfcmf_media_module.media_type.abstract_media
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.twitter:
-    class: Cmfcmf\Module\MediaModule\MediaType\Twitter
-    parent: cmfcmf_media_module.media_type.abstract_media
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.twitter:
+        class: Cmfcmf\Module\MediaModule\MediaType\Twitter
+        parent: cmfcmf_media_module.media_type.abstract_media
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.image:
-    class: Cmfcmf\Module\MediaModule\MediaType\Image
-    parent: cmfcmf_media_module.media_type.abstract_file
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.image:
+        class: Cmfcmf\Module\MediaModule\MediaType\Image
+        parent: cmfcmf_media_module.media_type.abstract_file
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.pdf:
-    class: Cmfcmf\Module\MediaModule\MediaType\Pdf
-    parent: cmfcmf_media_module.media_type.abstract_file
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.pdf:
+        class: Cmfcmf\Module\MediaModule\MediaType\Pdf
+        parent: cmfcmf_media_module.media_type.abstract_file
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.plaintext:
-    class: Cmfcmf\Module\MediaModule\MediaType\Plaintext
-    parent: cmfcmf_media_module.media_type.abstract_file
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.plaintext:
+        class: Cmfcmf\Module\MediaModule\MediaType\Plaintext
+        parent: cmfcmf_media_module.media_type.abstract_file
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.audio:
-    class: Cmfcmf\Module\MediaModule\MediaType\Audio
-    parent: cmfcmf_media_module.media_type.abstract_file
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.audio:
+        class: Cmfcmf\Module\MediaModule\MediaType\Audio
+        parent: cmfcmf_media_module.media_type.abstract_file
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.video:
-    class: Cmfcmf\Module\MediaModule\MediaType\Video
-    parent: cmfcmf_media_module.media_type.abstract_file
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.video:
+        class: Cmfcmf\Module\MediaModule\MediaType\Video
+        parent: cmfcmf_media_module.media_type.abstract_file
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.markdown:
-    class: Cmfcmf\Module\MediaModule\MediaType\Markdown
-    parent: cmfcmf_media_module.media_type.abstract_file
-    calls:
-      - [setMarkdownParser, [@markdown_extra_parser]]
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.markdown:
+        class: Cmfcmf\Module\MediaModule\MediaType\Markdown
+        parent: cmfcmf_media_module.media_type.abstract_file
+        calls:
+            - [setMarkdownParser, ['@zikula_core.common.markdown_parser']]
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.archive:
-    class: Cmfcmf\Module\MediaModule\MediaType\Archive
-    parent: cmfcmf_media_module.media_type.abstract_file
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.archive:
+        class: Cmfcmf\Module\MediaModule\MediaType\Archive
+        parent: cmfcmf_media_module.media_type.abstract_file
+        tags: ['cmfcmf_media_module.media_type']
 
-  cmfcmf_media_module.media_type.unknown:
-    class: Cmfcmf\Module\MediaModule\MediaType\Unknown
-    parent: cmfcmf_media_module.media_type.abstract_file
-    tags:
-      - { name: cmfcmf_media_module.media_type }
+    cmfcmf_media_module.media_type.unknown:
+        class: Cmfcmf\Module\MediaModule\MediaType\Unknown
+        parent: cmfcmf_media_module.media_type.abstract_file
+        tags: ['cmfcmf_media_module.media_type']

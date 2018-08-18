@@ -5,131 +5,150 @@ imports:
   - { resource: 'importers.yml' }
 
 services:
-  # Security management
-  cmfcmf_media_module.security_manager:
-    class: Cmfcmf\Module\MediaModule\Security\SecurityManager
-    arguments: [@translator, @zikula_permissions_module.api.permission, @doctrine.orm.default_entity_manager, @cmfcmf_media_module.collection_permission.container]
+    # Security management
+    cmfcmf_media_module.security_manager:
+        class: Cmfcmf\Module\MediaModule\Security\SecurityManager
+        arguments:
+            - '@translator'
+            - '@zikula_permissions_module.api.permission'
+            - '@doctrine.orm.default_entity_manager'
+            - '@cmfcmf_media_module.collection_permission.container'
 
 
-  # Module upgrader and version checker
-  cmfcmf_media_module.upgrade.module_upgrader:
-    class: Cmfcmf\Module\MediaModule\Upgrade\ModuleUpgrader
-    arguments: [@translator, @zikula.cache_clearer, %kernel.cache_dir%, %kernel.root_dir%]
+    # Module upgrader and version checker
+    cmfcmf_media_module.upgrade.module_upgrader:
+        class: Cmfcmf\Module\MediaModule\Upgrade\ModuleUpgrader
+        arguments:
+            - '@translator'
+            - '@zikula.cache_clearer'
+            - '%kernel.cache_dir%'
+            - '%kernel.root_dir%'
 
-  cmfcmf_media_module.upgrade.version_checker:
-    class: Cmfcmf\Module\MediaModule\Upgrade\VersionChecker
-    arguments: [%kernel.cache_dir%]
-
-
-  # Form types
-  cmfcmf_media_module.form.type.font:
-    class: Cmfcmf\Module\MediaModule\Form\Type\FontType
-    arguments: [@cmfcmf_media_module.font_collection]
-    tags:
-      - { name: form.type, alias: cmfcmfmediamodule_font_choice }
-
-  cmfcmf_media_module.form.type.color:
-    class: Cmfcmf\Module\MediaModule\Form\Type\ColorType
-    tags:
-      - { name: form.type, alias: cmfcmfmediamodule_color }
-
-  cmfcmf_media_module.form.type.permission_level:
-      class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
-      arguments:
-          - @cmfcmf_media_module.security_manager
-      tags:
-          - { name: form.type, alias: cmfcmfmediamodule_permission }
-
-  cmfcmf_media_module.form.type.collection_template:
-      class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType
-      arguments:
-          - "@translator"
-          - "@cmfcmf_media_module.collection_template_collection"
-          - "@cmfcmf_media_module.collection_template.selected_factory"
-      tags:
-          - { name: form.type, alias: cmfcmfmediamodule_collectiontemplate }
+    cmfcmf_media_module.upgrade.version_checker:
+        class: Cmfcmf\Module\MediaModule\Upgrade\VersionChecker
+        arguments:
+            - '%kernel.cache_dir%'
 
 
-  # Listeners
-  cmfcmf_media_module.listener.module:
-    class: Cmfcmf\Module\MediaModule\Listener\ModuleListener
-    arguments: [@doctrine.orm.default_entity_manager]
-    tags:
-      - { name: kernel.event_subscriber }
+    # Form types
+    cmfcmf_media_module.form.type.font:
+        class: Cmfcmf\Module\MediaModule\Form\Type\FontType
+        arguments:
+            - '@cmfcmf_media_module.font_collection'
+        tags: ['form.type']
 
-  cmfcmf_media_module.listener.thirdparty:
-    class: Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener
-    arguments: [%kernel.root_dir%]
-    tags:
-      - { name: kernel.event_subscriber }
+    cmfcmf_media_module.form.type.color:
+        class: Cmfcmf\Module\MediaModule\Form\Type\ColorType
+        tags: ['form.type']
 
-  cmfcmf_media_module.listener.doctrine:
-    class: Cmfcmf\Module\MediaModule\Listener\DoctrineListener
-    tags:
-      - { name: doctrine.event_subscriber }
+    cmfcmf_media_module.form.type.permission_level:
+        class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
+        arguments:
+            - '@cmfcmf_media_module.security_manager'
+        tags: ['form.type']
 
-
-  # Link container
-  cmfcmf_media_module.container.links:
-    class: Cmfcmf\Module\MediaModule\Container\LinkContainer
-    arguments: [@router, @cmfcmf_media_module.security_manager, @translator, @doctrine.orm.default_entity_manager]
-    tags:
-      - { name: zikula.link_container }
-
-
-  # Collection of media types
-  cmfcmf_media_module.media_type_collection:
-    class: Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection
-    lazy: true
+    cmfcmf_media_module.form.type.collection_template:
+        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType
+        arguments:
+            - '@translator'
+            - '@cmfcmf_media_module.collection_template_collection'
+            - '@cmfcmf_media_module.collection_template.selected_factory'
+        tags: ['form.type']
 
 
-  # Collection of "Collection" templates
-  cmfcmf_media_module.collection_template_collection:
-    class: Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection
-    lazy: true
+    # Listeners
+    cmfcmf_media_module.listener.module:
+        class: Cmfcmf\Module\MediaModule\Listener\ModuleListener
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+        tags: ['kernel.event_subscriber']
+
+    cmfcmf_media_module.listener.thirdparty:
+        class: Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener
+        arguments:
+            - '%kernel.root_dir%'
+        tags: ['kernel.event_subscriber']
+
+    cmfcmf_media_module.listener.doctrine:
+        class: Cmfcmf\Module\MediaModule\Listener\DoctrineListener
+        tags: ['doctrine.event_subscriber']
 
 
-  # Selected collection template factory
-  cmfcmf_media_module.collection_template.selected_factory:
-    class: Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory
-    arguments: ["@cmfcmf_media_module.collection_template_collection"]
-
-  # Twig extension
-  cmfcmf_media_module.twig_extension:
-    class: Cmfcmf\Module\MediaModule\Twig\TwigExtension
-    arguments: [@markdown_extra_parser, @hook_dispatcher, @cmfcmf_media_module.security_manager, @cmfcmf_media_module.upgrade.version_checker, @translator]
-    public: false
-    tags:
-      - { name: twig.extension }
+    # Link container
+    cmfcmf_media_module.container.links:
+        class: Cmfcmf\Module\MediaModule\Container\LinkContainer
+        arguments:
+            - '@router'
+            - '@cmfcmf_media_module.security_manager'
+            - '@translator'
+            - '@doctrine.orm.default_entity_manager'
+        tags: ['zikula.link_container']
 
 
-  # Hook handlers
-  cmfcmf_media_module.hook_handler.base:
-    abstract: true
-    arguments: [@doctrine.orm.default_entity_manager, @request_stack, @templating, @cmfcmf_media_module.security_manager, @translator]
+    # Collection of media types
+    cmfcmf_media_module.media_type_collection:
+        class: Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection
+        lazy: true
 
-  cmfcmf_media_module.hook_handler.license:
-    class: Cmfcmf\Module\MediaModule\HookHandler\LicenseHookHandler
-    parent: cmfcmf_media_module.hook_handler.base
 
-  cmfcmf_media_module.hook_handler.media:
-    class: Cmfcmf\Module\MediaModule\HookHandler\MediaHookHandler
-    parent: cmfcmf_media_module.hook_handler.base
-    calls:
-      - [setMediaTypeCollection, [@cmfcmf_media_module.media_type_collection]]
+    # Collection of "Collection" templates
+    cmfcmf_media_module.collection_template_collection:
+        class: Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection
+        lazy: true
 
-  cmfcmf_media_module.hook_handler.collection:
-    class: Cmfcmf\Module\MediaModule\HookHandler\CollectionHookHandler
-    parent: cmfcmf_media_module.hook_handler.base
-    calls:
-      - [setMediaTypeCollection, [@cmfcmf_media_module.media_type_collection]]
-      
 
-  # Fonts
-  cmfcmf_media_module.font.font_loader:
-    class: Cmfcmf\Module\MediaModule\Font\FontLoader
-    tags:
-        - { name: cmfcmf_media_module.font }
+    # Selected collection template factory
+    cmfcmf_media_module.collection_template.selected_factory:
+        class: Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory
+        arguments:
+            - '@cmfcmf_media_module.collection_template_collection'
+
+    # Twig extension
+    cmfcmf_media_module.twig_extension:
+        class: Cmfcmf\Module\MediaModule\Twig\TwigExtension
+        arguments:
+            - '@zikula_core.common.markdown_extra_parser'
+            - '@hook_dispatcher'
+            - '@cmfcmf_media_module.security_manager'
+            - '@cmfcmf_media_module.upgrade.version_checker'
+            - '@translator'
+            - '@zikula_extensions_module.api.variable'
+            - '@request_stack'
+        public: false
+        tags: ['twig.extension']
+
+
+    # Hook handlers
+    cmfcmf_media_module.hook_handler.base:
+        abstract: true
+        arguments:
+            - '@doctrine.orm.default_entity_manager'
+            - '@request_stack'
+            - '@templating'
+            - '@cmfcmf_media_module.security_manager'
+            - '@translator'
+
+    cmfcmf_media_module.hook_handler.license:
+        class: Cmfcmf\Module\MediaModule\HookHandler\LicenseHookHandler
+        parent: cmfcmf_media_module.hook_handler.base
+
+    cmfcmf_media_module.hook_handler.media:
+        class: Cmfcmf\Module\MediaModule\HookHandler\MediaHookHandler
+        parent: cmfcmf_media_module.hook_handler.base
+        calls:
+            - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
+
+    cmfcmf_media_module.hook_handler.collection:
+        class: Cmfcmf\Module\MediaModule\HookHandler\CollectionHookHandler
+        parent: cmfcmf_media_module.hook_handler.base
+        calls:
+            - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
         
-  cmfcmf_media_module.font_collection:
-    class: Cmfcmf\Module\MediaModule\Font\FontCollection
+
+    # Fonts
+    cmfcmf_media_module.font.font_loader:
+        class: Cmfcmf\Module\MediaModule\Font\FontLoader
+        tags: ['cmfcmf_media_module.font']
+            
+    cmfcmf_media_module.font_collection:
+        class: Cmfcmf\Module\MediaModule\Font\FontCollection

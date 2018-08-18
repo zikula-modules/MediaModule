@@ -28,10 +28,10 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     public function isEnabled()
     {
         return
-            \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiKey') != "" &&
-            \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiSecret') != "" &&
-            \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessToken') != "" &&
-            \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessTokenSecret') != ""
+            $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey') != '' &&
+            $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret') != '' &&
+            $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken') != '' &&
+            $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret') != ''
         ;
     }
 
@@ -197,10 +197,10 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         require_once __DIR__ . '/../vendor/autoload.php';
 
         $api = new \TwitterAPIExchange([
-            'oauth_access_token' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessToken'),
-            'oauth_access_token_secret' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessTokenSecret'),
-            'consumer_key' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiKey'),
-            'consumer_secret' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiSecret')
+            'oauth_access_token' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken'),
+            'oauth_access_token_secret' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret'),
+            'consumer_key' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey'),
+            'consumer_secret' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret')
         ]);
 
         return $api;
