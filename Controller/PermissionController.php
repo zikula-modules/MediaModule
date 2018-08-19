@@ -65,7 +65,7 @@ class PermissionController extends AbstractController
             'entities' => $entities,
             'collection' => $collectionEntity,
             'collectionPermissionTypeContainer' => $collectionPermissionTypeContainer,
-            'userId' => \UserUtil::getVar('uid'),
+            'userId' => $this->get('zikula_users_module.current_user')->get('uid'),
             'highlight' => $request->query->get('highlight', null)
         ];
     }
@@ -128,7 +128,10 @@ class PermissionController extends AbstractController
             ]);
         }
 
-        return ['form' => $form->createView(), 'collection' => $collection];
+        return [
+            'form' => $form->createView(),
+            'collection' => $collection
+        ];
     }
 
     /**
@@ -317,10 +320,10 @@ class PermissionController extends AbstractController
         if ($securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)) {
             return CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS;
         }
-        if ($permissionEntity == null) {
+        if (null === $permissionEntity) {
             throw new AccessDeniedException();
         }
-        if ($permissionEntity->getCreatedBy()->getUid() == \UserUtil::getVar('uid')) {
+        if ($permissionEntity->getCreatedBy()->getUid() == $this->get('zikula_users_module.current_user')->get('uid')) {
             if ($securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS)) {
                 return CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS;
             }

@@ -282,7 +282,7 @@ class CollectionController extends AbstractController
         if ($entity->getDefaultTemplate() != null) {
             $defaultTemplate = $entity->getDefaultTemplate();
         } else {
-            $defaultTemplate = \ModUtil::getVar('CmfcmfMediaModule', 'defaultCollectionTemplate');
+            $defaultTemplate = $this->getVar('defaultCollectionTemplate');
         }
         $template = $request->query->get('template', $defaultTemplate);
 

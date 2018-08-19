@@ -35,7 +35,7 @@ class UpgradeController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $hasPermission = \SecurityUtil::checkPermission('ZikulaExtensionsModule::', '::', ACCESS_ADMIN);
+        $hasPermission = $this->hasPermission('ZikulaExtensionsModule::', '::', ACCESS_ADMIN);
         $upgrader = $this->get('cmfcmf_media_module.upgrade.module_upgrader');
 
         return [
@@ -69,7 +69,7 @@ class UpgradeController extends AbstractController
                 $this->resetUpgradeMessage();
             }
 
-            return new JsonResponse([
+            return $this->json([
                 'proceed' => true,
                 'message' => null,
                 'done' => $upgradeDone
@@ -77,19 +77,19 @@ class UpgradeController extends AbstractController
         } catch (UpgradeNotRequiredException $e) {
             $this->resetUpgradeMessage();
 
-            return new JsonResponse([
+            return $this->json([
                 'proceed' => false,
                 'message' => $e->getMessage(),
                 'done' => false
             ]);
         } catch (UpgradeFailedException $e) {
-            return new JsonResponse([
+            return $this->json([
                 'proceed' => false,
                 'message' => $e->getMessage(),
                 'done' => false
             ]);
         } catch (\Exception $e) {
-            return new JsonResponse([
+            return $this->json([
                 'proceed' => false,
                 'message' => $this->get('translator')->trans(
                     'Something unexpected happened. Please report this problem and give the following information: %s',
@@ -102,7 +102,7 @@ class UpgradeController extends AbstractController
 
     private function resetUpgradeMessage()
     {
-        \ModUtil::setVar('CmfcmfMediaModule', 'newVersionAvailable', false);
-        \ModUtil::setVar('CmfcmfMediaModule', 'lastNewVersionCheck', 0);
+        $this->setVar('newVersionAvailable', false);
+        $this->setVar('lastNewVersionCheck', 0);
     }
 }
