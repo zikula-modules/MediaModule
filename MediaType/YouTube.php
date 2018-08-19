@@ -234,8 +234,6 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     private function getYouTubeApi()
     {
-        require_once __DIR__ . '/../vendor/autoload.php';
-
         $client = new \Google_Client();
         $client->setApplicationName('Zikula Media Module by @cmfcmf');
         $client->setDeveloperKey($this->variableApi->get('CmfcmfMediaModule', 'googleApiKey'));

@@ -22,7 +22,7 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        if (!class_exists('Scribite_EditorHelper')) {
+        if (!interface_exists('\\Zikula\\ScribiteModule\\Editor\\EditorHelperInterface')) {
             $this->markTestSkipped(
                 'The Scribite module is not installed.'
             );
@@ -39,6 +39,7 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    // TODO update obsolete test implementation
     public function testIfScribiteHelpersAreRegistered()
     {
         $eventStub = $this->getMockBuilder('Zikula_Event')
@@ -70,6 +71,7 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
         $this->listener->getScribiteEditorHelpers($eventStub);
     }
 
+    // TODO update obsolete test implementation
     public function testIfCKEditorPluginsAreRegistered()
     {
         $eventStub = $this->getMockBuilder('Zikula_Event')

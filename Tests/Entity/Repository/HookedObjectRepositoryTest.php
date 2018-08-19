@@ -11,29 +11,33 @@
 
 namespace Cmfcmf\Module\MediaModule\Tests\Entity\Repository;
 
+/*use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Zikula\Bundle\HookBundle\Hook\Hook;*/
+
 class HookedObjectRepositoryTest extends \PHPUnit_Framework_TestCase
 {
-    //    /**
-//     * @var HookedObjectRepository
-//     */
-//    private $repository;
-//
-//    public function setUp()
-//    {
-//        $emStub = $this->getMockBuilder('Doctrine\ORM\EntityManagerInterface')
-//            ->getMock();
-//        $classMetadataStub = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')
-//            ->disableOriginalConstructor()
-//            ->getMock();
-//        $this->repository = new HookedObjectRepository($emStub, $classMetadataStub);
-//    }
-//
-//    public function testIsSomethingHookedMethod()
-//    {
-//        $hookStub = $this->getMockBuilder('Zikula\Bundle\HookBundle\Hook\Hook')
-//            ->getMock();
-//        $this->repository->getByHookOrCreate($hookStub);
-//    }
+    /**
+     * @var HookedObjectRepository
+     * /
+    private $repository;
+
+    public function setUp()
+    {
+        $emStub = $this->getMockBuilder(EntityManagerInterface::class)
+            ->getMock();
+        $classMetadataStub = $this->getMockBuilder(ClassMetadata::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->repository = new HookedObjectRepository($emStub, $classMetadataStub);
+    }
+
+    public function testIsSomethingHookedMethod()
+    {
+        $hookStub = $this->getMockBuilder(Hook::class)
+            ->getMock();
+        $this->repository->getByHookOrCreate($hookStub);
+    }*/
 
     public function testTest()
     {

@@ -66,8 +66,6 @@ class MediaTypeController extends AbstractController
             ]);
         }
 
-        require_once __DIR__ . '/../vendor/autoload.php';
-
         $client = new Google_Client();
         $client->setClientId($clientID);
         $client->setClientSecret($clientSecret);

@@ -194,8 +194,6 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     private function getTwitterApi()
     {
-        require_once __DIR__ . '/../vendor/autoload.php';
-
         $api = new \TwitterAPIExchange([
             'oauth_access_token' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken'),
             'oauth_access_token_secret' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret'),

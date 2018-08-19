@@ -12,6 +12,8 @@
 namespace Cmfcmf\Module\MediaModule\Tests\Font;
 
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
+use Cmfcmf\Module\MediaModule\Font\FontLoaderInterface;
+use Cmfcmf\Module\MediaModule\Font\FontInterface;
 
 class FontCollectionTest extends \PHPUnit_Framework_TestCase
 {
@@ -30,7 +32,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
         $fontCollection = new FontCollection();
         $fontCollection->getFonts();
 
-        $fontLoader = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontLoaderInterface')->getMock();
+        $fontLoader = $this->getMockBuilder(FontLoaderInterface::class)->getMock();
 
         $fontCollection->addFontLoader($fontLoader);
     }
@@ -53,7 +55,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $fontCollection = new FontCollection();
 
-        $font = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontInterface')->getMock();
+        $font = $this->getMockBuilder(FontInterface::class)->getMock();
         $font
             ->expects($this->any())
             ->method('getId')
@@ -70,7 +72,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
             ->willReturn('fontTitle')
         ;
 
-        $fontLoader = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontLoaderInterface')->getMock();
+        $fontLoader = $this->getMockBuilder(FontLoaderInterface::class)->getMock();
         $fontLoader
             ->expects($this->once())
             ->method('loadFonts')
@@ -86,7 +88,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $fontCollection = new FontCollection();
 
-        $font1 = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontInterface')->getMock();
+        $font1 = $this->getMockBuilder(FontInterface::class)->getMock();
         $font1
             ->expects($this->any())
             ->method('getId')
@@ -103,7 +105,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
             ->willReturn('font1')
         ;
 
-        $font2 = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontInterface')->getMock();
+        $font2 = $this->getMockBuilder(FontInterface::class)->getMock();
         $font2
             ->expects($this->any())
             ->method('getId')
@@ -120,7 +122,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
             ->willReturn('fontTitle')
         ;
 
-        $font3 = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontInterface')->getMock();
+        $font3 = $this->getMockBuilder(FontInterface::class)->getMock();
         $font3
             ->expects($this->any())
             ->method('getId')
@@ -137,7 +139,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
             ->willReturn('font3')
         ;
 
-        $fontLoader = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontLoaderInterface')->getMock();
+        $fontLoader = $this->getMockBuilder(FontLoaderInterface::class)->getMock();
         $fontLoader
             ->expects($this->once())
             ->method('loadFonts')
@@ -235,7 +237,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
     {
         $fontCollection = new FontCollection();
 
-        $font = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontInterface')->getMock();
+        $font = $this->getMockBuilder(FontInterface::class)->getMock();
         $font
             ->expects($this->any())
             ->method('getId')
@@ -252,7 +254,7 @@ class FontCollectionTest extends \PHPUnit_Framework_TestCase
             ->willReturn('fontTitle')
         ;
 
-        $fontLoader = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Font\FontLoaderInterface')->getMock();
+        $fontLoader = $this->getMockBuilder(FontLoaderInterface::class)->getMock();
         $fontLoader
             ->expects($this->once())
             ->method('loadFonts')

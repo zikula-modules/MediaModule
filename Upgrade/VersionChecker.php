@@ -213,8 +213,6 @@ class VersionChecker
 
     private function getClient()
     {
-        require_once __DIR__ . '/../vendor/autoload.php';
-
         $client = new GitHubClient(
             new GitHubCachedHttpClient(['cache_dir' => $this->githubApiCache])
         );
