@@ -6,23 +6,28 @@
 
 <div class="table-responsive">
     <table class="table table-striped table-condensed">
+        <colgroup>
+            <col id="cThumbnail" />
+            <col id="cTitle" />
+            <col id="cActions" />
+        </colgroup>
         <thead>
-        <tr>
-            <th>{{ __('Thumbnail') }}</th>
-            <th>{{ __('Title') }}</th>
-            <th></th>
-        </tr>
+            <tr>
+                <th id="hThumbnail" scope="col">{{ __('Thumbnail') }}</th>
+                <th id="hTitle" scope="col">{{ __('Title') }}</th>
+                <th id="hActions" scope="col"></th>
+            </tr>
         </thead>
         <tbody id="cmfcmfmedia-media-hook-table">
             {% for media in selectedMedia %}
                 <tr>
-                    <td>
+                    <td headers="hEntity{{ media.id }} hThumbnail">
                         {% if media.thumbnail.small %}
                             <img src="{{ media.thumbnail.small|e('html_attr') }}" alt="" />
                         {% endif %}
                     </td>
-                    <td>{{ media.title }}</td>
-                    <td>
+                    <th id="hEntity{{ media.id }}" scope="row" headers="hTitle">{{ media.title }}</th>
+                    <td headers="hEntity{{ media.id }} hActions">
                         <input type="hidden" name="cmfcmfmediamodule[media][]" value="{{ media.id }}" />
                         <button type="button" class="cmfcmfmedia-media-hook-table-remove btn btn-danger btn-sm">
                             <i class="fa fa-trash-o"></i>
