@@ -12,9 +12,18 @@
 namespace Cmfcmf\Module\MediaModule;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\PasswordPermissionRestrictionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
+use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
+use Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Zikula\Core\AbstractExtensionInstaller;
 
@@ -104,16 +113,16 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             /** @noinspection PhpMissingBreakStatementInspection */
             case '1.0.6':
                 $this->schemaTool->create([
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity',
+                    AbstractPermissionEntity::class,
+                    GroupPermissionEntity::class,
+                    OwnerPermissionEntity::class,
+                    UserPermissionEntity::class,
 
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\PasswordPermissionRestrictionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity',
+                    AbstractPermissionRestrictionEntity::class,
+                    PasswordPermissionRestrictionEntity::class
                 ]);
                 $this->schemaTool->update([
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity'
+                    CollectionEntity::class
                 ]);
 
                 // Create root collection.
@@ -126,7 +135,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 $this->entityManager->persist($rootCollection);
 
                 $allCollections = $this->entityManager
-                    ->getRepository('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity')
+                    ->getRepository(CollectionEntity::class)
                     ->findAll();
                 foreach ($allCollections as $collection) {
                     if ($collection->getParent() === null && $collection->getId() != null) {
@@ -138,23 +147,27 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 $this->entityManager->flush();
 
                 $this->createPermissions(
-                    $this->entityManager->find('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity', 1),
+                    $this->entityManager->find(CollectionEntity::class, 1),
                     $rootCollection
                 );
             case '1.1.0':
             case '1.1.1':
             case '1.1.2':
                 $this->schemaTool->update([
-                    'Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity'
+                    AbstractWatermarkEntity::class,
+                    TextWatermarkEntity::class
                 ]);
-                $this->entityManager->getConnection()->executeUpdate("UPDATE `cmfcmfmedia_watermarks` SET `fontColor`='#000000ff',`backgroundColor`='#00000000' WHERE `discr`='text'");
+                $this->entityManager->getConnection()->executeUpdate("
+                    UPDATE `cmfcmfmedia_watermarks`
+                    SET `fontColor`='#000000ff', `backgroundColor`='#00000000'
+                    WHERE `discr`='text'
+                ");
 
                 $this->schemaTool->update([
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity',
+                    CollectionEntity::class,
+                    CollectionCategoryAssignmentEntity::class,
+                    AbstractMediaEntity::class,
+                    MediaCategoryAssignmentEntity::class
                 ]);
 
                 $this->createCategoryRegistries();

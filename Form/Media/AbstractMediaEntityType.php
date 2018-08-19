@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Form\Media;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Form\DataTransformer\ArrayToJsonTransformer;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
@@ -21,6 +22,7 @@ use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\FormBuilderInterface;
+use Zikula\CategoriesModule\Form\Type\CategoriesType;
 use Zikula\ExtensionsModule\Api\VariableApi;
 
 /**
@@ -150,12 +152,12 @@ abstract class AbstractMediaEntityType extends AbstractType
 
         $builder
             ->add('collection', 'entity', $collectionOptions)
-            ->add('categoryAssignments', 'Zikula\CategoriesModule\Form\Type\CategoriesType', [
+            ->add('categoryAssignments', CategoriesType::class, [
                 'required' => false,
                 'multiple' => true,
                 'module' => 'CmfcmfMediaModule',
                 'entity' => 'AbstractMediaEntity',
-                'entityCategoryClass' => 'Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity',
+                'entityCategoryClass' => MediaCategoryAssignmentEntity::class,
             ])
             ->add(
                 'title',

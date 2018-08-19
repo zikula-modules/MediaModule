@@ -12,6 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\Block;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
+use Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -109,7 +110,7 @@ class CollectionBlock extends AbstractBlockHandler
      */
     public function getFormClassName()
     {
-        return 'Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType';
+        return CollectionBlockType::class;
     }
 
     /**

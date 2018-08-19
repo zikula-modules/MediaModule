@@ -12,6 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\Form\Collection;
 
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository;
@@ -21,6 +22,7 @@ use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Parameter;
 use Symfony\Component\Form\FormBuilderInterface;
+use Zikula\CategoriesModule\Form\Type\CategoriesType;
 
 class CollectionType extends AbstractType
 {
@@ -108,19 +110,19 @@ class CollectionType extends AbstractType
                         'help' => $descriptionHelp
                     ]
                 ])
-            ->add('categoryAssignments', 'Zikula\CategoriesModule\Form\Type\CategoriesType', [
+            ->add('categoryAssignments', CategoriesType::class, [
                 'required' => false,
                 'multiple' => true,
                 'module' => 'CmfcmfMediaModule',
                 'entity' => 'CollectionEntity',
-                'entityCategoryClass' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity',
+                'entityCategoryClass' => CollectionCategoryAssignmentEntity::class,
             ])
             ->add('defaultTemplate', 'cmfcmfmediamodule_collectiontemplate')
             ->add(
                 'parent',
                 'entity',
                 [
-                    'class' => 'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
+                    'class' => CollectionEntity::class,
                     'required' => false,
                     'label' => $this->translator->trans('Parent', [], 'cmfcmfmediamodule'),
                     'placeholder' => $this->translator->trans('No parent', [], 'cmfcmfmediamodule'),

@@ -11,6 +11,8 @@
 
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
+use Cmfcmf\Module\MediaModule\Form\CollectionTemplate\GalleriaType;
+
 /**
  * Displays a Galleria image slider https://galleria.io/.
  */
@@ -26,7 +28,7 @@ class GalleriaTemplate extends AbstractTemplate
 
     public function getSettingsForm()
     {
-        return 'Cmfcmf\Module\MediaModule\Form\CollectionTemplate\GalleriaType';
+        return GalleriaType::class;
     }
 
     public function getDefaultOptions()
