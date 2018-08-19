@@ -16,8 +16,7 @@ use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 
 /**
- * @todo Once Zikula supports the Symfony user mechanism, retrieve the user
- * from a service instead of using the static method call.
+ * Owner based collection permission.
  */
 class OwnerCollectionPermission extends AbstractCollectionPermission
 {
@@ -44,11 +43,11 @@ class OwnerCollectionPermission extends AbstractCollectionPermission
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
-        if (php_sapi_name() === 'cli' || !\UserUtil::isLoggedIn()) {
+        if ('cli' === php_sapi_name() || !$this->currentUserApi->isLoggedIn()) {
             return null;
         }
 
-        $userId = (int)\UserUtil::getVar('uid');
+        $userId = $this->currentUserApi->get('uid');
 
         $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_op", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_op.id");
         $qb->setParameter('opUserId', $userId);

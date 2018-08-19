@@ -14,13 +14,35 @@ namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\UsersModule\Api\ApiInterface\CurrentUserApiInterface;
+use Zikula\UsersModule\Constant as UsersConstant;
+use Zikula\UsersModule\Entity\RepositoryInterface\UserRepositoryInterface;
 
 /**
- * @todo Once Zikula supports the Symfony user mechanism, retrieve the user
- * from a service instead of using the static method call.
+ * User based collection permission.
  */
 class UserCollectionPermission extends AbstractCollectionPermission
 {
+    /**
+     * @var UserRepositoryInterface
+     */
+    protected $userRepository;
+
+    /**
+     * @param TranslatorInterface     $translator
+     * @param CurrentUserApiInterface $currentUserApi
+     * @param UserRepositoryInterface $userRepository
+     */
+    public function __construct(
+        TranslatorInterface $translator,
+        CurrentUserApiInterface $currentUserApi,
+        UserRepositoryInterface $userRepository
+    ) {
+        parent::__construct($translator, $currentUserApi;
+        $this->userRepository = $userRepository;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -37,8 +59,13 @@ class UserCollectionPermission extends AbstractCollectionPermission
     public function getTargets($permissionEntity)
     {
         $targets = [];
-        foreach ($permissionEntity->getUserIds() as $userId) {
-            $targets[] = \UserUtil::getVar('uname', $userId);
+        if (!count($permissionEntity->getUserIds())) {
+            return '';
+        }
+
+        $users = $this->userRepository->findByUids($permissionEntity->getUserIds());
+        foreach ($users as $user) {
+            $targets[] = $user->getUname();
         }
 
         return implode(', ', $targets);
@@ -49,16 +76,14 @@ class UserCollectionPermission extends AbstractCollectionPermission
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
-        if (php_sapi_name() === 'cli') {
+        if ('cli' === php_sapi_name()) {
             return null;
+        }
+
+        if ($this->currentUserApi->isLoggedIn()) {
+            $userId = $this->currentUserApi->get('uid');
         } else {
-            if (\UserUtil::isLoggedIn()) {
-                $userId = (int)\UserUtil::getVar('uid');
-            } else {
-                // Cannot use PermissionAPI constant due to
-                // https://github.com/zikula/core/issues/2800
-                $userId = 1; //PermissionApi::UNREGISTERED_USER;
-            }
+            $userId = UsersConstant::USER_ID_ANONYMOUS;
         }
 
         $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_up", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_up.id");
