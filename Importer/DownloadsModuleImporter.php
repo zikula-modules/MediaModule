@@ -115,8 +115,8 @@ SQL;
                     ->setTitle($download['title'])
                     ->setDescription($download['description'])
                     ->setCollection($collection)
-                    //->setCreatedUserId()
-                    //->setUpdatedUserId()
+                    //->setCreatedBy()
+                    //->setUpdatedBy()
                     ->setCreatedDate(new \DateTime($download['ddate']))
                     ->setUpdatedDate(new \DateTime($download['uupdate']))
                 ;

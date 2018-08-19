@@ -1,10 +1,6 @@
 <blockquote class="twitter-tweet">
     <a href="{{ entity.url|e('html_attr') }}">
-        {% if placeholder is defined %}
-            {{ placeholder }}
-        {% else %}
-            {{ __('The tweet is loading.') }}
-        {% endif %}
+        {{ placeholder|default(__('The tweet is loading.')) }}
     </a>
 </blockquote>
 {% if usePageAddAsset %}

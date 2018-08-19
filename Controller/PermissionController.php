@@ -320,7 +320,7 @@ class PermissionController extends AbstractController
         if ($permissionEntity == null) {
             throw new AccessDeniedException();
         }
-        if ($permissionEntity->getCreatedUserId() == \UserUtil::getVar('uid')) {
+        if ($permissionEntity->getCreatedBy()->getUid() == \UserUtil::getVar('uid')) {
             if ($securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS)) {
                 return CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS;
             }

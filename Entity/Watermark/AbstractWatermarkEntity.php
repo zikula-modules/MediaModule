@@ -12,8 +12,8 @@
 namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
+use Cmfcmf\Module\MediaModule\Traits\StandardFieldsTrait;
 use Doctrine\ORM\Mapping as ORM;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
@@ -33,6 +33,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class AbstractWatermarkEntity
 {
+    use StandardFieldsTrait;
+
     /**
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -108,46 +110,6 @@ abstract class AbstractWatermarkEntity
      * @var int
      */
     protected $relativeSize;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @ZK\StandardFields(type="userid", on="create")
-     *
-     * No assertions.
-     *
-     * @var int.
-     */
-    protected $createdUserId;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @ZK\StandardFields(type="userid", on="update")
-     *
-     * No assertions.
-     *
-     * @var int.
-     */
-    protected $updatedUserId;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
-     *
-     * No assertions.
-     *
-     * @var \DateTime.
-     */
-    protected $createdDate;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="update")
-     *
-     * No assertions.
-     *
-     * @var \DateTime.
-     */
-    protected $updatedDate;
 
     public function __construct()
     {
@@ -273,86 +235,6 @@ abstract class AbstractWatermarkEntity
     public function setRelativeSize($relativeSize)
     {
         $this->relativeSize = $relativeSize;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getCreatedUserId()
-    {
-        return $this->createdUserId;
-    }
-
-    /**
-     * @param int $createdUserId
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setCreatedUserId($createdUserId)
-    {
-        $this->createdUserId = $createdUserId;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUpdatedUserId()
-    {
-        return $this->updatedUserId;
-    }
-
-    /**
-     * @param int $updatedUserId
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setUpdatedUserId($updatedUserId)
-    {
-        $this->updatedUserId = $updatedUserId;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedDate()
-    {
-        return $this->createdDate;
-    }
-
-    /**
-     * @param \DateTime $createdDate
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setCreatedDate($createdDate)
-    {
-        $this->createdDate = $createdDate;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getUpdatedDate()
-    {
-        return $this->updatedDate;
-    }
-
-    /**
-     * @param \DateTime $updatedDate
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setUpdatedDate($updatedDate)
-    {
-        $this->updatedDate = $updatedDate;
 
         return $this;
     }

@@ -13,7 +13,8 @@ namespace Cmfcmf\Module\MediaModule\Listener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Zikula_Event;
+use Zikula\Core\Event\GenericEvent;
+use Zikula\ScribiteModule\Event\EditorHelperEvent;
 
 /**
  * Listens to Scribite events.
@@ -59,9 +60,9 @@ class ThirdPartyListener implements EventSubscriberInterface
     /**
      * Adds external plugin to CKEditor.
      *
-     * @param Zikula_Event $event The event instance.
+     * @param GenericEvent $event The event instance.
      */
-    public function getCKEditorPlugins(Zikula_Event $event)
+    public function getCKEditorPlugins(GenericEvent $event)
     {
         $plugins = $event->getSubject();
         $plugins->add([
@@ -75,13 +76,11 @@ class ThirdPartyListener implements EventSubscriberInterface
     /**
      * Adds extra JS to load on pages using the Scribite editor.
      *
-     * @param Zikula_Event $event
+     * @param EditorHelperEvent $event
      */
-    public function getScribiteEditorHelpers(Zikula_Event $event)
+    public function getScribiteEditorHelpers(EditorHelperEvent $event)
     {
-        // intended is using the add() method to add a helper like below
-        $helpers = $event->getSubject();
-
+        $helpers = $event->getHelperCollection();
         $helpers->add([
             'module' => 'CmfcmfMediaModule',
             'type'   => 'javascript',

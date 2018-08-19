@@ -15,7 +15,7 @@
 
 {%- block widget_attributes -%}
     {% set tmp = false %}
-    {% if attr.help is defined %}
+    {% if attr.help|default %}
         {% set tmp = attr.help %}
         {% set attr = attr|merge({help: false}) %}
     {% endif %}

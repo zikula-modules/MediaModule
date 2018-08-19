@@ -11,7 +11,7 @@
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
             {% set thumbnail = mediaType.thumbnail(media, options.thumbWidth, options.thumbHeight, 'url', options.thumbMode) %}
             <a href="{{ mediaType.originalWithWatermark(media, 'url') }}" style="margin: 4px" data-sub-html=".caption" data-download-url="
-                {%- if media.downloadAllowed is defined and media.downloadAllowed -%}
+                {%- if media.downloadAllowed|default -%}
                     {{- path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') -}}
                 {%- else -%}
                     false

@@ -161,6 +161,19 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             case '1.2.0':
             case '1.2.1':
                 return true;
+            case '1.2.2':
+                /**
+                 * TODO fields have changed: createdUserId becomes createdBy, updatedUserId becomes updatedBy
+                 * affects the following entities:
+                 *     Entity/Collection/CollectionEntity
+                 *     Entity/Collection/Permission/AbstractPermissionEntity
+                 *     Entity/Media/AbstractMediaEntity
+                 *     Entity/Watermark/AbstractWatermarkEntity
+                 */
+                die('Sorry, update functionality has not been completed yet!');
+                return true;
+            case '1.3.0':
+                return true;
             default:
                 return false;
         }

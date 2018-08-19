@@ -82,7 +82,7 @@
                             <i class="fa fa-search"></i> {{ __('Details') }}
                         </a>
                     {% endif %}
-                    {% if downloadMediaPermission and media.downloadAllowed is defined and media.downloadAllowed %}
+                    {% if downloadMediaPermission and media.downloadAllowed|default %}
                         <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
                             <i class="fa fa-download"></i> {{ __('Download') }}
                         </a>

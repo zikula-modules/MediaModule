@@ -37,7 +37,7 @@
                     data-id="{{ permission.id|e('html_attr') }}" data-version="{{ permission.version|e('html_attr') }}"
                 >
                     <td>
-                        {% if permission.locked or not (changePermissionsPermission or (enhancePermissionsPermission and permission.createdUserId == userId)) %}
+                        {% if permission.locked or not (changePermissionsPermission or (enhancePermissionsPermission and permission.createdBy.uid == userId)) %}
                             <i class="fa fa-fw fa-2x fa-lock"></i>
                         {% else %}
                             <i class="fa fa-fw fa-2x fa-sort" style="cursor: move;"></i>
@@ -72,7 +72,7 @@
                                 <i class="fa fa-plus fa-fw"></i>
                             </a>
                             {% if permission.collection.id == collection.id and not permission.locked %}
-                                {% if changePermissionsPermission or permission.createdUserId == userId %}
+                                {% if changePermissionsPermission or permission.createdBy.uid == userId %}
                                     <a href="{{ path('cmfcmfmediamodule_permission_edit', {id: permission.id}) }}" title="{{ __('Edit')|e('html_attr') }}">
                                         <i class="fa fa-edit fa-fw"></i>
                                     </a>

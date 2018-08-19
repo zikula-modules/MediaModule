@@ -86,7 +86,7 @@
                 {% set supportText = media.attribution %}
             {% endif %}
             {% set buttons = [{url: path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('View')}] %}
-            {% if media.downloadAllowed is defined and media.downloadAllowed %}
+            {% if media.downloadAllowed|default %}
                 {% set buttons = buttons|merge([{url: path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('Download')}]) %}
             {% endif %}
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}

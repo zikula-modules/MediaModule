@@ -221,6 +221,9 @@ class TwigExtension extends \Twig_Extension
      * @param int $uid The user id.
      *
      * @return string
+     *
+     * @TODO maybe remove in favour of core function
+     * @see https://github.com/zikula/core/blob/2.0/src/docs/Twig/Functions.md#profiles
      */
     public function userNameFromUid($uid)
     {
@@ -239,6 +242,9 @@ class TwigExtension extends \Twig_Extension
      * @param int $uid The user id.
      *
      * @return string
+     *
+     * @TODO maybe remove in favour of core function
+     * @see https://github.com/zikula/core/blob/2.0/src/docs/Twig/Functions.md#profiles
      */
     public function avatarFromUid($uid)
     {

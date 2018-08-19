@@ -53,6 +53,6 @@ class OwnerCollectionPermission extends AbstractCollectionPermission
         $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_op", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_op.id");
         $qb->setParameter('opUserId', $userId);
 
-        return $qb->expr()->eq('c.createdUserId', ':opUserId');
+        return $qb->expr()->eq('c.createdBy', ':opUserId');
     }
 }

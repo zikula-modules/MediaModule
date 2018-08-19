@@ -48,9 +48,9 @@
                 {% endif %}
                 <div class="clearfix"></div>
                 <p>
-                    <strong>{{ __('Added by') }}</strong>: {{ entity.createdUserId|cmfcmfmediamodule_unamefromuid }}
+                    <strong>{{ __('Added by') }}</strong>: {{ entity.createdBy.uid|cmfcmfmediamodule_unamefromuid }}
                     {{ __('at ') }} {{ entity.createdDate.format('d.m.Y H:i') }} <!-- @todo Internationalize -->
-                    <img src="{{ entity.createdUserId|cmfcmfmediamodule_avatarfromuid }}" class="img img-rounded pull-right" alt="" width="60" height="60" />
+                    <img src="{{ entity.createdBy.uid|cmfcmfmediamodule_avatarfromuid }}" class="img img-rounded pull-right" alt="" width="60" height="60" />
                     {% if views >= 0 %}
                         <strong>{{ __('Views') }}</strong>: {{ views }}
                     {% endif %}
@@ -69,7 +69,7 @@
                 </div>
             {% endif %}
             <div class="list-group">
-                {% if entity.downloadAllowed is defined and entity.downloadAllowed and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
+                {% if entity.downloadAllowed|default and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
                     <a href="{{ path('cmfcmfmediamodule_media_download', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item">
                         <i class="fa fa-fw fa-download"></i>
                         {{ __('Download') }}
