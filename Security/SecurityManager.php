@@ -30,8 +30,6 @@ class SecurityManager
 
     /**
      * @var PermissionApiInterface
-     *
-     * @todo Use Permission API if core_min is 1.4.2.
      */
     private $permissionApi;
 
