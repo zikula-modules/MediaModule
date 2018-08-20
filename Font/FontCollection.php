@@ -76,9 +76,12 @@ class FontCollection
             $this->load();
         }
 
-        return array_map(function (FontInterface $font) {
-            return $font->getTitle();
-        }, $this->getFonts());
+        $choices = [];
+        foreach ($this->getFonts() as $font) {
+            $choices[$font->getTitle()] = $font->getId();
+        }
+
+        return $choices;
     }
 
     /**

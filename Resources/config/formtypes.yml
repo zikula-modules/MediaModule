@@ -1,0 +1,167 @@
+services:
+    cmfcmf_media_module.form.type.font:
+        class: Cmfcmf\Module\MediaModule\Form\Type\FontType
+        arguments:
+            - '@cmfcmf_media_module.font_collection'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.permission_level:
+        class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
+        arguments:
+            - '@cmfcmf_media_module.security_manager'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.collection:
+        class: Cmfcmf\Module\MediaModule\Form\CollectionType
+        arguments:
+            - '@translator'
+            - '@cmfcmf_media_module.collection_template_collection'
+            - '@cmfcmf_media_module.security_manager'
+            - '@zikula_extensions_module.api.variable'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.collection_template:
+        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType
+        arguments:
+            - '@translator'
+            - '@cmfcmf_media_module.collection_template_collection'
+            - '@cmfcmf_media_module.collection_template.selected_factory'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.collection_template.galleria:
+        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\GalleriaType
+        arguments:
+            - '@translator'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.collection_template.light_gallery:
+        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\LightGalleryType
+        arguments:
+            - '@translator'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.media.base:
+        abstract: true
+        arguments:
+            - '@translator'
+            - '@cmfcmf_media_module.security_manager'
+            - '@zikula_extensions_module.api.variable'
+            - '@doctrine.orm.entity_manager'
+    cmfcmf_media_module.form.type.media.archive:
+        class: Cmfcmf\Module\MediaModule\Form\Media\ArchiveType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.audio:
+        class: Cmfcmf\Module\MediaModule\Form\Media\AudioType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.deezer:
+        class: Cmfcmf\Module\MediaModule\Form\Media\DeezerType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.flickr:
+        class: Cmfcmf\Module\MediaModule\Form\Media\FlickrType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.image:
+        class: Cmfcmf\Module\MediaModule\Form\Media\ImageType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.markdown:
+        class: Cmfcmf\Module\MediaModule\Form\Media\MarkdownType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.pdf:
+        class: Cmfcmf\Module\MediaModule\Form\Media\PdfType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.plaintext:
+        class: Cmfcmf\Module\MediaModule\Form\Media\PlaintextType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.sound_cloud:
+        class: Cmfcmf\Module\MediaModule\Form\Media\SoundCloudType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.twitter:
+        class: Cmfcmf\Module\MediaModule\Form\Media\TwitterType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.unknown:
+        class: Cmfcmf\Module\MediaModule\Form\Media\UnknownType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.url:
+        class: Cmfcmf\Module\MediaModule\Form\Media\UrlType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.video:
+        class: Cmfcmf\Module\MediaModule\Form\Media\VideoType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.web:
+        class: Cmfcmf\Module\MediaModule\Form\Media\WebType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.media.you_tube:
+        class: Cmfcmf\Module\MediaModule\Form\Media\YouTubeType
+        parent: cmfcmf_media_module.form.type.media.base
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.collection.permission.base:
+        abstract: true
+        arguments:
+            - '@translator'
+            - '@cmfcmf_media_module.security_manager'
+            - '@zikula_groups_module.group_repository'
+            - '@zikula_users_module.user_repository'
+    cmfcmf_media_module.form.type.collection.permission.group:
+        class: Cmfcmf\Module\MediaModule\Form\Collection\Permission\GroupPermissionType
+        parent: cmfcmf_media_module.form.type.collection.permission.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.collection.permission.owner:
+        class: Cmfcmf\Module\MediaModule\Form\Collection\Permission\OwnerPermissionType
+        parent: cmfcmf_media_module.form.type.collection.permission.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.collection.permission.password:
+        class: Cmfcmf\Module\MediaModule\Form\Collection\Permission\PasswordPermissionType
+        parent: cmfcmf_media_module.form.type.collection.permission.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.collection.permission.user:
+        class: Cmfcmf\Module\MediaModule\Form\Collection\Permission\UserPermissionType
+        parent: cmfcmf_media_module.form.type.collection.permission.base
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.import:
+        class: Cmfcmf\Module\MediaModule\Form\ImportType
+        arguments:
+            - '@translator'
+            - '@cmfcmf_media_module.security_manager'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.license:
+        class: Cmfcmf\Module\MediaModule\Form\License\LicenseType
+        arguments:
+            - '@translator'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.settings:
+        class: Cmfcmf\Module\MediaModule\Form\SettingsType
+        arguments:
+            - '@translator'
+            - '@zikula_extensions_module.api.variable'
+            - '@doctrine.orm.entity_manager'
+            - '@cmfcmf_media_module.collection_template_collection'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.watermark.image:
+        class: Cmfcmf\Module\MediaModule\Form\Watermark\ImageWatermarkType
+        arguments:
+            - '@translator'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.watermark.text:
+        class: Cmfcmf\Module\MediaModule\Form\Watermark\TextWatermarkType
+        arguments:
+            - '@translator'
+        tags: ['form.type']

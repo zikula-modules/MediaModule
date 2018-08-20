@@ -11,7 +11,6 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Watermark;
 
-use Cmfcmf\Module\MediaModule\Entity\Watermark\ImageWatermarkEntity;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\File\File;
@@ -23,26 +22,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ImageWatermarkType extends AbstractWatermarkType
 {
     /**
-     * @var ImageWatermarkEntity
-     */
-    protected $entity;
-
-    /**
-     * @param ImageWatermarkEntity|null $entity
-     */
-    public function __construct(ImageWatermarkEntity $entity = null)
-    {
-        $this->entity = $entity;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $file = null;
-        if (null !== $this->entity) {
-            $file = new File($this->entity->getPath());
+        if (isset($options['entity']) && null !== $options['entity'] && $options['entity']->getFileName()) {
+            $file = new File($options['entity']->getPath());
         }
         $builder
             ->add('file', FileType::class, [
@@ -52,7 +38,7 @@ class ImageWatermarkType extends AbstractWatermarkType
                     'help' => $this->translator->trans('Image to be used as watermark.', [], 'cmfcmfmediamodule')
                 ],
                 'data' => $file, // @todo Still needed??
-                'required' => $this->entity === null,
+                'required' => !isset($options['entity']) || null === $options['entity'],
                 'constraints' => [
                     new Assert\File([
                         // NOTE: If you change the allowed mime types here, make sure to

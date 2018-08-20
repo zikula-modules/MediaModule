@@ -87,7 +87,7 @@ class PermissionLevelType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_permission';
     }

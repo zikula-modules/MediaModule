@@ -28,15 +28,17 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\CategoriesModule\Form\Type\CategoriesType;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
 class CollectionType extends AbstractType
 {
     /**
-     * @var CollectionEntity|null
+     * @var TranslatorInterface
      */
-    private $parent;
+    private $translator;
 
     /**
      * @var TemplateCollection
@@ -54,18 +56,18 @@ class CollectionType extends AbstractType
     private $variableApi;
 
     /**
+     * @param TranslatorInterface  $translator
      * @param TemplateCollection   $templateCollection
-     * @param CollectionEntity     $parent
      * @param SecurityManager      $securityManager
      * @param VariableApiInterface $variableApi
      */
     public function __construct(
+        TranslatorInterface $translator,
         TemplateCollection $templateCollection,
-        CollectionEntity $parent = null,
         SecurityManager $securityManager,
         VariableApiInterface $variableApi
     ) {
-        $this->parent = $parent;
+        $this->translator = $translator;
         $this->templateCollection = $templateCollection;
         $this->securityManager = $securityManager;
         $this->variableApi = $variableApi;
@@ -164,7 +166,7 @@ class CollectionType extends AbstractType
 
                     return $qb;
                 },
-                'data' => $this->parent,
+                'data' => $options['parent'],
                 'choice_label' => 'indentedTitle',
             ])
             ->add('watermark', EntityType::class, [
@@ -172,7 +174,7 @@ class CollectionType extends AbstractType
                 'required' => false,
                 'label' => $this->translator->trans('Watermark', [], 'cmfcmfmediamodule'),
                 'data' => null !== $theCollection->getId() ? $theCollection->getWatermark() :
-                    (isset($this->parent) ? $this->parent->getWatermark() : null),
+                    (isset($options['parent']) ? $options['parent']->getWatermark() : null),
                 'placeholder' => $this->translator->trans('No watermark', [], 'cmfcmfmediamodule'),
                 'choice_label' => 'title',
             ])
@@ -194,6 +196,18 @@ class CollectionType extends AbstractType
                 'attr' => [
                     'help' => $this->translator->trans('The primary medium is used as collection thumbnail. It must be part of the collection.', [], 'cmfcmfmediamodule')
                 ]
+            ])
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver
+            ->setDefaults([
+                'parent' => null
             ])
         ;
     }

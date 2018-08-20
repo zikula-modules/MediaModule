@@ -2,6 +2,7 @@ imports:
   - { resource: 'mediatypes.yml' }
   - { resource: 'collectiontemplates.yml' }
   - { resource: 'collectionpermissions.yml' }
+  - { resource: 'formtypes.yml' }
   - { resource: 'hooks.yml' }
   - { resource: 'importers.yml' }
 
@@ -34,50 +35,6 @@ services:
         class: Cmfcmf\Module\MediaModule\Upgrade\VersionChecker
         arguments:
             - '%kernel.cache_dir%'
-
-
-    # Form types
-    cmfcmf_media_module.form.type.font:
-        class: Cmfcmf\Module\MediaModule\Form\Type\FontType
-        arguments:
-            - '@cmfcmf_media_module.font_collection'
-        tags: ['form.type']
-
-    cmfcmf_media_module.form.type.permission_level:
-        class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
-        arguments:
-            - '@cmfcmf_media_module.security_manager'
-        tags: ['form.type']
-
-    cmfcmf_media_module.form.type.collection_template:
-        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType
-        arguments:
-            - '@translator'
-            - '@cmfcmf_media_module.collection_template_collection'
-            - '@cmfcmf_media_module.collection_template.selected_factory'
-        tags: ['form.type']
-
-    cmfcmf_media_module.form.type.collection_template.galleria:
-        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\GalleriaType
-        arguments:
-            - '@translator'
-        tags: ['form.type']
-
-    cmfcmf_media_module.form.type.collection_template.light_gallery:
-        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\LightGalleryType
-        arguments:
-            - '@translator'
-        tags: ['form.type']
-
-    cmfcmf_media_module.form.type.settings:
-        class: Cmfcmf\Module\MediaModule\Form\SettingsType
-        arguments:
-            - '@translator'
-            - '@zikula_extensions_module.api.variable'
-            - '@doctrine.orm.entity_manager'
-            - '@cmfcmf_media_module.collection_template_collection'
-        tags: ['form.type']
-
 
     # Helpers
     cmfcmf_media_module.search_helper:

@@ -56,7 +56,7 @@ abstract class AbstractType extends BaseAbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         $class = get_class($this);
         $class = substr($class, strlen('Cmfcmf\\Module\\MediaModule\\Form\\'));

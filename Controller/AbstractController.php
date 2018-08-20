@@ -98,8 +98,10 @@ abstract class AbstractController extends BaseAbstractController
     protected function applyFormAwareDisplayHook(Form $form, $name, $hookType, $id, UrlInterface $url = null)
     {
         $eventName = 'cmfcmfmediamodule.form_aware_hook.' . $name . '.' . $hookType;
-        $hook = new FormAwareHook($id, $url);
+        $hook = new FormAwareHook($form);
         $this->dispatchHooks($eventName, $hook);
+
+        return $hook;
     }
 
     /**
@@ -115,8 +117,8 @@ abstract class AbstractController extends BaseAbstractController
     {
         $formResponse = new FormAwareResponse($form, $formSubject, $url);
         $eventName = 'cmfcmfmediamodule.form_aware_hook.' . $name . '.' . $hookType;
-        $hook = new FormAwareHook($id, $url);
-        $this->dispatchHooks($eventName, $hook);
+
+        $this->dispatchHooks($eventName, $formResponse);
     }
 
     /**

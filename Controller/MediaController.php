@@ -110,14 +110,12 @@ class MediaController extends AbstractController
             $parent = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->findOneBy(['slug' => $parent]);
         }
 
-        $variableApi = $this->get('zikula_extensions_module.api.variable');
         $mediaType = $this->get('cmfcmf_media_module.media_type_collection')->getMediaTypeFromEntity($entity);
         $form = $mediaType->getFormTypeClass();
-        /** @var AbstractType $form */
-        $form = new $form($securityManager, $variableApi, $em, false, $parent);
-        $form->setTranslator($this->get('translator'));
+        $formOptions = $mediaType->getFormOptions($entity);
+        $formOptions['parent'] = $parent;
         /** @var \Symfony\Component\Form\Form $form */
-        $form = $this->createForm($form, $entity, $mediaType->getFormOptions($entity));
+        $form = $this->createForm($form, $entity, $formOptions);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -193,7 +191,7 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/delete/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method"="findBySlugs", "map_method_signature"=true})
+     * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template("CmfcmfMediaModule:Media:delete.html.twig")
      *
      * @param Request             $request
@@ -305,16 +303,14 @@ class MediaController extends AbstractController
         $entity = $this->getDefaultEntity($request, $type, $mediaType, $init, $collection);
 
         $form = $mediaType->getFormTypeClass();
-        /** @var AbstractType $form */
-        $form = new $form($securityManager, $variableApi, $em, true);
-        $form->setTranslator($this->get('translator'));
-        $form = $this->createForm($form, $entity, $mediaType->getFormOptions($entity));
+        $formOptions = $mediaType->getFormOptions($entity);
+        $formOptions['isCreation'] = true;
         /** @var \Symfony\Component\Form\Form $form */
+        $form = $this->createForm($form, $entity, $mediaType->getFormOptions($entity));
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             if ($this->hookValidates('media', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
-                $em = $this->getDoctrine()->getManager();
                 $em->persist($entity);
                 $em->flush();
 
@@ -546,13 +542,13 @@ class MediaController extends AbstractController
             $entity = $selectedMediaType->getEntityClass();
             $entity = new $entity($this->get('request_stack'), $dataDirectory);
 
-            $variableApi = $this->get('zikula_extensions_module.api.variable');
             $form = $selectedMediaType->getFormTypeClass();
-            /** @var AbstractType $form */
-            $form = new $form($securityManager, $variableApi, $em, true, null, true);
-            $form->setTranslator($this->get('translator'));
+            $formOptions = $mediaType->getFormOptions($entity);
+            $formOptions['isCreation'] = true;
+            $formOptions['allowTemporaryUploadCollection'] = true;
+            $formOptions['csrf_protection'] = false;
             /** @var \Symfony\Component\Form\Form $form */
-            $form = $this->createForm($form, $entity, ['csrf_protection' => false]);
+            $form = $this->createForm($form, $entity, $formOptions);
             $form->remove('file');
 
             $form->submit([

@@ -34,7 +34,7 @@
                     </td>
                     <th id="hEntity{{ entity.id }}" scope="row" headers="hId">
                         {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(entity) %}
-                        {% set thumbnail =  mediaType.thumbnail(entity, 200, 100, 'url') %}
+                        {% set thumbnail = mediaType.thumbnail(entity, 200, 100, 'url') %}
                         {% if thumbnail %}
                             <img src="{{ thumbnail|e('html_attr') }}" alt="{{ entity.title|e('html_attr') }}" style="max-width: 200px; max-height: 100px" />
                         {% else %}

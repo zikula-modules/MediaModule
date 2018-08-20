@@ -66,7 +66,7 @@ class FontType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_font_choice';
     }

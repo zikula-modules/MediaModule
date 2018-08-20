@@ -235,7 +235,7 @@ class SettingsType extends SymfonyAbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_settingstype';
     }

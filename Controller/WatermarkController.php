@@ -19,7 +19,6 @@ use Cmfcmf\Module\MediaModule\Form\Watermark\ImageWatermarkType;
 use Cmfcmf\Module\MediaModule\Form\Watermark\TextWatermarkType;
 use Doctrine\ORM\OptimisticLockException;
 use Gedmo\Uploadable\Uploadable;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -68,16 +67,15 @@ class WatermarkController extends AbstractController
         $dataDirectory = $this->get('service_container')->getParameter('datadir');
         if ($type == 'image') {
             $entity = new ImageWatermarkEntity($this->get('request_stack'), $dataDirectory);
-            $form = new ImageWatermarkType();
+            $form = ImageWatermarkType::class;
         } elseif ($type == 'text') {
             $entity = new TextWatermarkEntity($this->get('request_stack'), $dataDirectory);
-            $form = new TextWatermarkType();
+            $form = TextWatermarkType::class;
         } else {
             throw new NotFoundHttpException();
         }
-        $form->setTranslator($this->get('translator'));
 
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm($form, $entity, ['entity' => $entity]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -103,7 +101,6 @@ class WatermarkController extends AbstractController
 
     /**
      * @Route("/edit/{id}")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Watermark\AbstractWatermarkEntity")
      * @Template("CmfcmfMediaModule:Watermark:edit.html.twig")
      *
      * @param Request                 $request
@@ -118,15 +115,14 @@ class WatermarkController extends AbstractController
         }
 
         if ($entity instanceof ImageWatermarkEntity) {
-            $form = new ImageWatermarkType($entity);
+            $form = ImageWatermarkType::class;
         } elseif ($entity instanceof TextWatermarkEntity) {
-            $form = new TextWatermarkType();
+            $form = TextWatermarkType::class;
         } else {
             throw new \LogicException();
         }
-        $form->setTranslator($this->get('translator'));
 
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm($form, $entity, ['entity' => $entity]);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -174,7 +170,6 @@ class WatermarkController extends AbstractController
 
     /**
      * @Route("/delete/{id}")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Watermark\AbstractWatermarkEntity")
      * @Template("CmfcmfMediaModule:Watermark:delete.html.twig")
      *
      * @param Request                 $request

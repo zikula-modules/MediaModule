@@ -145,7 +145,7 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
         $resolver->setDefault('allowDefaultTemplate', true);
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_collectiontemplate';
     }

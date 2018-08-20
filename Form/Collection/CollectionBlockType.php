@@ -93,7 +93,7 @@ class CollectionBlockType extends AbstractType
         ;
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_collectionblock';
     }

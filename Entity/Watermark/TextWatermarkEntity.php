@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Imagine\Image\ImagineInterface;
 use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -68,12 +69,16 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
      */
     protected $backgroundColor;
 
-    public function __construct()
+    /**
+     * @param RequestStack $requestStack
+     * @param string       $dataDirectory
+     */
+    public function __construct(RequestStack $requestStack, $dataDirectory = '')
     {
-        parent::__construct();
+        parent::__construct($requestStack, $dataDirectory);
 
-        $this->fontColor = "#000000FF";
-        $this->backgroundColor = "#00000000";
+        $this->fontColor = '#000000FF';
+        $this->backgroundColor = '#00000000';
     }
 
     /**

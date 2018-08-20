@@ -84,6 +84,11 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         return $this->getPathToUploadTo(null) . '/' . $this->fileName;
     }
 
+    public function getFileName()
+    {
+        return $this->fileName;
+    }
+
     public function getUrl()
     {
         return $this->requestStack->getCurrentRequest()->getBasePath() . '/' . $this->getPath();

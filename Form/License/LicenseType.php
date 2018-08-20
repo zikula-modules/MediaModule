@@ -17,20 +17,22 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class LicenseType extends AbstractType
 {
     /**
-     * @var bool
+     * @var TranslatorInterface
      */
-    private $isEdit;
+    protected $translator;
 
     /**
-     * @param bool $isEdit Whether or not the license is currently edited
+     * @param TranslatorInterface $translator
      */
-    public function __construct($isEdit)
+    public function __construct(TranslatorInterface $translator)
     {
-        $this->isEdit = $isEdit;
+        $this->translator = $translator;
     }
 
     /**
@@ -42,7 +44,7 @@ class LicenseType extends AbstractType
 
         $builder
             ->add('id', TextType::class, [
-                'disabled' => $this->isEdit,
+                'disabled' => $options['isEdit'],
                 'label' => $this->translator->trans('License ID', [], 'cmfcmfmediamodule'),
                 'attr' => [
                     'help' => $this->translator->trans('You won\'t be able to change the ID after creation. It should be something like "gplv3" or similar.', [], 'cmfcmfmediamodule')
@@ -92,6 +94,19 @@ class LicenseType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => $this->translator->trans('Save', [], 'cmfcmfmediamodule')
             ])
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver
+            ->setDefaults([
+                'isEdit' => false
+            ])
+            ->setAllowedTypes('isEdit', 'boolean')
         ;
     }
 }

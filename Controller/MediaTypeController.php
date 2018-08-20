@@ -22,7 +22,6 @@ use Google_Service_YouTube;
 use Google_Service_YouTube_Video;
 use Google_Service_YouTube_VideoSnippet;
 use Google_Service_YouTube_VideoStatus;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
@@ -40,7 +39,6 @@ class MediaTypeController extends AbstractController
 {
     /**
      * @Route("/youtube/upload/{id}")
-     * @ParamConverter()
      *
      * @param VideoEntity $entity
      * @param Request     $request

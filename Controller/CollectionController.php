@@ -18,7 +18,6 @@ use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -37,7 +36,6 @@ class CollectionController extends AbstractController
 {
     /**
      * @Route("/new/{slug}", requirements={"slug" = ".+"})
-     * @ParamConverter("parent", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      *
      * @param Request          $request
@@ -55,12 +53,10 @@ class CollectionController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
-        $variableApi = $this->get('zikula_extensions_module.api.variable');
         $entity = new CollectionEntity();
-        $form = new CollectionType($templateCollection, $parent, $securityManager, $variableApi);
-        $form->setTranslator($this->get('translator'));
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm(CollectionType::class, $entity, [
+            'parent' => $parent
+        ]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -92,7 +88,6 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/edit/{slug}", requirements={"slug" = ".+"})
-     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      *
      * @param Request          $request
@@ -107,10 +102,9 @@ class CollectionController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
-        $form = new CollectionType($templateCollection, $entity->getParent(), $securityManager);
-        $form->setTranslator($this->get('translator'));
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm(CollectionType::class, $entity, [
+            'parent' => $entity->getParent()
+        ]);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -151,7 +145,6 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/download/{slug}.zip", requirements={"slug"=".+"})
-     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
      * @param CollectionEntity $entity
      *
@@ -269,7 +262,6 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/{slug}", methods={"GET"}, requirements={"slug"=".*[^/]"}, options={"expose" = true})
-     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template(template="CmfcmfMediaModule:Collection:display.html.twig")
      *
      * @param Request          $request

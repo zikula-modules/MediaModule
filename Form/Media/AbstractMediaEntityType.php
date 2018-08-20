@@ -27,6 +27,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\CategoriesModule\Form\Type\CategoriesType;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
@@ -36,47 +38,39 @@ use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 abstract class AbstractMediaEntityType extends AbstractType
 {
     /**
-     * @var bool
+     * @var TranslatorInterface
      */
-    protected $isCreation;
-
-    /**
-     * @var CollectionEntity|null
-     */
-    private $parent;
-
-    /**
-     * @var bool
-     */
-    private $allowTemporaryUploadCollection;
+    protected $translator;
 
     /**
      * @var SecurityManager
      */
-    private $securityManager;
+    protected $securityManager;
 
     /**
      * @var VariableApiInterface
      */
-    private $variableApi;
+    protected $variableApi;
 
     /**
      * @var EntityManagerInterface
      */
-    private $em;
+    protected $em;
 
+    /**
+     * @param TranslatorInterface    $translator
+     * @param SecurityManager        $securityManager
+     * @param VariableApiInterface   $variableApi
+     * @param EntityManagerInterface $em
+     */
     public function __construct(
+        TranslatorInterface $translator,
         SecurityManager $securityManager,
         VariableApiInterface $variableApi,
-        EntityManagerInterface $em,
-        $isCreation = false,
-        CollectionEntity $parent = null,
-        $allowTemporaryUploadCollection = false
+        EntityManagerInterface $em
     ) {
+        $this->translator = $translator;
         $this->securityManager = $securityManager;
-        $this->isCreation = $isCreation;
-        $this->parent = $parent;
-        $this->allowTemporaryUploadCollection = $allowTemporaryUploadCollection;
         $this->variableApi = $variableApi;
         $this->em = $em;
     }
@@ -119,7 +113,7 @@ abstract class AbstractMediaEntityType extends AbstractType
         ];
 
         $securityManager = $this->securityManager;
-        $allowTemporaryUploadCollection = $this->allowTemporaryUploadCollection;
+        $allowTemporaryUploadCollection = isset($options['allowTemporaryUploadCollection']) ? $options['allowTemporaryUploadCollection'] : false;
         $collectionOptions = [
             'required' => true,
             'label' => $this->translator->trans('Collection', [], 'cmfcmfmediamodule'),
@@ -146,8 +140,8 @@ abstract class AbstractMediaEntityType extends AbstractType
             'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
             'choice_label' => 'indentedTitle',
         ];
-        if ($this->parent !== null) {
-            $collectionOptions['data'] = $this->parent;
+        if (isset($options['parent']) && null !== $options['parent']) {
+            $collectionOptions['data'] = $options['parent'];
         }
 
         $defaultLicense = $this->variableApi->get('CmfcmfMediaModule', 'defaultLicense', null);
@@ -247,5 +241,21 @@ abstract class AbstractMediaEntityType extends AbstractType
         ;
 
         $builder->get('extraData')->addModelTransformer(new ArrayToJsonTransformer());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver
+            ->setDefaults([
+                'isCreation' => false,
+                'parent' => null,
+                'allowTemporaryUploadCollection' => false
+            ])
+            ->setAllowedTypes('isCreation', 'boolean')
+            ->setAllowedTypes('allowTemporaryUploadCollection', 'boolean')
+        ;
     }
 }

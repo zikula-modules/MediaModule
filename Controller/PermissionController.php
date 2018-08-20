@@ -38,7 +38,6 @@ class PermissionController extends AbstractController
 {
     /**
      * @Route("/show/{slug}", requirements={"slug" = ".+?"})
-     * @ParamConverter("collectionEntity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      * @Template("CmfcmfMediaModule:Permission:view.html.twig")
      *
      * @param Request          $request
@@ -98,17 +97,11 @@ class PermissionController extends AbstractController
         $entity = new $entity($this->get('request_stack'), $dataDirectory);
 
         $form = $permissionType->getFormClass();
-        /** @var AbstractType $form */
-        $form = new $form(
-            $collection,
-            $this->get('cmfcmf_media_module.security_manager'),
-            $permissionLevel,
-            $this->get('zikula_groups_module.group_repository'),
-            $this->get('zikula_users_module.user_repository')
-        );
-        $form->setTranslator($this->get('translator'));
         /** @var \Symfony\Component\Form\Form $form */
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm($form, $entity, [
+            'collection' => $collection,
+            'permissionLevel' => $permissionLevel
+        ]);
         $form->handleRequest($request);
 
         /** @var AbstractPermissionEntity $entity */
@@ -140,7 +133,6 @@ class PermissionController extends AbstractController
 
     /**
      * @Route("/edit/{id}")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity")
      * @Template("CmfcmfMediaModule:Permission:edit.html.twig")
      *
      * @param Request                  $request
@@ -157,15 +149,11 @@ class PermissionController extends AbstractController
             ->getCollectionPermissionFromEntity($permissionEntity)
             ->getFormClass();
 
-        /** @var AbstractType $form */
-        $form = new $form(
-            $permissionEntity->getCollection(),
-            $this->get('cmfcmf_media_module.security_manager'),
-            $permissionLevel
-        );
-        $form->setTranslator($this->get('translator'));
         /** @var \Symfony\Component\Form\Form $form */
-        $form = $this->createForm($form, $permissionEntity);
+        $form = $this->createForm($form, $permissionEntity, [
+            'collection' => $permissionEntity->getCollection(),
+            'permissionLevel' => $permissionLevel
+        ]);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -195,7 +183,6 @@ class PermissionController extends AbstractController
 
     /**
      * @Route("/delete/{id}")
-     * @ParamConverter("permissionEntity", class="CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity")
      * @Template("CmfcmfMediaModule:Permission:delete.html.twig")
      *
      * @param Request                  $request
