@@ -98,7 +98,7 @@ msgid "Applies to the collection itself"
 msgstr "Gilt für die Sammlung selber"
 
 msgid "As is - use with editors like Scribite"
-msgstr "Wie es ist - zum benutzen mit Editoren wie Scribite"
+msgstr "Wie es ist - zum Benutzen mit Editoren wie Scribite"
 
 msgid "Attributions"
 msgstr "Zuschreibungen"
@@ -696,11 +696,9 @@ msgid "Invite people and view permissions"
 msgstr "Personen einladen und Zugriffsrechte anzeigen"
 
 msgid ""
-"It seems like the Scribite integration is working! Make sure you use a "
-"\"special\" or \"full\" toolbar."
+"It seems like the Scribite integration is working."
 msgstr ""
-"Es scheint als würde die Integration mit Scribite funktionieren! Stellen Sie "
-"sicher, dass Sie die \"special\" oder \"full\" Tollbar benutzen."
+"Es scheint als würde die Integration mit Scribite funktionieren."
 
 msgid "License"
 msgstr "Lizenz"

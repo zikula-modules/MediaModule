@@ -1,7 +1,7 @@
 {% extends 'CmfcmfMediaModule:Settings:settings.html.twig' %}
 {% block settings_content %}
     {% if scribiteInstalled %}
-        <div class="alert alert-success">{{ __('It seems like the Scribite integration is working! Make sure you use a "special" or "full" toolbar.') }}</div>
+        <div class="alert alert-success">{{ __('It seems like the Scribite integration is working.') }}</div>
         {% if not descriptionEscapingStrategyForCollectionOk %}
             <div class="alert alert-danger">{{ __('You should set "Collection description escaping strategy" to "As is" for Scribite to work properly!') }}</div>
         {% endif %}
