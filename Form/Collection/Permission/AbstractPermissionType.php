@@ -13,8 +13,12 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
+use Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 abstract class AbstractPermissionType extends AbstractType
@@ -30,10 +34,15 @@ abstract class AbstractPermissionType extends AbstractType
     private $collectionEntity;
 
     /**
-     * @var
+     * @var ?
      */
     private $permissionLevel;
 
+    /**
+     * @param CollectionEntity $collectionEntity
+     * @param SecurityManager  $securityManager
+     * @param ?                $permissionLevel
+     */
     public function __construct(
         CollectionEntity $collectionEntity,
         SecurityManager $securityManager,
@@ -51,16 +60,12 @@ abstract class AbstractPermissionType extends AbstractType
     {
         parent::buildForm($builder, $options);
 
-        $builder->add(
-            'permissionLevels',
-            'cmfcmfmediamodule_permission',
-            [
+        $builder
+            ->add('permissionLevels', PermissionLevelType::class, [
                 'label' => $this->translator->trans('Permission level', [], 'cmfcmfmediamodule'),
                 'permissionLevel' => $this->permissionLevel
-            ])->add(
-            'description',
-            'textarea',
-            [
+            ])
+            ->add('description', TextareaType::class, [
                 'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'attr' => [
@@ -69,49 +74,37 @@ abstract class AbstractPermissionType extends AbstractType
                         [],
                         'cmfcmfmediamodule')
                 ]
-            ])->add(
-            'appliedToSelf',
-            'checkbox',
-            [
+            ])
+            ->add('appliedToSelf', CheckboxType::class, [
                 'label' => $this->translator->trans('Applies to the collection itself', [], 'cmfcmfmediamodule'),
                 'required' => false
-            ])->add(
-            'appliedToSubCollections',
-            'checkbox',
-            [
+            ])
+            ->add('appliedToSubCollections', CheckboxType::class, [
                 'label' => $this->translator->trans('Applies to sub-collections', [], 'cmfcmfmediamodule'),
                 'required' => false
-            ]);
+            ])
+        ;
 
         if ($this->securityManager->hasPermission(
             $this->collectionEntity,
             CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)
         ) {
-            $builder->add(
-                'goOn',
-                'checkbox',
-                [
-                    'label' => $this->translator->trans('Go on if this permission is not sufficient', [], 'cmfcmfmediamodule'),
-                    'required' => false
-                ]);
+            $builder->add('goOn', CheckboxType::class, [
+                'label' => $this->translator->trans('Go on if this permission is not sufficient', [], 'cmfcmfmediamodule'),
+                'required' => false
+            ]);
         } else {
-            $builder->add(
-                'goOn',
-                'checkbox',
-                [
-                    'label' => $this->translator->trans('Go on if this permission is not sufficient', [], 'cmfcmfmediamodule'),
-                    'required' => true,
-                    'data' => true,
-                    'attr' => [
-                        'disabled' => true
-                    ],
-                ]);
+            $builder->add('goOn', CheckboxType::class, [
+                'label' => $this->translator->trans('Go on if this permission is not sufficient', [], 'cmfcmfmediamodule'),
+                'data' => true,
+                'attr' => [
+                    'disabled' => true
+                ],
+            ]);
         }
 
-        $builder->add(
-            'validAfter',
-            'datetime',
-            [
+        $builder
+            ->add('validAfter', DateTimeType::class, [
                 'label' => $this->translator->trans('Valid after', [], 'cmfcmfmediamodule'),
                 'widget' => 'choice',
                 'required' => false,
@@ -121,10 +114,8 @@ abstract class AbstractPermissionType extends AbstractType
                         [],
                         'cmfcmfmediamodule')
                 ]
-            ])->add(
-            'validUntil',
-            'datetime',
-            [
+            ])
+            ->add('validUntil', DateTimeType::class, [
                 'label' => $this->translator->trans('Valid until', [], 'cmfcmfmediamodule'),
                 'widget' => 'choice',
                 'required' => false,
@@ -134,6 +125,7 @@ abstract class AbstractPermissionType extends AbstractType
                         [],
                         'cmfcmfmediamodule')
                 ]
-            ]);
+            ])
+        ;
     }
 }

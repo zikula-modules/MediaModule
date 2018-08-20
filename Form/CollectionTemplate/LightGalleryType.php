@@ -12,30 +12,49 @@
 namespace Cmfcmf\Module\MediaModule\Form\CollectionTemplate;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class LightGalleryType extends AbstractType
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(
+        TranslatorInterface $translator
+    ) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('thumbWidth', 'Symfony\Component\Form\Extension\Core\Type\NumberType', [
-            'label' => 'Thumbnail width',
-            'required' => true
-        ])->add('thumbHeight', 'Symfony\Component\Form\Extension\Core\Type\NumberType', [
-            'label' => 'Thumbnail height',
-            'required' => true
-        ])->add('thumbMode', 'Symfony\Component\Form\Extension\Core\Type\ChoiceType', [
-            'label' => 'Thumbnail mode',
-            'required' => true,
+        $builder->add('thumbWidth', NumberType::class, [
+            'label' => $this->translator->trans('Thumbnail width', [], 'cmfcmfmediamodule')
+        ])
+        ->add('thumbHeight', NumberType::class, [
+            'label' => $this->translator->trans('Thumbnail height', [], 'cmfcmfmediamodule')
+        ])
+        ->add('thumbMode', ChoiceType::class, [
+            'label' => $this->translator->trans('Thumbnail mode', [], 'cmfcmfmediamodule'),
             'choices' => [
                 'inset' => 'inset',
                 'outbound' => 'outbound'
             ],
-        ])->add('showTitleBelowThumbs', 'checkbox', [
-            'label' => 'Show the image titles below thumbnails.',
+        ])
+        ->add('showTitleBelowThumbs', CheckboxType::class, [
+            'label' => $this->translator->trans('Show the image titles below thumbnails.', [], 'cmfcmfmediamodule'),
             'required' => false
-        ])->add('showAttributionBelowThumbs', 'checkbox', [
-            'label' => 'Show the image attributions below thumbnails.',
+        ])
+        ->add('showAttributionBelowThumbs', CheckboxType::class, [
+            'label' => $this->translator->trans('Show the image attributions below thumbnails.', [], 'cmfcmfmediamodule'),
             'required' => false
         ]);
     }

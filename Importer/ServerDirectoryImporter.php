@@ -66,13 +66,13 @@ class ServerDirectoryImporter extends AbstractImporter
             ->depth($formData['importSettings']['includeSubDirectories'] ? '>=0' : '==0')
             ->files()
         ;
-        $collectionMapping = ["" => $rootCollection];
+        $collectionMapping = ['' => $rootCollection];
         $c = 0;
         /** @var SplFileInfo $finderFile */
         foreach ($finder as $finderFile) {
             $file = new File($finderFile->getPathname(), false);
             $selectedMediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
-            if ($selectedMediaType === null) {
+            if (null === $selectedMediaType) {
                 $flashBag->add('warning', $this->translator->trans('Could not import file %file%, because this kind of media isn\'t yet supported by the MediaModule.', ['%file%' => $file->getPathname()], 'cmfcmfmediamodule'));
                 continue;
             }

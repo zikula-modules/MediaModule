@@ -22,14 +22,14 @@ use Zikula\ScribiteModule\Event\EditorHelperEvent;
 class ThirdPartyListener implements EventSubscriberInterface
 {
     /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
      * @var string
      */
     private $zikulaRoot;
-
-    /**
-     * @var Filesystem
-     */
-    private $fs;
 
     /**
      * @var string
@@ -37,13 +37,16 @@ class ThirdPartyListener implements EventSubscriberInterface
     private $resourceRoot;
 
     /**
-     * @param string $kernelRootDir The kernel root directory.
+     * @param Filesystem $filesystem
+     * @param string     $kernelRootDir The kernel root directory
      */
-    public function __construct($kernelRootDir)
-    {
+    public function __construct(
+        Filesystem $filesystem,
+        $kernelRootDir
+    ) {
+        $this->filesystem = $filesystem;
         $this->zikulaRoot = realpath($kernelRootDir . '/..');
         $this->resourceRoot = realpath(__DIR__ . '/../Resources');
-        $this->fs = new Filesystem();
     }
 
     /**
@@ -67,9 +70,9 @@ class ThirdPartyListener implements EventSubscriberInterface
         $plugins = $event->getSubject();
         $plugins->add([
             'name' => 'cmfcmfmediamodule',
-            'path' => $this->fs->makePathRelative($this->resourceRoot . '/public/js/CKEditorPlugin', $this->zikulaRoot),
+            'path' => $this->filesystem->makePathRelative($this->resourceRoot . '/public/js/CKEditorPlugin', $this->zikulaRoot),
             'file' => 'plugin.js',
-            'img'  => $this->fs->makePathRelative($this->resourceRoot . '/public/images', $this->zikulaRoot) . 'admin.png'
+            'img'  => $this->filesystem->makePathRelative($this->resourceRoot . '/public/images', $this->zikulaRoot) . 'admin.png'
         ]);
     }
 
@@ -84,17 +87,17 @@ class ThirdPartyListener implements EventSubscriberInterface
         $helpers->add([
             'module' => 'CmfcmfMediaModule',
             'type'   => 'javascript',
-            'path'   => $this->fs->makePathRelative($this->resourceRoot . '/public/js/vendor', $this->zikulaRoot) . 'toastr.min.js'
+            'path'   => $this->filesystem->makePathRelative($this->resourceRoot . '/public/js/vendor', $this->zikulaRoot) . 'toastr.min.js'
         ]);
         $helpers->add([
             'module' => 'CmfcmfMediaModule',
             'type'   => 'stylesheet',
-            'path'   => $this->fs->makePathRelative($this->resourceRoot . '/public/css/vendor', $this->zikulaRoot) . 'toastr.min.css'
+            'path'   => $this->filesystem->makePathRelative($this->resourceRoot . '/public/css/vendor', $this->zikulaRoot) . 'toastr.min.css'
         ]);
         $helpers->add([
             'module' => 'CmfcmfMediaModule',
             'type'   => 'javascript',
-            'path'   => $this->fs->makePathRelative($this->resourceRoot . '/public/js', $this->zikulaRoot) . 'util.js'
+            'path'   => $this->filesystem->makePathRelative($this->resourceRoot . '/public/js', $this->zikulaRoot) . 'util.js'
         ]);
     }
 }

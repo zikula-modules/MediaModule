@@ -11,6 +11,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Media;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class SoundCloudType extends WebType
@@ -24,9 +25,10 @@ class SoundCloudType extends WebType
             'url', 'license'
         ];
         parent::buildForm($builder, $options);
+
         $builder
-            ->add('musicType', 'hidden')
-            ->add('musicId', 'hidden')
+            ->add('musicType', HiddenType::class)
+            ->add('musicId', HiddenType::class)
         ;
     }
 }

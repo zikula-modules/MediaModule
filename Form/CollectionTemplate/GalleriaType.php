@@ -12,15 +12,30 @@
 namespace Cmfcmf\Module\MediaModule\Form\CollectionTemplate;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class GalleriaType extends AbstractType
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(
+        TranslatorInterface $translator
+    ) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('height', 'Symfony\Component\Form\Extension\Core\Type\NumberType', [
-            'label' => 'Slider height',
-            'required' => true
+        $builder->add('height', NumberType::class, [
+            'label' => $this->translator->trans('Slider height', [], 'cmfcmfmediamodule')
         ]);
     }
 }

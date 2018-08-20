@@ -13,11 +13,17 @@ namespace Cmfcmf\Module\MediaModule\Upgrade;
 
 use Cmfcmf\Module\MediaModule\Exception\UpgradeFailedException;
 use Github\Exception\RuntimeException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\TranslatorInterface;
 use vierbergenlars\SemVer\expression;
 use vierbergenlars\SemVer\version;
 use Zikula\Bundle\CoreBundle\CacheClearer;
+use Zikula\Core\Event\GenericEvent;
+use Zikula\ExtensionsModule\Entity\RepositoryInterface\ExtensionRepositoryInterface;
+use Zikula\ExtensionsModule\ExtensionEvents;
+use Zikula\ExtensionsModule\Helper\BundleSyncHelper;
+use Zikula\ExtensionsModule\Helper\ExtensionHelper;
 
 /**
  * Upgrades the module.
@@ -35,14 +41,34 @@ class ModuleUpgrader
     private $moduleDir;
 
     /**
-     * @var Filesystem
-     */
-    private $fs;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
+
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
+     * @var ExtensionRepositoryInterface
+     */
+    protected $extensionRepository;
+
+    /**
+     * @var BundleSyncHelper
+     */
+    private $bundleSyncHelper;
+
+    /**
+     * @var ExtensionHelper
+     */
+    private $extensionHelper;
 
     /**
      * @var CacheClearer
@@ -52,24 +78,38 @@ class ModuleUpgrader
     /**
      * ModuleUpgrader constructor.
      *
-     * @param TranslatorInterface $translator
-     * @param CacheClearer        $cacheClearer
-     * @param string              $kernelCacheDir
-     * @param string              $kernelRootDir
+     * @param TranslatorInterface          $translator
+     * @param Filesystem                   $filesystem
+     * @param EventDispatcherInterface     $eventDispatcher
+     * @param ExtensionRepositoryInterface $extensionRepository
+     * @param BundleSyncHelper             $bundleSyncHelper
+     * @param ExtensionHelper              $extensionHelper
+     * @param CacheClearer                 $cacheClearer
+     * @param string                       $kernelCacheDir
+     * @param string                       $kernelRootDir
      */
-    public function __construct(TranslatorInterface $translator,
+    public function __construct(
+        TranslatorInterface $translator,
+        EventDispatcherInterface $eventDispatcher,
+        ExtensionRepositoryInterface $extensionRepository,
+        BundleSyncHelper $bundleSyncHelper,
+        ExtensionHelper $extensionHelper,
         CacheClearer $cacheClearer,
         $kernelCacheDir,
         $kernelRootDir
     ) {
         $this->translator = $translator;
+        $this->eventDispatcher = $eventDispatcher;
+        $this->extensionRepository = $extensionRepository;
+        $this->bundleSyncHelper = $bundleSyncHelper;
+        $this->extensionHelper = $extensionHelper;
         $this->cacheClearer = $cacheClearer;
 
-        $this->fs = new Filesystem();
-        $this->cacheFile = $kernelCacheDir . "/CmfcmfMediaModule.zip";
+        $this->filesystem = $filesystem;
+        $this->cacheFile = $kernelCacheDir . '/CmfcmfMediaModule.zip';
 
         $zikulaDir = realpath($kernelRootDir . '/..');
-        $this->moduleDir = $this->fs->makePathRelative(realpath(__DIR__ . '/..'), $zikulaDir);
+        $this->moduleDir = $this->filesystem->makePathRelative(realpath(__DIR__ . '/..'), $zikulaDir);
         $this->moduleDir = rtrim($this->moduleDir, '/\\');
     }
 
@@ -147,7 +187,7 @@ class ModuleUpgrader
                 $zip = new \ZipArchive();
                 $zip->open($this->cacheFile);
                 $content = $zip->getFromName('composer.json');
-                if ($content === false) {
+                if (false === $content) {
                     throw new UpgradeFailedException(
                         $this->translator->trans(
                             'Could not read composer.json file from downloaded zip archive.',
@@ -215,20 +255,21 @@ class ModuleUpgrader
     private function is_writable_r($dir)
     {
         if (is_dir($dir)) {
-            if (is_writable($dir)) {
-                $objects = scandir($dir);
-                foreach ($objects as $object) {
-                    if ($object != "." && $object != "..") {
-                        if (!$this->is_writable_r($dir."/".$object)) {
-                            return false;
-                        }
-                    }
-                }
-
-                return true;
-            } else {
+            if (!is_writable($dir)) {
                 return false;
             }
+
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if (in_array($object, ['.', '..'])) {
+                    continue;
+                }
+                if (!$this->is_writable_r($dir . '/' . $object)) {
+                    return false;
+                }
+            }
+
+            return true;
         } elseif (file_exists($dir)) {
             return is_writable($dir);
         }
@@ -252,7 +293,7 @@ class ModuleUpgrader
     private function extractNewVersion()
     {
         // Delete all the existing files first.
-        $this->fs->remove(glob($this->moduleDir . '/*'));
+        $this->filesystem->remove(glob($this->moduleDir . '/*'));
 
         // Extract new files.
         $zip = new \ZipArchive();
@@ -260,7 +301,7 @@ class ModuleUpgrader
         $zip->extractTo($this->moduleDir);
         $zip->close();
 
-        $this->fs->remove($this->cacheFile);
+        $this->filesystem->remove($this->cacheFile);
 
         $this->cacheClearer->clear('');
     }
@@ -270,16 +311,33 @@ class ModuleUpgrader
      */
     private function doUpgrade()
     {
-        $filemodules = \ModUtil::apiFunc('ZikulaExtensionsModule', 'admin', 'getfilemodules');
-        \ModUtil::apiFunc('ZikulaExtensionsModule', 'admin', 'regenerate', ['filemodules' => $filemodules]);
+        $upgradedExtensions = [];
+        $vetoEvent = new GenericEvent();
+        $this->get('event_dispatcher')->dispatch(ExtensionEvents::REGENERATE_VETO, $vetoEvent);
+        if ($vetoEvent->isPropagationStopped()) {
+            throw new UpgradeFailedException(
+                $this->translator->trans('Upgrade was stopped by a veto!', [], 'cmfcmfmediamodule'));
+        }
 
-        $worked = \ModUtil::apiFunc('ZikulaExtensionsModule', 'admin', 'upgrade', [
-            'id' => \ModUtil::getIdFromName('CmfcmfMediaModule')
-        ]);
+        $extensionsInFileSystem = $this->bundleSyncHelper->scanForBundles();
+        $upgradedExtensions = $this->bundleSyncHelper->syncExtensions($extensionsInFileSystem);
 
+        if (!isset($upgradedExtensions['CmfcmfMediaModule'])) {
+            throw new UpgradeFailedException(
+                $this->translator->trans('No new version detected!', [], 'cmfcmfmediamodule'));
+        }
+        // $upgradedExtensions['CmfcmfMediaModule'] contains new version
+
+        $extension = $this->extensionRepository->findOneByName('CmfcmfMediaModule');
+        if (null === $extension) {
+            throw new UpgradeFailedException(
+                $this->translator->trans('Could not determine version information from database!', [], 'cmfcmfmediamodule'));
+        }
+
+        $worked = $this->extensionHelper->->upgrade($extension);
         $this->cacheClearer->clear('');
 
-        if ($worked != true) {
+        if (true !== $worked) {
             throw new UpgradeFailedException(
                 $this->translator->trans(
                     'Something went wrong with the upgrade code. This should not have happened!',
@@ -303,9 +361,15 @@ class ModuleUpgrader
                         [],
                         'cmfcmfmediamodule'));
             }
-            $info = \ModUtil::getInfoFromName('CmfcmfMediaModule');
-            $release = $versionChecker->getReleaseToUpgradeTo($info['version']);
-            if ($release === false) {
+
+            $extension = $this->extensionRepository->findOneByName('CmfcmfMediaModule');
+            if (null === $extension) {
+                throw new UpgradeFailedException(
+                    $this->translator->trans('Could not determine version information from database!', [], 'cmfcmfmediamodule'));
+            }
+
+            $release = $versionChecker->getReleaseToUpgradeTo($extension['version']);
+            if (false === $release) {
                 throw new UpgradeFailedException(
                     $this->translator->trans('No release to upgrade to available!', [], 'cmfcmfmediamodule'));
             }

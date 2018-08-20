@@ -16,7 +16,6 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\UrlEntity;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
@@ -62,8 +61,8 @@ SQL;
         } catch (TableNotFoundException $e) {
             return $this->translator->trans('Please install the Downloads Module or import it\'s tables into the database.');
         }
-        $fs = new Filesystem();
-        if (!$fs->exists($this->fileDirectory)) {
+
+        if (!$this->filesystem->exists($this->fileDirectory)) {
             return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->fileDirectory], 'cmfcmfmediamodule');
         }
 

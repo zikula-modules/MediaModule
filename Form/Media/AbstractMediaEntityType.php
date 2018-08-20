@@ -21,9 +21,14 @@ use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermission
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Zikula\CategoriesModule\Form\Type\CategoriesType;
-use Zikula\ExtensionsModule\Api\VariableApi;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
 /**
  * Provides some convenience methods for all media form types.
@@ -51,7 +56,7 @@ abstract class AbstractMediaEntityType extends AbstractType
     private $securityManager;
 
     /**
-     * @var VariableApi
+     * @var VariableApiInterface
      */
     private $variableApi;
 
@@ -62,7 +67,7 @@ abstract class AbstractMediaEntityType extends AbstractType
 
     public function __construct(
         SecurityManager $securityManager,
-        VariableApi $variableApi,
+        VariableApiInterface $variableApi,
         EntityManagerInterface $em,
         $isCreation = false,
         CollectionEntity $parent = null,
@@ -151,7 +156,7 @@ abstract class AbstractMediaEntityType extends AbstractType
         }
 
         $builder
-            ->add('collection', 'entity', $collectionOptions)
+            ->add('collection', EntityType::class, $collectionOptions)
             ->add('categoryAssignments', CategoriesType::class, [
                 'required' => false,
                 'multiple' => true,
@@ -159,33 +164,32 @@ abstract class AbstractMediaEntityType extends AbstractType
                 'entity' => 'AbstractMediaEntity',
                 'entityCategoryClass' => MediaCategoryAssignmentEntity::class,
             ])
-            ->add(
-                'title',
+            ->add('title',
                 isset($options['hiddenFields']) && in_array(
                     'title',
-                    $options['hiddenFields']) ? 'hidden' : 'text',
+                    $options['hiddenFields']) ? HiddenType::class : TextType::class,
                 [
                     'label' => $this->translator->trans('Title', [], 'cmfcmfmediamodule')
-                ])
+                ]
+            )
             ->add(
                 'description',
                 isset($options['hiddenFields']) && in_array(
                     'description',
-                    $options['hiddenFields']) ? 'hidden' : 'textarea',
+                    $options['hiddenFields']) ? HiddenType::class : TextareaType::class,
                 [
                     'required' => false,
                     'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
                     'attr' => [
                         'help' => $descriptionHelp
                     ]
-                ])
+                ]
+            )
             ->add(
-                'license',
-                'entity',
-                [
+                'license', EntityType::class, [
                     'required' => false,
                     'label' => $this->translator->trans('License', [], 'cmfcmfmediamodule'),
-                    'class' => 'CmfcmfMediaModule:License\LicenseEntity',
+                    'class' => LicenseEntity::class,
                     'preferred_choices' => function (LicenseEntity $license) {
                         return !$license->isOutdated();
                     },
@@ -204,47 +208,43 @@ abstract class AbstractMediaEntityType extends AbstractType
                     'label_attr' => isset($options['hiddenFields']) && in_array(
                         'license',
                         $options['hiddenFields']) ? $hiddenAttr : []
-                ])
-            ->add(
-                'author',
+                ]
+            )
+            ->add('author',
                 isset($options['hiddenFields']) && in_array(
                     'author',
-                    $options['hiddenFields']) ? 'hidden' : 'text',
+                    $options['hiddenFields']) ? HiddenType::class : TextType::class,
                 [
                     'label' => $this->translator->trans('Author', [], 'cmfcmfmediamodule'),
                     'required' => false,
                     'empty_data' => null
-                ])
-            ->add(
-                'authorUrl',
+                ]
+            )
+            ->add('authorUrl',
                 isset($options['hiddenFields']) && in_array(
                     'authorUrl',
-                    $options['hiddenFields']) ? 'hidden' : 'url',
+                    $options['hiddenFields']) ? HiddenType::class : UrlType::class,
                 [
                     'label' => $this->translator->trans('Author URL', [], 'cmfcmfmediamodule'),
                     'required' => false,
                     'empty_data' => null
-                ])
-            ->add(
-                'authorAvatarUrl',
+                ]
+            )
+            ->add('authorAvatarUrl',
                 isset($options['hiddenFields']) && in_array(
                     'authorAvatarUrl',
-                    $options['hiddenFields']) ? 'hidden' : 'url',
+                    $options['hiddenFields']) ? HiddenType::class : UrlType::class,
                 [
-                    'label' => $this->translator->trans(
-                        'Author Avatar URL',
-                        [],
-                        'cmfcmfmediamodule'),
+                    'label' => $this->translator->trans('Author Avatar URL', [], 'cmfcmfmediamodule'),
                     'required' => false,
                     'empty_data' => null
-                ])
-            ->add(
-                'mediaType',
-                'hidden',
-                [
-                    'mapped' => false
-                ])
-            ->add('extraData', 'hidden');
+                ]
+            )
+            ->add('mediaType', HiddenType::class, [
+                'mapped' => false
+            ])
+            ->add('extraData', HiddenType::class)
+        ;
 
         $builder->get('extraData')->addModelTransformer(new ArrayToJsonTransformer());
     }

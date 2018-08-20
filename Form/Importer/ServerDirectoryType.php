@@ -11,6 +11,8 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Importer;
 
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class ServerDirectoryType extends AbstractImporterType
@@ -18,18 +20,18 @@ class ServerDirectoryType extends AbstractImporterType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('serverDirectory', 'text', [
+            ->add('serverDirectory', TextType::class, [
                 'required' => true,
                 'label' => $this->translator->trans('Server directory', [], 'cmfcmfmediamodule'),
                 'attr' => [
                     'help' => $this->translator->trans('Either provide an absolute path or a path relative to the Zikula root directory.', [], 'cmfcmfmediamodule')
                 ]
             ])
-            ->add('includeSubDirectories', 'checkbox', [
+            ->add('includeSubDirectories', CheckboxType::class, [
                 'required' => false,
                 'label' => $this->translator->trans('Include sub directories', [], 'cmfcmfmediamodule')
             ])
-            ->add('createSubCollectionsForSubDirectories', 'checkbox', [
+            ->add('createSubCollectionsForSubDirectories', CheckboxType::class, [
                 'required' => false,
                 'label' => $this->translator->trans('Create sub collections for sub directories', [], 'cmfcmfmediamodule')
             ])

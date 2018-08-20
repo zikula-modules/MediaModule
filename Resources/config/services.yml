@@ -20,6 +20,11 @@ services:
         class: Cmfcmf\Module\MediaModule\Upgrade\ModuleUpgrader
         arguments:
             - '@translator'
+            - '@filesystem'
+            - '@event_dispatcher'
+            - '@zikula_extensions_module.extension_repository'
+            - '@zikula_extensions_module.bundle_sync_helper'
+            - '@zikula_extensions_module.extension_helper'
             - '@zikula.cache_clearer'
             - '%kernel.cache_dir%'
             - '%kernel.root_dir%'
@@ -37,10 +42,6 @@ services:
             - '@cmfcmf_media_module.font_collection'
         tags: ['form.type']
 
-    cmfcmf_media_module.form.type.color:
-        class: Cmfcmf\Module\MediaModule\Form\Type\ColorType
-        tags: ['form.type']
-
     cmfcmf_media_module.form.type.permission_level:
         class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
         arguments:
@@ -55,6 +56,27 @@ services:
             - '@cmfcmf_media_module.collection_template.selected_factory'
         tags: ['form.type']
 
+    cmfcmf_media_module.form.type.collection_template.galleria:
+        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\GalleriaType
+        arguments:
+            - '@translator'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.collection_template.light_gallery:
+        class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\LightGalleryType
+        arguments:
+            - '@translator'
+        tags: ['form.type']
+
+    cmfcmf_media_module.form.type.settings:
+        class: Cmfcmf\Module\MediaModule\Form\SettingsType
+        arguments:
+            - '@translator'
+            - '@zikula_extensions_module.api.variable'
+            - '@doctrine.orm.entity_manager'
+            - '@cmfcmf_media_module.collection_template_collection'
+        tags: ['form.type']
+
 
     # Listeners
     cmfcmf_media_module.listener.module:
@@ -66,6 +88,7 @@ services:
     cmfcmf_media_module.listener.thirdparty:
         class: Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener
         arguments:
+            - '@filesystem'
             - '%kernel.root_dir%'
         tags: ['kernel.event_subscriber']
 

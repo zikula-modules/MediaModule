@@ -16,6 +16,8 @@ use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -44,8 +46,16 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
      */
     private $selectedTemplateFactory;
 
-    public function __construct(TranslatorInterface $translator, TemplateCollection $templateCollection, SelectedTemplateFactory $selectedTemplateFactory)
-    {
+    /**
+     * @param TranslatorInterface     $translator
+     * @param TemplateCollection      $templateCollection
+     * @param SelectedTemplateFactory $selectedTemplateFactory
+     */
+    public function __construct(
+        TranslatorInterface $translator,
+        TemplateCollection $templateCollection,
+        SelectedTemplateFactory $selectedTemplateFactory
+    ) {
         $this->translator = $translator;
         $this->templateCollection = $templateCollection;
         $this->selectedTemplateFactory = $selectedTemplateFactory;
@@ -55,12 +65,12 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
     {
         $selectedTemplateFactory = $this->selectedTemplateFactory;
 
-        $builder->add('template', 'choice', [
+        $builder->add('template', ChoiceType::class, [
             'label' => $this->translator->trans('Template', [], 'cmfcmfmediamodule'),
             'required' => !$options['allowDefaultTemplate'],
             'placeholder' => $options['allowDefaultTemplate'] ? $this->translator->trans('Default', [], 'cmfcmfmediamodule') : false,
             'choices' => $this->templateCollection->getCollectionTemplateTitles()
-        ])->add('options', 'form', [
+        ])->add('options', FormType::class, [
             'required' => false
         ])->addModelTransformer(new CallbackTransformer(function ($modelData) use ($selectedTemplateFactory) {
             if ($modelData === null) {
@@ -86,7 +96,7 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
             $data = $event->getData();
 
             if (null === $data) {
-                $form->add('options', 'form', [
+                $form->add('options', FormType::class, [
                     'required' => false
                 ]);
 
@@ -105,7 +115,7 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
             $form = $event->getForm();
             $template = $form->getData();
             if (null === $template) {
-                $form->getParent()->add('options', 'form', [
+                $form->getParent()->add('options', FormType::class, [
                     'required' => false
                 ]);
 
@@ -116,7 +126,7 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
             if (null !== $settingsForm) {
                 $form->getParent()->add('options', $settingsForm);
             } else {
-                $form->getParent()->add('options', 'form', [
+                $form->getParent()->add('options', FormType::class, [
                     'required' => false
                 ]);
             }
@@ -130,6 +140,6 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
 
     public function getName()
     {
-        return "cmfcmfmediamodule_collectiontemplate";
+        return 'cmfcmfmediamodule_collectiontemplate';
     }
 }

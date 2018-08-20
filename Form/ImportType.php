@@ -16,7 +16,9 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType as SymfonyAbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -38,8 +40,16 @@ class ImportType extends SymfonyAbstractType
      */
     private $securityManager;
 
-    public function __construct(FormTypeInterface $importerForm, TranslatorInterface $translator, SecurityManager $securityManager)
-    {
+    /**
+     * @param FormTypeInterface   $importerForm
+     * @param TranslatorInterface $translator
+     * @param SecurityManager     $securityManager
+     */
+    public function __construct(
+        FormTypeInterface $importerForm,
+        TranslatorInterface $translator,
+        SecurityManager $securityManager
+    ) {
         $this->importerForm = $importerForm;
         $this->translator = $translator;
         $this->securityManager = $securityManager;
@@ -48,9 +58,9 @@ class ImportType extends SymfonyAbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('collection', 'entity', [
+            ->add('collection', EntityType::class, [
                 'required' => true,
-                'class' => 'CmfcmfMediaModule:Collection\CollectionEntity',
+                'class' => CollectionEntity::class,
                 'query_builder' => function (EntityRepository $er) {
                     /** @var CollectionRepository $qb */
                     $qb = $this->securityManager->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS);
@@ -66,7 +76,7 @@ class ImportType extends SymfonyAbstractType
                 'property' => 'indentedTitle',
             ])
             ->add('importSettings', $this->importerForm)
-            ->add('import', 'submit', [
+            ->add('import', SubmitType::class, [
                 'attr' => [
                     'class' => 'btn-success'
                 ]

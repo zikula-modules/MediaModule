@@ -191,17 +191,7 @@ class SettingsController extends AbstractController
     {
         $this->ensurePermission();
 
-        $collectionTemplateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
-        $translator = $this->get('translator');
-        $variableApi = $this->get('zikula_extensions_module.api.variable');
-
-        $form = $this->createForm(
-            new SettingsType(
-                $translator,
-                $variableApi,
-                $collectionTemplateCollection->getCollectionTemplateTitles()
-            )
-        );
+        $form = $this->createForm(SettingsType::class);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
