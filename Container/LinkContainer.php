@@ -78,6 +78,9 @@ class LinkContainer implements LinkContainerInterface
      */
     public function getLinks($type = self::TYPE_ADMIN)
     {
+        if (!class_exists('\\Fhaculty\\Graph\\Graph')) {
+            include_once __DIR__ . '/../bootstrap.php';
+        }
         if (self::TYPE_ADMIN == $type) {
             return $this->adminLinks();
         }
