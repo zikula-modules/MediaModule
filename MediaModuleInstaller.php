@@ -173,15 +173,23 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             case '1.2.1':
                 return true;
             case '1.2.2':
-                /**
-                 * TODO fields have changed: createdUserId becomes createdBy, updatedUserId becomes updatedBy
-                 * affects the following entities:
-                 *     Entity/Collection/CollectionEntity
-                 *     Entity/Collection/Permission/AbstractPermissionEntity
-                 *     Entity/Media/AbstractMediaEntity
-                 *     Entity/Watermark/AbstractWatermarkEntity
-                 */
-                die('Sorry, update functionality has not been completed yet!');
+                // fields have changed: createdUserId becomes createdBy, updatedUserId becomes updatedBy
+                $connection = $this->entityManager->getConnection();
+                foreach (['collection', 'media', 'watermarks', 'permission'] as $tableName) {
+                    $sql = '
+                        ALTER TABLE `cmfcmfmedia_' . $tableName . '`
+                        CHANGE `createdUserId` `createdBy` INT(11) DEFAULT NULL
+                    ';
+                    $stmt = $connection->prepare($sql);
+                    $stmt->execute();
+
+                    $sql = '
+                        ALTER TABLE `cmfcmfmedia_' . $tableName . '`
+                        CHANGE `updatedUserId` `updatedBy` INT(11) DEFAULT NULL
+                    ';
+                    $stmt = $connection->prepare($sql);
+                    $stmt->execute();
+                }
                 return true;
             case '1.3.0':
                 return true;
@@ -201,12 +209,11 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         $this->delVars();
 
         // remove category registry entries
-        $entityManager = $this->container->get('doctrine.orm.default_entity_manager');
         $registries = $this->container->get('zikula_categories_module.category_registry_repository')->findBy(['modname' => 'CmfcmfMediaModule']);
         foreach ($registries as $registry) {
-            $entityManager->remove($registry);
+            $this->entityManager->remove($registry);
         }
-        $entityManager->flush();
+        $this->entityManager->flush();
 
         return true;
     }
