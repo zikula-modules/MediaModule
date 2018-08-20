@@ -79,7 +79,7 @@ class ServerDirectoryImporter extends AbstractImporter
 
             $entityClass = $selectedMediaType->getEntityClass();
             /** @var AbstractFileEntity $entity */
-            $entity = new $entityClass($this->dataDirectory);
+            $entity = new $entityClass($this->requestStack, $this->dataDirectory);
             $relativePath = $finderFile->getRelativePath();
             if ($formData['importSettings']['createSubCollectionsForSubDirectories'] && $relativePath != "") {
                 if (!isset($collectionMapping[$relativePath])) {

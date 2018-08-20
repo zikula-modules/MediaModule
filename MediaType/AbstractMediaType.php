@@ -13,7 +13,7 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
@@ -35,6 +35,11 @@ abstract class AbstractMediaType implements MediaTypeInterface
     protected $variableApi;
 
     /**
+     * @var RequestStack
+     */
+    protected $requestStack;
+
+    /**
      * @var string
      */
     protected $dataDirectory;
@@ -43,17 +48,20 @@ abstract class AbstractMediaType implements MediaTypeInterface
      * @param EngineInterface      $renderEngine
      * @param TranslatorInterface  $translator
      * @param VariableApiInterface $variableApi
+     * @param RequestStack         $requestStack
      * @param string               $dataDirectory
      */
     public function __construct(
         EngineInterface $renderEngine,
         TranslatorInterface $translator,
         VariableApiInterface $variableApi,
+        RequestStack $requestStack,
         $dataDirectory
     ) {
         $this->renderEngine = $renderEngine;
         $this->translator = $translator;
         $this->variableApi = $variableApi;
+        $this->requestStack = $requestStack;
         $this->dataDirectory = $dataDirectory;
     }
 
@@ -155,12 +163,12 @@ abstract class AbstractMediaType implements MediaTypeInterface
         return $result;
     }
 
-    public function getEntityFromWeb(Request $request)
+    public function getEntityFromWeb()
     {
         $entity = $this->getEntityClass();
-        $entity = new $entity($this->dataDirectory);
+        $entity = new $entity($this->requestStack, $this->dataDirectory);
 
-        $settings = json_decode($request->request->get('settings'), true);
+        $settings = json_decode($this->requestStack->getCurrentRequest()->request->get('settings'), true);
         foreach ($settings as $name => $value) {
             $setter = 'set' . ucfirst($name);
             $entity->$setter($value);

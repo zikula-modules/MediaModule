@@ -453,11 +453,11 @@ class MediaController extends AbstractController
             throw new NotFoundHttpException();
         }
         $dropdownValue = $request->request->get('dropdownValue', null);
-        if ($dropdownValue == "") {
+        if ('' == $dropdownValue) {
             $dropdownValue = null;
         }
 
-        $results = $mediaType->getSearchResults($request, $q, $dropdownValue);
+        $results = $mediaType->getSearchResults($q, $dropdownValue);
 
         return $this->json($results);
     }
@@ -745,7 +745,7 @@ class MediaController extends AbstractController
             case 'web':
                 try {
                     /** @var MediaTypeInterface|WebMediaTypeInterface $mediaType */
-                    $entity = $mediaType->getEntityFromWeb($request);
+                    $entity = $mediaType->getEntityFromWeb();
                 } catch (\Exception $e) {
                     throw new NotFoundHttpException();
                 }

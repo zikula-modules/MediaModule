@@ -10,6 +10,7 @@ services:
             - '@form.factory'
             - '@cmfcmf_media_module.media_type_collection'
             - '@doctrine.orm.entity_manager'
+            - '@request_stack'
             - '%datadir%'
 
     cmfcmf_media_module.importer.server_directory:

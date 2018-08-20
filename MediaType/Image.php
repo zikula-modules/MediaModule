@@ -184,7 +184,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
         $path = $this->imagineManager->getThumb($entity->getPath(), $entity->getImagineId());
 
-        $url = \System::getBaseUri() . '/' . $path;
+        $url = $this->getBaseUri() . '/' . $path;
         switch ($format) {
             case 'url':
                 return $url;

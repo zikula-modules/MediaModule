@@ -107,7 +107,7 @@ SQL
                 $mediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
                 $entityClass = $mediaType->getEntityClass();
                 /** @var AbstractFileEntity $entity */
-                $entity = new $entityClass($this->dataDirectory);
+                $entity = new $entityClass($this->requestStack, $this->dataDirectory);
                 $entity
                     ->setTitle($download['downloadTitle'])
                     ->setDescription($download['downloadDescription'])

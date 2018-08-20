@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Entity\Media;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Uploadable\Uploadable;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository")
@@ -53,11 +54,12 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
     protected $downloadAllowed;
 
     /**
-     * @param string $dataDirectory
+     * @param RequestStack $requestStack
+     * @param string       $dataDirectory
      */
-    public function __construct($dataDirectory = '')
+    public function __construct(RequestStack $requestStack, $dataDirectory = '')
     {
-        parent::__construct($dataDirectory);
+        parent::__construct($requestStack, $dataDirectory);
 
         $this->downloadAllowed = true;
     }

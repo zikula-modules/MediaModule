@@ -95,7 +95,7 @@ class PermissionController extends AbstractController
         $dataDirectory = $this->get('service_container')->getParameter('datadir');
 
         $entity = $permissionType->getEntityClass();
-        $entity = new $entity($dataDirectory);
+        $entity = new $entity($this->get('request_stack'), $dataDirectory);
 
         $form = $permissionType->getFormClass();
         /** @var AbstractType $form */

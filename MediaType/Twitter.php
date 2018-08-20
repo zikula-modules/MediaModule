@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\TwitterEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteMediaTypeInterface
 {
@@ -56,7 +55,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getEntityFromPaste($pastedText)
     {
-        $entity = new TwitterEntity($this->dataDirectory);
+        $entity = new TwitterEntity($this->requestStack, $this->dataDirectory);
 
         $tweetId = $this->extractTweetIdFromPaste($pastedText);
         if ($tweetId === false) {
@@ -117,7 +116,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         ]) . '</div><p></p>';
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         $q = str_replace('&', '', $q);
         $q = str_replace('?', '', $q);

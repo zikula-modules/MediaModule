@@ -39,7 +39,7 @@ class UserCollectionPermission extends AbstractCollectionPermission
         CurrentUserApiInterface $currentUserApi,
         UserRepositoryInterface $userRepository
     ) {
-        parent::__construct($translator, $currentUserApi;
+        parent::__construct($translator, $currentUserApi);
         $this->userRepository = $userRepository;
     }
 

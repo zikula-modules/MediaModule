@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -112,17 +113,25 @@ abstract class AbstractWatermarkEntity
     protected $relativeSize;
 
     /**
+     * @var RequestStack
+     */
+    protected $requestStack;
+
+    /**
      * @var string
      */
     protected $dataDirectory;
 
     /**
-     * @param string $dataDirectory
+     * @param RequestStack $requestStack
+     * @param string       $dataDirectory
      */
-    public function __construct($dataDirectory = '')
+    public function __construct(RequestStack $requestStack, $dataDirectory = '')
     {
         $this->minSizeX = 200;
         $this->minSizeY = 80;
+
+        $this->requestStack = $requestStack;
         $this->dataDirectory = $dataDirectory;
     }
 

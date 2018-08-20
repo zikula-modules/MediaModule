@@ -99,10 +99,10 @@ SQL;
                     $mediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
                     $entityClass = $mediaType->getEntityClass();
                     /** @var AbstractFileEntity $entity */
-                    $entity = new $entityClass(this->dataDirectory);
+                    $entity = new $entityClass($this->requestStack, $this->dataDirectory);
                     $this->uploadManager->markEntityToUpload($entity, ImportedFile::fromFile($file));
                 } else {
-                    $entity = new UrlEntity($this->dataDirectory);
+                    $entity = new UrlEntity($this->requestStack, $this->dataDirectory);
                     $entity->setUrl($download['url']);
                 }
                 $entity

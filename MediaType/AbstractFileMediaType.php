@@ -75,7 +75,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
 
     public function getUrlToFile($identifier)
     {
-        return \System::getBaseUri() . '/' . $this->getPathToFile($identifier);
+        return $this->getBaseUri() . '/' . $this->getPathToFile($identifier);
     }
 
     protected function getPreset(AbstractFileEntity $entity, $file, $width, $height, $mode, $optimize)
@@ -241,7 +241,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
 
         $path = $this->imagineCacheManager->resolve($path/** TODO, $entity->getImagineId()*/);
 
-        $url = \System::getBaseUri() . '/' . $path;
+        $url = $this->getBaseUri() . '/' . $path;
         switch ($format) {
             case 'url':
                 return $url;
@@ -263,5 +263,10 @@ abstract class AbstractFileMediaType extends AbstractMediaType
             default:
                 throw new \LogicException();
         }
+    }
+
+    protected function getBaseUri()
+    {
+        return $this->requestStack->getCurrentRequest()->getBasePath();
     }
 }

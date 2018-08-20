@@ -11,11 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
-use Symfony\Component\HttpFoundation\Request;
-
 interface WebMediaTypeInterface
 {
-    public function getEntityFromWeb(Request $request);
+    public function getEntityFromWeb();
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null);
+    public function getSearchResults($q, $dropdownValue = null);
 }

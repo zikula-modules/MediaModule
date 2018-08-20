@@ -47,7 +47,7 @@ class Url extends AbstractMediaType implements PasteMediaTypeInterface
      */
     public function getEntityFromPaste($pastedText)
     {
-        $entity = new UrlEntity($this->dataDirectory);
+        $entity = new UrlEntity($this->requestStack, $this->dataDirectory);
         $entity->setUrl($pastedText);
 
         return $entity;

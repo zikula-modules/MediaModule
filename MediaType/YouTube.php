@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\YouTubeEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteMediaTypeInterface
 {
@@ -51,7 +50,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getEntityFromPaste($pastedText)
     {
-        $entity = new YouTubeEntity($this->dataDirectory);
+        $entity = new YouTubeEntity($this->requestStack, $this->dataDirectory);
 
         list($type, $id) = $this->extractYouTubeIdAndTypeFromPaste($pastedText);
         if ($id === false || !in_array($type, ['playlist', 'video', 'channel', true])) {
@@ -118,7 +117,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         ]);
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         $youtube = $this->getYouTubeApi();
 

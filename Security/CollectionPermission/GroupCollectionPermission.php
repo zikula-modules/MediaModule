@@ -38,7 +38,7 @@ class GroupCollectionPermission extends AbstractCollectionPermission
         CurrentUserApiInterface $currentUserApi,
         GroupRepositoryInterface $groupRepository
     ) {
-        parent::__construct($translator, $currentUserApi;
+        parent::__construct($translator, $currentUserApi);
         $this->groupRepository = $groupRepository;
     }
 

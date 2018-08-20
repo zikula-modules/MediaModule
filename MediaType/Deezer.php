@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\DeezerEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMediaTypeInterface
 {
@@ -51,7 +50,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
             throw new \RuntimeException();
         }
 
-        $entity = new DeezerEntity($this->dataDirectory);
+        $entity = new DeezerEntity($this->requestStack, $this->dataDirectory);
         if (isset($parameters['title'])) {
             $entity->setTitle($parameters['title']);
         }
@@ -128,10 +127,10 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         ]);
     }
 
-    public function getEntityFromWeb(Request $request)
+    public function getEntityFromWeb()
     {
         /** @var DeezerEntity $entity */
-        $entity = parent::getEntityFromWeb($request);
+        $entity = parent::getEntityFromWeb();
 
         $this->addExtraData($entity);
 
@@ -187,7 +186,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         ];
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         // TODO: Implement getSearchResults() method.
     }

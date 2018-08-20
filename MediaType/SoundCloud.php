@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\SoundCloudEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, PasteMediaTypeInterface
 {
@@ -56,7 +55,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
             throw new \RuntimeException();
         }
 
-        $entity = new SoundCloudEntity($this->dataDirectory);
+        $entity = new SoundCloudEntity($this->requestStack, $this->dataDirectory);
         $entity->setUrl('https://soundcloud.com/');
         $entity->setMusicId($trackId);
 
@@ -114,7 +113,7 @@ EOD;
         return false;
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         // TODO: Implement getSearchResults() method.
     }

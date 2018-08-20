@@ -86,7 +86,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
 
     public function getUrl()
     {
-        return \System::getBaseUri() . '/' . $this->getPath();
+        return $this->requestStack->getCurrentRequest()->getBasePath() . '/' . $this->getPath();
     }
 
     /**

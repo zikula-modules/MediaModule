@@ -5,6 +5,7 @@ services:
             - '@templating'
             - '@translator'
             - '@zikula_extensions_module.api.variable'
+            - '@request_stack'
             - '%datadir%'
 
     cmfcmf_media_module.media_type.abstract_file:

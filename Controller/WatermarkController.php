@@ -67,10 +67,10 @@ class WatermarkController extends AbstractController
         }
         $dataDirectory = $this->get('service_container')->getParameter('datadir');
         if ($type == 'image') {
-            $entity = new ImageWatermarkEntity($dataDirectory);
+            $entity = new ImageWatermarkEntity($this->get('request_stack'), $dataDirectory);
             $form = new ImageWatermarkType();
         } elseif ($type == 'text') {
-            $entity = new TextWatermarkEntity($dataDirectory);
+            $entity = new TextWatermarkEntity($this->get('request_stack'), $dataDirectory);
             $form = new TextWatermarkType();
         } else {
             throw new NotFoundHttpException();
