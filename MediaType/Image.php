@@ -178,11 +178,13 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             throw new \InvalidArgumentException('Invalid mode requested.');
         }
 
+        /** TODO migrate
         $this->imagineManager->setPreset(
             $this->getPreset($entity, $entity->getPath(), $width, $height, $mode, $optimize)
         );
+        */
 
-        $path = $this->imagineManager->getThumb($entity->getPath(), $entity->getImagineId());
+        $path = $this->imagineCacheManager->getBrowserPath($entity->getPath(), 'zkroot'/** TODO, $entity->getImagineId()*/);
 
         $url = $this->getBaseUri() . '/' . $path;
         switch ($format) {
@@ -211,8 +213,8 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
                 $code = $this->getThumbnail($entity, 250, 150, 'html', 'inset');
                 break;
         }
-        if ($entity->getAttribution() != null) {
-            $code .= '<p>' . $entity->getAttribution() . '</p>';
+        if (null !== $entity->getAttribution()) {
+            $code .= '<p>' . $this->__f('By %s', ['%s' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
         }
 
         return $code;

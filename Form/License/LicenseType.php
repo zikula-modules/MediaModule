@@ -23,11 +23,6 @@ use Symfony\Component\Translation\TranslatorInterface;
 class LicenseType extends AbstractType
 {
     /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
      * @param TranslatorInterface $translator
      */
     public function __construct(TranslatorInterface $translator)

@@ -10,7 +10,7 @@
         <div class="col-lg-9 col-md-9 col-sm-12">
             {{ mediaType.renderFullpage(entity)|raw }}
 
-            {% if entity.description is not empty %}
+            {% if entity.description|default %}
                 {{ entity|cmfcmfmediamodule_getdescription }}
             {% endif %}
         </div>
@@ -19,11 +19,11 @@
                 {% if entity.license %}
                     <p>
                         <strong>{{ __('License') }}</strong>:
-                        {% if entity.license.url is not null %}
+                        {% if entity.license.url|default %}
                             <a href="{{ entity.license.url|e('html_attr') }}">
                         {% endif %}
                             {{ entity.license.title }}
-                        {% if entity.license.url is not null %}
+                        {% if entity.license.url|default %}
                             </a>
                         {% endif %}
                     </p>
@@ -36,17 +36,17 @@
                     {% endfor %}
                     </ul>
                 {% endif %}
-                {% if entity.authorAvatarUrl is not empty %}
+                {% if entity.authorAvatarUrl|default %}
                     <img src="{{ entity.authorAvatarUrl }}" class="img img-rounded pull-right" alt="{{ __('Author avatar') }}" width="60" height="60" />
                 {% endif %}
-                {% if entity.attribution is not empty %}
-                    <p>{{ entity.attribution|raw }}</p>
+                {% if entity.attribution|default %}
+                    <p>{{ __f('By %s', {'%s': entity.attribution})|raw }}</p>
                 {% endif %}
                 <div class="clearfix"></div>
                 <p>
                     <strong>{{ __('Added by') }}</strong>: {{ entity.createdBy.uid|profileLinkByUserId }}
                     {{ __('at ') }} {{ entity.createdDate|localizeddate('short', 'short') }}
-                    {{ userAvatar(obj.createdBy.uid, {rating: 'g', class: 'img img-rounded pull-right', width: 60, height: 60}) }}
+                    {{ userAvatar(entity.createdBy.uid, {rating: 'g', class: 'img img-rounded pull-right', width: 60, height: 60}) }}
                     {% if views >= 0 %}
                         <strong>{{ __('Views') }}</strong>: {{ views }}
                     {% endif %}
@@ -54,7 +54,7 @@
                 </p>
             </div>
             {% set extendedMetaInformation = mediaType.extendedMetaInformation(entity) %}
-            {% if extendedMetaInformation is not empty %}
+            {% if extendedMetaInformation|default %}
                 <div class="well well-sm">
                     {% for information in extendedMetaInformation %}
                         <p>

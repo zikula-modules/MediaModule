@@ -239,7 +239,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
         );
         */
 
-        $path = $this->imagineCacheManager->resolve($path/** TODO, $entity->getImagineId()*/);
+        $path = $this->imagineCacheManager->getBrowserPath($path, 'zkroot'/** TODO, $entity->getImagineId()*/);
 
         $url = $this->getBaseUri() . '/' . $path;
         switch ($format) {

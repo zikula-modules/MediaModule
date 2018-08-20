@@ -24,7 +24,7 @@
                     {% endif %}
                     {{ title }}
                 </h4>
-                {% if supportText is not empty %}
+                {% if supportText|default %}
                     <p class="card-text">
                         {{ supportText|raw }}
                     </p>
@@ -60,10 +60,10 @@
                     {% set buttons = [{url: path('cmfcmfmediamodule_collection_display', {slug: child.slug}), text: __('View collection')}] %}
                     {% set thumbnail = false %}
                     {% set supportText = '' %}
-                    {% if child.mediaForThumbnail is not null %}
+                    {% if child.mediaForThumbnail|default %}
                         {% set thumbnail = mediaTypeCollection.mediaTypeFromEntity(child.mediaForThumbnail).thumbnail(child.mediaForThumbnail, 200, 150, 'url') %}
-                        {% if child.mediaForThumbnail.attribution is not empty %}
-                            {% set supportText = __('Cover') ~ ' ' ~ child.mediaForThumbnail.attribution ~ '<br>' %}
+                        {% if child.mediaForThumbnail.attribution|default %}
+                            {% set supportText = __('Cover') ~ ' ' ~ __f('By %s', {'%s': child.mediaForThumbnail.attribution})|lower ~ '<br>' %}
                         {% endif %}
                     {% endif %}
                     {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
@@ -82,8 +82,8 @@
     <div class="masonry-grid row" id="cmfcmfmedia-media-sortable-container">
         {% for media in collection.media %}
             {% set supportText = '' %}
-            {% if media.attribution is not empty %}
-                {% set supportText = media.attribution %}
+            {% if media.attribution|default %}
+                {% set supportText = __f('By %s', {'%s': media.attribution}) %}
             {% endif %}
             {% set buttons = [{url: path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('View')}] %}
             {% if media.downloadAllowed|default %}

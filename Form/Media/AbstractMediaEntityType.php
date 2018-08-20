@@ -38,11 +38,6 @@ use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 abstract class AbstractMediaEntityType extends AbstractType
 {
     /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
      * @var SecurityManager
      */
     protected $securityManager;

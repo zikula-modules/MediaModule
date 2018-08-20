@@ -92,10 +92,9 @@ abstract class AbstractController extends BaseAbstractController
      * @param Form              $form
      * @param string            $name
      * @param string            $hookType
-     * @param string            $id
      * @param UrlInterface|null $url
      */
-    protected function applyFormAwareDisplayHook(Form $form, $name, $hookType, $id, UrlInterface $url = null)
+    protected function applyFormAwareDisplayHook(Form $form, $name, $hookType, UrlInterface $url = null)
     {
         $eventName = 'cmfcmfmediamodule.form_aware_hook.' . $name . '.' . $hookType;
         $hook = new FormAwareHook($form);

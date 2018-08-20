@@ -27,11 +27,6 @@ use Zikula\UsersModule\Entity\RepositoryInterface\UserRepositoryInterface;
 abstract class AbstractPermissionType extends AbstractType
 {
     /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
      * @var SecurityManager
      */
     protected $securityManager;

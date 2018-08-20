@@ -25,11 +25,6 @@ use Symfony\Component\Translation\TranslatorInterface;
 class AbstractWatermarkType extends AbstractType
 {
     /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
      * @param TranslatorInterface $translator
      */
     public function __construct(TranslatorInterface $translator)

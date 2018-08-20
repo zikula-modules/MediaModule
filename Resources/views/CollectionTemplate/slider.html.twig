@@ -28,15 +28,11 @@
                         {{ media|cmfcmfmediamodule_getdescription }}
                     {% endif %}
                 </a>
-                {% if media.title is not empty %}
-                    <h4>
-                        {{ media.title }}
-                    </h4>
+                {% if media.title|default %}
+                    <h4>{{ media.title }}</h4>
                 {% endif %}
-                {% if media.attribution is not empty %}
-                    <h5>
-                        {{ media.attribution|raw }}
-                    </h5>
+                {% if media.attribution|default %}
+                    <h5>{{ __f('By %s', {'%s': media.attribution})|raw }}</h5>
                 {% endif %}
             </div>
         {% endfor %}

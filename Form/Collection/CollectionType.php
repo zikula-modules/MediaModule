@@ -36,11 +36,6 @@ use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 class CollectionType extends AbstractType
 {
     /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
      * @var TemplateCollection
      */
     private $templateCollection;

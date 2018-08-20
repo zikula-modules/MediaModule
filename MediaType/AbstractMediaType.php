@@ -124,7 +124,12 @@ abstract class AbstractMediaType implements MediaTypeInterface
 
     public function getEmbedCode(AbstractMediaEntity $entity, $size = 'full')
     {
-        return $this->renderFullpage($entity) . $entity->getAttribution();
+        $attribution = '';
+        if (null !== $entity->getAttribution()) {
+            $attribution = '<p>' . $this->__f('By %s', ['%s' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
+        }
+
+        return $this->renderFullpage($entity) . $attribution;
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)

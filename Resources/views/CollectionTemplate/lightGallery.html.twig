@@ -19,11 +19,11 @@
             ">
                 <img src="{{ thumbnail|e('html_attr') }}" class="img-responsive" />
                 <div class="caption">
-                    {% if media.title is not empty %}
+                    {% if media.title|default %}
                         <h4{% if not options.showTitleBelowThumbs %} class="hidden"{% endif %}>{{ media.title }}</h4>
                     {% endif %}
-                    {% if media.attribution is not empty %}
-                        <p{% if not options.showAttributionBelowThumbs %} class="hidden"{% endif %}>{{ media.attribution('raw') }}</p>
+                    {% if media.attribution|default %}
+                        <p{% if not options.showAttributionBelowThumbs %} class="hidden"{% endif %}>{{ __f('By %s', {'%s': media.attribution})|raw }}</p>
                     {% endif %}
                 </div>
             </a>

@@ -252,7 +252,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             $author = trim($author);
         }
 
-        return __f('By %s', [$author], 'cmfcmfmediamodule');
+        return $author;
     }
 
     /**

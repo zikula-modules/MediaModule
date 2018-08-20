@@ -12,7 +12,7 @@ services:
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection:
-        class: Cmfcmf\Module\MediaModule\Form\CollectionType
+        class: Cmfcmf\Module\MediaModule\Form\Collection\CollectionType
         arguments:
             - '@translator'
             - '@cmfcmf_media_module.collection_template_collection'

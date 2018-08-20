@@ -81,7 +81,11 @@
                         {{ __('Unkown') }}
                     {% endif %}
                 </td>
-                <td headers="hAuthor">{{ media.attribution|raw }}</td>
+                <td headers="hAuthor">
+                    {% if media.attribution|default %}
+                        {{ __f('By %s', {'%s': media.attribution})|raw }}
+                    {% endif %}
+                </td>
                 <td headers="hActions" class="text-right">
                     {% if viewMediaPermission %}
                         <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
