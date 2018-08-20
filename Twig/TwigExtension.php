@@ -19,7 +19,8 @@ use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
 use Github\Exception\RuntimeException;
 use Michelf\MarkdownExtra;
 use Symfony\Component\Translation\TranslatorInterface;
-use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcher;
+use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcherInterface;
+use Zikula\Bundle\HookBundle\Hook\FilterHook;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 use Zikula\ExtensionsModule\Entity\RepositoryInterface\ExtensionRepositoryInterface;
 
@@ -39,7 +40,7 @@ class TwigExtension extends \Twig_Extension
     private $markdownExtra;
 
     /**
-     * @var HookDispatcher
+     * @var HookDispatcherInterface
      */
     private $hookDispatcher;
 
@@ -66,7 +67,7 @@ class TwigExtension extends \Twig_Extension
     /**
      * @param TranslatorInterface          $translator
      * @param MarkdownExtra                $markdownExtra
-     * @param HookDispatcher               $hookDispatcher
+     * @param HookDispatcherInterface      $hookDispatcher
      * @param SecurityManager              $securityManager
      * @param VersionChecker               $versionChecker
      * @param ExtensionRepositoryInterface $extensionRepository
@@ -75,7 +76,7 @@ class TwigExtension extends \Twig_Extension
     public function __construct(
         TranslatorInterface $translator,
         MarkdownExtra $markdownExtra,
-        HookDispatcher $hookDispatcher,
+        HookDispatcherInterface $hookDispatcher,
         SecurityManager $securityManager,
         VersionChecker $versionChecker,
         ExtensionRepositoryInterface $extensionRepository,
@@ -194,8 +195,8 @@ class TwigExtension extends \Twig_Extension
             throw new \LogicException();
         }
 
-        $eventName = "cmfcmfmediamodule.filter_hooks.$hookName.filter";
-        $hook = new \Zikula_FilterHook($eventName, $description);
+        $eventName = 'cmfcmfmediamodule.filter_hooks.' . $hookName . '.filter';
+        $hook = new FilterHook($description);
         $description = $this->hookDispatcher->dispatch($eventName, $hook)->getData();
 
         switch ($strategy) {

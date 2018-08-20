@@ -73,7 +73,7 @@ services:
         class: Cmfcmf\Module\MediaModule\MediaType\Markdown
         parent: cmfcmf_media_module.media_type.abstract_file
         calls:
-            - [setMarkdownParser, ['@zikula_core.common.markdown_parser']]
+            - [setMarkdownParser, ['@zikula_core.common.markdown_extra_parser']]
         tags: ['cmfcmf_media_module.media_type']
 
     cmfcmf_media_module.media_type.archive:

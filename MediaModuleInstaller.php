@@ -25,6 +25,7 @@ use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Zikula\CategoriesModule\Entity\CategoryRegistryEntity;
 use Zikula\Core\AbstractExtensionInstaller;
 
 class MediaModuleInstaller extends AbstractExtensionInstaller
@@ -70,9 +71,6 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         $this->entityManager->persist($exampleCollection);
 
         $this->createPermissions($temporaryUploadCollection, $rootCollection);
-
-        $this->hookApi->installSubscriberHooks($this->bundle->getMetaData());
-        $this->hookApi->installProviderHooks($this->bundle->getMetaData());
 
         $this->setVar('descriptionEscapingStrategyForCollection', 'text');
         $this->setVar('descriptionEscapingStrategyForMedia', 'text');
@@ -199,9 +197,6 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
     {
         // @todo Also delete media files?
         $this->schemaTool->drop(static::getEntities());
-
-        $this->hookApi->uninstallSubscriberHooks($this->bundle->getMetaData());
-        $this->hookApi->uninstallProviderHooks($this->bundle->getMetaData());
 
         $this->delVars();
 

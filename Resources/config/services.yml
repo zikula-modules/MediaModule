@@ -2,6 +2,7 @@ imports:
   - { resource: 'mediatypes.yml' }
   - { resource: 'collectiontemplates.yml' }
   - { resource: 'collectionpermissions.yml' }
+  - { resource: 'hooks.yml' }
   - { resource: 'importers.yml' }
 
 services:
@@ -140,33 +141,6 @@ services:
         public: false
         tags: ['twig.extension']
 
-
-    # Hook handlers
-    cmfcmf_media_module.hook_handler.base:
-        abstract: true
-        arguments:
-            - '@doctrine.orm.default_entity_manager'
-            - '@request_stack'
-            - '@templating'
-            - '@cmfcmf_media_module.security_manager'
-            - '@translator'
-
-    cmfcmf_media_module.hook_handler.license:
-        class: Cmfcmf\Module\MediaModule\HookHandler\LicenseHookHandler
-        parent: cmfcmf_media_module.hook_handler.base
-
-    cmfcmf_media_module.hook_handler.media:
-        class: Cmfcmf\Module\MediaModule\HookHandler\MediaHookHandler
-        parent: cmfcmf_media_module.hook_handler.base
-        calls:
-            - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
-
-    cmfcmf_media_module.hook_handler.collection:
-        class: Cmfcmf\Module\MediaModule\HookHandler\CollectionHookHandler
-        parent: cmfcmf_media_module.hook_handler.base
-        calls:
-            - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
-        
 
     # Fonts
     cmfcmf_media_module.font.font_loader:

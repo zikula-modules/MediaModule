@@ -36,6 +36,8 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
+use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\Core\Response\PlainResponse;
 use Zikula\Core\RouteUrl;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
@@ -122,7 +124,7 @@ class MediaController extends AbstractController
             goto edit_error;
         }
 
-        if (!$this->hookValidates('media', 'validate_edit')) {
+        if (!$this->hookValidates('media', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
             $this->hookValidationError($form);
             goto edit_error;
         }
@@ -158,13 +160,12 @@ class MediaController extends AbstractController
             goto edit_error;
         }
 
-        $this->applyProcessHook('media', 'process_edit', $entity->getId(), new RouteUrl(
-            'cmfcmfmediamodule_media_display',
-            [
-                'slug' => $entity->getSlug(),
-                'collectionSlug' => $entity->getCollection()->getSlug()
-            ]
-        ));
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_media_display', [
+            'slug' => $entity->getSlug(),
+            'collectionSlug' => $entity->getCollection()->getSlug()
+        ]);
+        $this->applyFormAwareProcessHook($form, 'media', FormAwareCategory::TYPE_PROCESS_EDIT, $entity, $hookUrl);
+        $this->applyProcessHook('media', UiHooksCategory::TYPE_PROCESS_EDIT, $entity->getId(), $hookUrl);
 
         $isPopup = $request->query->get('popup', false);
         if ($isPopup) {
@@ -175,19 +176,18 @@ class MediaController extends AbstractController
 
         edit_error:
 
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_media_display', [
+            'slug' => $entity->getSlug(),
+            'collectionSlug' => $entity->getCollection()->getSlug()
+        ]);
+        $formHook = $this->applyFormAwareDisplayHook($form, 'media', FormAwareCategory::TYPE_EDIT, $entity->getId(), $hookUrl);
+
         return [
             'form' => $form->createView(),
+            'entity' => $entity,
             'breadcrumbs' => $entity->getCollection()->getBreadcrumbs($this->get('router')),
-            'hook' => $this->getDisplayHookContent(
-                'media',
-                'form_edit',
-                $entity->getId(),
-                new RouteUrl('cmfcmfmediamodule_media_display', [
-                    'slug' => $entity->getSlug(),
-                    'collectionSlug' => $entity->getCollection()->getSlug()
-                ])
-            ),
-            'entity' => $entity
+            'hook' => $this->getDisplayHookContent('media', UiHooksCategory::TYPE_FORM_EDIT, $entity->getId(), $hookUrl),
+            'formHookTemplates' => $formHook->getTemplates()
         ];
     }
 
@@ -211,7 +211,7 @@ class MediaController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
-            if ($this->hookValidates('media', 'validate_delete')) {
+            if ($this->hookValidates('media', UiHooksCategory::TYPE_VALIDATE_DELETE)) {
                 // Save entity id for use in hook event. It is set to null during the entitymanager flush.
                 $id = $entity->getId();
 
@@ -221,37 +221,27 @@ class MediaController extends AbstractController
 
                 // @todo Delete file if appropriate.
 
-                $this->applyProcessHook(
-                    'media',
-                    'process_delete',
-                    $id,
-                    new RouteUrl('cmfcmfmediamodule_media_display', [
-                        'slug' => $entity->getSlug(),
-                        'collectionSlug' => $entity->getCollection()->getSlug()
-                    ])
-                );
+                $hookUrl = new RouteUrl('cmfcmfmediamodule_media_display', [
+                    'slug' => $entity->getSlug(),
+                    'collectionSlug' => $entity->getCollection()->getSlug()
+                ]);
+                $this->applyProcessHook('media', UiHooksCategory::TYPE_PROCESS_DELETE, $id, $hookUrl);
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getCollection()->getSlug()]);
             } else {
-                /** @var \Zikula_Session $session */
-                $session = $request->getSession();
-                $session->getFlashbag()->add('error', $this->__('Hook validation failed!'));
+                $request->getSession()->getFlashbag()->add('error', $this->__('Hook validation failed!'));
             }
         }
-        $breadcrumbs = $entity->getCollection()->getBreadcrumbs($this->get('router'));
+
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_media_edit', [
+            'slug' => $entity->getSlug(),
+            'collectionSlug' => $entity->getCollection()->getSlug()
+        ]);
 
         return [
-            'breadcrumbs' => $breadcrumbs,
             'entity' => $entity,
-            'hook' => $this->getDisplayHookContent(
-                'media',
-                'form_delete',
-                $entity->getId(),
-                new RouteUrl('cmfcmfmediamodule_media_edit', [
-                    'slug' => $entity->getSlug(),
-                    'collectionSlug' => $entity->getCollection()->getSlug()
-                ])
-            )
+            'breadcrumbs' => $entity->getCollection()->getBreadcrumbs($this->get('router')),
+            'hook' => $this->getDisplayHookContent('media', UiHooksCategory::TYPE_FORM_DELETE, $entity->getId(), $hookUrl)
         ];
     }
 
@@ -277,7 +267,8 @@ class MediaController extends AbstractController
                 CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA
             )
             ->getQuery()
-            ->execute();
+            ->execute()
+        ;
 
         return [
             'webMediaTypes' => $mediaTypeCollection->getWebMediaTypes(true),
@@ -322,26 +313,20 @@ class MediaController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            if ($this->hookValidates('media', 'validate_edit')) {
+            if ($this->hookValidates('media', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
                 $em = $this->getDoctrine()->getManager();
                 $em->persist($entity);
                 $em->flush();
 
-                $this->applyProcessHook(
-                    'media',
-                    'process_edit',
-                    $entity->getId(),
-                    new RouteUrl('cmfcmfmediamodule_media_display', [
-                        'slug' => $entity->getSlug(),
-                        'collectionSlug' => $entity->getCollection()->getSlug()
-                    ])
-                );
+                $hookUrl = new RouteUrl('cmfcmfmediamodule_media_display', [
+                    'slug' => $entity->getSlug(),
+                    'collectionSlug' => $entity->getCollection()->getSlug()
+                ]);
+                $this->applyFormAwareProcessHook($form, 'media', FormAwareCategory::TYPE_PROCESS_EDIT, $entity, $hookUrl);
+                $this->applyProcessHook('media', UiHooksCategory::TYPE_PROCESS_EDIT, $entity->getId(), $hookUrl);
 
                 if ($request->query->get('popup', false)) {
-                    return $this->redirectToRoute(
-                        'cmfcmfmediamodule_media_popupembed',
-                        ['id' => $entity->getId()]
-                    );
+                    return $this->redirectToRoute('cmfcmfmediamodule_media_popupembed', ['id' => $entity->getId()]);
                 }
 
                 return $this->redirectToRoute('cmfcmfmediamodule_media_display', [
@@ -354,10 +339,7 @@ class MediaController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'hook' => $this->getDisplayHookContent(
-                'media',
-                'form_edit'
-            )
+            'hook' => $this->getDisplayHookContent('media', UiHooksCategory::TYPE_FORM_EDIT)
         ];
     }
 
@@ -562,7 +544,7 @@ class MediaController extends AbstractController
 
             /** @var AbstractFileEntity $entity */
             $entity = $selectedMediaType->getEntityClass();
-            $entity = new $entity($dataDirectory);
+            $entity = new $entity($this->get('request_stack'), $dataDirectory);
 
             $variableApi = $this->get('zikula_extensions_module.api.variable');
             $form = $selectedMediaType->getFormTypeClass();
@@ -698,21 +680,17 @@ class MediaController extends AbstractController
         }
 
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_media_display', [
+            'slug' => $entity->getSlug(),
+            'collectionSlug' => $entity->getCollection()->getSlug()
+        ]);
 
         return [
             'mediaType' => $mediaTypeCollection->getMediaTypeFromEntity($entity),
             'entity' => $entity,
             'breadcrumbs' =>  $entity->getCollection()->getBreadcrumbs($this->get('router'), true),
             'views' => $this->getVar('enableMediaViewCounter', false) ? $entity->getViews() : '-1',
-            'hook' => $this->getDisplayHookContent(
-                'media',
-                'display_view',
-                $entity->getId(),
-                new RouteUrl('cmfcmfmediamodule_media_display', [
-                    'slug' => $entity->getSlug(),
-                    'collectionSlug' => $entity->getCollection()->getSlug()
-                ])
-            )
+            'hook' => $this->getDisplayHookContent('media', UiHooksCategory::TYPE_DISPLAY_VIEW, $entity->getId(), $hookUrl)
         ];
     }
 
@@ -737,7 +715,7 @@ class MediaController extends AbstractController
         if (!$init) {
             $dataDirectory = $this->get('service_container')->getParameter('datadir');
             $entity = $mediaType->getEntityClass();
-            $entity = new $entity($dataDirectory);
+            $entity = new $entity($this->get('request_stack'), $dataDirectory);
 
             return $entity;
         }

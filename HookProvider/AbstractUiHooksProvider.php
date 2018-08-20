@@ -9,22 +9,30 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\HookHandler;
+namespace Cmfcmf\Module\MediaModule\HookProvider;
 
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatorInterface;
-use Zikula\Bundle\HookBundle\Hook\DisplayHook;
-use Zikula\Bundle\HookBundle\Hook\DisplayHookResponse;
+use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\Bundle\HookBundle\Hook\ProcessHook;
+use Zikula\Bundle\HookBundle\HookProviderInterface;
+use Zikula\Bundle\HookBundle\ServiceIdTrait;
 
 /**
  * Provides convenience methods for hook handling.
  */
-abstract class AbstractHookHandler
+abstract class AbstractUiHooksProvider implements HookProviderInterface
 {
+    use ServiceIdTrait;
+
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
     /**
      * @var EntityManagerInterface
      */
@@ -46,11 +54,6 @@ abstract class AbstractHookHandler
     protected $securityManager;
 
     /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
      * @param EntityManagerInterface $entityManager
      * @param RequestStack           $requestStack
      * @param EngineInterface        $renderEngine
@@ -58,28 +61,27 @@ abstract class AbstractHookHandler
      * @param TranslatorInterface    $translator
      */
     public function __construct(
+        TranslatorInterface $translator,
         EntityManagerInterface $entityManager,
         RequestStack $requestStack,
         EngineInterface $renderEngine,
-        SecurityManager $securityManager,
-        TranslatorInterface $translator
+        SecurityManager $securityManager
     ) {
+        $this->translator = $translator;
         $this->entityManager = $entityManager;
         $this->requestStack = $requestStack;
         $this->renderEngine = $renderEngine;
         $this->securityManager = $securityManager;
-        $this->translator = $translator;
     }
 
-    /**
-     * Generates a Hook response using the given content.
-     *
-     * @param DisplayHook $hook
-     * @param string      $content
-     */
-    public function uiResponse(DisplayHook $hook, $content)
+    public function getOwner()
     {
-        $hook->setResponse(new DisplayHookResponse($this->getProvider(), $content));
+        return 'CmfcmfMediaModule';
+    }
+
+    public function getCategory()
+    {
+        return UiHooksCategory::NAME;
     }
 
     /**
@@ -95,23 +97,5 @@ abstract class AbstractHookHandler
 
         $this->entityManager->remove($hookedObject);
         $this->entityManager->flush();
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        $class = get_class($this);
-
-        return lcfirst(substr($class, strrpos($class, '\\') + 1, -strlen('HookHandler')));
-    }
-
-    /**
-     * @return string
-     */
-    protected function getProvider()
-    {
-        return 'provider.cmfcmfmediamodule.ui_hooks.' . $this->getType();
     }
 }

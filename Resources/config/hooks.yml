@@ -1,0 +1,76 @@
+services:
+    # Subscribers
+    cmfcmf_media_module.hook_subscriber.filter_hooks.collections:
+        class: Cmfcmf\Module\MediaModule\HookSubscriber\CollectionFilterHooksSubscriber
+        arguments:
+            - '@translator.default'
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.cmfcmfmediamodule.filter_hooks.collections' }
+
+    cmfcmf_media_module.hook_subscriber.filter_hooks.media:
+        class: Cmfcmf\Module\MediaModule\HookSubscriber\MediaFilterHooksSubscriber
+        arguments:
+            - '@translator.default'
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.cmfcmfmediamodule.filter_hooks.media' }
+
+    cmfcmf_media_module.hook_subscriber.form_aware_hook.collections:
+        class: Cmfcmf\Module\MediaModule\HookSubscriber\CollectionFormAwareHookSubscriber
+        arguments:
+            - "@translator.default"
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.cmfcmfmediamodule.form_aware_hook.collections' }
+
+    cmfcmf_media_module.hook_subscriber.form_aware_hook.media:
+        class: Cmfcmf\Module\MediaModule\HookSubscriber\MediaFormAwareHookSubscriber
+        arguments:
+            - "@translator.default"
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.cmfcmfmediamodule.form_aware_hook.media' }
+
+    cmfcmf_media_module.hook_subscriber.ui_hooks.collections:
+        class: Cmfcmf\Module\MediaModule\HookSubscriber\CollectionUiHooksSubscriber
+        arguments:
+            - '@translator.default'
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.cmfcmfmediamodule.ui_hooks.collections' }
+
+    cmfcmf_media_module.hook_subscriber.ui_hooks.media:
+        class: Cmfcmf\Module\MediaModule\HookSubscriber\MediaUiHooksSubscriber
+        arguments:
+            - '@translator.default'
+        tags:
+            - { name: zikula.hook_subscriber, areaName: 'subscriber.cmfcmfmediamodule.ui_hooks.media' }
+
+
+    # Providers
+    cmfcmf_media_module.hook_provider.ui_hooks.base:
+        abstract: true
+        arguments:
+            - '@translator'
+            - '@doctrine.orm.default_entity_manager'
+            - '@request_stack'
+            - '@templating'
+            - '@cmfcmf_media_module.security_manager'
+
+    cmfcmf_media_module.hook_provider.ui_hooks.collections:
+        class: Cmfcmf\Module\MediaModule\HookProvider\CollectionUiHooksProvider
+        parent: cmfcmf_media_module.hook_provider.ui_hooks.base
+        calls:
+            - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
+        tags:
+            - { name: zikula.hook_provider, areaName: 'provider.cmfcmfmediamodule.ui_hooks.collections' }
+
+    cmfcmf_media_module.hook_provider.ui_hooks.media:
+        class: Cmfcmf\Module\MediaModule\HookProvider\MediaUiHooksProvider
+        parent: cmfcmf_media_module.hook_provider.ui_hooks.base
+        calls:
+            - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
+        tags:
+            - { name: zikula.hook_provider, areaName: 'provider.cmfcmfmediamodule.ui_hooks.media' }
+
+    cmfcmf_media_module.hook_provider.ui_hooks.licenses:
+        class: Cmfcmf\Module\MediaModule\HookProvider\LicenseUiHooksProvider
+        parent: cmfcmf_media_module.hook_provider.ui_hooks.base
+        tags:
+            - { name: zikula.hook_provider, areaName: 'provider.cmfcmfmediamodule.ui_hooks.licenses' }

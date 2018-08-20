@@ -19,6 +19,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 use vierbergenlars\SemVer\expression;
 use vierbergenlars\SemVer\version;
 use Zikula\Bundle\CoreBundle\CacheClearer;
+use Zikula\Bundle\CoreBundle\HttpKernel\ZikulaKernel;
 use Zikula\Core\Event\GenericEvent;
 use Zikula\ExtensionsModule\Entity\RepositoryInterface\ExtensionRepositoryInterface;
 use Zikula\ExtensionsModule\ExtensionEvents;
@@ -199,7 +200,7 @@ class ModuleUpgrader
                 $json = json_decode($content, true);
                 $coreCompat = $json['extra']['zikula']['core-compatibility'];
                 $coreCompatExpr = new expression($coreCompat);
-                if (!$coreCompatExpr->satisfiedBy(new version(\Zikula_Core::VERSION_NUM))) {
+                if (!$coreCompatExpr->satisfiedBy(new version(ZikulaKernel::VERSION))) {
                     throw new UpgradeFailedException(
                         $this->translator->trans(
                             'Your installed Core version is not capable of running the upgrade. Please upgrade your core to match %version% first.',

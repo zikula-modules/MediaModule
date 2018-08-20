@@ -7,6 +7,13 @@
     {{ form_start(form) }}
     {{ form_widget(form) }}
     {{ hook|raw }}
+    {% if formHookTemplates|length > 0 %}
+        <fieldset>
+            {% for hookTemplate in formHookTemplates %}
+                {{ include(hookTemplate.0, hookTemplate.1, ignore_missing = true) }}
+            {% endfor %}
+        </fieldset>
+    {% endif %}
     <div class="col-sm-offset-2 col-sm-10">
         <button type="submit" class="btn btn-success">
             <i class="fa fa-fw fa-save"></i> {{ __('Save') }}

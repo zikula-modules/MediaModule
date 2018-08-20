@@ -39,7 +39,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/requirements")
-     * @Template("CmfcmfMediaModule:Upgrade:requirements.html.twig")
+     * @Template("CmfcmfMediaModule:Settings:requirements.html.twig")
      * @Theme("admin")
      */
     public function requirementsAction()
@@ -180,7 +180,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/general", options={"expose" = true})
-     * @Template("CmfcmfMediaModule:Upgrade:general.html.twig")
+     * @Template("CmfcmfMediaModule:Settings:general.html.twig")
      * @Theme("admin")
      *
      * @param Request $request
@@ -209,7 +209,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/scribite", options={"expose" = true})
-     * @Template("CmfcmfMediaModule:Upgrade:scribite.html.twig")
+     * @Template("CmfcmfMediaModule:Settings:scribite.html.twig")
      * @Theme("admin")
      *
      * @return array
@@ -223,12 +223,13 @@ class SettingsController extends AbstractController
         $descriptionEscapingStrategyForMediaOk = true;
 
         if ($scribiteInstalled) {
-            $mediaBinding = $this->get('hook_dispatcher')->getBindingBetweenAreas(
+            $hookDispatcher = $this->get('hook_dispatcher');
+            $mediaBinding = $hookDispatcher->getBindingBetweenAreas(
                 'subscriber.cmfcmfmediamodule.ui_hooks.media',
-                'provider.scribite.ui_hooks.editor');
-            $collectionBinding = $this->get('hook_dispatcher')->getBindingBetweenAreas(
-                'subscriber.cmfcmfmediamodule.ui_hooks.collection',
-                'provider.scribite.ui_hooks.editor');
+                'provider.zikulascribitemodule.ui_hooks.editor');
+            $collectionBinding = $hookDispatcher->getBindingBetweenAreas(
+                'subscriber.cmfcmfmediamodule.ui_hooks.collections',
+                'provider.zikulascribitemodule.ui_hooks.editor');
 
             $descriptionEscapingStrategyForCollectionOk = !is_object($collectionBinding)
                 || 'raw' == $this->getVar('descriptionEscapingStrategyForCollection');

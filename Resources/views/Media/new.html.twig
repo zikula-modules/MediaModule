@@ -70,10 +70,10 @@
             <div role="tabpanel" class="tab-pane fade in active" id="cmfcmfmedia-upload" data-max-filesize="{{ cmfcmfmediamodule_maxfilesize()|e('html_attr') }}">
                 <div id="cmfcmfmedia-upload-actions" class="row">
                     <div class="col-lg-9">
-                    <span class="btn btn-success" id="cmfcmfmedia-upload-fileinput-btn">
-                        <i class="fa fa-fw fa-plus"></i>
-                        <span>{{ __('Add files (try drag and drop as well!)') }}</span>
-                    </span>
+                        <span class="btn btn-success" id="cmfcmfmedia-upload-fileinput-btn">
+                            <i class="fa fa-fw fa-plus"></i>
+                            <span>{{ __('Add files (try drag and drop as well!)') }}</span>
+                        </span>
                         {% if not isPopup %}
                             <button type="submit" class="btn btn-primary start" id="cmfcmfmedia-upload-start-fast-btn" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ __('If you use the fast upload, all media will be uploaded instantly and you will only be able to select the collection to upload the media too. If you would like to edit further settings, i.e. titles, descriptions or licenses, you can do so by either not using the fast upload and uploading the media one by one or by editing the media after you uploaded everything') }}">
                                 <i class="fa fa-fw fa-upload"></i>

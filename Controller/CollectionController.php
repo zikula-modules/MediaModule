@@ -28,6 +28,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
+use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\Core\Response\PlainResponse;
 use Zikula\Core\RouteUrl;
 
@@ -62,7 +64,7 @@ class CollectionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            if ($this->hookValidates('collection', 'validate_edit')) {
+            if ($this->hookValidates('collection', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
                 if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity->getParent(), CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
                     throw new AccessDeniedException($this->__('You don\'t have permission to add a sub-collection to the selected parent collection.'));
                 }
@@ -70,22 +72,21 @@ class CollectionController extends AbstractController
                 $em->persist($entity);
                 $em->flush();
 
-                $this->applyProcessHook('collection', 'process_edit', $entity->getId(), new RouteUrl(
-                    'cmfcmfmediamodule_collection_display',
-                    ['slug' => $entity->getSlug()]
-                ));
+                $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
+                $this->applyFormAwareProcessHook($form, 'collection', FormAwareCategory::TYPE_PROCESS_EDIT, $entity, $hookUrl);
+                $this->applyProcessHook('collection', UiHooksCategory::TYPE_PROCESS_EDIT, $entity->getId(), $hookUrl);
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
             }
             $this->hookValidationError($form);
         }
 
+        $formHook = $this->applyFormAwareDisplayHook($form, 'collections', FormAwareCategory::TYPE_EDIT);
+
         return [
             'form' => $form->createView(),
-            'hook' => $this->getDisplayHookContent(
-                'collection',
-                'form_edit'
-            ),
+            'hook' => $this->getDisplayHookContent('collections', UiHooksCategory::TYPE_FORM_EDIT),
+            'formHookTemplates' => $formHook->getTemplates()
         ];
     }
 
@@ -116,7 +117,7 @@ class CollectionController extends AbstractController
             goto edit_error;
         }
 
-        if (!$this->hookValidates('collection', 'validate_edit')) {
+        if (!$this->hookValidates('collection', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
             $this->hookValidationError($form);
             goto edit_error;
         }
@@ -130,23 +131,21 @@ class CollectionController extends AbstractController
             goto edit_error;
         }
 
-        $this->applyProcessHook('collection', 'process_edit', $entity->getId(), new RouteUrl(
-            'cmfcmfmediamodule_collection_display',
-            ['slug' => $entity->getSlug()]
-        ));
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
+        $this->applyFormAwareProcessHook($form, 'collection', FormAwareCategory::TYPE_PROCESS_EDIT, $entity, $hookUrl);
+        $this->applyProcessHook('collection', UiHooksCategory::TYPE_PROCESS_EDIT, $entity->getId(), $hookUrl);
 
         return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
 
         edit_error:
 
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
+        $formHook = $this->applyFormAwareDisplayHook($form, 'collections', FormAwareCategory::TYPE_EDIT, $entity->getId(), $hookUrl);
+
         return [
             'form' => $form->createView(),
-            'hook' => $this->getDisplayHookContent(
-                'collection',
-                'form_edit',
-                $entity->getId(),
-                new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()])
-            ),
+            'hook' => $this->getDisplayHookContent('collections', UiHooksCategory::TYPE_FORM_EDIT, $entity->getId(), $hookUrl),
+            'formHookTemplates' => $formHook->getTemplates()
         ];
     }
 
@@ -316,12 +315,7 @@ class CollectionController extends AbstractController
         ];
 
         $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
-        $templateVars['hook'] = $this->getDisplayHookContent(
-            'collection',
-            'display_view',
-            $entity->getId(),
-            $hookUrl
-        );
+        $templateVars['hook'] = $this->getDisplayHookContent('collections', UiHooksCategory::TYPE_DISPLAY_VIEW, $entity->getId(), $hookUrl);
         $templateVars['renderRaw'] = $isHook = $request->query->get('isHook', false);
 
         $templateVars['content'] = $selectedTemplate->getTemplate()->render(

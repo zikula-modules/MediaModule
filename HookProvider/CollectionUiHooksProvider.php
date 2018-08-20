@@ -9,20 +9,22 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\HookHandler;
+namespace Cmfcmf\Module\MediaModule\HookProvider;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectCollectionEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
+use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\Bundle\HookBundle\Hook\DisplayHook;
+use Zikula\Bundle\HookBundle\Hook\DisplayHookResponse;
 use Zikula\Bundle\HookBundle\Hook\ProcessHook;
 use Zikula\Bundle\HookBundle\Hook\ValidationHook;
 use Zikula\Bundle\HookBundle\Hook\ValidationResponse;
 
 /**
- * Handles collection hooks.
+ * Collection ui hooks provider.
  */
-class CollectionHookHandler extends AbstractHookHandler
+class CollectionUiHooksProvider extends AbstractUiHooksProvider
 {
     /**
      * @var CollectionEntity[]
@@ -44,6 +46,22 @@ class CollectionHookHandler extends AbstractHookHandler
         $this->mediaTypeCollection = $mediaTypeCollection;
     }
 
+    public function getTitle()
+    {
+        return $this->translator->__('Collection ui hooks provider');
+    }
+
+    public function getProviderTypes()
+    {
+        return [
+            UiHooksCategory::TYPE_DISPLAY_VIEW => 'uiView',
+            UiHooksCategory::TYPE_FORM_EDIT => 'uiEdit',
+            UiHooksCategory::TYPE_VALIDATE_EDIT => 'validateEdit',
+            UiHooksCategory::TYPE_PROCESS_EDIT => 'processEdit',
+            UiHooksCategory::TYPE_PROCESS_DELETE => 'processDelete'
+        ];
+    }
+
     /**
      * @param DisplayHook $hook
      */
@@ -52,12 +70,12 @@ class CollectionHookHandler extends AbstractHookHandler
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
         $hookedObject = $repository->getByHookOrCreate($hook);
 
-        $content = $this->renderEngine->render('CmfcmfMediaModule:Collection:hookView.html.twig', [
+        $content = $this->renderEngine->render('@CmfcmfMediaModule/Collection/hookView.html.twig', [
             'hookedObjectCollections' => $hookedObject->getHookedObjectCollections(),
             'mediaTypeCollection' => $this->mediaTypeCollection
         ]);
 
-        $this->uiResponse($hook, $content);
+        $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.collections', $content));
     }
 
     /**
@@ -72,11 +90,12 @@ class CollectionHookHandler extends AbstractHookHandler
             return $hookedObjectCollectionEntity->getCollection()->getId();
         }, $hookedObject->getHookedObjectCollections()->getValues());
 
-        $content = $this->renderEngine->render('CmfcmfMediaModule:Collection:hookEdit.html.twig', [
+        $content = $this->renderEngine->render('@CmfcmfMediaModule/Collection/hookEdit.html.twig', [
             'selectedCollections' => $selectedCollections,
             'hookedObject' => $hookedObject
         ]);
-        $this->uiResponse($hook, $content);
+
+        $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.collections', $content));
     }
 
     /**

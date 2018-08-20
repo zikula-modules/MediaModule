@@ -1,0 +1,80 @@
+<?php
+
+/*
+ * This file is part of the MediaModule for Zikula.
+ *
+ * (c) Christian Flach <hi@christianflach.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Cmfcmf\Module\MediaModule\HookSubscriber;
+
+use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
+use Zikula\Bundle\HookBundle\HookSubscriberInterface;
+use Zikula\Common\Translator\TranslatorInterface;
+
+/**
+ * Collection ui hooks subscriber.
+ */
+class CollectionUiHooksSubscriber implements HookSubscriberInterface
+{
+    /**
+     * @var TranslatorInterface
+     */
+    protected $translator;
+
+    /**
+     * @param TranslatorInterface $translator
+     */
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getOwner()
+    {
+        return 'CmfcmfMediaModule';
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getCategory()
+    {
+        return UiHooksCategory::NAME;
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function getTitle()
+    {
+        return $this->translator->__('Collection ui hooks subscriber');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getEvents()
+    {
+        return [
+            // Display hook for view/display templates.
+            UiHooksCategory::TYPE_DISPLAY_VIEW => 'cmfcmfmediamodule.ui_hooks.collections.display_view',
+            // Display hook for create/edit forms.
+            UiHooksCategory::TYPE_FORM_EDIT => 'cmfcmfmediamodule.ui_hooks.collections.form_edit',
+            // Validate input from an item to be edited.
+            UiHooksCategory::TYPE_VALIDATE_EDIT => 'cmfcmfmediamodule.ui_hooks.collections.validate_edit',
+            // Perform the final update actions for an edited item.
+            UiHooksCategory::TYPE_PROCESS_EDIT => 'cmfcmfmediamodule.ui_hooks.collections.process_edit',
+            // Validate input from an item to be deleted.
+            UiHooksCategory::TYPE_VALIDATE_DELETE => 'cmfcmfmediamodule.ui_hooks.collections.validate_delete',
+            // Perform the final delete actions for a deleted item.
+            UiHooksCategory::TYPE_PROCESS_DELETE => 'cmfcmfmediamodule.ui_hooks.collections.process_delete'
+        ];
+    }
+}
