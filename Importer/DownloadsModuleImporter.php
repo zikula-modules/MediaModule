@@ -59,7 +59,7 @@ SQL;
             $conn->executeQuery('SELECT 1 FROM downloads_categories LIMIT 1');
             $conn->executeQuery('SELECT 1 FROM downloads_downloads LIMIT 1');
         } catch (TableNotFoundException $e) {
-            return $this->translator->trans('Please install the Downloads Module or import it\'s tables into the database.');
+            return $this->translator->trans('Please install the Downloads Module or import it\'s tables into the database.', [], 'cmfcmfmediamodule');
         }
 
         if (!$this->filesystem->exists($this->dataDirectory . $this->fileDirectory)) {

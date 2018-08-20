@@ -25,10 +25,10 @@ class GroupPermissionType extends AbstractPermissionType
         $groupNames = $this->groupRepository->getGroupNamesById();
 
         $choices = [];
-        $choices[-1] = $this->translator->trans('All groups', [], 'cmfcmfmediamodule');
+        $choices[$this->translator->trans('All groups', [], 'cmfcmfmediamodule')] = -1;
 
         foreach ($groupNames as $groupId => $groupName) {
-            $choices[$groupId] = $groupName;
+            $choices[$groupName] = $groupId;
         }
 
         $builder->add('groupIds', ChoiceType::class, [

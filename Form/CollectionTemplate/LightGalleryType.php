@@ -45,8 +45,8 @@ class LightGalleryType extends AbstractType
         ->add('thumbMode', ChoiceType::class, [
             'label' => $this->translator->trans('Thumbnail mode', [], 'cmfcmfmediamodule'),
             'choices' => [
-                'inset' => 'inset',
-                'outbound' => 'outbound'
+                $this->translator->trans('inset', [], 'cmfcmfmediamodule') => 'inset',
+                $this->translator->trans('outbound', [], 'cmfcmfmediamodule') => 'outbound'
             ],
         ])
         ->add('showTitleBelowThumbs', CheckboxType::class, [

@@ -23,6 +23,8 @@ use Google_Service_YouTube_Video;
 use Google_Service_YouTube_VideoSnippet;
 use Google_Service_YouTube_VideoStatus;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -204,14 +206,14 @@ END;
     {
         $builder = $this->createFormBuilder();
         $builder
-            ->add('privacyStatus', 'choice', [
+            ->add('privacyStatus', ChoiceType::class, [
                 'choices' => [
-                    'public' => $this->get('translator')->trans('Public', [], 'cmfcmfmediamodule'),
-                    'unlisted' => $this->get('translator')->trans('Unlisted', [], 'cmfcmfmediamodule'),
-                    'private' => $this->get('translator')->trans('Private', [], 'cmfcmfmediamodule')
+                    $this->get('translator')->trans('Public', [], 'cmfcmfmediamodule') => 'public',
+                    $this->get('translator')->trans('Unlisted', [], 'cmfcmfmediamodule') => 'unlisted',
+                    $this->get('translator')->trans('Private', [], 'cmfcmfmediamodule') => 'private'
                 ]
             ])
-            ->add('submit', 'submit', [])
+            ->add('submit', SubmitType::class, [])
             ->setAction($this->generateUrl('cmfcmfmediamodule_mediatype_youtubeupload', ['id' => $entity->getId()]));
 
         return $builder->getForm();

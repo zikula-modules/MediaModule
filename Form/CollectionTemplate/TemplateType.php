@@ -65,51 +65,58 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
     {
         $selectedTemplateFactory = $this->selectedTemplateFactory;
 
-        $builder->add('template', ChoiceType::class, [
-            'label' => $this->translator->trans('Template', [], 'cmfcmfmediamodule'),
-            'required' => !$options['allowDefaultTemplate'],
-            'placeholder' => $options['allowDefaultTemplate'] ? $this->translator->trans('Default', [], 'cmfcmfmediamodule') : false,
-            'choices' => $this->templateCollection->getCollectionTemplateTitles()
-        ])->add('options', FormType::class, [
-            'required' => false
-        ])->addModelTransformer(new CallbackTransformer(function ($modelData) use ($selectedTemplateFactory) {
-            if ($modelData === null) {
-                return [
-                    'template' => null,
-                    'options' => []
-                ];
-            }
-            $selectedTemplate = $selectedTemplateFactory->fromDB($modelData);
+        $builder
+            ->add('template', ChoiceType::class, [
+                'label' => $this->translator->trans('Template', [], 'cmfcmfmediamodule'),
+                'required' => !$options['allowDefaultTemplate'],
+                'placeholder' => $options['allowDefaultTemplate'] ? $this->translator->trans('Default', [], 'cmfcmfmediamodule') : false,
+                'choices' => $this->templateCollection->getCollectionTemplateTitles()
+            ])
+            ->add('options', FormType::class, [
+                'required' => false
+            ])
+            ->addModelTransformer(
+                new CallbackTransformer(function ($modelData) use ($selectedTemplateFactory) {
+                    if ($modelData === null) {
+                        return [
+                            'template' => null,
+                            'options' => []
+                        ];
+                    }
+                    $selectedTemplate = $selectedTemplateFactory->fromDB($modelData);
 
-            return [
-                'template' => $selectedTemplate->getTemplate()->getName(),
-                'options' => $selectedTemplate->getOptions()
-            ];
-        }, function ($viewData) use ($selectedTemplateFactory) {
-            if (null === $viewData['template']) {
-                return null;
-            }
+                    return [
+                        'template' => $selectedTemplate->getTemplate()->getName(),
+                        'options' => $selectedTemplate->getOptions()
+                    ];
+                }, function ($viewData) use ($selectedTemplateFactory) {
+                    if (null === $viewData['template']) {
+                        return null;
+                    }
 
-            return $selectedTemplateFactory->fromTemplateName($viewData['template'], (array) $viewData['options'])->toDB();
-        }))->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            $form = $event->getForm();
-            $data = $event->getData();
+                    return $selectedTemplateFactory->fromTemplateName($viewData['template'], (array) $viewData['options'])->toDB();
+                })
+            )
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+                $form = $event->getForm();
+                $data = $event->getData();
 
-            if (null === $data) {
-                $form->add('options', FormType::class, [
-                    'required' => false
-                ]);
+                if (null === $data) {
+                    $form->add('options', FormType::class, [
+                        'required' => false
+                    ]);
 
-                return;
-            }
+                    return;
+                }
 
-            $selectedTemplate = $this->selectedTemplateFactory->fromDB($data);
+                $selectedTemplate = $this->selectedTemplateFactory->fromDB($data);
 
-            $settingsForm = $selectedTemplate->getTemplate()->getSettingsForm();
-            if (null !== $settingsForm) {
-                $form->add('options', $settingsForm);
-            }
-        });
+                $settingsForm = $selectedTemplate->getTemplate()->getSettingsForm();
+                if (null !== $settingsForm) {
+                    $form->add('options', $settingsForm);
+                }
+            })
+        ;
 
         $builder->get('template')->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
             $form = $event->getForm();

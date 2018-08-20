@@ -49,7 +49,7 @@
                 return $field.closest('form').find('input[id$=\'_token\']').attr('id');
             }
             function createNoOptionsMessage() {
-                var noOptionsMessage = "{{ 'There are no options for this collection template.'|trans }}";
+                var noOptionsMessage = "{{ __('There are no options for this collection template.') }}";
                 $options.html('<div class="alert alert-info">' + noOptionsMessage + '</div>');
             }
 

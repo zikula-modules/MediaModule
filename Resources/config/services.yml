@@ -79,6 +79,13 @@ services:
         tags: ['form.type']
 
 
+    # Helpers
+    cmfcmf_media_module.search_helper:
+        class: Cmfcmf\Module\MediaModule\Helper\SearchHelper
+        arguments:
+            - '@request_stack'
+            - '@cmfcmf_media_module.security_manager'
+
     # Listeners
     cmfcmf_media_module.listener.module:
         class: Cmfcmf\Module\MediaModule\Listener\ModuleListener

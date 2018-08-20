@@ -242,7 +242,7 @@ class ModuleUpgrader
     {
         if (!$this->is_writable_r($this->moduleDir)) {
             throw new UpgradeFailedException(
-                $this->translator->trans('Please make %s and recursively writable.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule'));
+                $this->translator->trans('Please make %s recursively writable.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule'));
         }
     }
 
@@ -335,7 +335,7 @@ class ModuleUpgrader
                 $this->translator->trans('Could not determine version information from database!', [], 'cmfcmfmediamodule'));
         }
 
-        $worked = $this->extensionHelper->->upgrade($extension);
+        $worked = $this->extensionHelper->upgrade($extension);
         $this->cacheClearer->clear('');
 
         if (true !== $worked) {

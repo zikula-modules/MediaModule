@@ -77,18 +77,18 @@ class SettingsType extends SymfonyAbstractType
                 'label' => $this->translator->trans('Collection description escaping strategy', [], 'cmfcmfmediamodule'),
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection'),
                 'choices' => [
-                    'text' => $this->translator->trans('Safe - no HTML permitted, only plain text', [], 'cmfcmfmediamodule'),
-                    'markdown' => $this->translator->trans('MarkDown', [], 'cmfcmfmediamodule'),
-                    'raw' => $this->translator->trans('As is - use with editors like Scribite', [], 'cmfcmfmediamodule'),
+                    $this->translator->trans('Safe - no HTML permitted, only plain text', [], 'cmfcmfmediamodule') => 'text',
+                    $this->translator->trans('MarkDown', [], 'cmfcmfmediamodule') => 'markdown',
+                    $this->translator->trans('As is - use with editors like Scribite', [], 'cmfcmfmediamodule') => 'raw'
                 ]
             ])
             ->add('descriptionEscapingStrategyForMedia', ChoiceType::class, [
                 'label' => $this->translator->trans('Media description escaping strategy', [], 'cmfcmfmediamodule'),
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForMedia'),
                 'choices' => [
-                    'text' => $this->translator->trans('Safe - no HTML permitted, only plain text', [], 'cmfcmfmediamodule'),
-                    'markdown' => $this->translator->trans('MarkDown', [], 'cmfcmfmediamodule'),
-                    'raw' => $this->translator->trans('As is - use with editors like Scribite', [], 'cmfcmfmediamodule'),
+                    $this->translator->trans('Safe - no HTML permitted, only plain text', [], 'cmfcmfmediamodule') => 'text',
+                    $this->translator->trans('MarkDown', [], 'cmfcmfmediamodule') => 'markdown',
+                    $this->translator->trans('As is - use with editors like Scribite', [], 'cmfcmfmediamodule') => 'raw'
                 ]
             ])
             ->add('defaultCollectionTemplate', TemplateType::class, [
@@ -123,7 +123,7 @@ class SettingsType extends SymfonyAbstractType
                 'required' => false,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'enableMediaViewCounter', false),
                 'attr' => [
-                    'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.')
+                    'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('enableCollectionViewCounter', CheckboxType::class, [
@@ -131,7 +131,7 @@ class SettingsType extends SymfonyAbstractType
                 'required' => false,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'enableCollectionViewCounter', false),
                 'attr' => [
-                    'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.')
+                    'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.', [], 'cmfcmfmediamodule')
                 ]
             ])
             ->add('soundCloudApiKey', TextType::class, [

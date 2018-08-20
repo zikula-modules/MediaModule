@@ -2,10 +2,10 @@
     <form method="post" action="{{ path('zikulasearchmodule_user_search') }}">
         <div class="input-group pull-right col-md-4 col-lg-3">
             <input type="hidden" name="active[CmfcmfMediaModule]" value="1" />
-            <input type="text" class="form-control" name="q" placeholder="{{ 'Search...'|trans|e('html_attr') }}" />
+            <input type="text" class="form-control" name="q" placeholder="{{ __('Search...')|e('html_attr') }}" />
             <span class="input-group-btn">
-                    <button class="btn btn-default" type="submit">{{ 'Go!'|trans }}</button>
-                </span>
+                <button class="btn btn-default" type="submit">{{ __('Go!') }}</button>
+            </span>
         </div>
     </form>
     <div class="clearfix hidden-md hidden-lg"></div>

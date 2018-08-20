@@ -14,41 +14,47 @@ namespace Cmfcmf\Module\MediaModule\Helper;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Zikula\Core\RouteUrl;
-use Zikula\SearchModule\AbstractSearchable;
+use Zikula\SearchModule\SearchableInterface;
 
-class SearchHelper extends AbstractSearchable
+class SearchHelper implements SearchableInterface
 {
     /**
-     * get the UI options for search form.
-     *
-     * @param bool       $active  if the module should be checked as active
-     * @param array|null $modVars module form vars as previously set
-     *
-     * @return string
+     * @var RequestStack
      */
-    public function getOptions($active, $modVars = null)
-    {
-        return $this->getContainer()->get('templating')
-            ->render('@CmfcmfMediaModule/Search/options.html.twig', ['active' => $active]);
-    }
+    private $requestStack;
 
     /**
-     * Get the search results.
-     *
-     * @param array      $words      array of words to search for
-     * @param string     $searchType AND|OR|EXACT
-     * @param array|null $modVars    module form vars passed though
-     *
-     * @return array
+     * @var SecurityManager
      */
+    private $securityManager;
+
+    /**
+     * @param RequestStack    $requestStack
+     * @param SecurityManager $securityManager
+     */
+    public function __construct(
+        RequestStack $requestStack,
+        SecurityManager $securityManager
+    ) {
+        $this->requestStack = $requestStack;
+        $this->securityManager = $securityManager;
+    }
+
+    public function amendForm(FormBuilderInterface $builder)
+    {
+        // nothing
+    }
+
     public function getResults(array $words, $searchType = 'AND', $modVars = null)
     {
         $results = [];
-        $securityManager = $this->getContainer()->get('cmfcmf_media_module.security_manager');
-        $sessionId = $this->container->get('session')->getId();
+        $sessionId = $this->requestStack->getCurrentRequest()->getSession()->getId();
 
-        $qb = $securityManager->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
+        $qb = $this->securityManager->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
         $where = $this->formatWhere($qb, $words, ['c.title'], $searchType);
         $qb->andWhere($where);
         /** @var CollectionEntity[] $collections */
@@ -65,7 +71,7 @@ class SearchHelper extends AbstractSearchable
             ];
         }
 
-        $qb = $securityManager->getMediaWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS);
+        $qb = $this->securityManager->getMediaWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS);
         $where = $this->formatWhere($qb, $words, ['m.title'], $searchType);
         $qb->andWhere($where);
         /** @var AbstractMediaEntity[] $media */
@@ -86,5 +92,10 @@ class SearchHelper extends AbstractSearchable
         }
 
         return $results;
+    }
+
+    public function getErrors()
+    {
+        return [];
     }
 }

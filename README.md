@@ -44,8 +44,9 @@ If you do so, it's going to break URLs.
 If you find a bug or have problems, please [create an issue](https://github.com/cmfcmf/MediaModule/issues/new)!
 
 ## Extracting translations
-Run
-`php -dmemory_limit=2G bin/console translation:extract --bundle=CmfcmfMediaModule --enable-extractor=jms_i18n_routing --exclude-dir=vendor --output-format=pot --keep --output-format=pot de`
+Add `require_once __DIR__ . '/../modules/cmfcmf/media-module/vendor/autoload.php';` to `src/app/autoload.php` and then run
+
+`php -dmemory_limit=2G bin/console translation:extract en --bundle=CmfcmfMediaModule --enable-extractor=jms_i18n_routing --output-format=po --exclude-dir=vendor`
 
 ## License and module development
 

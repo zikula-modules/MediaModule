@@ -22,9 +22,10 @@ class UserPermissionType extends AbstractPermissionType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $users = $this->userRepository->findAll();
-        $choices = array_map(function ($user) {
-            return $user['uname'];
-        }, $users);
+        $choices = [];
+        foreach ($users as $user) {
+            $choices[$user['uname']] = $user['uid'];
+        }
 
         $builder->add('userIds', ChoiceType::class, [
             'label' => $this->translator->trans('Users', [], 'cmfcmfmediamodule'),
