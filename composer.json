@@ -20,7 +20,8 @@
         "knplabs/github-api": "1.*",
         "j7mbo/twitter-api-php": "1.*",
         "google/apiclient": "2.*",
-        "clue/graph": "0.9.*"
+        "clue/graph": "0.9.*",
+        "vierbergenlars/php-semver": "*"
     },
     "require-dev": {
         "graphp/graphviz": "0.2.*"

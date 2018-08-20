@@ -32,16 +32,6 @@ use Zikula\ExtensionsModule\Helper\ExtensionHelper;
 class ModuleUpgrader
 {
     /**
-     * @var string
-     */
-    private $cacheFile;
-
-    /**
-     * @var string
-     */
-    private $moduleDir;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -77,6 +67,16 @@ class ModuleUpgrader
     private $cacheClearer;
 
     /**
+     * @var string
+     */
+    private $cacheFile;
+
+    /**
+     * @var string
+     */
+    private $moduleDir;
+
+    /**
      * ModuleUpgrader constructor.
      *
      * @param TranslatorInterface          $translator
@@ -91,6 +91,7 @@ class ModuleUpgrader
      */
     public function __construct(
         TranslatorInterface $translator,
+        Filesystem $filesystem,
         EventDispatcherInterface $eventDispatcher,
         ExtensionRepositoryInterface $extensionRepository,
         BundleSyncHelper $bundleSyncHelper,
@@ -100,13 +101,13 @@ class ModuleUpgrader
         $kernelRootDir
     ) {
         $this->translator = $translator;
+        $this->filesystem = $filesystem;
         $this->eventDispatcher = $eventDispatcher;
         $this->extensionRepository = $extensionRepository;
         $this->bundleSyncHelper = $bundleSyncHelper;
         $this->extensionHelper = $extensionHelper;
         $this->cacheClearer = $cacheClearer;
 
-        $this->filesystem = $filesystem;
         $this->cacheFile = $kernelCacheDir . '/CmfcmfMediaModule.zip';
 
         $zikulaDir = realpath($kernelRootDir . '/..');
