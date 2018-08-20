@@ -12,6 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\Tests\Listener;
 
 use Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
 {
@@ -27,8 +28,7 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
                 'The Scribite module is not installed.'
             );
         }
-        $this->listener = new ThirdPartyListener(__DIR__ . '/../../../..');
-        \ModUtil::registerAutoloaders();
+        $this->listener = new ThirdPartyListener(new Filesystem(), __DIR__ . '/../../../..');
     }
 
     public function testIfEventMethodsExist()

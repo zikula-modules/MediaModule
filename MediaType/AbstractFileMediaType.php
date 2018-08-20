@@ -13,6 +13,8 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
+use Imagine\Image\ImagineInterface;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -34,27 +36,34 @@ abstract class AbstractFileMediaType extends AbstractMediaType
     private $zikulaRoot;
 
     /**
-     * @var \SystemPlugin_Imagine_Manager
+     * @var ImagineInterface
      */
-    protected $imagineManager;
+    protected $imagine;
+
+    /**
+     * @var CacheManager
+     */
+    protected $imagineCacheManager;
 
     /**
      * @var FontCollection
      */
     private $fontCollection;
 
-    public function injectThings(ContainerInterface $container, FileLocatorInterface $fileLocator, FontCollection $fontCollection, $kernelRootDir)
-    {
+    public function injectThings(
+        ContainerInterface $container,
+        FileLocatorInterface $fileLocator,
+        FontCollection $fontCollection,
+        $kernelRootDir
+    ) {
         $this->container = $container;
 
         $this->fileLocator = $fileLocator;
         $this->fontCollection = $fontCollection;
         $this->zikulaRoot = realpath($kernelRootDir . '/..');
 
-        /** @var \SystemPlugin_Imagine_Manager $imagineManager */
-        $imagineManager = $this->container->get('systemplugin.imagine.manager');
-        $imagineManager->setModule('CmfcmfMediaModule');
-        $this->imagineManager = $imagineManager;
+        $this->imagine = $this->container->get('liip_imagine');
+        $this->imagineCacheManager = $this->container->get('liip_imagine.cache.manager');
     }
 
     public function getPathToFile($identifier)
@@ -115,8 +124,6 @@ abstract class AbstractFileMediaType extends AbstractMediaType
             return $transformation;
         }
 
-        $imagine = $this->imagineManager->getImagine();
-
         // Generate the watermark image. It will already be correctly sized
         // for the thumbnail.
         if ($mode == 'outbound') {
@@ -143,7 +150,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
             return $transformation;
         }
 
-        $watermarkImage = $watermark->getImagineImage($imagine, $this->fontCollection, $wWidth, $wHeight);
+        $watermarkImage = $watermark->getImagineImage($this->imagine, $this->fontCollection, $wWidth, $wHeight);
         $watermarkSize = $watermarkImage->getSize();
 
         // Calculate watermark position. If the position is negative, handle
@@ -226,11 +233,13 @@ abstract class AbstractFileMediaType extends AbstractMediaType
             $path = $this->getPathToFile($icon);
         }
 
+        /** TODO migrate
         $this->imagineManager->setPreset(
             $this->getPreset($entity, $path, $width, $height, $mode, $optimize)
         );
+        */
 
-        $path = $this->imagineManager->getThumb($path, $entity->getImagineId());
+        $path = $this->imagineCacheManager->resolve($path/** TODO, $entity->getImagineId()*/);
 
         $url = \System::getBaseUri() . '/' . $path;
         switch ($format) {

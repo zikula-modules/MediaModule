@@ -205,8 +205,13 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         $this->delVars();
 
-        \CategoryRegistryUtil::deleteEntry('CmfcmfMediaModule');
-        \CategoryRegistryUtil::deleteEntry('CmfcmfMediaModule');
+        // remove category registry entries
+        $entityManager = $this->container->get('doctrine.orm.default_entity_manager');
+        $registries = $this->container->get('zikula_categories_module.category_registry_repository')->findBy(['modname' => 'CmfcmfMediaModule']);
+        foreach ($registries as $registry) {
+            $entityManager->remove($registry);
+        }
+        $entityManager->flush();
 
         return true;
     }
@@ -320,7 +325,8 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
      */
     private function createUploadDir()
     {
-        $uploadDirectory = \FileUtil::getDataDirectory() . '/cmfcmf-media-module/media';
+        $dataDirectory = $this->container->getParameter('datadir');
+        $uploadDirectory = $dataDirectory . '/cmfcmf-media-module/media';
 
         if (!is_dir($uploadDirectory)) {
             mkdir($uploadDirectory, 0777, true);
@@ -398,8 +404,21 @@ TXT;
 
     private function createCategoryRegistries()
     {
-        $categoryID = \CategoryUtil::getCategoryByPath('/__SYSTEM__/Modules/Global')['id'];
-        \CategoryRegistryUtil::insertEntry('CmfcmfMediaModule', 'AbstractMediaEntity', 'Main', $categoryID);
-        \CategoryRegistryUtil::insertEntry('CmfcmfMediaModule', 'CollectionEntity', 'Main', $categoryID);
+        $categoryGlobal = $this->container->get('zikula_categories_module.category_repository')->findOneBy(['name' => 'Global']);
+        if (!$categoryGlobal) {
+            return;
+        }
+
+        $entityManager = $this->container->get('doctrine.orm.default_entity_manager');
+        foreach (['AbstractMediaEntity', 'CollectionEntity'] as $entityName) {
+            $registry = new CategoryRegistryEntity();
+            $registry->setModname('CmfcmfMediaModule');
+            $registry->setEntityname($entityName);
+            $registry->setProperty('Main');
+            $registry->setCategory($categoryGlobal);
+
+            $entityManager->persist($registry);
+        }
+        $entityManager->flush();
     }
 }

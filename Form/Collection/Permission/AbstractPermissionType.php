@@ -20,37 +20,55 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Zikula\GroupsModule\Entity\RepositoryInterface\GroupRepositoryInterface;
+use Zikula\UsersModule\Entity\RepositoryInterface\UserRepositoryInterface;
 
 abstract class AbstractPermissionType extends AbstractType
 {
     /**
      * @var SecurityManager
      */
-    private $securityManager;
+    protected $securityManager;
 
     /**
      * @var CollectionEntity
      */
-    private $collectionEntity;
+    protected $collectionEntity;
 
     /**
      * @var ?
      */
-    private $permissionLevel;
+    protected $permissionLevel;
 
     /**
-     * @param CollectionEntity $collectionEntity
-     * @param SecurityManager  $securityManager
-     * @param ?                $permissionLevel
+     * @var GroupRepositoryInterface
+     */
+    protected $groupRepository;
+
+    /**
+     * @var UserRepositoryInterface
+     */
+    protected $userRepository;
+
+    /**
+     * @param CollectionEntity         $collectionEntity
+     * @param SecurityManager          $securityManager
+     * @param ?                        $permissionLevel
+     * @param GroupRepositoryInterface $groupRepository
+     * @param UserRepositoryInterface  $userRepository
      */
     public function __construct(
         CollectionEntity $collectionEntity,
         SecurityManager $securityManager,
-        $permissionLevel
+        $permissionLevel,
+        GroupRepositoryInterface $groupRepository,
+        UserRepositoryInterface $userRepository
     ) {
         $this->securityManager = $securityManager;
         $this->collectionEntity = $collectionEntity;
         $this->permissionLevel = $permissionLevel;
+        $this->groupRepository = $groupRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**

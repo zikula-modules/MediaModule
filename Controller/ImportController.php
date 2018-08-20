@@ -13,9 +13,9 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\ImportType;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
 
@@ -23,7 +23,7 @@ class ImportController extends AbstractController
 {
     /**
      * @Route("/import")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Import:select.html.twig")
      * @Theme("admin")
      *
      * @return array
@@ -43,7 +43,7 @@ class ImportController extends AbstractController
 
     /**
      * @Route("/import/{importer}")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Import:execute.html.twig")
      * @Theme("admin")
      *
      * @param Request $request

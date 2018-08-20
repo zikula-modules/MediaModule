@@ -13,10 +13,10 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Exception\UpgradeFailedException;
 use Cmfcmf\Module\MediaModule\Exception\UpgradeNotRequiredException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
 
@@ -24,7 +24,7 @@ class UpgradeController extends AbstractController
 {
     /**
      * @Route("/settings/upgrade")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Upgrade:doUpgrade.html.twig")
      * @Theme("admin")
      *
      * @return array|RedirectResponse

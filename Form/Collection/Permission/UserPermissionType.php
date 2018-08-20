@@ -11,6 +11,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class UserPermissionType extends AbstractPermissionType
@@ -20,12 +21,12 @@ class UserPermissionType extends AbstractPermissionType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $users = \UserUtil::getAll();
+        $users = $this->userRepository->findAll();
         $choices = array_map(function ($user) {
             return $user['uname'];
         }, $users);
 
-        $builder->add('userIds', 'choice', [
+        $builder->add('userIds', ChoiceType::class, [
             'label' => $this->translator->trans('Users', [], 'cmfcmfmediamodule'),
             'multiple' => true,
             'choices' => $choices

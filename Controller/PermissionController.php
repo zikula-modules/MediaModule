@@ -20,7 +20,6 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,6 +27,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\Core\Response\PlainResponse;
 
@@ -39,7 +39,7 @@ class PermissionController extends AbstractController
     /**
      * @Route("/show/{slug}", requirements={"slug" = ".+?"})
      * @ParamConverter("collectionEntity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Permission:view.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $collectionEntity
@@ -72,7 +72,7 @@ class PermissionController extends AbstractController
 
     /**
      * @Route("/new/{type}/{collection}/{afterPermission}", options={"expose"="true"})
-     * @Template(template="CmfcmfMediaModule:Permission:edit.html.twig")
+     * @Template("CmfcmfMediaModule:Permission:edit.html.twig")
      *
      * @param Request                  $request
      * @param                          $type
@@ -100,7 +100,9 @@ class PermissionController extends AbstractController
         $form = new $form(
             $collection,
             $this->get('cmfcmf_media_module.security_manager'),
-            $permissionLevel
+            $permissionLevel,
+            $this->get('zikula_groups_module.group_repository'),
+            $this->get('zikula_users_module.user_repository')
         );
         $form->setTranslator($this->get('translator'));
         /** @var \Symfony\Component\Form\Form $form */
@@ -137,7 +139,7 @@ class PermissionController extends AbstractController
     /**
      * @Route("/edit/{id}")
      * @ParamConverter("entity", class="CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Permission:edit.html.twig")
      *
      * @param Request                  $request
      * @param AbstractPermissionEntity $permissionEntity
@@ -192,7 +194,7 @@ class PermissionController extends AbstractController
     /**
      * @Route("/delete/{id}")
      * @ParamConverter("permissionEntity", class="CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Permission:delete.html.twig")
      *
      * @param Request                  $request
      * @param AbstractPermissionEntity $permissionEntity
@@ -247,7 +249,7 @@ class PermissionController extends AbstractController
         try {
             $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
         } catch (AccessDeniedException $e) {
-            return new JsonResponse([], JsonResponse::HTTP_FORBIDDEN);
+            return $this->json([], JsonResponse::HTTP_FORBIDDEN);
         }
 
         $repository = $this->getDoctrine()->getRepository(
@@ -265,16 +267,16 @@ class PermissionController extends AbstractController
         try {
             $repository->save($permissionEntity, false);
         } catch (OptimisticLockException $e) {
-            return new JsonResponse(['error' => $this->__(
+            return $this->json(['error' => $this->__(
                 'Someone modified a permission rule. Please reload the page and try again!'
             )], Response::HTTP_FORBIDDEN);
         } catch (InvalidPositionException $e) {
-            return new JsonResponse(['error' => $this->__(
+            return $this->json(['error' => $this->__(
                 'You cannot move the permission rule to this position!'
             )], Response::HTTP_FORBIDDEN);
         }
 
-        return new JsonResponse(['newVersion' => $permissionEntity->getVersion()]);
+        return $this->json(['newVersion' => $permissionEntity->getVersion()]);
     }
 
     /**

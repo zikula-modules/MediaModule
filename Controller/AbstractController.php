@@ -53,7 +53,7 @@ abstract class AbstractController extends BaseAbstractController
         /** @var DisplayHookResponse[] $responses */
         $responses = $hook->getResponses();
 
-        $content = "";
+        $content = '';
 
         foreach ($responses as $result) {
             $result = $result->__toString();
@@ -62,7 +62,7 @@ abstract class AbstractController extends BaseAbstractController
             }
         }
 
-        return strlen($content) == 0 ? "" : "<div class=\"row\">\n$content</div>";
+        return strlen($content) == 0 ? '' : "<div class=\"row\">\n$content</div>";
     }
 
     /**

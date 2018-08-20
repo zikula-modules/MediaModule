@@ -130,13 +130,13 @@ services:
     cmfcmf_media_module.twig_extension:
         class: Cmfcmf\Module\MediaModule\Twig\TwigExtension
         arguments:
+            - '@translator'
             - '@zikula_core.common.markdown_extra_parser'
             - '@hook_dispatcher'
             - '@cmfcmf_media_module.security_manager'
             - '@cmfcmf_media_module.upgrade.version_checker'
-            - '@translator'
+            - '@zikula_extensions_module.extension_repository'
             - '@zikula_extensions_module.api.variable'
-            - '@request_stack'
         public: false
         tags: ['twig.extension']
 

@@ -14,10 +14,10 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/finder")
@@ -26,7 +26,7 @@ class FinderController extends AbstractController
 {
     /**
      * @Route("/choose", options={"expose" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Finder:chooseMethod.html.twig")
      */
     public function chooseMethodAction()
     {
@@ -35,7 +35,7 @@ class FinderController extends AbstractController
 
     /**
      * @Route("/popup/choose/collection", options={"expose" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Finder:popupChooseCollections.html.twig")
      */
     public function popupChooseCollectionsAction()
     {
@@ -44,7 +44,7 @@ class FinderController extends AbstractController
 
     /**
      * @Route("/popup/choose/media", options={"expose" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Finder:popupChooseMedia.html.twig")
      */
     public function popupChooseMediaAction()
     {
@@ -91,7 +91,7 @@ class FinderController extends AbstractController
             return $entity->toArrayForFinder($mediaTypeCollection);
         }, $collectionResults);
 
-        return new JsonResponse([
+        return $this->json([
             'media' => $mediaResults,
             'collections' => $collectionResults
         ]);
@@ -132,6 +132,6 @@ class FinderController extends AbstractController
             return $collection->toArrayForJsTree($mediaTypeCollection, $hookedObjectEntity);
         }, $collections);
 
-        return new JsonResponse($collections);
+        return $this->json($collections);
     }
 }

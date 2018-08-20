@@ -13,12 +13,12 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\SettingsType;
 use Cmfcmf\Module\MediaModule\Helper\PHPIniHelper;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
 
@@ -39,7 +39,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/requirements")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Upgrade:requirements.html.twig")
      * @Theme("admin")
      */
     public function requirementsAction()
@@ -180,7 +180,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/general", options={"expose" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Upgrade:general.html.twig")
      * @Theme("admin")
      *
      * @param Request $request
@@ -209,7 +209,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/scribite", options={"expose" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Upgrade:scribite.html.twig")
      * @Theme("admin")
      *
      * @return array

@@ -29,12 +29,10 @@
                     </p>
                 {% endif %}
                 {% if entity.categoryAssignments|length > 0 %}
-                    <strong>{{ __('Categories') }}</strong>:
+                    <p><strong>{{ __('Categories') }}</strong>:</p>
                     <ul>
                     {% for assignment in entity.categoryAssignments %}
-                        <li>
-                            {{ assignment.category|cmfcmfmediamodule_categorytitle }}
-                        </li>
+                        <li>{{ assignment.category.getDisplay_name(app.request.locale) }}</li>
                     {% endfor %}
                     </ul>
                 {% endif %}
@@ -42,15 +40,13 @@
                     <img src="{{ entity.authorAvatarUrl }}" class="img img-rounded pull-right" alt="{{ __('Author avatar') }}" width="60" height="60" />
                 {% endif %}
                 {% if entity.attribution is not empty %}
-                    <p>
-                        {{ entity.attribution|raw }}
-                    </p>
+                    <p>{{ entity.attribution|raw }}</p>
                 {% endif %}
                 <div class="clearfix"></div>
                 <p>
-                    <strong>{{ __('Added by') }}</strong>: {{ entity.createdBy.uid|cmfcmfmediamodule_unamefromuid }}
-                    {{ __('at ') }} {{ entity.createdDate.format('d.m.Y H:i') }} <!-- @todo Internationalize -->
-                    <img src="{{ entity.createdBy.uid|cmfcmfmediamodule_avatarfromuid }}" class="img img-rounded pull-right" alt="" width="60" height="60" />
+                    <strong>{{ __('Added by') }}</strong>: {{ entity.createdBy.uid|profileLinkByUserId }}
+                    {{ __('at ') }} {{ entity.createdDate|localizeddate('short', 'short') }}
+                    {{ userAvatar(obj.createdBy.uid, {rating: 'g', class: 'img img-rounded pull-right', width: 60, height: 60}) }}
                     {% if views >= 0 %}
                         <strong>{{ __('Views') }}</strong>: {{ views }}
                     {% endif %}

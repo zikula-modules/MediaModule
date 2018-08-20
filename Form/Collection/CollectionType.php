@@ -29,6 +29,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Zikula\CategoriesModule\Form\Type\CategoriesType;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
 class CollectionType extends AbstractType
 {
@@ -48,18 +49,26 @@ class CollectionType extends AbstractType
     private $securityManager;
 
     /**
-     * @param TemplateCollection $templateCollection
-     * @param CollectionEntity $parent
-     * @param SecurityManager $securityManager
+     * @var VariableApiInterface
+     */
+    private $variableApi;
+
+    /**
+     * @param TemplateCollection   $templateCollection
+     * @param CollectionEntity     $parent
+     * @param SecurityManager      $securityManager
+     * @param VariableApiInterface $variableApi
      */
     public function __construct(
         TemplateCollection $templateCollection,
         CollectionEntity $parent = null,
-        SecurityManager $securityManager
+        SecurityManager $securityManager,
+        VariableApiInterface $variableApi
     ) {
         $this->parent = $parent;
         $this->templateCollection = $templateCollection;
         $this->securityManager = $securityManager;
+        $this->variableApi = $variableApi;
     }
 
     /**
@@ -69,9 +78,7 @@ class CollectionType extends AbstractType
     {
         parent::buildForm($builder, $options);
 
-        $escapingStrategy = \ModUtil::getVar(
-            'CmfcmfMediaModule',
-            'descriptionEscapingStrategyForCollection');
+        $escapingStrategy = $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection');
         switch ($escapingStrategy) {
             case 'raw':
                 $descriptionHelp = $this->translator->trans('You may use HTML.', [], 'cmfcmfmediamodule');
@@ -95,7 +102,7 @@ class CollectionType extends AbstractType
         ]);
         /**
         If enabled, breaks slug generation of children when the slug is changed.
-        if (\ModUtil::getVar('CmfcmfMediaModule', 'slugEditable')) {
+        if ($this->variableApi->get('CmfcmfMediaModule', 'slugEditable')) {
             $builder->add('slug', TextType::class, [
                 'label' => $this->translator->trans('Slug', [], 'cmfcmfmediamodule'),
                 'required'=> false,

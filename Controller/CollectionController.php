@@ -18,9 +18,7 @@ use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -28,6 +26,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\Core\Response\PlainResponse;
 use Zikula\Core\RouteUrl;
@@ -36,8 +35,8 @@ class CollectionController extends AbstractController
 {
     /**
      * @Route("/new/{slug}", requirements={"slug" = ".+"})
-     * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      * @ParamConverter("parent", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
+     * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $parent
@@ -55,8 +54,9 @@ class CollectionController extends AbstractController
         }
 
         $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
+        $variableApi = $this->get('zikula_extensions_module.api.variable');
         $entity = new CollectionEntity();
-        $form = new CollectionType($templateCollection, $parent, $securityManager);
+        $form = new CollectionType($templateCollection, $parent, $securityManager, $variableApi);
         $form->setTranslator($this->get('translator'));
         $form = $this->createForm($form, $entity);
         $form->handleRequest($request);
@@ -92,7 +92,7 @@ class CollectionController extends AbstractController
     /**
      * @Route("/edit/{slug}", requirements={"slug" = ".+"})
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
-     * @Template()
+     * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $entity
@@ -165,12 +165,19 @@ class CollectionController extends AbstractController
         }
         $em = $this->getDoctrine()->getManager();
 
-        \CacheUtil::createLocalDir('CmfcmfMediaModule');
-        $dir = \CacheUtil::getLocalDir('CmfcmfMediaModule');
-        $path = $dir . '/' . uniqid(time(), true) . '.zip';
+        $cacheDirectory = $this->get('service_container')->getParameter('kernel.cache_dir') . '/CmfCmfMediaModule/';
+        $filesystem = $this->get('filesystem');
+        if (!$filesystem->exists($cacheDirectory)) {
+            $filesystem->mkdir($cacheDirectory, 0777);
+        }
+        if (!$filesystem->exists($cacheDirectory)) {
+            $cacheDirectory = sys_get_temp_dir();
+        }
+
+        $path = $cacheDirectory . '/' . uniqid(time(), true) . '.zip';
 
         $zip = new \ZipArchive();
-        if ($zip->open($path, \ZipArchive::CREATE) !== true) {
+        if (true !== $zip->open($path, \ZipArchive::CREATE)) {
             throw new ServiceUnavailableHttpException('Could not create zip archive!');
         }
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
@@ -245,8 +252,7 @@ class CollectionController extends AbstractController
     }
 
     /**
-     * @Route("")
-     * @Method("GET")
+     * @Route("", methods={"GET"})
      *
      * @return RedirectResponse
      */
@@ -263,10 +269,9 @@ class CollectionController extends AbstractController
     }
 
     /**
-     * @Route("/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
+     * @Route("/{slug}", methods={"GET"}, requirements={"slug"=".*[^/]"}, options={"expose" = true})
      * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
-     * @Method("GET")
-     * @Template()
+     * @Template(template="CmfcmfMediaModule:Collection:display.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $entity

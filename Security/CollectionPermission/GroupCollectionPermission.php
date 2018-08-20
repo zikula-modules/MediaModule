@@ -29,8 +29,8 @@ class GroupCollectionPermission extends AbstractCollectionPermission
     protected $groupRepository;
 
     /**
-     * @param TranslatorInterface     $translator
-     * @param CurrentUserApiInterface $currentUserApi
+     * @param TranslatorInterface      $translator
+     * @param CurrentUserApiInterface  $currentUserApi
      * @param GroupRepositoryInterface $groupRepository
      */
     public function __construct(

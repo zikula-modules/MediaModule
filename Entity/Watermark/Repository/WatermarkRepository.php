@@ -11,8 +11,8 @@
 
 namespace Cmfcmf\Module\MediaModule\Entity\Watermark\Repository;
 
-use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
+//use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+//use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Doctrine\ORM\EntityRepository;
 
 class WatermarkRepository extends EntityRepository
@@ -22,7 +22,8 @@ class WatermarkRepository extends EntityRepository
      *
      * @param AbstractWatermarkEntity       $entity
      * @param \SystemPlugin_Imagine_Manager $imagineManager
-     */
+     * @todo needs migration
+     * /
     public function cleanupThumbs(
         AbstractWatermarkEntity $entity,
         \SystemPlugin_Imagine_Manager $imagineManager
@@ -36,10 +37,10 @@ class WatermarkRepository extends EntityRepository
             ->where($qb->expr()->eq('c.watermark', ':watermark'))
             ->setParameter('watermark', $entity);
 
-        /** @var AbstractMediaEntity[] $media */
+        /** @var AbstractMediaEntity[] $media * /
         $media = $qb->getQuery()->execute();
         foreach ($media as $medium) {
             $imagineManager->removeObjectThumbs($medium->getImagineId());
         }
-    }
+    }*/
 }

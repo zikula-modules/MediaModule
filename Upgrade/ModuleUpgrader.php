@@ -53,12 +53,12 @@ class ModuleUpgrader
     /**
      * @var EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    private $eventDispatcher;
 
     /**
      * @var ExtensionRepositoryInterface
      */
-    protected $extensionRepository;
+    private $extensionRepository;
 
     /**
      * @var BundleSyncHelper

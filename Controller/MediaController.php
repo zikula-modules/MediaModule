@@ -24,9 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -36,6 +34,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\Core\Response\PlainResponse;
 use Zikula\Core\RouteUrl;
@@ -44,9 +43,8 @@ use Zikula\ThemeModule\Engine\Annotation\Theme;
 class MediaController extends AbstractController
 {
     /**
-     * @Route("/admin/media-list/{page}", requirements={"page" = "\d+"})
-     * @Method("GET")
-     * @Template()
+     * @Route("/admin/media-list/{page}", methods={"GET"}, requirements={"page" = "\d+"})
+     * @Template("CmfcmfMediaModule:Media:adminlist.html.twig")
      * @Theme("admin")
      *
      * @param int $page
@@ -83,7 +81,7 @@ class MediaController extends AbstractController
     /**
      * @Route("/edit/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Media:edit.html.twig")
      *
      * @param Request             $request
      * @param AbstractMediaEntity $entity
@@ -143,11 +141,13 @@ class MediaController extends AbstractController
 
             $uploadManager->markEntityToUpload($entity, $file);
 
-            // Cleanup thumbnails
-            /** @var \SystemPlugin_Imagine_Manager $imagineManager */
-            $imagineManager = $this->get('systemplugin.imagine.manager');
-            $imagineManager->setModule('CmfcmfMediaModule');
+            /** TODO migrate
+            // Cleanup existing thumbnails
+            /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager * /
+            $imagineCacheManager = $this->get('liip_imagine.cache.manager');
+
             $imagineManager->removeObjectThumbs($entity->getImagineId());
+            */
         }
 
         try {
@@ -194,7 +194,7 @@ class MediaController extends AbstractController
     /**
      * @Route("/delete/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method"="findBySlugs", "map_method_signature"=true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Media:delete.html.twig")
      *
      * @param Request             $request
      * @param AbstractMediaEntity $entity
@@ -256,9 +256,8 @@ class MediaController extends AbstractController
     }
 
     /**
-     * @Route("/media/new")
-     * @Method("GET")
-     * @Template()
+     * @Route("/media/new", methods={"GET"})
+     * @Template("CmfcmfMediaModule:Media:new.html.twig")
      *
      * @param Request $request
      *
@@ -290,7 +289,7 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/media/create/{type}/{mediaType}/{collection}", options={"expose"=true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Media:create.html.twig")
      *
      * @param Request $request
      * @param $type
@@ -363,8 +362,7 @@ class MediaController extends AbstractController
     }
 
     /**
-     * @Route("/media/ajax/matches-paste", options={"expose" = true})
-     * @Method("POST")
+     * @Route("/media/ajax/matches-paste", methods={"POST"}, options={"expose" = true})
      *
      * @param Request $request
      *
@@ -393,7 +391,7 @@ class MediaController extends AbstractController
             return $b['score'] - $a['score'];
         });
 
-        return new JsonResponse($matches);
+        return $this->json($matches);
     }
 
     /**
@@ -430,8 +428,7 @@ class MediaController extends AbstractController
     }
 
     /**
-     * @Route("/media/ajax/creation-results/web/{mediaType}", options={"expose"=true})
-     * @Method("POST")
+     * @Route("/media/ajax/creation-results/web/{mediaType}", methods={"POST"}, options={"expose"=true})
      *
      * @param Request $request
      *
@@ -462,12 +459,11 @@ class MediaController extends AbstractController
 
         $results = $mediaType->getSearchResults($request, $q, $dropdownValue);
 
-        return new JsonResponse($results);
+        return $this->json($results);
     }
 
     /**
-     * @Route("/media/ajax/get-media-type", options={"expose"=true})
-     * @Method("POST")
+     * @Route("/media/ajax/get-media-type", methods={"POST"}, options={"expose"=true})
      *
      * @param Request $request
      *
@@ -509,7 +505,7 @@ class MediaController extends AbstractController
             }
         }
 
-        return new JsonResponse([
+        return $this->json([
             'result' => $result,
             'multiple' => $multiple,
             'notFound' => $notFound
@@ -519,8 +515,7 @@ class MediaController extends AbstractController
     /**
      * Endpoint for file uploads.
      *
-     * @Route("/media/upload", options={"expose"=true})
-     * @Method("POST")
+     * @Route("/media/upload", methods={"POST"}, options={"expose"=true})
      *
      * @param Request $request
      *
@@ -593,7 +588,7 @@ class MediaController extends AbstractController
             $justUploadedIds[] = $entity->getId();
             $request->getSession()->set('cmfcmfmediamodule_just_uploaded', $justUploadedIds);
 
-            return new JsonResponse([
+            return $this->json([
                 'msg' => $this->__('File uploaded!'),
                 'editUrl' => $this->generateUrl('cmfcmfmediamodule_media_edit', ['slug' => $entity->getSlug(), 'collectionSlug' => $entity->getCollection()->getSlug()]),
                 'openNewTabAndEdit' => $collection == CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID
@@ -604,9 +599,8 @@ class MediaController extends AbstractController
     }
 
     /**
-     * @Route("/media/popup-embed/{id}")
-     * @Template()
-     * @Method("GET")
+     * @Route("/media/popup-embed/{id}", methods={"GET"})
+     * @Template("CmfcmfMediaModule:Media:popupEmbed.html.twig")
      *
      * @param AbstractMediaEntity $entity
      *
@@ -635,8 +629,7 @@ class MediaController extends AbstractController
     }
 
     /**
-     * @Route("/download/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
-     * @Method("GET")
+     * @Route("/download/{collectionSlug}/f/{slug}", methods={"GET"}, requirements={"collectionSlug" = ".+?"})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractFileEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      *
      * @param AbstractFileEntity $entity
@@ -673,10 +666,9 @@ class MediaController extends AbstractController
     }
 
     /**
-     * @Route("/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"}, options={"expose" = true})
-     * @Method("GET")
+     * @Route("/{collectionSlug}/f/{slug}", methods={"GET"}, requirements={"collectionSlug" = ".+?"}, options={"expose" = true})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Media:display.html.twig")
      *
      * @param AbstractMediaEntity $entity
      *
