@@ -73,7 +73,7 @@ class ImportType extends SymfonyAbstractType
                     return $qb;
                 },
                 'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
-                'property' => 'indentedTitle',
+                'choice_label' => 'indentedTitle',
             ])
             ->add('importSettings', $this->importerForm)
             ->add('import', SubmitType::class, [

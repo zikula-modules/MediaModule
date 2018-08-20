@@ -165,7 +165,7 @@ class CollectionType extends AbstractType
                     return $qb;
                 },
                 'data' => $this->parent,
-                'property' => 'indentedTitle',
+                'choice_label' => 'indentedTitle',
             ])
             ->add('watermark', EntityType::class, [
                 'class' => AbstractWatermarkEntity::class,
@@ -174,7 +174,7 @@ class CollectionType extends AbstractType
                 'data' => null !== $theCollection->getId() ? $theCollection->getWatermark() :
                     (isset($this->parent) ? $this->parent->getWatermark() : null),
                 'placeholder' => $this->translator->trans('No watermark', [], 'cmfcmfmediamodule'),
-                'property' => 'title',
+                'choice_label' => 'title',
             ])
             ->add('primaryMedium', EntityType::class, [
                 'class' => AbstractMediaEntity::class,
@@ -182,7 +182,7 @@ class CollectionType extends AbstractType
                 'label' => $this->translator->trans('Primary medium', [], 'cmfcmfmediamodule'),
                 'placeholder' => $this->translator->trans('First medium of collection', [], 'cmfcmfmediamodule'),
                 'disabled' => null === $theCollection->getId(),
-                'property' => 'title',
+                'choice_label' => 'title',
                 'query_builder' => function (EntityRepository $er) use ($theCollection) {
                     /** @var MediaRepository $er */
                     $qb = $er->createQueryBuilder('m');

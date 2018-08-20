@@ -144,7 +144,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                 return $qb;
             },
             'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
-            'property' => 'indentedTitle',
+            'choice_label' => 'indentedTitle',
         ];
         if ($this->parent !== null) {
             $collectionOptions['data'] = $this->parent;
@@ -201,7 +201,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                         // @todo Move to the actual uploadable file types.
                     },
                     'placeholder' => $this->translator->trans('Unknown', [], 'cmfcmfmediamodule'),
-                    'property' => 'title',
+                    'choice_label' => 'title',
                     'attr' => isset($options['hiddenFields']) && in_array(
                         'license',
                         $options['hiddenFields']) ? $hiddenAttr : [],

@@ -111,7 +111,7 @@ class SettingsType extends SymfonyAbstractType
                 },
                 'empty_data' => null,
                 'placeholder' => $this->translator->trans('Unknown', [], 'cmfcmfmediamodule'),
-                'property' => 'title',
+                'choice_label' => 'title',
             ])
             /*@todo Allow to edit slugs.
             ->add('slugEditable', CheckboxType::class, [

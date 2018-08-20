@@ -54,7 +54,7 @@ class CollectionBlockType extends AbstractType
                 return $qb;
             },
             'placeholder' => $translator->trans('Select collection', [], 'cmfcmfmediamodule'),
-            'property' => 'indentedTitle',
+            'choice_label' => 'indentedTitle',
             'multiple' => false
         ];
         $builder
