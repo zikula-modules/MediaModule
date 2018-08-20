@@ -51,11 +51,11 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
             throw new \RuntimeException();
         }
 
-        $entity = new DeezerEntity();
+        $entity = new DeezerEntity($this->dataDirectory);
         if (isset($parameters['title'])) {
             $entity->setTitle($parameters['title']);
         }
-        $entity->setUrl('http://www.deezer.com');
+        $entity->setUrl('https://www.deezer.com');
 
         $entity->setMusicId($parameters['musicId']);
         $entity->setMusicType($parameters['musicType']);

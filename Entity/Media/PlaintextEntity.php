@@ -18,9 +18,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PlaintextEntity extends AbstractFileEntity
 {
-    public function __construct()
+    /**
+     * @param string $dataDirectory
+     */
+    public function __construct($dataDirectory = '')
     {
-        parent::__construct();
+        parent::__construct($dataDirectory);
 
         $this->setUseSyntaxHighlighting(true);
     }

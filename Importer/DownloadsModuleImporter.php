@@ -39,7 +39,7 @@ SQL;
     /**
      * @var string
      */
-    private $fileDirectory;
+    private $fileDirectory = '/Downloads';
 
     public function getTitle()
     {
@@ -62,8 +62,8 @@ SQL;
             return $this->translator->trans('Please install the Downloads Module or import it\'s tables into the database.');
         }
 
-        if (!$this->filesystem->exists($this->fileDirectory)) {
-            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->fileDirectory], 'cmfcmfmediamodule');
+        if (!$this->filesystem->exists($this->dataDirectory . $this->fileDirectory)) {
+            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->dataDirectory . $this->fileDirectory], 'cmfcmfmediamodule');
         }
 
         return true;
@@ -72,11 +72,6 @@ SQL;
     public function setUploadManager(UploadableManager $uploadManager)
     {
         $this->uploadManager = $uploadManager;
-    }
-
-    public function setUserDataDirectory($userDataDir)
-    {
-        $this->fileDirectory = $userDataDir . '/Downloads';
     }
 
     public function import($formData, FlashBagInterface $flashBag)
@@ -100,14 +95,14 @@ SQL;
             $downloadResult = $conn->executeQuery(self::DOWNLOADS_QUERY, [$downloadCollection['cid']]);
             while ($download = $downloadResult->fetch(\PDO::FETCH_ASSOC)) {
                 if (!empty($download['filename'])) {
-                    $file = new File($this->fileDirectory . '/' . $download['filename']);
+                    $file = new File($this->dataDirectory . $this->fileDirectory . '/' . $download['filename']);
                     $mediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
                     $entityClass = $mediaType->getEntityClass();
                     /** @var AbstractFileEntity $entity */
-                    $entity = new $entityClass();
+                    $entity = new $entityClass(this->dataDirectory);
                     $this->uploadManager->markEntityToUpload($entity, ImportedFile::fromFile($file));
                 } else {
-                    $entity = new UrlEntity();
+                    $entity = new UrlEntity($this->dataDirectory);
                     $entity->setUrl($download['url']);
                 }
                 $entity

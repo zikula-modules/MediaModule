@@ -111,10 +111,19 @@ abstract class AbstractWatermarkEntity
      */
     protected $relativeSize;
 
-    public function __construct()
+    /**
+     * @var string
+     */
+    protected $dataDirectory;
+
+    /**
+     * @param string $dataDirectory
+     */
+    public function __construct($dataDirectory = '')
     {
         $this->minSizeX = 200;
         $this->minSizeY = 80;
+        $this->dataDirectory = $dataDirectory;
     }
 
     /**

@@ -35,18 +35,26 @@ abstract class AbstractMediaType implements MediaTypeInterface
     protected $variableApi;
 
     /**
+     * @var string
+     */
+    protected $dataDirectory;
+
+    /**
      * @param EngineInterface      $renderEngine
      * @param TranslatorInterface  $translator
      * @param VariableApiInterface $variableApi
+     * @param string               $dataDirectory
      */
     public function __construct(
         EngineInterface $renderEngine,
         TranslatorInterface $translator,
-        VariableApiInterface $variableApi
+        VariableApiInterface $variableApi,
+        $dataDirectory
     ) {
         $this->renderEngine = $renderEngine;
         $this->translator = $translator;
         $this->variableApi = $variableApi;
+        $this->dataDirectory = $dataDirectory;
     }
 
     public function getVar($name, $default)
@@ -150,7 +158,7 @@ abstract class AbstractMediaType implements MediaTypeInterface
     public function getEntityFromWeb(Request $request)
     {
         $entity = $this->getEntityClass();
-        $entity = new $entity();
+        $entity = new $entity($this->dataDirectory);
 
         $settings = json_decode($request->request->get('settings'), true);
         foreach ($settings as $name => $value) {

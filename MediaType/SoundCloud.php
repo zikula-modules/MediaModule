@@ -56,8 +56,8 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
             throw new \RuntimeException();
         }
 
-        $entity = new SoundCloudEntity();
-        $entity->setUrl('http://www.soundcloud.com');
+        $entity = new SoundCloudEntity($this->dataDirectory);
+        $entity->setUrl('https://soundcloud.com/');
         $entity->setMusicId($trackId);
 
         return $entity;

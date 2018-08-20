@@ -182,7 +182,15 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
      */
     private $categoryAssignments;
 
-    public function __construct()
+    /**
+     * @var string
+     */
+    protected $dataDirectory;
+
+    /**
+     * @param string $dataDirectory
+     */
+    public function __construct($dataDirectory = '')
     {
         // Position at the end of the album.
         $this->position = -1;
@@ -191,6 +199,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         $this->downloads = 0;
         $this->hookedObjectMedia = new ArrayCollection();
         $this->categoryAssignments = new ArrayCollection();
+        $this->dataDirectory = $dataDirectory;
     }
 
     /**

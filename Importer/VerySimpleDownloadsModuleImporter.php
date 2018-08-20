@@ -36,7 +36,7 @@ class VerySimpleDownloadsModuleImporter extends AbstractImporter
     /**
      * @var string
      */
-    private $fileDirectory;
+    private $fileDirectory = '/VerySimpleDownload/downloads/fileupload';
 
     public function getTitle()
     {
@@ -64,8 +64,8 @@ class VerySimpleDownloadsModuleImporter extends AbstractImporter
             return $this->translator->trans('Please install the VerySimpleDownloads Module or import it\'s tables into the database.', [], 'cmfcmfmediamodule');
         }
 
-        if (!$this->filesystem->exists($this->fileDirectory)) {
-            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->fileDirectory], 'cmfcmfmediamodule');
+        if (!$this->filesystem->exists($this->dataDirectory . $this->fileDirectory)) {
+            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->dataDirectory . $this->fileDirectory], 'cmfcmfmediamodule');
         }
 
         return true;
@@ -79,11 +79,6 @@ class VerySimpleDownloadsModuleImporter extends AbstractImporter
     public function setCategoryRegistryRepository(CategoryRegistryRepositoryInterface $categoryRegistryRepository)
     {
         $this->categoryRegistryRepository = $categoryRegistryRepository;
-    }
-
-    public function setUserDataDirectory($userDataDir)
-    {
-        $this->fileDirectory = $userDataDir . '/VerySimpleDownload/downloads/fileupload';
     }
 
     public function import($formData, FlashBagInterface $flashBag)
@@ -108,11 +103,11 @@ SQL
             if ($lastId != $download['id']) {
                 $lastId = $download['id'];
 
-                $file = new File($this->fileDirectory . '/' . $download['fileUpload']);
+                $file = new File($this->dataDirectory . $this->fileDirectory . '/' . $download['fileUpload']);
                 $mediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
                 $entityClass = $mediaType->getEntityClass();
                 /** @var AbstractFileEntity $entity */
-                $entity = new $entityClass();
+                $entity = new $entityClass($this->dataDirectory);
                 $entity
                     ->setTitle($download['downloadTitle'])
                     ->setDescription($download['downloadDescription'])

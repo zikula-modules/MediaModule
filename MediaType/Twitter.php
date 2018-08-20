@@ -56,7 +56,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getEntityFromPaste($pastedText)
     {
-        $entity = new TwitterEntity();
+        $entity = new TwitterEntity($this->dataDirectory);
 
         $tweetId = $this->extractTweetIdFromPaste($pastedText);
         if ($tweetId === false) {

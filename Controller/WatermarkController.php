@@ -65,11 +65,12 @@ class WatermarkController extends AbstractController
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('watermark', 'new')) {
             throw new AccessDeniedException();
         }
+        $dataDirectory = $this->get('service_container')->getParameter('datadir');
         if ($type == 'image') {
-            $entity = new ImageWatermarkEntity();
+            $entity = new ImageWatermarkEntity($dataDirectory);
             $form = new ImageWatermarkType();
         } elseif ($type == 'text') {
-            $entity = new TextWatermarkEntity();
+            $entity = new TextWatermarkEntity($dataDirectory);
             $form = new TextWatermarkType();
         } else {
             throw new NotFoundHttpException();

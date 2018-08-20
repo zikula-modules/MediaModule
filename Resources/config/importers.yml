@@ -10,6 +10,7 @@ services:
             - '@form.factory'
             - '@cmfcmf_media_module.media_type_collection'
             - '@doctrine.orm.entity_manager'
+            - '%datadir%'
 
     cmfcmf_media_module.importer.server_directory:
         parent: cmfcmf_media_module.importer.abstract_service
@@ -23,7 +24,6 @@ services:
         class: Cmfcmf\Module\MediaModule\Importer\DownloadsModuleImporter
         calls:
             - [setUploadManager, ['@stof_doctrine_extensions.uploadable.manager']]
-            - [setUserDataDirectory, ['%datadir%']]
         tags: ['cmfcmf_media_module.importer']
 
     cmfcmf_media_module.importer.very_simple_downloads_module:
@@ -32,5 +32,4 @@ services:
         calls:
             - [setUploadManager, ['@stof_doctrine_extensions.uploadable.manager']]
             - [setCategoryRegistryRepository, ['@zikula_categories_module.category_registry_repository']]
-            - [setUserDataDirectory, ['%datadir%']]
         tags: ['cmfcmf_media_module.importer']

@@ -558,9 +558,11 @@ class MediaController extends AbstractController
                 return new Response($this->__('File type not supported!'), Response::HTTP_FORBIDDEN);
             }
 
+            $dataDirectory = $this->get('service_container')->getParameter('datadir');
+
             /** @var AbstractFileEntity $entity */
             $entity = $selectedMediaType->getEntityClass();
-            $entity = new $entity();
+            $entity = new $entity($dataDirectory);
 
             $variableApi = $this->get('zikula_extensions_module.api.variable');
             $form = $selectedMediaType->getFormTypeClass();
@@ -733,8 +735,9 @@ class MediaController extends AbstractController
     private function getDefaultEntity(Request $request, $type, MediaTypeInterface $mediaType, $init, $collection)
     {
         if (!$init) {
+            $dataDirectory = $this->get('service_container')->getParameter('datadir');
             $entity = $mediaType->getEntityClass();
-            $entity = new $entity();
+            $entity = new $entity($dataDirectory);
 
             return $entity;
         }
@@ -758,7 +761,7 @@ class MediaController extends AbstractController
             default:
                 throw new \LogicException();
         }
-        if ($collection !== null) {
+        if (null !== $collection) {
             $entity->setCollection($this->getDoctrine()->getManager()->find('CmfcmfMediaModule:Collection\CollectionEntity', $collection));
         }
 

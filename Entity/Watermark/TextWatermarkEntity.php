@@ -99,9 +99,9 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
     public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height)
     {
         $fontPath = $fontCollection->getFontById($this->font)->getPath();
-        if ($this->getAbsoluteSize() !== null) {
+        if (null !== $this->getAbsoluteSize()) {
             $fontSize = $this->getAbsoluteSize();
-        } elseif ($this->getRelativeSize() !== null) {
+        } elseif (null !== $this->getRelativeSize()) {
             $fontSize = (int) $this->getRelativeSize() / 100 * $height;
         } else {
             throw new \LogicException('Either relative or absolute watermark size must be set!');
@@ -128,8 +128,8 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
      */
     public function assertRelativeOrAbsoluteSizeSet()
     {
-        $r = $this->relativeSize !== null;
-        $a = $this->absoluteSize !== null;
+        $r = null !== $this->relativeSize;
+        $a = null !== $this->absoluteSize;
 
         return $r xor $a;
     }

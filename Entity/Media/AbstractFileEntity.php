@@ -52,9 +52,12 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
      */
     protected $downloadAllowed;
 
-    public function __construct()
+    /**
+     * @param string $dataDirectory
+     */
+    public function __construct($dataDirectory = '')
     {
-        parent::__construct();
+        parent::__construct($dataDirectory);
 
         $this->downloadAllowed = true;
     }
@@ -63,7 +66,7 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
     {
         unset($defaultPath);
 
-        return \FileUtil::getDataDirectory() . '/cmfcmf-media-module/media';
+        return $this->dataDirectory . '/cmfcmf-media-module/media';
     }
 
     public function getPath()

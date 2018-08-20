@@ -92,8 +92,10 @@ class PermissionController extends AbstractController
             throw new NotFoundHttpException();
         }
 
+        $dataDirectory = $this->get('service_container')->getParameter('datadir');
+
         $entity = $permissionType->getEntityClass();
-        $entity = new $entity();
+        $entity = new $entity($dataDirectory);
 
         $form = $permissionType->getFormClass();
         /** @var AbstractType $form */

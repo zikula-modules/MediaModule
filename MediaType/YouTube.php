@@ -51,7 +51,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getEntityFromPaste($pastedText)
     {
-        $entity = new YouTubeEntity();
+        $entity = new YouTubeEntity($this->dataDirectory);
 
         list($type, $id) = $this->extractYouTubeIdAndTypeFromPaste($pastedText);
         if ($id === false || !in_array($type, ['playlist', 'video', 'channel', true])) {
