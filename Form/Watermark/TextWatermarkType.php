@@ -11,9 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Watermark;
 
+use Cmfcmf\Module\MediaModule\Form\Type\ColorType;
 use Cmfcmf\Module\MediaModule\Form\Type\FontType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -45,10 +45,16 @@ class TextWatermarkType extends AbstractWatermarkType
                 'label' => $this->translator->trans('Font', [], 'cmfcmfmediamodule')
             ])
             ->add('fontColor', ColorType::class, [
-                'label' => $this->translator->trans('Font color', [], 'cmfcmfmediamodule')
+                'label' => $this->translator->trans('Font color', [], 'cmfcmfmediamodule'),
+                'attr' => [
+                    'help' => $this->translator->trans('R-G-B-A', [], 'cmfcmfmediamodule')
+                ]
             ])
             ->add('backgroundColor', ColorType::class, [
-                'label' => $this->translator->trans('Background color', [], 'cmfcmfmediamodule')
+                'label' => $this->translator->trans('Background color', [], 'cmfcmfmediamodule'),
+                'attr' => [
+                    'help' => $this->translator->trans('R-G-B-A', [], 'cmfcmfmediamodule')
+                ]
             ])
         ;
         parent::buildForm($builder, $options);

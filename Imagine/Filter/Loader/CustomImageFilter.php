@@ -12,6 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\Imagine\Filter\Loader;
 
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Filter\Basic\Autorotate;
 use Imagine\Filter\Basic\Paste;
 use Imagine\Filter\Basic\WebOptimization;
@@ -29,19 +30,27 @@ class CustomImageFilter implements LoaderInterface
     private $imagine;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * @var FontCollection
      */
     private $fontCollection;
 
     /**
-     * @param ImagineInterface $imagine
-     * @param FontCollection $fontCollection
+     * @param ImagineInterface       $imagine
+     * @param EntityManagerInterface $em
+     * @param FontCollection         $fontCollection
      */
     public function __construct(
         ImagineInterface $imagine,
+        EntityManagerInterface $em,
         FontCollection $fontCollection
     ) {
         $this->imagine = $imagine;
+        $this->em = $em;
         $this->fontCollection = $fontCollection;
     }
 
@@ -74,8 +83,13 @@ class CustomImageFilter implements LoaderInterface
             ;
         }
 
-        if (!isset($options['watermark']) || null === $options['watermark']) {
+        if (!isset($options['watermark']) || null === $options['watermark'] || !is_array($options['watermark']) || !count($options['watermark'])) {
             // The image shall not be watermarked.
+            return $transformation;
+        }
+        $watermark = $this->em->getRepository('CmfcmfMediaModule:Watermark\\AbstractWatermarkEntity')->find($options['watermark']);
+        if (null === $watermark) {
+            // watermark not found
             return $transformation;
         }
 
@@ -84,7 +98,6 @@ class CustomImageFilter implements LoaderInterface
 
         // Generate the watermark image.
         // It will already be correctly sized for the thumbnail.
-        $watermark = $options['watermark'];
 
         $wWidth = $wHeight = 0;
         if (isset($options['mode']) && $options['mode'] == ImageInterface::THUMBNAIL_OUTBOUND) {
@@ -104,10 +117,10 @@ class CustomImageFilter implements LoaderInterface
         }
 
         // Check whether the image is big enough to be watermarked.
-        if (null !== $watermark->getMinSizeX() && $wWidth < $watermark->getMinSizeX()) {
+        if (null !== $watermark['minSizeX'] && $wWidth < $watermark['minSizeX']) {
             return $transformation;
         }
-        if (null !== $watermark->getMinSizeY() && $wHeight < $watermark->getMinSizeY()) {
+        if (null !== $watermark['minSizeY'] && $wHeight < $watermark['minSizeY']) {
             return $transformation;
         }
 

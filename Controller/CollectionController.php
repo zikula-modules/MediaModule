@@ -134,7 +134,7 @@ class CollectionController extends AbstractController
         edit_error:
 
         $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
-        $formHook = $this->applyFormAwareDisplayHook($form, 'collections', FormAwareCategory::TYPE_EDIT, $entity->getId(), $hookUrl);
+        $formHook = $this->applyFormAwareDisplayHook($form, 'collections', FormAwareCategory::TYPE_EDIT, $hookUrl);
 
         return [
             'form' => $form->createView(),

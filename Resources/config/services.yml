@@ -12,6 +12,7 @@ services:
         class: Cmfcmf\Module\MediaModule\Imagine\Filter\Loader\CustomImageFilter
         arguments:
             - '@liip_imagine'
+            - '@doctrine.orm.default_entity_manager'
             - '@cmfcmf_media_module.font_collection'
         tags:
             - { name: 'liip_imagine.filter.loader', loader: cmfcmfmediamodule.custom_image_filter }

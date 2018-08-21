@@ -66,12 +66,6 @@ abstract class AbstractFileMediaType extends AbstractMediaType
 
     protected function getImagineRuntimeOptions(AbstractFileEntity $entity, $file, $width, $height, $mode, $optimize)
     {
-        $watermarkId = '';
-        $watermark = $entity->getCollection()->getWatermark();
-        if (null !== $watermark) {
-            $watermarkId = ', w ' . $watermark->getId();
-        }
-
         if ($height == 'original' || $width == 'original') {
             $size = getimagesize($entity->getPath());
             if ($width == 'original') {
@@ -82,6 +76,9 @@ abstract class AbstractFileMediaType extends AbstractMediaType
             }
         }
 
+        $watermark = $entity->getCollection()->getWatermark();
+        $watermarkId = null !== $watermark ? $watermark->getId() : null;
+
         $options = [
             'thumbnail' => [
                 'size'      => [$width, $height],
@@ -89,7 +86,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
                 'extension' => null // file extension for thumbnails (jpg, png, gif; null for original file type)
             ],
             'cmfcmfmediamodule.custom_image_filter' => [
-                'watermark' => $entity->getCollection()->getWatermark(),
+                'watermark' => $watermarkId,
                 'file' => $file,
                 'width' => $width,
                 'height' => $height,

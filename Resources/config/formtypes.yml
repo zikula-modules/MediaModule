@@ -1,4 +1,8 @@
 services:
+    cmfcmf_media_module.form.type.color:
+        class: Cmfcmf\Module\MediaModule\Form\Type\ColorType
+        tags: ['form.type']
+
     cmfcmf_media_module.form.type.font:
         class: Cmfcmf\Module\MediaModule\Form\Type\FontType
         arguments:

@@ -175,7 +175,7 @@ class MediaController extends AbstractController
             'slug' => $entity->getSlug(),
             'collectionSlug' => $entity->getCollection()->getSlug()
         ]);
-        $formHook = $this->applyFormAwareDisplayHook($form, 'media', FormAwareCategory::TYPE_EDIT, $entity->getId(), $hookUrl);
+        $formHook = $this->applyFormAwareDisplayHook($form, 'media', FormAwareCategory::TYPE_EDIT, $hookUrl);
 
         return [
             'form' => $form->createView(),
