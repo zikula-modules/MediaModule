@@ -207,6 +207,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         $this->hookedObjectMedia = new ArrayCollection();
         $this->categoryAssignments = new ArrayCollection();
 
+        // TODO refactor these dependencies out of the entities
         $this->requestStack = $requestStack;
         $this->dataDirectory = $dataDirectory;
     }
@@ -648,5 +649,29 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     protected function getBaseUri()
     {
         return $this->requestStack->getCurrentRequest()->getBasePath();
+    }
+
+    /**
+     * @param RequestStack $requestStack
+     *
+     * @return AbstractWatermarkEntity
+     */
+    public function setRequestStack(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+
+        return $this;
+    }
+
+    /**
+     * @param string $dataDirectory
+     *
+     * @return AbstractWatermarkEntity
+     */
+    public function setDataDirectory($dataDirectory)
+    {
+        $this->dataDirectory = $dataDirectory;
+
+        return $this;
     }
 }

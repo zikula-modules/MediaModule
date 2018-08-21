@@ -138,6 +138,23 @@ services:
             - '@translator'
             - '@cmfcmf_media_module.security_manager'
         tags: ['form.type']
+    cmfcmf_media_module.form.type.importer.base:
+        class: Cmfcmf\Module\MediaModule\Form\Importer\AbstractImporterType
+        abstract: true
+        arguments:
+            - '@translator'
+    cmfcmf_media_module.form.type.importer.downloads:
+        class: Cmfcmf\Module\MediaModule\Form\Importer\DownloadsModuleType
+        parent: cmfcmf_media_module.form.type.importer.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.importer.server_directory:
+        class: Cmfcmf\Module\MediaModule\Form\Importer\ServerDirectoryType
+        parent: cmfcmf_media_module.form.type.importer.base
+        tags: ['form.type']
+    cmfcmf_media_module.form.type.importer.very_simple_downloads:
+        class: Cmfcmf\Module\MediaModule\Form\Importer\VerySimpleDownloadsModuleType
+        parent: cmfcmf_media_module.form.type.importer.base
+        tags: ['form.type']
 
     cmfcmf_media_module.form.type.license:
         class: Cmfcmf\Module\MediaModule\Form\License\LicenseType

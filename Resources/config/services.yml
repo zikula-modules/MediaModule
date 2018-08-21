@@ -7,6 +7,15 @@ imports:
   - { resource: 'importers.yml' }
 
 services:
+    # Imagine filter
+    cmfcmf_media_module.filter.custom_image_filter:
+        class: Cmfcmf\Module\MediaModule\Imagine\Filter\Loader\CustomImageFilter
+        arguments:
+            - '@liip_imagine'
+            - '@cmfcmf_media_module.font_collection'
+        tags:
+            - { name: 'liip_imagine.filter.loader', loader: cmfcmfmediamodule.custom_image_filter }
+
     # Security management
     cmfcmf_media_module.security_manager:
         class: Cmfcmf\Module\MediaModule\Security\SecurityManager
@@ -15,7 +24,6 @@ services:
             - '@zikula_permissions_module.api.permission'
             - '@doctrine.orm.default_entity_manager'
             - '@cmfcmf_media_module.collection_permission.container'
-
 
     # Module upgrader and version checker
     cmfcmf_media_module.upgrade.module_upgrader:
@@ -44,6 +52,16 @@ services:
             - '@cmfcmf_media_module.security_manager'
 
     # Listeners
+    cmfcmf_media_module.listener.doctrine:
+        class: Cmfcmf\Module\MediaModule\Listener\DoctrineListener
+        tags: ['doctrine.event_subscriber']
+
+    cmfcmf_media_module.listener.entity_lifecycle:
+        class: Cmfcmf\Module\MediaModule\Listener\EntityLifecycleListener
+        arguments:
+            - '@service_container'
+        tags: ['doctrine.event_subscriber']
+
     cmfcmf_media_module.listener.module:
         class: Cmfcmf\Module\MediaModule\Listener\ModuleListener
         arguments:
@@ -56,11 +74,6 @@ services:
             - '@filesystem'
             - '%kernel.root_dir%'
         tags: ['kernel.event_subscriber']
-
-    cmfcmf_media_module.listener.doctrine:
-        class: Cmfcmf\Module\MediaModule\Listener\DoctrineListener
-        tags: ['doctrine.event_subscriber']
-
 
     # Link container
     cmfcmf_media_module.container.links:
@@ -113,3 +126,6 @@ services:
             
     cmfcmf_media_module.font_collection:
         class: Cmfcmf\Module\MediaModule\Font\FontCollection
+
+parameters:
+    liip_imagine.cache.signer.class: Cmfcmf\Module\MediaModule\Imagine\Cache\DummySigner

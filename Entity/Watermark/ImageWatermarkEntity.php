@@ -103,7 +103,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         $title = htmlentities($this->title);
 
         return <<<EOD
-<img class="img-responsive" style="max-width:150px;max-height:100px" src="$src" alt="$title" />
+<img src="$src" alt="$title" class="img-responsive" style="max-width: 150px; max-height: 100px" />
 EOD;
     }
 }

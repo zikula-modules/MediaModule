@@ -78,7 +78,7 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
 
     public function getUrl()
     {
-        return \System::getBaseUri() . '/' . $this->getPath();
+        return $this->getBaseUri() . '/' . $this->getPath();
     }
 
     public function getBeautifiedFileName()

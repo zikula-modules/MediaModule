@@ -131,6 +131,7 @@ abstract class AbstractWatermarkEntity
         $this->minSizeX = 200;
         $this->minSizeY = 80;
 
+        // TODO refactor these dependencies out of the entities
         $this->requestStack = $requestStack;
         $this->dataDirectory = $dataDirectory;
     }
@@ -323,5 +324,29 @@ abstract class AbstractWatermarkEntity
     public function getVersion()
     {
         return $this->version;
+    }
+
+    /**
+     * @param RequestStack $requestStack
+     *
+     * @return AbstractWatermarkEntity
+     */
+    public function setRequestStack(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+
+        return $this;
+    }
+
+    /**
+     * @param string $dataDirectory
+     *
+     * @return AbstractWatermarkEntity
+     */
+    public function setDataDirectory($dataDirectory)
+    {
+        $this->dataDirectory = $dataDirectory;
+
+        return $this;
     }
 }

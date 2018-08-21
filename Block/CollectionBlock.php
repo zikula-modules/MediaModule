@@ -20,7 +20,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\BlocksModule\AbstractBlockHandler;
 
 /**
- * Class PageBlock.
+ * Collection block handler.
  */
 class CollectionBlock extends AbstractBlockHandler
 {

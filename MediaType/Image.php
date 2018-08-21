@@ -178,15 +178,10 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             throw new \InvalidArgumentException('Invalid mode requested.');
         }
 
-        /** TODO migrate
-        $this->imagineManager->setPreset(
-            $this->getPreset($entity, $entity->getPath(), $width, $height, $mode, $optimize)
-        );
-        */
+        $path = $entity->getPath();
+        $imagineOptions = $this->getImagineRuntimeOptions($entity, $path, $width, $height, $mode, $optimize);
+        $url = $this->imagineCacheManager->getBrowserPath($path, 'zkroot', $imagineOptions);
 
-        $path = $this->imagineCacheManager->getBrowserPath($entity->getPath(), 'zkroot'/** TODO, $entity->getImagineId()*/);
-
-        $url = $this->getBaseUri() . '/' . $path;
         switch ($format) {
             case 'url':
                 return $url;

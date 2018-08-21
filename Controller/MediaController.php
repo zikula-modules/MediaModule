@@ -141,13 +141,10 @@ class MediaController extends AbstractController
 
             $uploadManager->markEntityToUpload($entity, $file);
 
-            /** TODO migrate
             // Cleanup existing thumbnails
-            /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager * /
+            /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
             $imagineCacheManager = $this->get('liip_imagine.cache.manager');
-
-            $imagineManager->removeObjectThumbs($entity->getImagineId());
-            */
+            $imagineCacheManager->remove($entity->getPath(), ['thumbnail', 'cmfcmfmediamodule.custom_image_filter']);
         }
 
         try {

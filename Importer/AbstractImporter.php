@@ -87,14 +87,12 @@ abstract class AbstractImporter implements ImporterInterface
         $type = $this->getType();
         $type = strtolower($type);
 
-        return "cmfcmfmediamodule:$type";
+        return 'cmfcmfmediamodule:' . $type;
     }
 
     public function getSettingsForm()
     {
-        $form = 'Cmfcmf\\Module\\MediaModule\\Form\\Importer\\' . $this->getType() . 'Type';
-
-        return new $form($this->translator);
+        return 'Cmfcmf\\Module\\MediaModule\\Form\\Importer\\' . $this->getType() . 'Type';
     }
 
     /**

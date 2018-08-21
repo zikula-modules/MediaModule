@@ -12,7 +12,7 @@ services:
         parent: cmfcmf_media_module.media_type.abstract_media
         abstract: true
         calls:
-            - [injectThings, ['@service_container', '@file_locator', '@cmfcmf_media_module.font_collection', '%kernel.root_dir%']]
+            - [injectThings, ['@service_container', '@file_locator', '%kernel.root_dir%']]
 
     cmfcmf_media_module.media_type.url:
         class: Cmfcmf\Module\MediaModule\MediaType\Url

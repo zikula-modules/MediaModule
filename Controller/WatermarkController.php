@@ -149,15 +149,13 @@ class WatermarkController extends AbstractController
             goto edit_error;
         }
 
-        /** TODO migrate
         // Cleanup existing thumbnails
-        /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager * /
+        /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
         $imagineCacheManager = $this->get('liip_imagine.cache.manager');
 
-        /** @var WatermarkRepository $repository * /
+        /** @var WatermarkRepository $repository */
         $repository = $em->getRepository('CmfcmfMediaModule:Watermark\AbstractWatermarkEntity');
         $repository->cleanupThumbs($entity, $imagineCacheManager);
-        */
 
         $this->addFlash('status', $this->__('Watermark updated!'));
 
@@ -188,15 +186,14 @@ class WatermarkController extends AbstractController
         }
 
         $em = $this->getDoctrine()->getManager();
-        /** TODO migrate
+
         // Cleanup existing thumbnails
-        /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager * /
+        /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
         $imagineCacheManager = $this->get('liip_imagine.cache.manager');
 
-        /** @var WatermarkRepository $repository * /
+        /** @var WatermarkRepository $repository */
         $repository = $em->getRepository('CmfcmfMediaModule:Watermark\AbstractWatermarkEntity');
         $repository->cleanupThumbs($entity, $imagineCacheManager);
-        */
 
         $em->remove($entity);
         $em->flush();
