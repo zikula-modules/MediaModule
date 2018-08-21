@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Media 1.3.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-08-21 11:47+0200\n"
+"PO-Revision-Date: 2018-08-21 21:02+0200\n"
 "Last-Translator: Axel Guckelsberger <info@guite.de>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -323,6 +323,12 @@ msgstr "Verbietet Zugriff auf die Sammlung temporärer Uploads."
 msgid "Display"
 msgstr "Anzeige"
 
+msgid "Display a media collection."
+msgstr "Eine Medien Sammlung anzeigen."
+
+msgid "Display a single medium."
+msgstr "Ein einzelnes Medium anzeigen."
+
 msgid "Display media details"
 msgstr "Mediendetails anzeigen"
 
@@ -536,9 +542,6 @@ msgstr ""
 "credentials -> API-Key -> Server-Key\". Wieder ist der Name egal. "
 "Anschließend den API-Schlüssel hierher kopieren."
 
-msgid "Go!"
-msgstr "Los!"
-
 msgid "Google API Developer Key"
 msgstr "Google API Developer Key"
 
@@ -742,11 +745,17 @@ msgstr ""
 msgid "Media"
 msgstr "Medien"
 
+msgid "Media collection"
+msgstr "Medien Sammlung"
+
 msgid "Media collections"
 msgstr "Sammlungen"
 
 msgid "Media description escaping strategy"
 msgstr "Medienbeschreibung Escaping Strategie"
+
+msgid "Media detail"
+msgstr "Medien Detail"
 
 msgid "Media filter hooks subscriber"
 msgstr "Medien Filter-Hooks Abonnent"
@@ -784,6 +793,9 @@ msgstr "Weiter"
 msgid "No access"
 msgstr "Kein Zugriff"
 
+msgid "No collection selected."
+msgstr "Keine Sammlung ausgewählt."
+
 msgid ""
 "No image processing extension installed. You must install the Imagick, "
 "Gmagick or, at the very least, Gd extension!"
@@ -796,6 +808,9 @@ msgstr "Bisher keine Medien angehangen!"
 
 msgid "No media available yet!"
 msgstr "Bisher keine Medien verfügbar!"
+
+msgid "No medium selected."
+msgstr "Kein Medium ausgewählt."
 
 msgid "No new version detected!"
 msgstr "Keine neue Version entdeckt!"
@@ -972,9 +987,6 @@ msgstr "Responsives Gitter"
 msgid "Search the web"
 msgstr "Internet durchsuchen"
 
-msgid "Search..."
-msgstr "Suchen..."
-
 msgid "Select a service below"
 msgstr "Service wählen"
 
@@ -983,6 +995,9 @@ msgstr "Sammlung wählen"
 
 msgid "Select license"
 msgstr "Lizenz wählen"
+
+msgid "Select medium"
+msgstr "Medium auswählen"
 
 msgid "Select uploaded collection"
 msgstr "Hochgeladene Sammlung wählen"
@@ -1605,6 +1620,12 @@ msgstr "wurzel"
 
 msgid "yes"
 msgstr "ja"
+
+#~ msgid "Go!"
+#~ msgstr "Los!"
+
+#~ msgid "Search..."
+#~ msgstr "Suchen..."
 
 #~ msgid "Your browser does not support the video element."
 #~ msgstr "Ihr Browser unterstützt das Video Element nicht."
