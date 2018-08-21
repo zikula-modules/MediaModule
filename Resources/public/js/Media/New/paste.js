@@ -17,10 +17,10 @@
             $.ajax({
                 url: Routing.generate('cmfcmfmediamodule_media_matchespaste'),
                 data: {pastedText: pastedText},
-                method: "POST"
-            }).success(function (mediaTypes) {
+                method: 'POST'
+            }).done(function (mediaTypes) {
                 if (mediaTypes.length == 0) {
-                    window.toastr["warning"](
+                    window.toastr['warning'](
                         "It seems like it isn't supported (yet) or simply an unknown way of embedding. " +
                         "Please consider to open an issue.",
                         "Pasted url or embed code could not be parsed."
