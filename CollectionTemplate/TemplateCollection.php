@@ -53,9 +53,12 @@ class TemplateCollection
      */
     public function getCollectionTemplateTitles()
     {
-        return array_map(function (TemplateInterface $template) {
-            return $template->getTitle();
-        }, $this->templates);
+        $choices = [];
+        foreach ($this->templates as $template) {
+            $choices[$template->getTitle()] = $template->getName();
+        }
+
+        return $choices;
     }
 
     /**
