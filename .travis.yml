@@ -39,8 +39,8 @@ install:
     - tar -xpzf 2.0.tar.gz
     - rm 2.0.tar.gz
     - cd 2.0
-    - php app/console zikula:install:start -n --database_user=root --database_name=zk_test --password=12345678 --email=admin@example.com --router:request_context:host=localhost
-    - php app/console zikula:install:finish
+    - php bin/console zikula:install:start -n --database_user=root --database_name=zk_test --password=12345678 --email=admin@example.com --router:request_context:host=localhost
+    - php bin/console zikula:install:finish
     - cd modules
     - mkdir cmfcmf
     - cd cmfcmf
@@ -48,12 +48,12 @@ install:
     - cd media-module
     - unzip -q ../../../../MediaModule
     - cd  ../../..
-    - php app/console bootstrap:bundles
+    - php bin/console bootstrap:bundles
     - mysql -e "INSERT INTO zk_test.modules (id, name, type, displayname, url, description, directory, version, capabilities, state, securityschema, core_min, core_max) VALUES (NULL, 'CmfcmfMediaModule', '3', 'Media Module', 'media', '...', 'cmfcmf/media-module', '1.2.2', 'N;', '3', 'N;', '1.4.3', '1.4.99');"
 
 script:
-    - php app/console lint:yaml modules/cmfcmf/media-module/Resources
-    - php app/console lint:twig @CmfcmfMediaModule
+    - php bin/console lint:yaml modules/cmfcmf/media-module/Resources
+    - php bin/console lint:twig @CmfcmfMediaModule
     - phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist --coverage-text --coverage-clover=coverage.clover -v
 
 after_success:
