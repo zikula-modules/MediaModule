@@ -275,7 +275,7 @@ class CollectionController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        if ($entity->getDefaultTemplate() != null) {
+        if (null !== $entity->getDefaultTemplate()) {
             $defaultTemplate = $entity->getDefaultTemplate();
         } else {
             $defaultTemplate = $this->getVar('defaultCollectionTemplate');

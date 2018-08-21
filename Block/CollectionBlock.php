@@ -79,6 +79,10 @@ class CollectionBlock extends AbstractBlockHandler
             return false;
         }
 
+        if (!$properties['template']) {
+            $properties['template'] = $this->getVar('defaultCollectionTemplate');
+        }
+
         $content = $this->get('cmfcmf_media_module.collection_template_collection')->getCollectionTemplate($properties['template'])->render(
             $collection,
             $this->get('cmfcmf_media_module.media_type_collection'),
