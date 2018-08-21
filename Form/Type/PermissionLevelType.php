@@ -69,9 +69,9 @@ class PermissionLevelType extends AbstractType
                     $this->fixSecurityGraph();
                 }
 
-                return array_map(function (Vertex $vertex) {
+                return array_flip(array_map(function (Vertex $vertex) {
                     return $vertex->getAttribute('title');
-                }, $this->securityGraph->getVertices()->getMap());
+                }, $this->securityGraph->getVertices()->getMap()));
             }
         ])->setRequired('permissionLevel');
     }
