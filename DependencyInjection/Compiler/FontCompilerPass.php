@@ -9,30 +9,30 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\DependencyInjection;
+namespace Cmfcmf\Module\MediaModule\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Calls "addMediaType" for each media type on the media type collection.
+ * Calls "addFontLoader" for each font loader on the font collection.
  */
-class MediaTypeCompilerPass implements CompilerPassInterface
+class FontCompilerPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->has('cmfcmf_media_module.media_type_collection')) {
+        if (!$container->has('cmfcmf_media_module.font_collection')) {
             return;
         }
 
-        $definition = $container->findDefinition('cmfcmf_media_module.media_type_collection');
-        $taggedServices = $container->findTaggedServiceIds('cmfcmf_media_module.media_type');
+        $definition = $container->findDefinition('cmfcmf_media_module.font_collection');
+        $taggedServices = $container->findTaggedServiceIds('cmfcmf_media_module.font');
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('addMediaType', [new Reference($id)]);
+            $definition->addMethodCall('addFontLoader', [new Reference($id)]);
         }
     }
 }

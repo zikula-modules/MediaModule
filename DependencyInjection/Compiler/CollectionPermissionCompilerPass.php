@@ -9,17 +9,17 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\DependencyInjection;
+namespace Cmfcmf\Module\MediaModule\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Calls "addCollectionTemplate" for each collection template on the collection
- * template container.
+ * Calls "addCollectionPermission" for each collection permission on the collection
+ * permission container.
  */
-class CollectionTemplateCompilerPass implements CompilerPassInterface
+class CollectionPermissionCompilerPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
@@ -30,10 +30,10 @@ class CollectionTemplateCompilerPass implements CompilerPassInterface
             return;
         }
 
-        $definition = $container->findDefinition('cmfcmf_media_module.collection_template_collection');
-        $taggedServices = $container->findTaggedServiceIds('cmfcmf_media_module.collection_template');
+        $definition = $container->findDefinition('cmfcmf_media_module.collection_permission.container');
+        $taggedServices = $container->findTaggedServiceIds('cmfcmf_media_module.collection_permission');
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('addCollectionTemplate', [new Reference($id)]);
+            $definition->addMethodCall('addCollectionPermission', [new Reference($id)]);
         }
     }
 }

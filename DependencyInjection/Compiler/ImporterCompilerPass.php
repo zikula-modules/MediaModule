@@ -9,12 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\DependencyInjection;
+namespace Cmfcmf\Module\MediaModule\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
+/**
+ * Calls "addImporter" for each importer on the importer collection.
+ */
 class ImporterCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)

@@ -9,30 +9,31 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\DependencyInjection;
+namespace Cmfcmf\Module\MediaModule\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Calls "add_FontLoader" for each font loader on the font collection.
+ * Calls "addCollectionTemplate" for each collection template on the collection
+ * template container.
  */
-class FontCompilerPass implements CompilerPassInterface
+class CollectionTemplateCompilerPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->has('cmfcmf_media_module.font_collection')) {
+        if (!$container->has('cmfcmf_media_module.collection_template_collection')) {
             return;
         }
 
-        $definition = $container->findDefinition('cmfcmf_media_module.font_collection');
-        $taggedServices = $container->findTaggedServiceIds('cmfcmf_media_module.font');
+        $definition = $container->findDefinition('cmfcmf_media_module.collection_template_collection');
+        $taggedServices = $container->findTaggedServiceIds('cmfcmf_media_module.collection_template');
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('addFontLoader', [new Reference($id)]);
+            $definition->addMethodCall('addCollectionTemplate', [new Reference($id)]);
         }
     }
 }

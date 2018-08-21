@@ -9,31 +9,30 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\DependencyInjection;
+namespace Cmfcmf\Module\MediaModule\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Calls "addCollectionPermission" for each collection permission on the collection
- * permission container.
+ * Calls "addMediaType" for each media type on the media type collection.
  */
-class CollectionPermissionCompilerPass implements CompilerPassInterface
+class MediaTypeCompilerPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->has('cmfcmf_media_module.collection_template_collection')) {
+        if (!$container->has('cmfcmf_media_module.media_type_collection')) {
             return;
         }
 
-        $definition = $container->findDefinition('cmfcmf_media_module.collection_permission.container');
-        $taggedServices = $container->findTaggedServiceIds('cmfcmf_media_module.collection_permission');
+        $definition = $container->findDefinition('cmfcmf_media_module.media_type_collection');
+        $taggedServices = $container->findTaggedServiceIds('cmfcmf_media_module.media_type');
         foreach ($taggedServices as $id => $tags) {
-            $definition->addMethodCall('addCollectionPermission', [new Reference($id)]);
+            $definition->addMethodCall('addMediaType', [new Reference($id)]);
         }
     }
 }

@@ -210,7 +210,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
                 break;
         }
         if (null !== $entity->getAttribution()) {
-            $code .= '<p>' . $this->__f('By %s', ['%s' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
+            $code .= '<p>' . $this->translator->__f('By %s', ['%s' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
         }
 
         return $code;

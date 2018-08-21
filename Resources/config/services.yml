@@ -73,7 +73,7 @@ services:
         class: Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener
         arguments:
             - '@filesystem'
-            - '%kernel.root_dir%'
+            - '@request_stack'
         tags: ['kernel.event_subscriber']
 
     # Link container

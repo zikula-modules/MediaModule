@@ -23,7 +23,7 @@
                 return;
             }
 
-            $.getJSON(Routing.generate('cmfcmfmediamodule_finder_ajaxfind'), {q: $searchInput.val()}).success(function (results) {
+            $.getJSON(Routing.generate('cmfcmfmediamodule_finder_ajaxfind'), {q: $searchInput.val()}, function (results) {
                 $cog.addClass('hidden');
 
                 var $table = $('#cmfcmfmedia-finder-table-body');
