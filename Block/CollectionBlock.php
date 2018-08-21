@@ -83,11 +83,18 @@ class CollectionBlock extends AbstractBlockHandler
             $properties['template'] = $this->getVar('defaultCollectionTemplate');
         }
 
-        $content = $this->get('cmfcmf_media_module.collection_template_collection')->getCollectionTemplate($properties['template'])->render(
+        $selectedTemplateFactory = $this->get('cmfcmf_media_module.collection_template.selected_factory');
+        try {
+            $selectedTemplate = $selectedTemplateFactory->fromDB($properties['template']);
+        } catch (\DomainException $e) {
+            throw new NotFoundHttpException();
+        }
+
+        $content = $selectedTemplate->getTemplate()->render(
             $collection,
             $this->get('cmfcmf_media_module.media_type_collection'),
             isset($properties['showChildCollections']) ? $properties['showChildCollections'] : false,
-            [] // @todo pass template options
+            $selectedTemplate->getOptions()
         );
 
         $hook = '';
@@ -125,7 +132,6 @@ class CollectionBlock extends AbstractBlockHandler
         return [
             'translator' => $this->translator,
             'securityManager' => $this->securityManager,
-            'templateCollection' => $this->get('cmfcmf_media_module.collection_template_collection'),
             'collectionRepository' => $this->collectionRepository
         ];
     }

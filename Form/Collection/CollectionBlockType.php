@@ -11,9 +11,9 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Collection;
 
-use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
+use Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityRepository;
@@ -21,7 +21,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -34,8 +33,6 @@ class CollectionBlockType extends AbstractType
         $translator = $options['translator'];
         /** @var SecurityManager $securityManager */
         $securityManager = $options['securityManager'];
-        /** @var TemplateCollection $templateCollection */
-        $templateCollection = $options['templateCollection'];
         /** @var CollectionRepository $collectionRepository */
         $collectionRepository = $options['collectionRepository'];
 
@@ -64,11 +61,8 @@ class CollectionBlockType extends AbstractType
                 'required' => false,
                 'disabled' => true
             ])
-            ->add('template', ChoiceType::class, [
-                'label' => $translator->trans('Template', [], 'cmfcmfmediamodule'),
-                'required' => false,
-                'placeholder' => $translator->trans('Default', [], 'cmfcmfmediamodule'),
-                'choices' => $templateCollection->getCollectionTemplateTitles()
+            ->add('template', TemplateType::class, [
+                'label' => $translator->trans('Display', [], 'cmfcmfmediamodule'),
             ])
             ->add('showChildCollections', CheckboxType::class, [
                 'label' => $translator->trans('Show child collections', [], 'cmfcmfmediamodule'),
@@ -103,6 +97,6 @@ class CollectionBlockType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setRequired(['translator', 'securityManager', 'templateCollection', 'collectionRepository']);
+        $resolver->setRequired(['translator', 'securityManager', 'collectionRepository']);
     }
 }
