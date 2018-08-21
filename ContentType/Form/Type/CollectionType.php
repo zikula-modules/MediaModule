@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Cmfcmf\Module\MediaModule\Form\Collection;
+namespace Cmfcmf\Module\MediaModule\ContentType\Form\Type;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
@@ -19,19 +19,17 @@ use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\Common\Content\AbstractContentFormType;
 
-class CollectionBlockType extends AbstractType
+/**
+ * Collection content type form type.
+ */
+class CollectionType extends AbstractContentFormType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
     /**
      * @var CollectionRepository
      */
@@ -52,7 +50,7 @@ class CollectionBlockType extends AbstractType
         SecurityManager $securityManager,
         EntityManagerInterface $em
     ) {
-        $this->translator = $translator;
+        $this->setTranslator($translator);
         $this->securityManager = $securityManager;
         $this->collectionRepository = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
     }
@@ -64,7 +62,7 @@ class CollectionBlockType extends AbstractType
 
         $collectionOptions = [
             'required' => true,
-            'label' => $this->translator->trans('Collection', [], 'cmfcmfmediamodule'),
+            'label' => $this->__('Collection', 'cmfcmfmediamodule'),
             'class' => CollectionEntity::class,
             'query_builder' => function (EntityRepository $er) use ($securityManager) {
                 /** @var CollectionRepository $er */
@@ -76,26 +74,21 @@ class CollectionBlockType extends AbstractType
 
                 return $qb;
             },
-            'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
+            'placeholder' => $this->__('Select collection', 'cmfcmfmediamodule'),
             'choice_label' => 'indentedTitle',
             'multiple' => false
         ];
         $builder
             ->add('id', EntityType::class, $collectionOptions)
-            ->add('showHooks', CheckboxType::class, [
-                'label' => $this->translator->trans('Show hooks', [], 'cmfcmfmediamodule'),
-                'required' => false,
-                'disabled' => true
-            ])
             ->add('template', TemplateType::class, [
-                'label' => $this->translator->trans('Display', [], 'cmfcmfmediamodule'),
+                'label' => $this->__('Display', 'cmfcmfmediamodule'),
             ])
             ->add('showChildCollections', CheckboxType::class, [
-                'label' => $this->translator->trans('Show child collections', [], 'cmfcmfmediamodule'),
+                'label' => $this->__('Show child collections', 'cmfcmfmediamodule'),
                 'required' => false
             ])
             ->add('showEditAndDownloadLinks', CheckboxType::class, [
-                'label' => $this->translator->trans('Show edit and download links', [], 'cmfcmfmediamodule'),
+                'label' => $this->__('Show edit and download links', 'cmfcmfmediamodule'),
                 'required' => false
             ])
             ->addModelTransformer(new CallbackTransformer(
@@ -113,8 +106,11 @@ class CollectionBlockType extends AbstractType
         ;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getBlockPrefix()
     {
-        return 'cmfcmfmediamodule_collectionblock';
+        return 'cmfcmfmediamodule_contenttype_collection';
     }
 }

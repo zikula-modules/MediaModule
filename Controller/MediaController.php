@@ -681,7 +681,7 @@ class MediaController extends AbstractController
         return [
             'mediaType' => $mediaTypeCollection->getMediaTypeFromEntity($entity),
             'entity' => $entity,
-            'breadcrumbs' =>  $entity->getCollection()->getBreadcrumbs($this->get('router'), true),
+            'breadcrumbs' => $entity->getCollection()->getBreadcrumbs($this->get('router'), true),
             'views' => $this->getVar('enableMediaViewCounter', false) ? $entity->getViews() : '-1',
             'hook' => $this->getDisplayHookContent('media', UiHooksCategory::TYPE_DISPLAY_VIEW, $entity->getId(), $hookUrl)
         ];

@@ -16,6 +16,7 @@ use Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\BlocksModule\AbstractBlockHandler;
 
@@ -24,6 +25,11 @@ use Zikula\BlocksModule\AbstractBlockHandler;
  */
 class CollectionBlock extends AbstractBlockHandler
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
     /**
      * @var CollectionRepository
      */
@@ -39,20 +45,15 @@ class CollectionBlock extends AbstractBlockHandler
      */
     private $twig;
 
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
     public function setContainer(ContainerInterface $container = null)
     {
         parent::setContainer($container);
 
+        $this->translator = $container->get('translator');
         $this->collectionRepository = $container->get('doctrine.orm.entity_manager')
             ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
         $this->securityManager = $container->get('cmfcmf_media_module.security_manager');
         $this->twig = $container->get('twig');
-        $this->translator = $container->get('translator');
     }
 
     /**
@@ -77,10 +78,6 @@ class CollectionBlock extends AbstractBlockHandler
         }
         if (!$this->securityManager->hasPermission($collection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             return false;
-        }
-
-        if (!$properties['template']) {
-            $properties['template'] = $this->getVar('defaultCollectionTemplate');
         }
 
         $selectedTemplateFactory = $this->get('cmfcmf_media_module.collection_template.selected_factory');
@@ -122,18 +119,6 @@ class CollectionBlock extends AbstractBlockHandler
     public function getFormClassName()
     {
         return CollectionBlockType::class;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormOptions()
-    {
-        return [
-            'translator' => $this->translator,
-            'securityManager' => $this->securityManager,
-            'collectionRepository' => $this->collectionRepository
-        ];
     }
 
     /**

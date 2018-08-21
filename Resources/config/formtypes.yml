@@ -24,6 +24,14 @@ services:
             - '@zikula_extensions_module.api.variable'
         tags: ['form.type']
 
+    cmfcmf_media_module.form.type.collection_block:
+        class: Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType
+        arguments:
+            - '@translator'
+            - '@cmfcmf_media_module.security_manager'
+            - '@doctrine.orm.entity_manager'
+        tags: ['form.type']
+
     cmfcmf_media_module.form.type.collection_template:
         class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType
         arguments:

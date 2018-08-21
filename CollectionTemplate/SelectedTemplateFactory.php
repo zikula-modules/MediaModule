@@ -18,13 +18,29 @@ class SelectedTemplateFactory
      */
     private $templateCollection;
 
-    public function __construct(TemplateCollection $templateCollection)
-    {
+    /**
+     * @var string
+     */
+    private $defaultTemplate;
+
+    /**
+     * @param TemplateCollection $templateCollection
+     * @param string             $defaultTemplate
+     */
+    public function __construct(
+        TemplateCollection $templateCollection,
+        $defaultTemplate
+    ) {
         $this->templateCollection = $templateCollection;
+        $this->defaultTemplate = $defaultTemplate;
     }
 
     public function fromDB($jsonOrString)
     {
+        if (!$jsonOrString) {
+            $jsonOrString = $this->defaultTemplate;
+        }
+
         if ($this->isJSON($jsonOrString)) {
             $json = json_decode($jsonOrString, true);
             $template = $json['template'];

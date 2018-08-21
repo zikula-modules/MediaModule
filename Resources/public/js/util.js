@@ -1,8 +1,10 @@
 (function ($) {
-    window.toastr.options = {
-        "progressBar": true,
-        "closeButton": true
-    };
+    if ('undefined' != typeof window.toastr) {
+        window.toastr.options = {
+            'progressBar': true,
+            'closeButton': true
+        };
+    }
     $(function () {
         window.CmfcmfMediaModule = window.CmfcmfMediaModule || {};
         window.CmfcmfMediaModule.Util = {
@@ -17,7 +19,11 @@
                     } else if (data.status == 403) {
                         errorText = "You do not have permission to execute this action."
                     }
-                    window.toastr["error"](errorText, "Something went wrong!");
+                    if ('undefined' != typeof window.toastr) {
+                        window.toastr["error"](errorText, 'Something went wrong!');
+                    } else {
+                        alert('Something went wrong!');
+                    }
                 },
                 makeExternalRequest: function (url, done, fail, always) {
                     var xmlhttp;

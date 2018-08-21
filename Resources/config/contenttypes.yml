@@ -1,0 +1,33 @@
+services:
+    # Content types
+    Cmfcmf\Module\MediaModule\ContentType\CollectionType:
+        parent: zikula.content_type.base
+        shared: false
+        calls:
+            - [setEntityManager, ['@doctrine.orm.entity_manager']]
+            - [setSecurityManager, ['@cmfcmf_media_module.security_manager']]
+            - [setSelectedTemplateFactory, ['@cmfcmf_media_module.collection_template.selected_factory']]
+            - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
+        tags: ['zikula.content_type']
+    Cmfcmf\Module\MediaModule\ContentType\Form\Type\CollectionType:
+        parent: zikula.content_type.form.base
+        arguments:
+            - '@cmfcmf_media_module.security_manager'
+            - '@doctrine.orm.entity_manager'
+        tags: ['form.type']
+    Cmfcmf\Module\MediaModule\ContentType\MediaType:
+        parent: zikula.content_type.base
+        shared: false
+        calls:
+            - [setEntityManager, ['@doctrine.orm.entity_manager']]
+            - [setSecurityManager, ['@cmfcmf_media_module.security_manager']]
+            - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
+            - [setRouter, ['@router']]
+            - [setEnableMediaViewCounter, ["@=service('zikula_extensions_module.api.variable').get('CmfcmfMediaModule', 'enableMediaViewCounter', false)"]]
+        tags: ['zikula.content_type']
+    Cmfcmf\Module\MediaModule\ContentType\Form\Type\MediaType:
+        parent: zikula.content_type.form.base
+        arguments:
+            - '@cmfcmf_media_module.security_manager'
+            - '@doctrine.orm.entity_manager'
+        tags: ['form.type']

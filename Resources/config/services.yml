@@ -5,6 +5,7 @@ imports:
   - { resource: 'formtypes.yml' }
   - { resource: 'hooks.yml' }
   - { resource: 'importers.yml' }
+  - { resource: 'contenttypes.yml' }
 
 services:
     # Imagine filter
@@ -104,6 +105,7 @@ services:
         class: Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory
         arguments:
             - '@cmfcmf_media_module.collection_template_collection'
+            - "@=service('zikula_extensions_module.api.variable').get('CmfcmfMediaModule', 'defaultCollectionTemplate')"
 
     # Twig extension
     cmfcmf_media_module.twig_extension:
@@ -118,7 +120,6 @@ services:
             - '@zikula_extensions_module.api.variable'
         public: false
         tags: ['twig.extension']
-
 
     # Fonts
     cmfcmf_media_module.font.font_loader:
