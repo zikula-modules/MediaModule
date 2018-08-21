@@ -124,7 +124,9 @@ class CollectionType extends AbstractType
                 'entity' => 'CollectionEntity',
                 'entityCategoryClass' => CollectionCategoryAssignmentEntity::class,
             ])
-            ->add('defaultTemplate', TemplateType::class)
+            ->add('defaultTemplate', TemplateType::class, [
+                'label' => $this->translator->trans('Display', [], 'cmfcmfmediamodule'),
+            ])
             ->add('parent', EntityType::class, [
                 'class' => CollectionEntity::class,
                 'required' => false,
