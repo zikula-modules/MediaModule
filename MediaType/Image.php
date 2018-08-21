@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
+use Imagine\Image\ImageInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
 class Image extends AbstractFileMediaType implements UploadableMediaTypeInterface
@@ -171,13 +172,13 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         return in_array($mimeType, $this->getSupportedMimeTypes()) ? 5 : 0;
     }
 
-    public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
+    public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = ImageInterface::THUMBNAIL_OUTBOUND, $optimize = true)
     {
-        /** @var ImageEntity $entity */
-        if (!in_array($mode, ['inset', 'outbound'])) {
-            throw new \InvalidArgumentException('Invalid mode requested.');
+        if (!in_array($mode, [ImageInterface::THUMBNAIL_INSET, ImageInterface::THUMBNAIL_OUTBOUND])) {
+            $mode = ImageInterface::THUMBNAIL_INSET;
         }
 
+        /** @var ImageEntity $entity */
         $path = $entity->getPath();
         $imagineOptions = $this->getImagineRuntimeOptions($entity, $path, $width, $height, $mode, $optimize);
         $url = $this->imagineCacheManager->getBrowserPath($path, 'zkroot', $imagineOptions);

@@ -16,7 +16,7 @@ If you want to test the current version (potentially unstable!), download it fro
 **Downloading directly from master would require you to execute `composer install --no-dev`.**
 
 ## Information
-Read all about the module [at it's website](http://cmfcmf.github.io/MediaModule).
+Read all about the module [at it's website](https://cmfcmf.github.io/MediaModule).
 
 The module supports many media types natively (images, plaintext, MarkDown, videos, audio, pdf, …)
 and further types can be added with ease! 

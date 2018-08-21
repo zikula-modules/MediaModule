@@ -103,9 +103,8 @@ abstract class AbstractFileMediaType extends AbstractMediaType
         return false;
         // @todo Re-enable?
         if (!in_array($mode, [ImageInterface::THUMBNAIL_INSET, ImageInterface::THUMBNAIL_OUTBOUND])) {
-            throw new \InvalidArgumentException('Invalid mode requested.');
+            $mode = ImageInterface::THUMBNAIL_INSET;
         }
-        $mode = 'inset';
 
         $availableSizes = [16, 32, 48, 512];
         $chosenSize = 0;

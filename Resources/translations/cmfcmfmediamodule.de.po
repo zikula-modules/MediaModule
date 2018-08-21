@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Media 1.3.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-08-20 19:35+0200\n"
+"PO-Revision-Date: 2018-08-21 10:25+0200\n"
 "Last-Translator: Axel Guckelsberger <info@guite.de>\n"
 "Language-Team: \n"
 "Language: de_DE\n"
@@ -695,10 +695,8 @@ msgstr "Ungültige Daten, Fehler: "
 msgid "Invite people and view permissions"
 msgstr "Personen einladen und Zugriffsrechte anzeigen"
 
-msgid ""
-"It seems like the Scribite integration is working."
-msgstr ""
-"Es scheint als würde die Integration mit Scribite funktionieren."
+msgid "It seems like the Scribite integration is working."
+msgstr "Es scheint als würde die Integration mit Scribite funktionieren."
 
 msgid "License"
 msgstr "Lizenz"
@@ -919,6 +917,9 @@ msgstr "Öffentlich"
 
 msgid "Publisher"
 msgstr "Verleger"
+
+msgid "R-G-B-A"
+msgstr "R-G-B-A"
 
 msgid "Raw"
 msgstr "Roh"
@@ -1312,6 +1313,15 @@ msgstr ""
 "Um diese Berechtigung zu bearbeiten, zur übergeordneten Sammlung gehen, in "
 "der die Regel definiert ist."
 
+msgid ""
+"To view this video please enable JavaScript, and consider upgrading to a web "
+"browser that <a href=\"https://videojs.com/html5-video-support/\" target="
+"\"_blank\">supports HTML5 video</a>."
+msgstr ""
+"Um dieses Video anzuschauen, bitte JavaScript aktivieren und ggf. auf einen "
+"Webbrowser aktualisieren, der <a href=\"https://videojs.com/html5-video-"
+"support/\" target=\"_blank\">HTML5 Video unterstützt</a>."
+
 msgid "Track number"
 msgstr "Titelnummer"
 
@@ -1371,6 +1381,9 @@ msgstr "Das Upgrade wurde durch ein Veto gestoppt!"
 
 msgid "Upload a file"
 msgstr "Datei hochladen"
+
+msgid "Upload to YouTube"
+msgstr "Zu YouTube hochladen"
 
 msgid "Url"
 msgstr "URL"
@@ -1531,9 +1544,6 @@ msgstr ""
 msgid "Your browser does not support the audio element."
 msgstr "Ihr Browser unterstützt das Audio Element nicht."
 
-msgid "Your browser does not support the video element."
-msgstr "Ihr Browser unterstützt das Video Element nicht."
-
 msgid ""
 "Your installed Core version is not capable of running the upgrade. Please "
 "upgrade your core to match %version% first."
@@ -1592,3 +1602,6 @@ msgstr "wurzel"
 
 msgid "yes"
 msgstr "ja"
+
+#~ msgid "Your browser does not support the video element."
+#~ msgstr "Ihr Browser unterstützt das Video Element nicht."
