@@ -110,7 +110,7 @@ class FinderController extends AbstractController
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
-        if ($hookedObjectId != null) {
+        if (null != $hookedObjectId) {
             $em = $this->getDoctrine()->getManager();
             $hookedObjectEntity = $em
                 ->find('CmfcmfMediaModule:HookedObject\HookedObjectEntity', $hookedObjectId);
@@ -120,7 +120,7 @@ class FinderController extends AbstractController
 
         $qb = $securityManager
             ->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
-        if ($parentId == '#') {
+        if ('#' == $parentId) {
             $qb->andWhere($qb->expr()->isNull('c.parent'));
         } else {
             $qb->andWhere($qb->expr()->eq('c.parent', ':parentId'))

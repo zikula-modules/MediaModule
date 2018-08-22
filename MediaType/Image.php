@@ -125,7 +125,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         // 32: NoFlashFunction
         // 64: RedEyeReductionMode
 
-        return ($flash & 1) != 0;
+        return 0 != ($flash & 1);
     }
 
     private function convertMeteringMode($meteringMode)
@@ -153,7 +153,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     }
 
     /**
-     * @return array A list of supported mime types.
+     * @return array a list of supported mime types
      */
     private function getSupportedMimeTypes()
     {

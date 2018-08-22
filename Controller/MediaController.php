@@ -14,7 +14,6 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\PasteMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
@@ -97,7 +96,7 @@ class MediaController extends AbstractController
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA
         );
-        $isTemporaryUploadCollection = $entity->getCollection()->getId() == CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID;
+        $isTemporaryUploadCollection = CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID == $entity->getCollection()->getId();
         $justUploadedIds = $request->getSession()->get('cmfcmfmediamodule_just_uploaded', []);
 
         if (!$editPermission && !($isTemporaryUploadCollection && in_array($entity->getId(), $justUploadedIds))) {
@@ -106,7 +105,7 @@ class MediaController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
         $parent = $request->query->get('parent', null);
-        if ($parent != null) {
+        if (null != $parent) {
             $parent = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->findOneBy(['slug' => $parent]);
         }
 
@@ -129,7 +128,7 @@ class MediaController extends AbstractController
 
         $uploadManager = $this->get('stof_doctrine_extensions.uploadable.manager');
         $file = $form->has('file') ? $form->get('file')->getData() : null;
-        if ($file !== null) {
+        if (null !== $file) {
             if (!($mediaType instanceof UploadableMediaTypeInterface)) {
                 // Attempt to upload a file for a non-upload media type.
                 throw new NotFoundHttpException();
@@ -348,7 +347,7 @@ class MediaController extends AbstractController
         $this->checkMediaCreationAllowed();
 
         $pastedText = $request->request->get('pastedText', false);
-        if ($pastedText === false) {
+        if (false === $pastedText) {
             throw new NotFoundHttpException();
         }
 
@@ -424,7 +423,7 @@ class MediaController extends AbstractController
             throw new NotFoundHttpException();
         }
         $q = $request->request->get('q', false);
-        if ($q === false) {
+        if (false === $q) {
             throw new NotFoundHttpException();
         }
         $dropdownValue = $request->request->get('dropdownValue', null);
@@ -450,7 +449,7 @@ class MediaController extends AbstractController
 
         $mediaTypes = $this->get('cmfcmf_media_module.media_type_collection')->getUploadableMediaTypes();
         $files = $request->request->get('files', false);
-        if ($files === false) {
+        if (false === $files) {
             throw new NotFoundHttpException();
         }
         $result = [];
@@ -467,7 +466,7 @@ class MediaController extends AbstractController
                     $selectedMediaType = $mediaType;
                 }
             }
-            if ($selectedMediaType === null) {
+            if (null === $selectedMediaType) {
                 $result[$c] = null;
                 $notFound++;
             } else {
@@ -507,11 +506,11 @@ class MediaController extends AbstractController
             $em = $this->getDoctrine()->getManager();
 
             $collection = $request->request->get('collection', null);
-            if ($collection == null) {
+            if (null == $collection) {
                 $collection = CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID;
             }
 
-            if ($request->files->count() != 1) {
+            if (1 != $request->files->count()) {
                 return new Response(null, Response::HTTP_BAD_REQUEST);
             }
 
@@ -529,7 +528,7 @@ class MediaController extends AbstractController
                     $selectedMediaType = $mediaType;
                 }
             }
-            if ($selectedMediaType === null) {
+            if (null === $selectedMediaType) {
                 return new Response($this->__('File type not supported!'), Response::HTTP_FORBIDDEN);
             }
 
@@ -568,7 +567,7 @@ class MediaController extends AbstractController
             return $this->json([
                 'msg' => $this->__('File uploaded!'),
                 'editUrl' => $this->generateUrl('cmfcmfmediamodule_media_edit', ['slug' => $entity->getSlug(), 'collectionSlug' => $entity->getCollection()->getSlug()]),
-                'openNewTabAndEdit' => $collection == CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID
+                'openNewTabAndEdit' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID == $collection
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);

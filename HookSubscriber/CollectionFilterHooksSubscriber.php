@@ -34,23 +34,23 @@ class CollectionFilterHooksSubscriber implements HookSubscriberInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getOwner()
     {
         return 'CmfcmfMediaModule';
     }
-    
+
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getCategory()
     {
         return FilterHooksCategory::NAME;
     }
-    
+
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getTitle()
     {
@@ -58,7 +58,7 @@ class CollectionFilterHooksSubscriber implements HookSubscriberInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getEvents()
     {

@@ -42,7 +42,7 @@ class ThirdPartyListener implements EventSubscriberInterface
         $this->filesystem = $filesystem;
         $this->requestStack = $requestStack;
     }
-    
+
     /**
      * Makes our handlers known to the event system.
      */
@@ -110,7 +110,7 @@ class ThirdPartyListener implements EventSubscriberInterface
             'path'   => $basePath . '/web/modules/cmfcmfmedia/js/Finder/opener.js'
         ]);
     }
-    
+
     /**
      * Listener for the `moduleplugin.ckeditor.externalplugins` event.
      *
@@ -132,7 +132,7 @@ class ThirdPartyListener implements EventSubscriberInterface
             'img'  => 'ed_cmfcmfmediamodule.gif'
         ]);
     }
-    
+
     /**
      * Listener for the `moduleplugin.quill.externalplugins` event.
      *
@@ -152,7 +152,7 @@ class ThirdPartyListener implements EventSubscriberInterface
             'path' => $this->requestStack->getCurrentRequest()->getBasePath() . '/web/modules/cmfcmfmedia/scribite/Quill/cmfcmfmediamodule/plugin.js'
         ]);
     }
-    
+
     /**
      * Listener for the `moduleplugin.summernote.externalplugins` event.
      *
@@ -172,7 +172,7 @@ class ThirdPartyListener implements EventSubscriberInterface
             'path' => $this->requestStack->getCurrentRequest()->getBasePath() . '/web/modules/cmfcmfmedia/scribite/Summernote/cmfcmfmediamodule/plugin.js'
         ]);
     }
-    
+
     /**
      * Listener for the `moduleplugin.tinymce.externalplugins` event.
      *

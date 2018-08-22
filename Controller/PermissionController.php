@@ -14,7 +14,6 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Exception\InvalidPositionException;
-use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query\Expr;
@@ -107,7 +106,7 @@ class PermissionController extends AbstractController
         /** @var AbstractPermissionEntity $entity */
         $entity->setCollection($collection);
         $entity->setPosition($afterPermission->getPosition() + 1);
-        if ($permissionLevel == CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS) {
+        if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS == $permissionLevel) {
             $entity->setGoOn(true);
         }
 

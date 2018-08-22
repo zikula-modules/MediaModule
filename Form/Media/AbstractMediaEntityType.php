@@ -187,7 +187,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                         return $er->createQueryBuilder('l')
                             ->orderBy('l.title', 'ASC')
                             ->where('l.enabledForUpload = 1');
-                        // @todo Move to the actual uploadable file types.
+                    // @todo Move to the actual uploadable file types.
                     },
                     'placeholder' => $this->translator->trans('Unknown', [], 'cmfcmfmediamodule'),
                     'choice_label' => 'title',

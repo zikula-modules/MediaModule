@@ -35,7 +35,6 @@ class ColorType extends AbstractType
 
                 return "#" . substr($rgba, 7, 2) . substr($rgba, 1, 6);
             }, function ($argb) {
-
                 return "#" . substr($argb, 3, 6) . substr($argb, 1, 2);
             }
         ));

@@ -14,7 +14,6 @@ namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Cmfcmf\Module\MediaModule\Traits\StandardFieldsTrait;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
 use Symfony\Component\HttpFoundation\RequestStack;

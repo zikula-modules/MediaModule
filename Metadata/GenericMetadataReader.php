@@ -21,7 +21,7 @@ class GenericMetadataReader
      *
      * @param string $file
      *
-     * @return array The metadata.
+     * @return array the metadata
      */
     public static function readMetadata($file)
     {

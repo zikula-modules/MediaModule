@@ -73,8 +73,6 @@ class MediaTypeController extends AbstractController
         $client->setRedirectUri(
             filter_var($this->generateUrl('cmfcmfmediamodule_mediatype_youtubeupload', ['id' => $entity->getId()], RouterInterface::ABSOLUTE_URL), FILTER_SANITIZE_URL));
 
-
-
         // Define an object that will be used to make all API requests.
         $youtube = new Google_Service_YouTube($client);
 
@@ -155,7 +153,6 @@ END;
                 $chunkSizeBytes
             );
             $media->setFileSize(filesize($videoPath));
-
 
             // Read the media file and upload it chunk by chunk.
             $status = false;

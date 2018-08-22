@@ -74,7 +74,6 @@ class SettingsController extends AbstractController
                 ['%size%' => PHPIniHelper::formatFileSize($maxUploadSize)], 'cmfcmfmediamodule'),
         ];
 
-
         $highMemoryRequired = false;
         try {
             new \Imagine\Imagick\Imagine();

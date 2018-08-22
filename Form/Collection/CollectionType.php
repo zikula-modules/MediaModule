@@ -142,7 +142,7 @@ class CollectionType extends AbstractType
                     );
                     $qb->orderBy('c.root', 'ASC')
                         ->addOrderBy('c.lft', 'ASC');
-                    if ($theCollection->getId() != null) {
+                    if (null != $theCollection->getId()) {
                         // The collection is currently edited. Make sure it's not placed into
                         // itself or one of it's children.
                         $childrenQuery = $er->getChildrenQuery($theCollection);

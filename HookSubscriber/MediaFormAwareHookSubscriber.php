@@ -34,23 +34,23 @@ class MediaFormAwareHookSubscriber implements HookSubscriberInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getOwner()
     {
         return 'CmfcmfMediaModule';
     }
-    
+
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getCategory()
     {
         return FormAwareCategory::NAME;
     }
-    
+
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getTitle()
     {
@@ -58,7 +58,7 @@ class MediaFormAwareHookSubscriber implements HookSubscriberInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getEvents()
     {

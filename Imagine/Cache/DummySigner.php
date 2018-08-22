@@ -32,7 +32,7 @@ class DummySigner implements SignerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function sign($path, array $runtimeConfig = null)
     {
@@ -46,10 +46,10 @@ class DummySigner implements SignerInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function check($hash, $path, array $runtimeConfig = null)
     {
-        return true;//$hash === $this->sign($path, $runtimeConfig);
+        return true; //$hash === $this->sign($path, $runtimeConfig);
     }
 }

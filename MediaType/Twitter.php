@@ -27,10 +27,10 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     public function isEnabled()
     {
         return
-            $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey') != '' &&
-            $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret') != '' &&
-            $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken') != '' &&
-            $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret') != ''
+            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey') &&
+            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret') &&
+            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken') &&
+            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret')
         ;
     }
 
@@ -47,7 +47,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function matchesPaste($pastedText)
     {
-        return $this->extractTweetIdFromPaste($pastedText) !== false ? 10 : 0;
+        return false !== $this->extractTweetIdFromPaste($pastedText) ? 10 : 0;
     }
 
     /**
@@ -58,7 +58,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         $entity = new TwitterEntity($this->requestStack, $this->dataDirectory);
 
         $tweetId = $this->extractTweetIdFromPaste($pastedText);
-        if ($tweetId === false) {
+        if (false === $tweetId) {
             throw new \RuntimeException();
         }
         $tweetInfo = $this->getTweetInfo($tweetId);
@@ -78,7 +78,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     private function extractTweetIdFromPaste($pastedText)
     {
         preg_match('#twitter\.com/[A-z]+/status/(\d+)#', $pastedText, $results);
-        if (count($results) == 2) {
+        if (2 == count($results)) {
             return $results[1];
         } else {
             return false;
@@ -129,7 +129,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         //    'results' => [],
         //    'more' => false
         //];
-        if ($dropdownValue === null || $dropdownValue == 'tweets') {
+        if (null === $dropdownValue || 'tweets' == $dropdownValue) {
             $tweetResults = $this->getTweetSearchResults($q);
         }
         //if ($dropdownValue === null || $dropdownValue == 'users') {

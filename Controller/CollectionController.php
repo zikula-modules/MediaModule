@@ -45,7 +45,7 @@ class CollectionController extends AbstractController
      */
     public function newAction(Request $request, CollectionEntity $parent)
     {
-        if ($parent == null) {
+        if (null == $parent) {
             throw new NotFoundHttpException();
         }
         $securityManager = $this->get('cmfcmf_media_module.security_manager');

@@ -77,7 +77,7 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
             ])
             ->addModelTransformer(
                 new CallbackTransformer(function ($modelData) use ($selectedTemplateFactory) {
-                    if ($modelData === null) {
+                    if (null === $modelData) {
                         return [
                             'template' => null,
                             'options' => []

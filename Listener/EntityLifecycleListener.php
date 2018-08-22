@@ -75,6 +75,6 @@ class EntityLifecycleListener implements EventSubscriber, ContainerAwareInterfac
     {
         $entityClassParts = explode('\\', get_class($entity));
 
-        return ($entityClassParts[0] == 'Cmfcmf' && $entityClassParts[2] == 'MediaModule');
+        return 'Cmfcmf' == $entityClassParts[0] && 'MediaModule' == $entityClassParts[2];
     }
 }

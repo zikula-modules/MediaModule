@@ -65,10 +65,10 @@ class WatermarkController extends AbstractController
             throw new AccessDeniedException();
         }
         $dataDirectory = $this->get('service_container')->getParameter('datadir');
-        if ($type == 'image') {
+        if ('image' == $type) {
             $entity = new ImageWatermarkEntity($this->get('request_stack'), $dataDirectory);
             $form = ImageWatermarkType::class;
-        } elseif ($type == 'text') {
+        } elseif ('text' == $type) {
             $entity = new TextWatermarkEntity($this->get('request_stack'), $dataDirectory);
             $form = TextWatermarkType::class;
         } else {
@@ -133,7 +133,7 @@ class WatermarkController extends AbstractController
         if ($entity instanceof Uploadable) {
             /** @var UploadedFile $file */
             $file = $form->get('file')->getData();
-            if ($file !== null && $file->isValid()) {
+            if (null !== $file && $file->isValid()) {
                 // If the file is invalid, it means that no new file has been selected
                 // to replace the already uploaded file.
                 $manager = $this->get('stof_doctrine_extensions.uploadable.manager');

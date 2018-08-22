@@ -64,7 +64,7 @@ class TemplateCollection
     /**
      * Returns the specified collection template.
      *
-     * @param string $template The template name.
+     * @param string $template the template name
      *
      * @return TemplateInterface
      */
@@ -80,7 +80,7 @@ class TemplateCollection
     /**
      * Checks whether or not the specified collection template exists.
      *
-     * @param string $template The template name.
+     * @param string $template the template name
      *
      * @return bool
      */

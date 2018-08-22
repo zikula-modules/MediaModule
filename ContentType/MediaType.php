@@ -17,7 +17,6 @@ use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 use Zikula\Common\Content\AbstractContentType;
 use Zikula\Common\Content\ContentTypeInterface;

@@ -100,10 +100,10 @@ class CustomImageFilter implements LoaderInterface
         // It will already be correctly sized for the thumbnail.
 
         $wWidth = $wHeight = 0;
-        if (isset($options['mode']) && $options['mode'] == ImageInterface::THUMBNAIL_OUTBOUND) {
+        if (isset($options['mode']) && ImageInterface::THUMBNAIL_OUTBOUND == $options['mode']) {
             $wWidth = $options['width'];
             $wHeight = $options['height'];
-        } elseif (!isset($options['mode']) || $options['mode'] == ImageInterface::THUMBNAIL_INSET) {
+        } elseif (!isset($options['mode']) || ImageInterface::THUMBNAIL_INSET == $options['mode']) {
             $imageSize = getimagesize($options['file']);
 
             $ratios = [

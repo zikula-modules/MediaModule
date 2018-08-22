@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Zikula\GroupsModule\Entity\GroupEntity;
 
 class GroupPermissionType extends AbstractPermissionType
 {

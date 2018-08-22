@@ -131,7 +131,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 5;
         }
-        if ($file->getMimeType() == 'application/ogg') {
+        if ('application/ogg' == $file->getMimeType()) {
             // This could be a video or audio file.
             $meta = GenericMetadataReader::readMetadata($file->getPathname());
             if (isset($meta['video']['dataformat'])) {
@@ -143,7 +143,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     }
 
     /**
-     * @return array A list of supported mime types.
+     * @return array a list of supported mime types
      */
     private function getSupportedMimeTypes()
     {

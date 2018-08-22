@@ -26,11 +26,13 @@ SELECT status, uupdate, title, url, filename, description, ddate, hits, submitte
 FROM downloads_downloads
 WHERE cid = ?
 SQL;
+
     const DOWNLOAD_CATEGORY_QUERY = <<<'SQL'
 SELECT cid, pid, title, description
 FROM downloads_categories
 ORDER BY pid ASC
 SQL;
+
     /**
      * @var UploadableManager
      */

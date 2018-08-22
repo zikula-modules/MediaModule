@@ -26,7 +26,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     public function isEnabled()
     {
-        return $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey') != '';
+        return '' != $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey');
     }
 
     /**
@@ -42,7 +42,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function matchesPaste($pastedText)
     {
-        return $this->extractYouTubeIdAndTypeFromPaste($pastedText) !== false ? 10 : 0;
+        return false !== $this->extractYouTubeIdAndTypeFromPaste($pastedText) ? 10 : 0;
     }
 
     /**
@@ -53,7 +53,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         $entity = new YouTubeEntity($this->requestStack, $this->dataDirectory);
 
         list($type, $id) = $this->extractYouTubeIdAndTypeFromPaste($pastedText);
-        if ($id === false || !in_array($type, ['playlist', 'video', 'channel', true])) {
+        if (false === $id || !in_array($type, ['playlist', 'video', 'channel', true])) {
             throw new \RuntimeException();
         }
 
@@ -65,17 +65,17 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     private function extractYouTubeIdAndTypeFromPaste($pastedText)
     {
         preg_match('#youtube\.com\/channel\/([a-zA-Z0-9_-]+)#', $pastedText, $results);
-        if (count($results) == 2) {
+        if (2 == count($results)) {
             return ['channel', $results[1]];
         }
 
         preg_match('#youtube(?:-nocookie)?\.com\/[a-zA-Z0-9_\-\/\=\?\&]+list=([a-zA-Z0-9_-]+)#', $pastedText, $results);
-        if (count($results) == 2) {
+        if (2 == count($results)) {
             return ['playlist', $results[1]];
         }
 
         preg_match('#(?:youtube(?:-nocookie)?\.com\/\S*(?:(?:\/e(?:mbed))?\/|watch\?(?:\S*?&?v\=))|youtu\.be\/)([a-zA-Z0-9_-]{6,11})#', $pastedText, $results);
-        if (count($results) == 2) {
+        if (2 == count($results)) {
             return ['video', $results[1]];
         }
 

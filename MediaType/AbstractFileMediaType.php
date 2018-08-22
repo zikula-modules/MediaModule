@@ -66,12 +66,12 @@ abstract class AbstractFileMediaType extends AbstractMediaType
 
     protected function getImagineRuntimeOptions(AbstractFileEntity $entity, $file, $width, $height, $mode, $optimize)
     {
-        if ($height == 'original' || $width == 'original') {
+        if ('original' == $height || 'original' == $width) {
             $size = getimagesize($entity->getPath());
-            if ($width == 'original') {
+            if ('original' == $width) {
                 $width = $size[0];
             }
-            if ($height == 'original') {
+            if ('original' == $height) {
                 $height = $size[1];
             }
         }

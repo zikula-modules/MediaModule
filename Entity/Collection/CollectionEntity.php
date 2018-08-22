@@ -257,7 +257,7 @@ class CollectionEntity implements Node, Sluggable
      */
     public function isPrimaryMediumInMediaCollection()
     {
-        return $this->primaryMedium === null || $this->media->contains($this->primaryMedium);
+        return null === $this->primaryMedium || $this->media->contains($this->primaryMedium);
     }
 
     /**
@@ -275,7 +275,7 @@ class CollectionEntity implements Node, Sluggable
         $children = true;
 
         $isSelected = false;
-        if ($hookedObjectEntity != null) {
+        if (null != $hookedObjectEntity) {
             /** @var HookedObjectCollectionEntity $hookedObjectCollectionEntity */
             foreach ($hookedObjectEntity->getHookedObjectCollections() as $hookedObjectCollectionEntity) {
                 if ($this->id == $hookedObjectCollectionEntity->getCollection()->getId()) {
@@ -360,7 +360,7 @@ class CollectionEntity implements Node, Sluggable
     }
 
     /**
-     * @deprecated Use $this->getPrimaryMedium() instead.
+     * @deprecated use $this->getPrimaryMedium() instead
      *
      * @return AbstractMediaEntity|null
      */
@@ -371,7 +371,7 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param RouterInterface $router
-     * @param bool            $selfIsClickable Whether or not this collection is clickable.
+     * @param bool            $selfIsClickable whether or not this collection is clickable
      *
      * @return array
      */
@@ -381,7 +381,7 @@ class CollectionEntity implements Node, Sluggable
         $breadcrumbs = [];
 
         /** @var CollectionEntity $parent */
-        while (($parent = $child->getParent()) !== null) {
+        while (null !== ($parent = $child->getParent())) {
             $breadcrumbs[] = [
                 'url' => $router->generate('cmfcmfmediamodule_collection_display', ['slug' => $parent->getSlug()]),
                 'title' => $parent->getTitle()
@@ -413,7 +413,7 @@ class CollectionEntity implements Node, Sluggable
      */
     public function isRoot()
     {
-        return $this->parent === null;
+        return null === $this->parent;
     }
 
     /**
@@ -750,7 +750,7 @@ class CollectionEntity implements Node, Sluggable
      */
     public function getPrimaryMedium($useFirstIfNoneSpecified = false)
     {
-        if ($useFirstIfNoneSpecified && $this->primaryMedium === null && !$this->media->isEmpty()) {
+        if ($useFirstIfNoneSpecified && null === $this->primaryMedium && !$this->media->isEmpty()) {
             return $this->media->first();
         }
 

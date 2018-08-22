@@ -68,7 +68,7 @@ abstract class AbstractController extends BaseAbstractController
             }
         }
 
-        return strlen($content) == 0 ? '' : "<div class=\"row\">\n$content</div>";
+        return 0 == strlen($content) ? '' : "<div class=\"row\">\n$content</div>";
     }
 
     /**

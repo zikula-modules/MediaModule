@@ -49,7 +49,7 @@ class PermissionLevelType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        if ($options['permissionLevel'] == CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS) {
+        if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS == $options['permissionLevel']) {
             $this->fixSecurityGraph();
         }
         $view->vars['securityGraph'] = $this->securityGraph;
@@ -65,7 +65,7 @@ class PermissionLevelType extends AbstractType
             'expanded' => true,
             'multiple' => true,
             'choices' => function (Options $options) {
-                if ($options['permissionLevel'] == CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS) {
+                if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS == $options['permissionLevel']) {
                     $this->fixSecurityGraph();
                 }
 

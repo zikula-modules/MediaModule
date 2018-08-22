@@ -234,7 +234,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             return null;
         }
 
-        if ($format == 'html') {
+        if ('html' == $format) {
             if (null === $this->authorUrl) {
                 $author = htmlentities($this->author);
             } elseif (null === $this->author) {
@@ -242,7 +242,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             } else {
                 $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->author) . '</a>';
             }
-        } elseif ($format == 'raw') {
+        } elseif ('raw' == $format) {
             $author = '';
             if (null !== $this->author) {
                 $author .= $this->author . ' ';
@@ -482,7 +482,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             'title' => $this->title,
             'slug' => $this->slug,
             'description' => $this->description,
-            'license' => $this->getLicense() !== null ? $this->getLicense()->toArray() : null,
+            'license' => null !== $this->getLicense() ? $this->getLicense()->toArray() : null,
             'embedCodes' => [
                 'full' => $mediaType->getEmbedCode($this),
                 'medium' => $mediaType->getEmbedCode($this, 'medium'),

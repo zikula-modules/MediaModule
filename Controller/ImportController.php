@@ -62,7 +62,7 @@ class ImportController extends AbstractController
             throw new NotFoundHttpException();
         }
         $importer = $importerCollection->getImporter($importer);
-        if ($importer->checkRequirements() !== true) {
+        if (true !== $importer->checkRequirements()) {
             throw new NotFoundHttpException();
         }
 
@@ -72,7 +72,7 @@ class ImportController extends AbstractController
         if ($form->isValid()) {
             $success = $importer->import($form->getData(), $this->get('session')->getFlashBag());
 
-            if ($success === true) {
+            if (true === $success) {
                 $this->addFlash('status', $this->__('Media imported successfully.'));
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $form->getData()['collection']->getSlug()]);

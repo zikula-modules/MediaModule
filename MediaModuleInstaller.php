@@ -49,7 +49,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         // We need to create and flush the upload collection first, because it has to has the ID 1.
         $this->entityManager->flush();
-        if ($temporaryUploadCollection->getId() != CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
+        if (CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID != $temporaryUploadCollection->getId()) {
             throw new \Exception($this->__f('The id of the generated "temporary upload collection" must be %s, but has a different value. This should not have happened. Please report this error.', ['%s' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID]));
         }
 
@@ -136,7 +136,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     ->getRepository(CollectionEntity::class)
                     ->findAll();
                 foreach ($allCollections as $collection) {
-                    if ($collection->getParent() === null && $collection->getId() != null) {
+                    if (null === $collection->getParent() && null != $collection->getId()) {
                         // Collection has no parent and isn't the to-be-created root collection.
                         $collection->setParent($rootCollection);
                         $this->entityManager->merge($collection);
@@ -190,6 +190,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $stmt = $connection->prepare($sql);
                     $stmt->execute();
                 }
+
                 return true;
             case '1.3.0':
                 return true;
@@ -302,7 +303,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         foreach ($ccVersions as $version) {
             foreach ($ccNames as $id => $name) {
-                if ($id == 'CC-BY-NC-ND' && $version == '1.0') {
+                if ('CC-BY-NC-ND' == $id && '1.0' == $version) {
                     // The license image somehow does not exist.
                     continue;
                 }
@@ -314,7 +315,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     ->setImageUrl("https://i.creativecommons.org/l/$urlId/$version/80x15.png")
                     ->setEnabledForWeb(true)
                     ->setEnabledForUpload(true)
-                    ->setOutdated($version != '4.0')
+                    ->setOutdated('4.0' != $version)
                 ;
                 $this->entityManager->persist($license);
             }
