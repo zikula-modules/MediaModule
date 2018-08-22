@@ -13,16 +13,16 @@
             },
             Ajax: {
                 fail: function (data) {
-                    var errorText = "Sorry, the AJAX request could not be finished. Please try again.";
+                    var errorText = 'Sorry, the AJAX request could not be finished. Please try again.';
                     if (data.responseJSON && data.responseJSON.error) {
                         errorText = data.responseJSON.error;
                     } else if (data.status == 403) {
-                        errorText = "You do not have permission to execute this action."
+                        errorText = 'You do not have permission to execute this action.'
                     }
                     if ('undefined' != typeof window.toastr) {
-                        window.toastr["error"](errorText, 'Something went wrong!');
+                        window.toastr['error'](errorText, 'Something went wrong!');
                     } else {
-                        alert('Something went wrong!');
+                        alert('Something went wrong!' + ' ' + errorText);
                     }
                 },
                 makeExternalRequest: function (url, done, fail, always) {
