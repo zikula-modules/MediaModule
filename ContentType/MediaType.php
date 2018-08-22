@@ -73,7 +73,7 @@ class MediaType extends AbstractContentType
      */
     public function getTitle()
     {
-        return $this->__('Media detail', 'cmfcmfmediamodule');
+        return $this->translator->__('Media detail', 'cmfcmfmediamodule');
     }
 
     /**
@@ -81,7 +81,7 @@ class MediaType extends AbstractContentType
      */
     public function getDescription()
     {
-        return $this->__('Display a single medium.', 'cmfcmfmediamodule');
+        return $this->translator->__('Display a single medium.', 'cmfcmfmediamodule');
     }
 
     /**
@@ -125,10 +125,8 @@ class MediaType extends AbstractContentType
      */
     public function displayEditing()
     {
-        $this->customInit();
-
         if (null === $this->data['id'] || empty($this->data['id'])) {
-            return $this->__('No medium selected.', 'cmfcmfmediamodule');
+            return $this->translator->__('No medium selected.', 'cmfcmfmediamodule');
         }
 
         return parent::displayEditing();
@@ -139,10 +137,7 @@ class MediaType extends AbstractContentType
      */
     public function getEditFormClass()
     {
-        $this->bundleName = 'CmfcmfMediaModule';
-        $this->domain = strtolower($this->bundleName);
-
-        include_once __DIR__ . '/../bootstrap.php';
+        $this->customInit();
 
         return FormType::class;
     }

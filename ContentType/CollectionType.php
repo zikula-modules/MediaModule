@@ -68,7 +68,7 @@ class CollectionType extends AbstractContentType
      */
     public function getTitle()
     {
-        return $this->__('Media collection', 'cmfcmfmediamodule');
+        return $this->translator->__('Media collection', 'cmfcmfmediamodule');
     }
 
     /**
@@ -76,7 +76,7 @@ class CollectionType extends AbstractContentType
      */
     public function getDescription()
     {
-        return $this->__('Display a media collection.', 'cmfcmfmediamodule');
+        return $this->translator->__('Display a media collection.', 'cmfcmfmediamodule');
     }
 
     /**
@@ -141,7 +141,7 @@ class CollectionType extends AbstractContentType
     public function displayEditing()
     {
         if (null === $this->data['id'] || empty($this->data['id'])) {
-            return $this->__('No collection selected.', 'cmfcmfmediamodule');
+            return $this->translator->__('No collection selected.', 'cmfcmfmediamodule');
         }
 
         return parent::displayEditing();
