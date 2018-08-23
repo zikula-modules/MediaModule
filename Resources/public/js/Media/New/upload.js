@@ -44,7 +44,7 @@
                 }
 
                 openCollectionSelectModal(function (collection) {
-                    console.log('Selected collection', collection);
+                    //console.log('Selected collection', collection);
                     formDataToAdd.collection = collection;
 
                     myDropzone.enqueueFiles(files);
