@@ -35,7 +35,7 @@ before_install:
 install:
     - composer install
     - zip -qr MediaModule.zip .
-    - wget https://github.com/zikula/core/releases/download/2.0.10/2.0.tar.gz
+    - wget https://github.com/zikula/core/releases/download/2.0.11/2.0.tar.gz
     - tar -xpzf 2.0.tar.gz
     - rm 2.0.tar.gz
     - cd 2.0
@@ -49,7 +49,7 @@ install:
     - unzip -q ../../../../MediaModule
     - cd  ../../..
     - php bin/console bootstrap:bundles
-    - mysql -e "INSERT INTO zk_test.modules (id, name, type, displayname, url, description, version, capabilities, state, securityschema, core_min, core_max) VALUES (NULL, 'CmfcmfMediaModule', '3', 'Media Module', 'media', '...', '1.3.0', 'N;', '3', 'N;', '2.0.10', '3.0.0');"
+    - mysql -e "INSERT INTO zk_test.modules (id, name, type, displayname, url, description, version, capabilities, state, securityschema, core_min, core_max) VALUES (NULL, 'CmfcmfMediaModule', '3', 'Media Module', 'media', '...', '1.3.0', 'N;', '3', 'N;', '2.0.11', '3.0.0');"
 
 script:
     - php bin/console lint:yaml modules/cmfcmf/media-module/Resources

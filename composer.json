@@ -29,7 +29,7 @@
     "extra": {
         "zikula": {
             "class": "Cmfcmf\\Module\\MediaModule\\CmfcmfMediaModule",
-            "core-compatibility": ">=2.0.10",
+            "core-compatibility": ">=2.0.11 <3.0.0",
             "displayname": "MediaModule",
             "url": "media",
             "oldnames": [],
