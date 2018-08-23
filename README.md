@@ -1,5 +1,5 @@
-Zikula 1.4.3+ MediaModule by @cmfcmf
-====================================
+Zikula 2.0.11+ MediaModule by @cmfcmf
+=====================================
 
 [![StyleCI](https://styleci.io/repos/43518681/shield)](https://styleci.io/repos/43518681) 
 [![Build Status](https://travis-ci.org/cmfcmf/MediaModule.svg?branch=master)](https://travis-ci.org/cmfcmf/MediaModule) 
