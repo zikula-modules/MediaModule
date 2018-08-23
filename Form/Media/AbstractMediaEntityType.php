@@ -249,8 +249,8 @@ abstract class AbstractMediaEntityType extends AbstractType
                 'parent' => null,
                 'allowTemporaryUploadCollection' => false
             ])
-            ->setAllowedTypes('isCreation', 'boolean')
-            ->setAllowedTypes('allowTemporaryUploadCollection', 'boolean')
+            ->setAllowedTypes('isCreation', 'bool')
+            ->setAllowedTypes('allowTemporaryUploadCollection', 'bool')
         ;
     }
 }

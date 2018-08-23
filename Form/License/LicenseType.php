@@ -101,7 +101,7 @@ class LicenseType extends AbstractType
             ->setDefaults([
                 'isEdit' => false
             ])
-            ->setAllowedTypes('isEdit', 'boolean')
+            ->setAllowedTypes('isEdit', 'bool')
         ;
     }
 }
