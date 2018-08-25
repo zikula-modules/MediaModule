@@ -93,7 +93,7 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
         }, $hookedObject->getHookedObjectMedia()->getValues());
 
         $content = $this->renderEngine->render('@CmfcmfMediaModule/Media/hookEdit.html.twig', [
-            'selectedMedia' => $selectedMedia,
+            'selectedMedia' => $selectedMedia
         ]);
 
         $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.media', $content));
