@@ -75,7 +75,7 @@ class CollectionUiHooksProvider extends AbstractUiHooksProvider
             'mediaTypeCollection' => $this->mediaTypeCollection
         ]);
 
-        $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.collections', $content));
+        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
     }
 
     /**
@@ -95,7 +95,7 @@ class CollectionUiHooksProvider extends AbstractUiHooksProvider
             'hookedObject' => $hookedObject
         ]);
 
-        $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.collections', $content));
+        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
     }
 
     /**
@@ -120,7 +120,7 @@ class CollectionUiHooksProvider extends AbstractUiHooksProvider
             }
         }
 
-        $hook->setValidator($this->getProvider(), $validationResponse);
+        $hook->setValidator($this->getProviderArea(), $validationResponse);
     }
 
     /**
@@ -139,5 +139,13 @@ class CollectionUiHooksProvider extends AbstractUiHooksProvider
         }
 
         $repository->saveOrDelete($hookedObject);
+    }
+
+    /**
+     * @return string
+     */
+    private function getProviderArea()
+    {
+        return 'provider.cmfcmfmediamodule.ui_hooks.collections';
     }
 }

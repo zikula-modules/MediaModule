@@ -57,7 +57,7 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
             'licenses' => $hookedObject->getLicenses()
         ]);
 
-        $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.licenses', $content));
+        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
     }
 
     /**
@@ -81,7 +81,7 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
             'outdatedLicenses' => $outdatedLicenses
         ]);
 
-        $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.licenses', $content));
+        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
     }
 
     /**
@@ -105,7 +105,7 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
             }
         }
 
-        $hook->setValidator($this->getProvider(), $validationResponse);
+        $hook->setValidator($this->getProviderArea(), $validationResponse);
     }
 
     /**
@@ -122,5 +122,13 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
         }
 
         $repository->saveOrDelete($hookedObject);
+    }
+
+    /**
+     * @return string
+     */
+    private function getProviderArea()
+    {
+        return 'provider.cmfcmfmediamodule.ui_hooks.licenses';
     }
 }

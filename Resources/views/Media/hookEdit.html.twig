@@ -1,6 +1,6 @@
 {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/HookEdit.js')) }}
 
-<h3>{{ __('Hooked media') }}</h3>
+<h3>{{ __('Hooked media', 'cmfcmfmediamodule') }}</h3>
 
 {% include 'CmfcmfMediaModule:Finder:raw.html.twig' %}
 
@@ -13,8 +13,8 @@
         </colgroup>
         <thead>
             <tr>
-                <th id="hThumbnail" scope="col">{{ __('Thumbnail') }}</th>
-                <th id="hTitle" scope="col">{{ __('Title') }}</th>
+                <th id="hThumbnail" scope="col">{{ __('Thumbnail', 'cmfcmfmediamodule') }}</th>
+                <th id="hTitle" scope="col">{{ __('Title', 'cmfcmfmediamodule') }}</th>
                 <th id="hActions" scope="col"></th>
             </tr>
         </thead>
@@ -36,7 +36,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td class="text-center cmfcmfmedia-empty-msg" colspan="3">{{ __('No media attached yet!') }}</td>
+                    <td class="text-center cmfcmfmedia-empty-msg" colspan="3">{{ __('No media attached yet!', 'cmfcmfmediamodule') }}</td>
                 </tr>
             {% endfor %}
         </tbody>

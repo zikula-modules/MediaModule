@@ -76,7 +76,7 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
             'mediaTypeCollection' => $this->mediaTypeCollection
         ]);
 
-        $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.media', $content));
+        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
     }
 
     /**
@@ -93,10 +93,10 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
         }, $hookedObject->getHookedObjectMedia()->getValues());
 
         $content = $this->renderEngine->render('@CmfcmfMediaModule/Media/hookEdit.html.twig', [
-            'selectedMedia' => $selectedMedia
+            'selectedMedia' => $selectedMedia,
         ]);
 
-        $hook->setResponse(new DisplayHookResponse('provider.cmfcmfmediamodule.ui_hooks.media', $content));
+        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
     }
 
     /**
@@ -122,7 +122,7 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
             }
         }
 
-        $hook->setValidator($this->getProvider(), $validationResponse);
+        $hook->setValidator($this->getProviderArea(), $validationResponse);
     }
 
     /**
@@ -139,5 +139,13 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
         }
 
         $repository->saveOrDelete($hookedObject);
+    }
+
+    /**
+     * @return string
+     */
+    private function getProviderArea()
+    {
+        return 'provider.cmfcmfmediamodule.ui_hooks.media';
     }
 }
