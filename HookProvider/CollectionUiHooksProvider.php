@@ -103,9 +103,13 @@ class CollectionUiHooksProvider extends AbstractUiHooksProvider
      */
     public function validateEdit(ValidationHook $hook)
     {
-        $request = $this->requestStack->getCurrentRequest()->request;
+        include_once __DIR__ . '/../bootstrap.php';
 
-        $collectionIds = json_decode($request->get('cmfcmfmediamodule[collections]', "[]", true));
+        // TODO migrate this to a FormAware hook provider
+        $collectionData = $this->requestStack->getCurrentRequest()
+            ->request->get('cmfcmfmediamodule[collections]', '[]', true);
+        $collectionData = isset($_POST['cmfcmfmediamodule']['collections']) ? $_POST['cmfcmfmediamodule']['collections'] : [];
+        $collectionIds = json_decode($collectionData);
 
         $this->entities = [];
         $validationResponse = new ValidationResponse('collections', $collectionIds);

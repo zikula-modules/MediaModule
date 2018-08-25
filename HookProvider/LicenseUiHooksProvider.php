@@ -89,8 +89,12 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
      */
     public function validateEdit(ValidationHook $hook)
     {
+        include_once __DIR__ . '/../bootstrap.php';
+
+        // TODO migrate this to a FormAware hook provider
         $licenseIds = $this->requestStack->getCurrentRequest()
             ->request->get('cmfcmfmediamodule[license]', [], true);
+        $licenseIds = isset($_POST['cmfcmfmediamodule']['license']) ? $_POST['cmfcmfmediamodule']['license'] : [];
 
         $this->entities = [];
         $validationResponse = new ValidationResponse('license', $licenseIds);

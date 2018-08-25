@@ -104,8 +104,12 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
      */
     public function validateEdit(ValidationHook $hook)
     {
+        include_once __DIR__ . '/../bootstrap.php';
+
+        // TODO migrate this to a FormAware hook provider
         $mediaIds = $this->requestStack->getCurrentRequest()
             ->request->get('cmfcmfmediamodule[media]', [], true);
+        $mediaIds = isset($_POST['cmfcmfmediamodule']['media']) ? $_POST['cmfcmfmediamodule']['media'] : [];
 
         $this->entities = [];
         $validationResponse = new ValidationResponse('media', $mediaIds);
