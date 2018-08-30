@@ -1,4 +1,4 @@
-{#% if renderRaw|default %}
+{% if renderRaw|default %}
     <form method="post" action="{{ path('zikulasearchmodule_search_execute') }}">
         <div class="input-group pull-right col-md-4 col-lg-3">
             <input type="hidden" name="active[CmfcmfMediaModule]" value="1" />
@@ -9,4 +9,4 @@
         </div>
     </form>
     <div class="clearfix hidden-md hidden-lg"></div>
-{% endif %#}
+{% endif %}
