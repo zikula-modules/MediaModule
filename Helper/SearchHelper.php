@@ -104,7 +104,7 @@ class SearchHelper implements SearchableInterface
     {
         return [];
     }
-    
+
     /**
      * Construct a QueryBuilder Where orX|andX Expr instance.
      *
