@@ -120,8 +120,8 @@ class SearchHelper implements SearchableInterface
         if (empty($words) || empty($fields)) {
             return null;
         }
-    
-        $method = ($searchtype == 'OR') ? 'orX' : 'andX';
+
+        $method = ('OR' == $searchtype) ? 'orX' : 'andX';
         /** @var $where Composite */
         $where = $qb->expr()->$method();
         $i = 1;
@@ -135,7 +135,7 @@ class SearchHelper implements SearchableInterface
             }
             $where->add($subWhere);
         }
-    
+
         return $where;
     }
 }
