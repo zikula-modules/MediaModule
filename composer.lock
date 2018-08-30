@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d9b71bcb4e38fb8cf4a41511797ee2bf",
+    "content-hash": "19e3fde846397d603ad84ff9bd6751cd",
     "packages": [
         {
             "name": "clue/graph",
@@ -158,16 +158,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.66",
+            "version": "v0.67",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-api-php-client-services.git",
-                "reference": "357a13e6f59e5590071b1d455c0ead482fac65db"
+                "reference": "32f65995935033e40cc94d4f484905b38eb039f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/357a13e6f59e5590071b1d455c0ead482fac65db",
-                "reference": "357a13e6f59e5590071b1d455c0ead482fac65db",
+                "url": "https://api.github.com/repos/google/google-api-php-client-services/zipball/32f65995935033e40cc94d4f484905b38eb039f8",
+                "reference": "32f65995935033e40cc94d4f484905b38eb039f8",
                 "shasum": ""
             },
             "require": {
@@ -191,20 +191,20 @@
             "keywords": [
                 "google"
             ],
-            "time": "2018-08-21T20:23:38+00:00"
+            "time": "2018-08-25T00:23:06+00:00"
         },
         {
             "name": "google/auth",
-            "version": "v1.3.2",
+            "version": "v1.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/google/google-auth-library-php.git",
-                "reference": "436007a77fd2037f933d3a5c8e4c7e0c9b88a7b0"
+                "reference": "af72b3f50420c801dc35cc07b1fa429ae027b847"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/google/google-auth-library-php/zipball/436007a77fd2037f933d3a5c8e4c7e0c9b88a7b0",
-                "reference": "436007a77fd2037f933d3a5c8e4c7e0c9b88a7b0",
+                "url": "https://api.github.com/repos/google/google-auth-library-php/zipball/af72b3f50420c801dc35cc07b1fa429ae027b847",
+                "reference": "af72b3f50420c801dc35cc07b1fa429ae027b847",
                 "shasum": ""
             },
             "require": {
@@ -238,7 +238,7 @@
                 "google",
                 "oauth2"
             ],
-            "time": "2018-07-23T21:44:38+00:00"
+            "time": "2018-08-27T19:47:35+00:00"
         },
         {
             "name": "guzzle/guzzle",
@@ -980,7 +980,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.8.44",
+            "version": "v2.8.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",

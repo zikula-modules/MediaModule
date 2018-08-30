@@ -171,7 +171,6 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 $this->createCategoryRegistries();
             case '1.2.0':
             case '1.2.1':
-                return true;
             case '1.2.2':
                 // fields have changed: createdUserId becomes createdBy, updatedUserId becomes updatedBy
                 $connection = $this->entityManager->getConnection();
@@ -190,9 +189,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $stmt = $connection->prepare($sql);
                     $stmt->execute();
                 }
-
-                return true;
-            case '1.3.0':
+            case '2.0.0':
                 return true;
             default:
                 return false;

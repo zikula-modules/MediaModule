@@ -6,7 +6,7 @@
 
 <video width="{{ width|e('html_attr') }}" height="{{ height|e('html_attr') }}" controls>
     <source src="{{ entity.url|e('html_attr') }}" type="{{ entity.mimeType|e('html_attr') }}">
-    <p class="vjs-no-js">{{ __('To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>.') }}</p>
+    <p class="vjs-no-js">{{ __('To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>.')|raw }}</p>
 </video>
 
 {% if enableYouTubeUpload and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}

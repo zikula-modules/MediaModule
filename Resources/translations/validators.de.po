@@ -17,7 +17,7 @@ msgid "The selected primary medium is not part of the collection!"
 msgstr "Das gewählte Hauptmedium ist nicht Teil der Sammlung!"
 
 msgid "You must select at least one user to apply the permission to."
-msgstr "Es muß mindestens ein Benutzer ausgewählt werden, auf den die Zugriffsrechte angewendet werden sollen."
+msgstr "Es muss mindestens ein Benutzer ausgewählt werden, auf den die Zugriffsrechte angewendet werden sollen."
 
 msgid "You need to grant at least one permission level."
-msgstr "Es muß mindestens eine Berechtigungsstufe eingeräumt werden."
+msgstr "Es muss mindestens eine Berechtigungsstufe eingeräumt werden."

@@ -14,7 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Imagine\Cache;
 use Liip\ImagineBundle\Imagine\Cache\SignerInterface;
 
 /**
- * Temporary dummy signer until https://github.com/liip/LiipImagineBundle/issues/837 has been resolved.
+ * Temporary dummy signer until https://github.com/zikula/core/issues/3902 has been resolved.
  */
 class DummySigner implements SignerInterface
 {

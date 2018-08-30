@@ -87,7 +87,7 @@ abstract class AbstractController extends BaseAbstractController
     }
 
     /**
-     * Applies form aware process hooks.
+     * Applies form aware display hooks.
      *
      * @param Form              $form
      * @param string            $name
