@@ -189,6 +189,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $stmt = $connection->prepare($sql);
                     $stmt->execute();
                 }
+            case '1.3.0':
             case '2.0.0':
                 return true;
             default:
