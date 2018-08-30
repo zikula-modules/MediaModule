@@ -39,7 +39,7 @@
                         position: evt.newIndex,
                         'new-position': evt.newIndex,
                         'old-position': evt.oldIndex
-                    }).success(function () {
+                    }).done(function () {
                         window.toastr['success']('', 'Saved new position.');
                     }).fail(window.CmfcmfMediaModule.Util.Ajax.fail);
                 }
