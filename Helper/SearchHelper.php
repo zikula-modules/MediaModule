@@ -15,9 +15,12 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr\Composite;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Zikula\Core\RouteUrl;
+use Zikula\SearchModule\Entity\SearchResultEntity;
 use Zikula\SearchModule\SearchableInterface;
 
 class SearchHelper implements SearchableInterface
@@ -42,6 +45,8 @@ class SearchHelper implements SearchableInterface
     ) {
         $this->requestStack = $requestStack;
         $this->securityManager = $securityManager;
+
+        include_once __DIR__ . '/../bootstrap.php';
     }
 
     public function amendForm(FormBuilderInterface $builder)
@@ -78,17 +83,18 @@ class SearchHelper implements SearchableInterface
         $media = $qb->getQuery()->execute();
 
         foreach ($media as $medium) {
-            $results[] = [
-                'title' => $medium->getTitle(),
-                'text' => $medium->getDescription(),
-                'module' => 'CmfcmfMediaModule',
-                'created' => $medium->getCreatedDate(),
-                'sesid' => $sessionId,
-                'url' => new RouteUrl('cmfcmfmediamodule_media_display', [
+            $result = new SearchResultEntity();
+            $result->setTitle($medium->getTitle())
+                ->setText($medium->getDescription())
+                ->setModule('CmfcmfMediaModule')
+                ->setCreated($medium->getCreatedDate())
+                ->setSesid($sessionId)
+                ->setUrl(new RouteUrl('cmfcmfmediamodule_media_display', [
                     'slug' => $medium->getSlug(),
                     'collectionSlug' => $medium->getCollection()->getSlug()
-                ])
-            ];
+                ]))
+            ;
+            $results[] = $result;
         }
 
         return $results;
@@ -97,5 +103,39 @@ class SearchHelper implements SearchableInterface
     public function getErrors()
     {
         return [];
+    }
+    
+    /**
+     * Construct a QueryBuilder Where orX|andX Expr instance.
+     *
+     * @param QueryBuilder $qb
+     * @param string[] $words  List of words to query for
+     * @param string[] $fields List of fields to include into query
+     * @param string $searchtype AND|OR|EXACT
+     *
+     * @return null|Composite
+     */
+    protected function formatWhere(QueryBuilder $qb, array $words = [], array $fields = [], $searchtype = 'AND')
+    {
+        if (empty($words) || empty($fields)) {
+            return null;
+        }
+    
+        $method = ($searchtype == 'OR') ? 'orX' : 'andX';
+        /** @var $where Composite */
+        $where = $qb->expr()->$method();
+        $i = 1;
+        foreach ($words as $word) {
+            $subWhere = $qb->expr()->orX();
+            foreach ($fields as $field) {
+                $expr = $qb->expr()->like($field, "?$i");
+                $subWhere->add($expr);
+                $qb->setParameter($i, '%' . $word . '%');
+                $i++;
+            }
+            $where->add($subWhere);
+        }
+    
+        return $where;
     }
 }

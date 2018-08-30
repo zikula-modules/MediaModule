@@ -52,6 +52,8 @@ services:
         arguments:
             - '@request_stack'
             - '@cmfcmf_media_module.security_manager'
+        tags:
+            - { name: zikula.searchable_module, bundleName: CmfcmfMediaModule }
 
     # Listeners
     cmfcmf_media_module.listener.doctrine:

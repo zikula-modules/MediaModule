@@ -41,8 +41,7 @@
                         "Cmfcmf\\Module\\MediaModule\\Entity\\Media\\AbstractMediaEntity",
                         "Cmfcmf\\Module\\MediaModule\\Entity\\Collection\\CollectionEntity"
                     ]
-                },
-                "searchable": {"class": "Cmfcmf\\Module\\MediaModule\\Helper\\SearchHelper"}
+                }
             },
             "securityschema": {
                 "CmfcmfMediaModule::": "::"
