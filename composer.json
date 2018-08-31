@@ -15,12 +15,12 @@
         "psr-4": { "Cmfcmf\\Module\\MediaModule\\": "" }
     },
     "require": {
-        "php": ">=5.5.9",
+        "clue/graph": "^0.9",
+        "google/apiclient": "^2",
+        "j7mbo/twitter-api-php": "^1",
         "james-heinrich/getid3": "^1",
         "knplabs/github-api": "^1",
-        "j7mbo/twitter-api-php": "^1",
-        "google/apiclient": "^2",
-        "clue/graph": "^0.9",
+        "php": ">=5.5.9",
         "vierbergenlars/php-semver": "^3"
     },
     "require-dev": {
