@@ -20,23 +20,23 @@
         <p>{{ __f('By %s', {'%s': entity.attribution})|raw }}</p>
     {% endif %}
     <div class="list-group">
-        {% if entity.downloadAllowed|default and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
+        {#% if entity.downloadAllowed|default and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
             <a href="{{ path('cmfcmfmediamodule_media_download', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item">
                 <i class="fa fa-fw fa-download"></i>
                 {{ __('Download') }}
             </a>
-        {% endif %}
+        {% endif %#}
         {% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
             <a href="{{ path('cmfcmfmediamodule_media_edit', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-warning">
                 <i class="fa fa-fw fa-edit"></i>
                 {{ __('Edit') }}
             </a>
         {% endif %}
-        {% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA')) %}
+        {#% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA')) %}
             <a href="{{ path('cmfcmfmediamodule_media_delete', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-danger">
                 <i class="fa fa-fw fa-trash-o"></i>
                 {{ __('Delete') }}
             </a>
-        {% endif %}
+        {% endif %#}
     </div>
 </div>
