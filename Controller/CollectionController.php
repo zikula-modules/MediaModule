@@ -261,6 +261,25 @@ class CollectionController extends AbstractController
     }
 
     /**
+     * @Route("/show-by-id/{id}", options={"expose" = true})
+     *
+     * @param CollectionEntity $entity
+     *
+     * @return RedirectResponse
+     */
+    public function displayByIdAction(CollectionEntity $entity)
+    {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
+            throw new AccessDeniedException();
+        }
+
+        return $this->redirectToRoute(
+            'cmfcmfmediamodule_collection_display',
+            ['slug' => $entity->getSlug()]
+        );
+    }
+
+    /**
      * @Route("/{slug}", methods={"GET"}, requirements={"slug"=".*[^/]"}, options={"expose" = true})
      * @Template(template="CmfcmfMediaModule:Collection:display.html.twig")
      *
@@ -318,24 +337,5 @@ class CollectionController extends AbstractController
         );
 
         return $this->render('CmfcmfMediaModule:Collection:display.html.twig', $templateVars);
-    }
-
-    /**
-     * @Route("/show-by-id/{id}", options={"expose" = true})
-     *
-     * @param CollectionEntity $entity
-     *
-     * @return RedirectResponse
-     */
-    public function displayByIdAction(CollectionEntity $entity)
-    {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
-            throw new AccessDeniedException();
-        }
-
-        return $this->redirectToRoute(
-            'cmfcmfmediamodule_collection_display',
-            ['slug' => $entity->getSlug()]
-        );
     }
 }
