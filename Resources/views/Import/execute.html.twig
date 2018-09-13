@@ -1,11 +1,13 @@
 {% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
 {% block title __f('Import from %s', {'%s': importer.title}) %}
 {% block content %}
-    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
-
+    {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
-    {{ form_row(form.collection) }}
-    {{ form_widget(form.importSettings) }}
-    {{ form_row(form.import) }}
+        <fieldset>
+            <legend>{{ __('Options') }}</legend>
+            {{ form_row(form.collection) }}
+            {{ form_widget(form.importSettings) }}
+            {{ form_row(form.import) }}
+        </fieldset>
     {{ form_end(form) }}
 {% endblock %}

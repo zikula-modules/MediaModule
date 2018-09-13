@@ -2,17 +2,17 @@
 {% block title __('Create new media') %}
 {% block content %}
     {% include 'CmfcmfMediaModule::util.html.twig' %}
-    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
-
+    {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
-    {{ form_widget(form) }}
-
-    {{ hook|raw }}
-
-    <div class="col-sm-offset-2 col-sm-10">
-        <button class="btn btn-success" type="submit">
-            {{ __('Save') }}
-        </button>
-    </div>
+        <fieldset>
+            <legend>{{ __('Content') }}</legend>
+            {{ form_widget(form) }}
+            {{ hook|raw }}
+            <div class="col-sm-offset-2 col-sm-10">
+                <button class="btn btn-success" type="submit">
+                    <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
+                </button>
+            </div>
+        </fieldset>
     {{ form_end(form) }}
 {% endblock %}

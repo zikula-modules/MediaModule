@@ -4,16 +4,19 @@
 {% endblock %}
 {% block content %}
     {% include 'CmfcmfMediaModule::util.html.twig' %}
-    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
+    {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success">
-            <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
-        </button>
-        <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default">
-            <i class="fa fa-fw fa-ban"></i> {{  __('Cancel') }}
-        </a>
-    </div>
+        <fieldset>
+            <legend>{{ __('Content') }}</legend>
+            {{ form_widget(form) }}
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
+                </button>
+                <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default">
+                    <i class="fa fa-fw fa-ban"></i> {{  __('Cancel') }}
+                </a>
+            </div>
+        </fieldset>
     {{ form_end(form) }}
 {% endblock %}

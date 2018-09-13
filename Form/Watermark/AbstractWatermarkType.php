@@ -13,6 +13,7 @@ namespace Cmfcmf\Module\MediaModule\Form\Watermark;
 
 use Cmfcmf\Module\MediaModule\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -58,6 +59,7 @@ class AbstractWatermarkType extends AbstractType
                 ]
             ])
             ->add('minSizeX', NumberType::class, [
+                'label' => $this->translator->trans('Minimum size x', [], 'cmfcmfmediamodule'),
                 'scale' => 0,
                 'required' => false,
                 'attr' => [
@@ -65,14 +67,17 @@ class AbstractWatermarkType extends AbstractType
                 ]
             ])
             ->add('minSizeY', NumberType::class, [
+                'label' => $this->translator->trans('Minimum size y', [], 'cmfcmfmediamodule'),
                 'scale' => 0,
                 'required' => false,
                 'attr' => [
                     'help' => $this->translator->trans('Smaller images will not be watermarked.', [], 'cmfcmfmediamodule')
                 ]
             ])
-            ->add('relativeSize', NumberType::class, [
+            ->add('relativeSize', PercentType::class, [
+                'label' => $this->translator->trans('Relative size', [], 'cmfcmfmediamodule'),
                 'scale' => 0,
+                'type' => 'integer',
                 'required' => false,
                 'attr' => [
                     'help' => $this->translator->trans('The size of the watermark in percent. If set, it will resize the watermark accordingly.', [], 'cmfcmfmediamodule')

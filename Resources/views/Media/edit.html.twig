@@ -2,27 +2,29 @@
 {% block title __('Edit') ~ ' "' ~ entity.title ~ '"' %}
 {% block content %}
     {% include 'CmfcmfMediaModule::util.html.twig' %}
-    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
-
+    {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <div class="col-sm-offset-2 col-sm-offset-10">
-            {{ hook|raw }}
-            {% if formHookTemplates|length > 0 %}
-                <fieldset>
-                    {% for hookTemplate in formHookTemplates %}
-                        {{ include(hookTemplate.0, hookTemplate.1, ignore_missing = true) }}
-                    {% endfor %}
-                </fieldset>
-            {% endif %}
-        </div>
-        <div class="col-sm-offset-2 col-sm-offset-10">
-            <button type="submit" class="btn btn-success">
-                <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
-            </button>
-            <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="btn btn-default">
-                <i class="fa fa-fw fa-ban"></i> {{ __('Cancel') }}
-            </a>
-        </div>
+        <fieldset>
+            <legend>{{ __('Content') }}</legend>
+            {{ form_widget(form) }}
+            <div class="col-sm-offset-2 col-sm-10">
+                {{ hook|raw }}
+                {% if formHookTemplates|length > 0 %}
+                    <fieldset>
+                        {% for hookTemplate in formHookTemplates %}
+                            {{ include(hookTemplate.0, hookTemplate.1, ignore_missing = true) }}
+                        {% endfor %}
+                    </fieldset>
+                {% endif %}
+            </div>
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
+                </button>
+                <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="btn btn-default">
+                    <i class="fa fa-fw fa-ban"></i> {{ __('Cancel') }}
+                </a>
+            </div>
+        </fieldset>
     {{ form_end(form) }}
 {% endblock %}

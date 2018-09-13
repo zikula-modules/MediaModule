@@ -2,9 +2,11 @@
 {% block title __('Create or edit license') %}
 {% block content %}
     {% include 'CmfcmfMediaModule::util.html.twig' %}
-    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
-
+    {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
-    {{ form_widget(form) }}
+        <fieldset>
+            <legend>{{ __('Content') }}</legend>
+            {{ form_widget(form) }}
+        </fieldset>
     {{ form_end(form) }}
 {% endblock %}

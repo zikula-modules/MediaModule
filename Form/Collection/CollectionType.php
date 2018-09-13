@@ -118,6 +118,7 @@ class CollectionType extends AbstractType
                 ]
             ])
             ->add('categoryAssignments', CategoriesType::class, [
+                'label' => $this->translator->trans('Categories', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'multiple' => true,
                 'module' => 'CmfcmfMediaModule',
