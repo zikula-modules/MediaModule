@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.2.2 <http://videojs.com/>
+ * Video.js 7.2.3 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -15,7 +15,7 @@
   typeof define === 'function' && define.amd ? define(factory) :
   (global.videojs = factory());
 }(this, (function () {
-  var version = "7.2.2";
+  var version = "7.2.3";
 
   var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -19106,20 +19106,21 @@
       _this.resizeObserver_ = null;
       _this.debouncedHandler_ = debounce(function () {
         _this.resizeHandler();
-      }, 100, false, player);
+      }, 100, false, _this);
 
       if (RESIZE_OBSERVER_AVAILABLE) {
         _this.resizeObserver_ = new _this.ResizeObserver(_this.debouncedHandler_);
         _this.resizeObserver_.observe(player.el());
       } else {
         _this.loadListener_ = function () {
-          if (_this.el_.contentWindow) {
-            on(_this.el_.contentWindow, 'resize', _this.debouncedHandler_);
+          if (!_this.el_ || !_this.el_.contentWindow) {
+            return;
           }
-          _this.off('load', _this.loadListener_);
+
+          on(_this.el_.contentWindow, 'resize', _this.debouncedHandler_);
         };
 
-        _this.on('load', _this.loadListener_);
+        _this.one('load', _this.loadListener_);
       }
       return _this;
     }
@@ -19144,10 +19145,20 @@
        * @event Player#playerresize
        * @type {EventTarget~Event}
        */
+      // make sure player is still around to trigger
+      // prevents this from causing an error after dispose
+      if (!this.player_ || !this.player_.trigger) {
+        return;
+      }
+
       this.player_.trigger('playerresize');
     };
 
     ResizeManager.prototype.dispose = function dispose() {
+      if (this.debouncedHandler_) {
+        this.debouncedHandler_.cancel();
+      }
+
       if (this.resizeObserver_) {
         if (this.player_.el()) {
           this.resizeObserver_.unobserve(this.player_.el());
@@ -19163,15 +19174,10 @@
         this.off('load', this.loadListener_);
       }
 
-      if (this.debouncedHandler_) {
-        this.debouncedHandler_.cancel();
-      }
-
       this.ResizeObserver = null;
       this.resizeObserver = null;
       this.debouncedHandler_ = null;
       this.loadListener_ = null;
-      _Component.prototype.dispose.call(this);
     };
 
     return ResizeManager;
@@ -21988,17 +21994,27 @@
 
       // set tabindex to -1 to remove the video element from the focus order
       tag.setAttribute('tabindex', '-1');
+      attrs.tabindex = '-1';
+
       // Workaround for #4583 (JAWS+IE doesn't announce BPB or play button)
       // See https://github.com/FreedomScientific/VFO-standards-support/issues/78
       // Note that we can't detect if JAWS is being used, but this ARIA attribute
       //  doesn't change behavior of IE11 if JAWS is not being used
       if (IE_VERSION) {
         tag.setAttribute('role', 'application');
+        attrs.role = 'application';
       }
 
       // Remove width/height attrs from tag so CSS can make it 100% width/height
       tag.removeAttribute('width');
       tag.removeAttribute('height');
+
+      if ('width' in attrs) {
+        delete attrs.width;
+      }
+      if ('height' in attrs) {
+        delete attrs.height;
+      }
 
       Object.getOwnPropertyNames(attrs).forEach(function (attr) {
         // don't copy over the class attribute to the player element when we're in a div embed
@@ -22348,7 +22364,7 @@
         autoplay: autoplay,
         'nativeControlsForTouch': this.options_.nativeControlsForTouch,
         'playerId': this.id(),
-        'techId': this.id() + '_' + titleTechName + '_api',
+        'techId': this.id() + '_' + camelTechName + '_api',
         'playsinline': this.options_.playsinline,
         'preload': this.options_.preload,
         'loop': this.options_.loop,
@@ -37911,7 +37927,7 @@
 
   /**
    * @videojs/http-streaming
-   * @version 1.2.4
+   * @version 1.2.5
    * @copyright 2018 Brightcove, Inc
    * @license Apache-2.0
    */
@@ -55358,7 +55374,7 @@
     initPlugin(this, options);
   };
 
-  var version$3 = "1.2.4";
+  var version$3 = "1.2.5";
 
   // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
   videojs$1.use('*', function (player) {
@@ -55378,6 +55394,16 @@
         }
 
         return time;
+      },
+
+      // Sync VHS after play requests.
+      // This specifically handles replay where the order of actions is
+      // play, video element will seek to 0 (skipping the setCurrentTime middleware)
+      // then triggers a play event.
+      play: function play() {
+        if (player.vhs && player.currentSource().src === player.vhs.source_.src) {
+          player.vhs.setCurrentTime(player.currentTime());
+        }
       }
     };
   });
