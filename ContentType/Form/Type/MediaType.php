@@ -67,6 +67,7 @@ class MediaType extends AbstractContentFormType
                 $qb = $securityManager->getMediaWithAccessQueryBuilder(
                     CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS
                 );
+                $qb->orderBy('m.title');
 
                 return $qb;
             },
