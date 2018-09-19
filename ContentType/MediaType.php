@@ -94,6 +94,14 @@ class MediaType extends AbstractContentType
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getTranslatableDataFields()
+    {
+        return ['id'];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function displayView()
