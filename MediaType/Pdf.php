@@ -82,9 +82,4 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
             //throw new \LogicException();
         //}
     }
-
-    public function isEmbeddable()
-    {
-        return false;
-    }
 }

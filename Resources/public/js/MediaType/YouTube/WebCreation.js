@@ -9,12 +9,12 @@
                 new window.CmfcmfMediaModule.WebCreation.tableColumns.FirstLineBoldColumn('Title')
             ],
             {
-                everything: 'Everything',
-                video: 'Videos',
-                channel: 'Channels',
-                playlist: 'Playlists'
+                everything: Translator.__('Everything'),
+                video: Translator.__('Videos'),
+                channel: Translator.__('Channels'),
+                playlist: Translator.__('Playlists')
             },
-            'Search for videos, channels and playlists'
+            Translator.__('Search for videos, channels and playlists')
         );
     });
 })(jQuery);

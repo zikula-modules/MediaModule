@@ -20,7 +20,7 @@
                     });
                     // Element is before the lowest locked element.
                     if (evt.newIndex < highestLockedIndex) {
-                        window.toastr['error']('You cannot move a permission with goOn = no above a locked permission.', 'Problem detected!');
+                        window.toastr['error'](Translator.__('You cannot move a permission with goOn = no above a locked permission.'), Translator.__('Problem detected!'));
                         $table.find('tr:nth-child(' + parseInt(evt.oldIndex + 1) + ')').after($item);
 
                         return;
@@ -32,7 +32,7 @@
                         newIndex: parseInt(evt.newIndex)
                 })).success(function (data) {
                     $item.data('version', data.newVersion);
-                    window.toastr['success']('', 'Saved new position.');
+                    window.toastr['success']('', Translator.__('Saved new position.'));
                 }).fail(window.CmfcmfMediaModule.Util.Ajax.fail);
             }
         });

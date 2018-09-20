@@ -596,16 +596,19 @@ class MediaController extends AbstractController
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($entity);
 
         return [
+            'title' => $entity->getTitle(),
+            'slug' => $entity->getSlug(),
             'embedCodes' => [
                 'full' => $mediaType->getEmbedCode($entity, 'full'),
                 'medium' => $mediaType->getEmbedCode($entity, 'medium'),
                 'small' => $mediaType->getEmbedCode($entity, 'small')
-            ]
+            ],
+            'collection' => $entity->getCollection()
         ];
     }
 
     /**
-     * @Route("/download/{collectionSlug}/f/{slug}", methods={"GET"}, requirements={"collectionSlug" = ".+?"})
+     * @Route("/download/{collectionSlug}/f/{slug}", methods={"GET"}, requirements={"collectionSlug" = ".+?"}, options={"expose"=true})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractFileEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      *
      * @param AbstractFileEntity $entity

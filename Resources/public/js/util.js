@@ -13,16 +13,16 @@
             },
             Ajax: {
                 fail: function (data) {
-                    var errorText = 'Sorry, the AJAX request could not be finished. Please try again.';
+                    var errorText = Translator.__('Sorry, the AJAX request could not be finished. Please try again.');
                     if (data.responseJSON && data.responseJSON.error) {
                         errorText = data.responseJSON.error;
                     } else if (data.status == 403) {
-                        errorText = 'You do not have permission to execute this action.'
+                        errorText = Translator.__('You do not have permission to execute this action.');
                     }
                     if ('undefined' != typeof window.toastr) {
-                        window.toastr['error'](errorText, 'Something went wrong!');
+                        window.toastr['error'](errorText, Translator.__('Something went wrong!'));
                     } else {
-                        alert('Something went wrong!' + ' ' + errorText);
+                        alert(Translator.__('Something went wrong!') + ' ' + errorText);
                     }
                 },
                 makeExternalRequest: function (url, done, fail, always) {
@@ -33,7 +33,7 @@
                         xmlhttp = new XMLHttpRequest();
                     } else {
                         // code for IE6, IE5
-                        xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+                        xmlhttp = new ActiveXObject('Microsoft.XMLHTTP');
                     }
 
                     xmlhttp.onreadystatechange = function() {
@@ -43,13 +43,13 @@
                             } else {
                                 fail();
                             }
-                            if (typeof always == "function") {
+                            if (typeof always == 'function') {
                                 always();
                             }
                         }
                     };
 
-                    xmlhttp.open("GET", url, true);
+                    xmlhttp.open('GET', url, true);
                     xmlhttp.send();
                 }
             },

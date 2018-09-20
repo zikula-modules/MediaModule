@@ -8,13 +8,13 @@
                 new window.CmfcmfMediaModule.WebCreation.tableColumns.FirstLineBoldColumn('Result')
             ],
             {
-                everything: 'Everything',
-                track: 'Tracks',
-                album: 'Albums',
-                artist: 'Artists',
-                playlist: 'Playlists'
+                everything: Translator.__('Everything'),
+                track: Translator.__('Tracks'),
+                album: Translator.__('Albums'),
+                artist: Translator.__('Artists'),
+                playlist: Translator.__('Playlists')
             },
-            'Search for artist, track, playlist or album',
+            Translator.__('Search for artist, track, playlist or album'),
             function (searchInput, dropdownValue, onFinished) {
                 var query = '/search';
                 if (dropdownValue != 'everything') {
@@ -39,15 +39,15 @@
                                 title = result.title;
                                 results.push([
                                     result.album.cover_small,
-                                    'Track',
-                                    title + "\nArtist: " + result.artist.name + "\nAlbum: " + result.album.title
+                                    Translator.__('Track'),
+                                    title + "\n" + Translator.__('Artist') + ': ' + result.artist.name + "\n" + Translator.__('Album') + ': ' + result.album.title
                                 ]);
                                 break;
                             case 'album':
                                 title = result.title;
                                 results.push([
                                     result.cover_small,
-                                    'Album',
+                                    Translator.__('Album'),
                                     title + "\n" + result.artist.name
                                 ]);
                                 break;
@@ -55,16 +55,16 @@
                                 title = result.name;
                                 results.push([
                                     result.picture_small,
-                                    'Artist',
-                                    name + "\nFans: " + result.nb_fan
+                                    Translator.__('Artist'),
+                                    name + "\n" + Translator.__('Fans') + ': ' + result.nb_fan
                                 ]);
                                 break;
                             case 'playlist':
                                 title = result.title;
                                 results.push([
                                     result.picture_small,
-                                    'Playlist',
-                                    title + "\nCreator: " + result.user.name + "\nTracks: " + result.nb_tracks
+                                    Translator.__('Playlist'),
+                                    title + "\n" + Translator.__('Creator') + ': ' + result.user.name + "\n" + Translator.__('Tracks') + ': ' + result.nb_tracks
                                 ]);
                                 break;
                             default:

@@ -133,7 +133,7 @@
                     return;
                 }
                 $results.empty();
-                $results.append('<tr><td colspan="' + (tableColumns.length + 1) + '" class="text-center">Searching...</td></tr>');
+                $results.append('<tr><td colspan="' + (tableColumns.length + 1) + '" class="text-center">' + Translator.__('Searching...') + '</td></tr>');
 
                 var dropdownValue = $btn.val();
                 if (typeof onSearch === "function") {
@@ -156,7 +156,7 @@
                     $results.empty();
                     if (resultSet.results.length == 0) {
                         $results.append(
-                            '<tr><td colspan="' + (tableColumns.length + 1) + '" class="text-center">No results found</td></tr>'
+                            '<tr><td colspan="' + (tableColumns.length + 1) + '" class="text-center">' + Translator.__('No results found.') + '</td></tr>'
                         );
                         return;
                     }
@@ -171,7 +171,7 @@
                         var settings = window.CmfcmfMediaModule.Util.htmlAttrEncode(JSON.stringify(resultSet.results[i][0]));
                         resultTable += '<td>' +
                             '<button type="submit" class="btn btn-primary cmfcmfmedia-web-mediatype-' + mediaType +
-                            '-submit-btn" data-settings="' + settings + '">Choose <i class="fa fa-fw fa-arrow-right"></i></button>' +
+                            '-submit-btn" data-settings="' + settings + '">' + Translator.__('Choose') + ' <i class="fa fa-fw fa-arrow-right"></i></button>' +
                             '</td>';
                         resultTable += '</tr>';
                     }
@@ -180,14 +180,13 @@
             };
             $input.blur(actualCallback);
             $btn.change(actualCallback);
-            $(document).on("keypress", $input, function(event) {
+            $(document).on('keypress', $input, function(event) {
                 if (event.keyCode != 13) {
                     return true;
-                } else {
-                    $input.blur();
-                    // Ignore ENTER -> Do not submit form on enter.
-                    return false;
                 }
+                $input.blur();
+                // Ignore ENTER -> Do not submit form on enter.
+                return false;
             });
         }
     }
