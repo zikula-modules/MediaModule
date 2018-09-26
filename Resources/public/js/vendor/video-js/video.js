@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.2.3 <http://videojs.com/>
+ * Video.js 7.2.4 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -15,7 +15,7 @@
   typeof define === 'function' && define.amd ? define(factory) :
   (global.videojs = factory());
 }(this, (function () {
-  var version = "7.2.3";
+  var version = "7.2.4";
 
   var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -7475,11 +7475,12 @@
               return;
             }
             mode = newMode;
-            if (mode === 'showing') {
-
+            if (mode !== 'disabled') {
               this.tech_.ready(function () {
                 _this2.tech_.on('timeupdate', timeupdateHandler);
               }, true);
+            } else {
+              this.tech_.off('timeupdate', timeupdateHandler);
             }
             /**
              * An event that fires when mode changes on this track. This allows
@@ -12085,8 +12086,10 @@
 
       var _this = possibleConstructorReturn(this, _Component.call(this, player, options, ready));
 
+      var updateDisplayHandler = bind(_this, _this.updateDisplay);
+
       player.on('loadstart', bind(_this, _this.toggleDisplay));
-      player.on('texttrackchange', bind(_this, _this.updateDisplay));
+      player.on('texttrackchange', updateDisplayHandler);
       player.on('loadstart', bind(_this, _this.preselectTrack));
 
       // This used to be called during player init, but was causing an error
@@ -12099,7 +12102,13 @@
           return;
         }
 
-        player.on('fullscreenchange', bind(this, this.updateDisplay));
+        player.on('fullscreenchange', updateDisplayHandler);
+        player.on('playerresize', updateDisplayHandler);
+
+        window_1.addEventListener('orientationchange', updateDisplayHandler);
+        player.on('dispose', function () {
+          return window_1.removeEventListener('orientationchange', updateDisplayHandler);
+        });
 
         var tracks = this.options_.playerOptions.tracks || [];
 
@@ -26999,8 +27008,8 @@
     (function (root) {
       /* jshint ignore:end */
 
-      var URL_REGEX = /^((?:[a-zA-Z0-9+\-.]+:)?)(\/\/[^\/\;?#]*)?(.*?)??(;.*?)?(\?.*?)?(#.*?)?$/;
-      var FIRST_SEGMENT_REGEX = /^([^\/;?#]*)(.*)$/;
+      var URL_REGEX = /^((?:[a-zA-Z0-9+\-.]+:)?)(\/\/[^\/?#]*)?((?:[^\/\?#]*\/)*.*?)??(;.*?)?(\?.*?)?(#.*?)?$/;
+      var FIRST_SEGMENT_REGEX = /^([^\/?#]*)(.*)$/;
       var SLASH_DOT_REGEX = /(?:\/|^)\.(?=\/)/g;
       var SLASH_DOT_DOT_REGEX = /(?:\/|^)\.\.\/(?!\.\.\/).*?(?=\/)/g;
 
@@ -37927,7 +37936,7 @@
 
   /**
    * @videojs/http-streaming
-   * @version 1.2.5
+   * @version 1.2.6
    * @copyright 2018 Brightcove, Inc
    * @license Apache-2.0
    */
@@ -54061,14 +54070,20 @@
 
         this.masterPlaylistLoader_.media(media);
 
-        // delete all buffered data to allow an immediate quality switch, then seek
-        // in place to give the browser a kick to remove any cached frames from the
-        // previous rendition
+        // Delete all buffered data to allow an immediate quality switch, then seek to give
+        // the browser a kick to remove any cached frames from the previous rendtion (.04 seconds
+        // ahead is roughly the minimum that will accomplish this across a variety of content
+        // in IE and Edge, but seeking in place is sufficient on all other browsers)
+        // Edge/IE bug: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/14600375/
+        // Chrome bug: https://bugs.chromium.org/p/chromium/issues/detail?id=651904
         this.mainSegmentLoader_.resetEverything(function () {
-          // Since this is not a typical seek, we avoid the seekTo method which can cause
-          // segments from the previously enabled rendition to load before the new playlist
-          // has finished loading
-          _this4.tech_.setCurrentTime(_this4.tech_.currentTime());
+          // Since this is not a typical seek, we avoid the seekTo method which can cause segments
+          // from the previously enabled rendition to load before the new playlist has finished loading
+          if (videojs$1.browser.IE_VERSION || videojs$1.browser.IS_EDGE) {
+            _this4.tech_.setCurrentTime(_this4.tech_.currentTime() + 0.04);
+          } else {
+            _this4.tech_.setCurrentTime(_this4.tech_.currentTime());
+          }
         });
 
         // don't need to reset audio as it is reset when media changes
@@ -55374,7 +55389,7 @@
     initPlugin(this, options);
   };
 
-  var version$3 = "1.2.5";
+  var version$3 = "1.2.6";
 
   // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
   videojs$1.use('*', function (player) {
