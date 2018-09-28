@@ -22,7 +22,6 @@ services:
             - [setEntityManager, ['@doctrine.orm.entity_manager']]
             - [setSecurityManager, ['@cmfcmf_media_module.security_manager']]
             - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
-            - [setRouter, ['@router']]
             - [setEnableMediaViewCounter, ["@=service('zikula_extensions_module.api.variable').get('CmfcmfMediaModule', 'enableMediaViewCounter', false)"]]
         tags: ['zikula.content_type']
     Cmfcmf\Module\MediaModule\ContentType\Form\Type\MediaType:

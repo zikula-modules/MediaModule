@@ -17,7 +17,6 @@ use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Zikula\Common\Content\AbstractContentType;
 use Zikula\Common\Content\ContentTypeInterface;
 
@@ -40,11 +39,6 @@ class MediaType extends AbstractContentType
      * @var MediaTypeCollection
      */
     private $mediaTypeCollection;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
 
     /**
      * @var boolean
@@ -171,14 +165,6 @@ class MediaType extends AbstractContentType
     public function setMediaTypeCollection(MediaTypeCollection $mediaTypeCollection)
     {
         $this->mediaTypeCollection = $mediaTypeCollection;
-    }
-
-    /**
-     * @param RouterInterface $router
-     */
-    public function setRouter(RouterInterface $router)
-    {
-        $this->router = $router;
     }
 
     /**
