@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\Listener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Zikula\Core\Event\GenericEvent;
 use Zikula\ScribiteModule\Event\EditorHelperEvent;
@@ -74,16 +73,10 @@ class ThirdPartyListener implements EventSubscriberInterface
     {
         // install assets for Scribite plugins
         $targetDir = 'web/modules/cmfcmfmedia';
-        $finder = new Finder();
         if (!$this->filesystem->exists($targetDir)) {
-            $this->filesystem->mkdir($targetDir, 0777);
-            if (is_dir($originDir = 'modules/cmfcmf/media-module/Resources/public')) {
-                $this->filesystem->mirror($originDir, $targetDir, Finder::create()->in($originDir));
-            }
-            if (is_dir($originDir = 'modules/cmfcmf/media-module/Resources/scribite')) {
-                $targetDir .= '/scribite';
-                $this->filesystem->mkdir($targetDir, 0777);
-                $this->filesystem->mirror($originDir, $targetDir, Finder::create()->in($originDir));
+            $moduleDirectory = str_replace('Listener', '', __DIR__);
+            if (is_dir($originDir = $moduleDirectory . 'Resources/public')) {
+                $this->filesystem->symlink($originDir, $targetDir, true);
             }
         }
 
