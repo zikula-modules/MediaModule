@@ -36,6 +36,7 @@
 
                     tr += '<td>' + window.CmfcmfMediaModule.Util.htmlEncode(results[i].type) + '</td>';
                     tr += '<td>' + window.CmfcmfMediaModule.Util.htmlEncode(results[i].title) + '</td>';
+                    tr += '<td>' + results[i].preview + '</td>';
                     if (results[i].license) {
                         tr += '<td>';
                         if (results[i].license.url) {

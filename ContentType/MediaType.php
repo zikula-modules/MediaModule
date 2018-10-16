@@ -182,4 +182,31 @@ class MediaType extends AbstractContentType
 
         include_once __DIR__ . '/../bootstrap.php';
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAssets($context)
+    {
+        $assets = parent::getAssets($context);
+        if (ContentTypeInterface::CONTEXT_EDIT != $context) {
+            return $assets;
+        }
+
+        $assets['js'][] = $this->assetHelper->resolve('@CmfcmfMediaModule:js/CmfcmfMediaModule.ContentType.Media.js');
+
+        return $assets;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getJsEntrypoint($context)
+    {
+        if (ContentTypeInterface::CONTEXT_EDIT != $context) {
+            return null;
+        }
+
+        return 'contentInitMediaEdit';
+    }
 }

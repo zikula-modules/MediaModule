@@ -578,11 +578,32 @@ class MediaController extends AbstractController
      * @Route("/media/popup-embed/{id}", methods={"GET"})
      * @Template("CmfcmfMediaModule:Media:popupEmbed.html.twig")
      *
+     * @param Request $request
      * @param AbstractMediaEntity $entity
      *
      * @return array
      */
-    public function popupEmbedAction(AbstractMediaEntity $entity)
+    public function popupEmbedAction(Request $request, AbstractMediaEntity $entity)
+    {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+            $entity,
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
+        ) {
+            throw new AccessDeniedException();
+        }
+
+        return $this->getEmbedDataAction($request, $entity);
+    }
+
+    /**
+     * @Route("/media/embed-data/{id}", methods={"GET"}, options={"expose"=true})
+     *
+     * @param Request $request
+     * @param AbstractMediaEntity $entity
+     *
+     * @return array
+     */
+    public function getEmbedDataAction(Request $request, AbstractMediaEntity $entity)
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
             $entity,
@@ -593,10 +614,18 @@ class MediaController extends AbstractController
 
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
+        $class = get_class($entity);
+        $type = substr($class, strrpos($class, '\\') + 1, -strlen('Entity'));
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($entity);
 
-        return [
+        $preview = '';
+        if ('Image' == $type) {
+            $preview = $mediaType->renderFullpage($entity);
+        }
+
+        $result = [
             'title' => $entity->getTitle(),
+            'preview' => $preview,
             'slug' => $entity->getSlug(),
             'embedCodes' => [
                 'full' => $mediaType->getEmbedCode($entity, 'full'),
@@ -605,6 +634,12 @@ class MediaController extends AbstractController
             ],
             'collection' => $entity->getCollection()
         ];
+
+        if (!$request->isXmlHttpRequest()) {
+            return $result;
+        }
+
+        return $this->json($result);
     }
 
     /**

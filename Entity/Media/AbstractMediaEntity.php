@@ -476,10 +476,16 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         $type = substr($class, strrpos($class, '\\') + 1, -strlen('Entity'));
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($this);
 
+        $preview = '';
+        if ('Image' == $type) {
+            $preview = $mediaType->renderFullpage($this);
+        }
+
         return [
             'id' => $this->id,
             'type' => $type,
             'title' => $this->title,
+            'preview' => $preview,
             'slug' => $this->slug,
             'description' => $this->description,
             'license' => null !== $this->getLicense() ? $this->getLicense()->toArray() : null,
