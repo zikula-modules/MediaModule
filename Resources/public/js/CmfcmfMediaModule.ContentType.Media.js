@@ -23,7 +23,7 @@ function getMediaPreview(id) {
 }
 
 /**
- * Initialises the media editing.
+ * Initialises the media edit view.
  */
 function contentInitMediaEdit() {
     var mediaSelector;
@@ -33,5 +33,28 @@ function contentInitMediaEdit() {
     mediaSelector.change(function () {
         mediaSelector.parent().find('.help-block').first().html('');
         mediaSelector.parent().find('.help-block').first().html(getMediaPreview(mediaSelector.val()));
+    });
+}
+
+/**
+ * Initialises the media translation view.
+ */
+function contentInitMediaTranslation() {
+    jQuery('.source-section .field-id').each(function (index) {
+        var fieldContainer;
+
+        fieldContainer = jQuery(this).find('.form-control-static');
+        zikulacontentmodule_translate_contentData_id
+        fieldContainer.append('<p class="help-block small">' + getMediaPreview(fieldContainer.text()) + '</p>');
+    });
+    jQuery('#contentTranslateTarget .tab-content').find("select[id$='_id']").each(function (index) {
+        var mediaSelector;
+
+        mediaSelector = jQuery(this);
+        mediaSelector.parents('.col-sm-9').first().append('<p class="help-block small">' + getMediaPreview(mediaSelector.val()) + '</p>');
+        mediaSelector.change(function () {
+            mediaSelector.parents('.col-sm-9').first().find('.help-block').first().html('');
+            mediaSelector.parents('.col-sm-9').first().find('.help-block').first().html(getMediaPreview(mediaSelector.val()));
+        });
     });
 }

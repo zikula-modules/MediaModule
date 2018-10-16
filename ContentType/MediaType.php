@@ -189,11 +189,9 @@ class MediaType extends AbstractContentType
     public function getAssets($context)
     {
         $assets = parent::getAssets($context);
-        if (ContentTypeInterface::CONTEXT_EDIT != $context) {
-            return $assets;
+        if (in_array($context, [ContentTypeInterface::CONTEXT_EDIT, ContentTypeInterface::CONTEXT_TRANSLATION])) {
+            $assets['js'][] = $this->assetHelper->resolve('@CmfcmfMediaModule:js/CmfcmfMediaModule.ContentType.Media.js');
         }
-
-        $assets['js'][] = $this->assetHelper->resolve('@CmfcmfMediaModule:js/CmfcmfMediaModule.ContentType.Media.js');
 
         return $assets;
     }
@@ -203,10 +201,13 @@ class MediaType extends AbstractContentType
      */
     public function getJsEntrypoint($context)
     {
-        if (ContentTypeInterface::CONTEXT_EDIT != $context) {
-            return null;
+        if (ContentTypeInterface::CONTEXT_EDIT == $context) {
+            return 'contentInitMediaEdit';
+        }
+        if (ContentTypeInterface::CONTEXT_TRANSLATION == $context) {
+            return 'contentInitMediaTranslation';
         }
 
-        return 'contentInitMediaEdit';
+        return null;
     }
 }
