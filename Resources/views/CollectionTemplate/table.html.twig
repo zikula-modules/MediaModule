@@ -34,16 +34,18 @@
             {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
             {% for child in collection.children %}
                 {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
-                    <th headers="hTitle" scope="row" colspan="3">
-                        <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
-                            <i class="fa fa-fw fa-folder-o"></i> {{ child.title }}
-                        </a>
-                    </th>
-                    <td headers="hActions" class="text-right">
-                        <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
-                            <i class="fa fa-search"></i> {{ __('View collection') }}
-                        </a>
-                    </td>
+                    <tr>
+                        <th headers="hTitle" scope="row" colspan="3">
+                            <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
+                                <i class="fa fa-fw fa-folder-o"></i> {{ child.title }}
+                            </a>
+                        </th>
+                        <td headers="hActions" class="text-right">
+                            <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
+                                <i class="fa fa-search"></i> {{ __('View collection') }}
+                            </a>
+                        </td>
+                    </tr>
                 {% endif %}
             {% endfor %}
         {% endif %}
