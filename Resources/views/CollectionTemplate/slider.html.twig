@@ -5,6 +5,7 @@
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/slick/slick.css'), 98) }}
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/slick/slick-theme.css'), 99) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/slider.js')) }}
+    {% set customStyle %}
     <style>
         .slick-prev:before, .slick-next:before {
             color: black;
@@ -14,6 +15,8 @@
             margin-right: 20px;
         }
     </style>
+    {% endset %}
+    {{ pageAddAsset('header', customStyle) }}
 
     <div id="cmfcmfmedia-display-slider">
         {% for media in collection.media %}
