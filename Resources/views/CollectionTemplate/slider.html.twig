@@ -18,7 +18,7 @@
     {% endset %}
     {{ pageAddAsset('header', customStyle) }}
 
-    <div id="cmfcmfmedia-display-slider">
+    <div class="cmfcmfmedia-display-slider">
         {% for media in collection.media %}
             <div class="img-thumbnail">
                 {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}

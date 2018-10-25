@@ -1,6 +1,6 @@
 (function ($) {
     $(function () {
-        var $slider = $('#cmfcmfmedia-display-slider');
+        var $slider = $('.cmfcmfmedia-display-slider');
         $slider.slick({
             autoplay: true,
             dots: $slider.children().length <= 10,
