@@ -650,7 +650,7 @@ class MediaController extends AbstractController
      *
      * @return BinaryFileResponse
      */
-    public function downloadAction(AbstractFileEntity $entity)
+    public function downloadAction(Request $request, AbstractFileEntity $entity)
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
             $entity,
@@ -674,7 +674,12 @@ class MediaController extends AbstractController
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($entity);
 
         $response = new BinaryFileResponse($mediaType->getOriginalWithWatermark($entity, 'path', false));
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $entity->getBeautifiedFileName());
+
+        if ($request->query->has('inline') && $request->query->get('inline', '0') == '1') {
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $entity->getBeautifiedFileName());
+        } else {
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $entity->getBeautifiedFileName());
+        }
 
         return $response;
     }
