@@ -136,11 +136,11 @@
   .vjs-icon-cog:before {
     content: "\f110"; }
 
-.vjs-icon-circle, .video-js .vjs-play-progress, .video-js .vjs-volume-level, .vjs-seek-to-live-control .vjs-seek-to-live-circle {
+.vjs-icon-circle, .video-js .vjs-play-progress, .video-js .vjs-volume-level, .vjs-seek-to-live-control .vjs-icon-placeholder {
   font-family: VideoJS;
   font-weight: normal;
   font-style: normal; }
-  .vjs-icon-circle:before, .video-js .vjs-play-progress:before, .video-js .vjs-volume-level:before, .vjs-seek-to-live-control .vjs-seek-to-live-circle:before {
+  .vjs-icon-circle:before, .video-js .vjs-play-progress:before, .video-js .vjs-volume-level:before, .vjs-seek-to-live-control .vjs-icon-placeholder:before {
     content: "\f111"; }
 
 .vjs-icon-circle-outline {
@@ -976,11 +976,11 @@ body.vjs-full-window {
 .vjs-seek-to-live-control.vjs-control.vjs-at-live-edge {
   cursor: auto; }
 
-.vjs-seek-to-live-control .vjs-seek-to-live-circle {
+.vjs-seek-to-live-control .vjs-icon-placeholder {
   margin-right: 0.5em;
   color: #888; }
 
-.vjs-seek-to-live-control.vjs-control.vjs-at-live-edge .vjs-seek-to-live-circle {
+.vjs-seek-to-live-control.vjs-control.vjs-at-live-edge .vjs-icon-placeholder {
   color: red; }
 
 .video-js .vjs-time-control {

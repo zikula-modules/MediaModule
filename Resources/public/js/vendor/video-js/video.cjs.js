@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.4.0 <http://videojs.com/>
+ * Video.js 7.4.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -26,7 +26,7 @@ var mp4 = require('mux.js/lib/mp4');
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.4.0";
+var version = "7.4.1";
 
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
@@ -11010,7 +11010,7 @@ function formatTime(seconds, guide) {
 }
 
 /**
- * Displays the time left in the video
+ * Displays time information about the video
  *
  * @extends Component
  */
@@ -11054,14 +11054,19 @@ function (_Component) {
 
     var el = _Component.prototype.createEl.call(this, 'div', {
       className: className + " vjs-time-control vjs-control",
-      innerHTML: "<span class=\"vjs-control-text\">" + this.localize(this.labelText_) + "\xA0</span>"
+      innerHTML: "<span class=\"vjs-control-text\" role=\"presentation\">" + this.localize(this.labelText_) + "\xA0</span>"
     });
 
     this.contentEl_ = createEl('span', {
       className: className + "-display"
     }, {
       // tell screen readers not to automatically read the time as it changes
-      'aria-live': 'off'
+      'aria-live': 'off',
+      // span elements have no implicit role, but some screen readers (notably VoiceOver)
+      // treat them as a break between items in the DOM when using arrow keys
+      // (or left-to-right swipes on iOS) to read contents of a page. Using
+      // role='presentation' causes VoiceOver to NOT treat this span as a break.
+      'role': 'presentation'
     });
     this.updateTextNode_();
     el.appendChild(this.contentEl_);
@@ -11394,6 +11399,11 @@ function (_Component) {
     return _Component.prototype.createEl.call(this, 'div', {
       className: 'vjs-time-control vjs-time-divider',
       innerHTML: '<div><span>/</span></div>'
+    }, {
+      // this element and its contents can be hidden from assistive techs since
+      // it is made extraneous by the announcement of the control text
+      // for the current time and duration displays
+      'aria-hidden': true
     });
   };
 
@@ -11642,7 +11652,9 @@ function (_Button) {
 
     _this.updateLiveEdgeStatus();
 
-    _this.on(_this.player_.liveTracker, 'liveedgechange', _this.updateLiveEdgeStatus);
+    if (_this.player_.liveTracker) {
+      _this.on(_this.player_.liveTracker, 'liveedgechange', _this.updateLiveEdgeStatus);
+    }
 
     return _this;
   }
@@ -11661,17 +11673,13 @@ function (_Button) {
       className: 'vjs-seek-to-live-control vjs-control'
     });
 
-    this.contentEl_ = createEl('div', {
-      className: 'vjs-seek-to-live',
-      innerHTML: "<span class=\"vjs-control-text\">" + this.localize('Stream Type') + "\xA0</span>" + this.localize('LIVE')
+    this.textEl_ = createEl('span', {
+      className: 'vjs-seek-to-live-text',
+      innerHTML: this.localize('LIVE')
     }, {
-      'aria-live': 'off'
+      'aria-hidden': 'true'
     });
-    this.circleEl_ = createEl('span', {
-      className: 'vjs-seek-to-live-circle'
-    });
-    el.appendChild(this.circleEl_);
-    el.appendChild(this.contentEl_);
+    el.appendChild(this.textEl_);
     return el;
   };
   /**
@@ -11681,10 +11689,15 @@ function (_Button) {
 
 
   _proto.updateLiveEdgeStatus = function updateLiveEdgeStatus(e) {
-    if (this.player_.liveTracker.behindLiveEdge()) {
-      this.removeClass('vjs-at-live-edge');
-    } else {
+    // default to live edge
+    if (!this.player_.liveTracker || this.player_.liveTracker.atLiveEdge()) {
+      this.setAttribute('aria-disabled', true);
       this.addClass('vjs-at-live-edge');
+      this.controlText('Seek to live, currently playing live');
+    } else {
+      this.setAttribute('aria-disabled', false);
+      this.removeClass('vjs-at-live-edge');
+      this.controlText('Seek to live, currently behind live');
     }
   };
   /**
@@ -11703,9 +11716,11 @@ function (_Button) {
 
 
   _proto.dispose = function dispose() {
-    this.off(this.player_.liveTracker, 'liveedgechange', this.updateLiveEdgeStatus);
-    this.contentEl_ = null;
-    this.circleEl_ = null;
+    if (this.player_.liveTracker) {
+      this.off(this.player_.liveTracker, 'liveedgechange', this.updateLiveEdgeStatus);
+    }
+
+    this.textEl_ = null;
 
     _Button.prototype.dispose.call(this);
   };
@@ -11713,6 +11728,7 @@ function (_Button) {
   return SeekToLive;
 }(Button);
 
+SeekToLive.prototype.controlText_ = 'Seek to live, currently playing live';
 Component.registerComponent('SeekToLive', SeekToLive);
 
 /**
@@ -12149,7 +12165,7 @@ function (_Component) {
   _proto.createEl = function createEl$$1() {
     return _Component.prototype.createEl.call(this, 'div', {
       className: 'vjs-load-progress',
-      innerHTML: "<span class=\"vjs-control-text\"><span>" + this.localize('Loaded') + "</span>: 0%</span>"
+      innerHTML: "<span class=\"vjs-control-text\"><span>" + this.localize('Loaded') + "</span>: <span class=\"vjs-control-text-loaded-percentage\">0%</span></span>"
     });
   };
 
@@ -12171,18 +12187,27 @@ function (_Component) {
   _proto.update = function update(event) {
     var liveTracker = this.player_.liveTracker;
     var buffered = this.player_.buffered();
-    var duration = liveTracker.isLive() ? liveTracker.seekableEnd() : this.player_.duration();
+    var duration = liveTracker && liveTracker.isLive() ? liveTracker.seekableEnd() : this.player_.duration();
     var bufferedEnd = this.player_.bufferedEnd();
-    var children = this.partEls_; // get the percent width of a time compared to the total end
+    var children = this.partEls_;
+    var controlTextPercentage = this.$('.vjs-control-text-loaded-percentage'); // get the percent width of a time compared to the total end
 
-    var percentify = function percentify(time, end) {
+    var percentify = function percentify(time, end, rounded) {
       // no NaN
       var percent = time / end || 0;
-      return (percent >= 1 ? 1 : percent) * 100 + '%';
+      percent = (percent >= 1 ? 1 : percent) * 100;
+
+      if (rounded) {
+        percent = percent.toFixed(2);
+      }
+
+      return percent + '%';
     }; // update the width of the progress bar
 
 
-    this.el_.style.width = percentify(bufferedEnd, duration); // add child elements to represent the individual buffered time ranges
+    this.el_.style.width = percentify(bufferedEnd, duration); // update the control-text
+
+    textContent(controlTextPercentage, percentify(bufferedEnd, duration, true)); // add child elements to represent the individual buffered time ranges
 
     for (var i = 0; i < buffered.length; i++) {
       var start = buffered.start(i);
@@ -12238,6 +12263,8 @@ function (_Component) {
   _proto.createEl = function createEl$$1() {
     return _Component.prototype.createEl.call(this, 'div', {
       className: 'vjs-time-tooltip'
+    }, {
+      'aria-hidden': 'true'
     });
   };
   /**
@@ -12327,7 +12354,7 @@ function (_Component) {
 
       var duration = _this.player_.duration();
 
-      if (_this.player_.liveTracker.isLive()) {
+      if (_this.player_.liveTracker && _this.player_.liveTracker.isLive()) {
         var liveWindow = _this.player_.liveTracker.liveWindow();
 
         var secondsBehind = liveWindow - seekBarPoint * liveWindow;
@@ -12375,8 +12402,9 @@ function (_Component) {
    */
   _proto.createEl = function createEl() {
     return _Component.prototype.createEl.call(this, 'div', {
-      className: 'vjs-play-progress vjs-slider-bar',
-      innerHTML: "<span class=\"vjs-control-text\"><span>" + this.localize('Progress') + "</span>: 0%</span>"
+      className: 'vjs-play-progress vjs-slider-bar'
+    }, {
+      'aria-hidden': 'true'
     });
   };
   /**
@@ -12553,8 +12581,13 @@ function (_Slider) {
     this.update = throttle(bind(this, this.update), UPDATE_REFRESH_INTERVAL);
     this.on(this.player_, 'timeupdate', this.update);
     this.on(this.player_, 'ended', this.handleEnded);
-    this.on(this.player_, 'durationchange', this.update); // when playing, let's ensure we smoothly update the play progress bar
+    this.on(this.player_, 'durationchange', this.update);
+
+    if (this.player_.liveTracker) {
+      this.on(this.player_.liveTracker, 'liveedgechange', this.update);
+    } // when playing, let's ensure we smoothly update the play progress bar
     // via an interval
+
 
     this.updateInterval = null;
     this.on(this.player_, ['playing'], function () {
@@ -12567,7 +12600,7 @@ function (_Slider) {
       }, UPDATE_REFRESH_INTERVAL);
     });
     this.on(this.player_, ['ended', 'pause', 'waiting'], function (e) {
-      if (_this2.player_.liveTracker.isLive() && e.type !== 'ended') {
+      if (_this2.player_.liveTracker && _this2.player_.liveTracker.isLive() && e.type !== 'ended') {
         return;
       }
 
@@ -12608,11 +12641,11 @@ function (_Slider) {
     var liveTracker = this.player_.liveTracker;
     var duration = this.player_.duration();
 
-    if (liveTracker.isLive()) {
-      duration = this.player_.liveTracker.seekableEnd();
+    if (liveTracker && liveTracker.isLive()) {
+      duration = this.player_.liveTracker.liveCurrentTime();
     }
 
-    if (liveTracker.seekableEnd() === Infinity) {
+    if (liveTracker && liveTracker.seekableEnd() === Infinity) {
       this.disable();
     } else {
       this.enable();
@@ -12685,7 +12718,7 @@ function (_Slider) {
     var percent;
     var liveTracker = this.player_.liveTracker;
 
-    if (liveTracker.isLive()) {
+    if (liveTracker && liveTracker.isLive()) {
       percent = (currentTime - liveTracker.seekableStart()) / liveTracker.liveWindow(); // prevent the percent from changing at the live edge
 
       if (liveTracker.atLiveEdge()) {
@@ -12739,7 +12772,7 @@ function (_Slider) {
     var distance = this.calculateDistance(event);
     var liveTracker = this.player_.liveTracker;
 
-    if (!liveTracker.isLive()) {
+    if (!liveTracker || !liveTracker.isLive()) {
       newTime = distance * this.player_.duration(); // Don't let video end while scrubbing.
 
       if (newTime === this.player_.duration()) {
@@ -12747,13 +12780,7 @@ function (_Slider) {
       }
     } else {
       var seekableStart = liveTracker.seekableStart();
-      var seekableEnd = liveTracker.seekableEnd();
-
-      if (distance === 1) {
-        liveTracker.seekToLiveEdge();
-        return;
-      }
-
+      var seekableEnd = liveTracker.liveCurrentTime();
       newTime = seekableStart + distance * liveTracker.liveWindow(); // Don't let video end while scrubbing.
 
       if (newTime >= seekableEnd) {
@@ -17245,6 +17272,11 @@ function (_Component) {
   var _proto = LiveTracker.prototype;
 
   _proto.isBehind_ = function isBehind_() {
+    // don't report that we are behind until a timeupdate has been seen
+    if (!this.timeupdateSeen_) {
+      return false;
+    }
+
     var liveCurrentTime = this.liveCurrentTime();
     var currentTime = this.player_.currentTime();
     var seekableIncrement = this.seekableIncrement_; // the live edge window is the amount of seconds away from live
@@ -17252,7 +17284,7 @@ function (_Component) {
     // we add 0.07 because the live tracking happens every 30ms
     // and we want some wiggle room for short segment live playback
 
-    var liveEdgeWindow = seekableIncrement + 0.07; // on Android liveCurrentTime can bee Infinity, because seekableEnd
+    var liveEdgeWindow = seekableIncrement * 2 + 0.07; // on Android liveCurrentTime can bee Infinity, because seekableEnd
     // can be Infinity, so we handle that case.
 
     return liveCurrentTime !== Infinity && liveCurrentTime - liveEdgeWindow >= currentTime;
@@ -17274,7 +17306,7 @@ function (_Component) {
 
     if (newSeekEnd !== this.lastSeekEnd_) {
       if (this.lastSeekEnd_) {
-        this.seekableIncrement_ = newSeekEnd - this.lastSeekEnd_;
+        this.seekableIncrement_ = Math.abs(newSeekEnd - this.lastSeekEnd_);
       }
 
       this.pastSeekEnd_ = 0;
@@ -17308,6 +17340,8 @@ function (_Component) {
 
 
   _proto.startTracking = function startTracking() {
+    var _this2 = this;
+
     if (this.isTracking()) {
       return;
     }
@@ -17316,6 +17350,21 @@ function (_Component) {
     this.trackLive_();
     this.on(this.player_, 'play', this.trackLive_);
     this.on(this.player_, 'pause', this.trackLive_);
+    this.one(this.player_, 'play', this.handlePlay); // this is to prevent showing that we are not live
+    // before a video starts to play
+
+    if (!this.timeupdateSeen_) {
+      this.handleTimeupdate = function () {
+        _this2.timeupdateSeen_ = true;
+        _this2.handleTimeupdate = null;
+      };
+
+      this.one(this.player_, 'timeupdate', this.handleTimeupdate);
+    }
+  };
+
+  _proto.handlePlay = function handlePlay() {
+    this.one(this.player_, 'timeupdate', this.seekToLiveEdge);
   };
   /**
    * Stop tracking, and set all internal variables to
@@ -17327,11 +17376,19 @@ function (_Component) {
     this.pastSeekEnd_ = 0;
     this.lastSeekEnd_ = null;
     this.behindLiveEdge_ = null;
+    this.timeupdateSeen_ = false;
     this.clearInterval(this.trackingInterval_);
     this.trackingInterval_ = null;
     this.seekableIncrement_ = 12;
     this.off(this.player_, 'play', this.trackLive_);
     this.off(this.player_, 'pause', this.trackLive_);
+    this.off(this.player_, 'play', this.handlePlay);
+    this.off(this.player_, 'timeupdate', this.seekToLiveEdge);
+
+    if (this.handleTimeupdate) {
+      this.off(this.player_, 'timeupdate', this.handleTimeupdate);
+      this.handleTimeupdate = null;
+    }
   };
   /**
    * stop tracking live playback
@@ -17389,13 +17446,13 @@ function (_Component) {
 
 
   _proto.liveWindow = function liveWindow() {
-    var seekableEnd = this.seekableEnd();
+    var liveCurrentTime = this.liveCurrentTime();
 
-    if (seekableEnd === Infinity) {
+    if (liveCurrentTime === Infinity) {
       return Infinity;
     }
 
-    return seekableEnd - this.seekableStart();
+    return liveCurrentTime - this.seekableStart();
   };
   /**
    * Determines if the player is live, only checks if this component
@@ -17450,21 +17507,15 @@ function (_Component) {
 
 
   _proto.seekToLiveEdge = function seekToLiveEdge() {
-    var _this2 = this;
-
     if (this.atLiveEdge()) {
       return;
     }
 
-    this.player().pause();
-    this.player().addClass('vjs-waiting');
-    this.one('seekableendchange', function () {
-      _this2.player().removeClass('vjs-waiting');
+    this.player_.currentTime(this.liveCurrentTime());
 
-      _this2.player().currentTime(_this2.seekableEnd());
-
-      _this2.player().play();
-    });
+    if (this.player_.paused()) {
+      this.player_.play();
+    }
   };
 
   _proto.dispose = function dispose() {
@@ -21957,7 +22008,7 @@ function (_Component) {
       if (seconds === Infinity) {
         this.addClass('vjs-live');
 
-        if (this.options_.liveui) {
+        if (this.options_.liveui && this.player_.liveTracker) {
           this.addClass('vjs-liveui');
         }
       } else {
@@ -25139,7 +25190,7 @@ videojs$1.url = Url;
 
 /**
  * @videojs/http-streaming
- * @version 1.5.0
+ * @version 1.5.1
  * @copyright 2018 Brightcove, Inc
  * @license Apache-2.0
  */
@@ -26641,36 +26692,84 @@ Object.freeze({
  * @file time.js
  */
 
-var findSegmentForTime = function findSegmentForTime(time, playlist) {
-  if (!playlist.segments || playlist.segments.length === 0) {
-    return;
-  } // Assumptions:
-  // - there will always be a segment.duration
-  // - we can start from zero
-  // - segments are in time order
-  // - segment.start and segment.end only come
-  //    from syncController
+/**
+ * Checks whether a given time is within a segment based on its start time
+ * and duration. For playerTime, the requested time is in seconds, for
+ * streamTime, the time is a Date object.
+ *
+ * @param {Date|Number} requestedTime Time to check is within a segment
+ * @param {"stream" | "player"} type Whether passing in a playerTime or streamTime
+ * @param {Date|Number} segmentStart The start time of the segment
+ * @param {Number} duration Segment duration in seconds
+ */
 
+var timeWithinSegment = function timeWithinSegment(requestedTime, type, segmentStart, duration) {
+  var endTime = void 0;
+
+  if (type === 'stream') {
+    endTime = new Date(duration * 1000 + segmentStart.getTime());
+    var requestedTimeString = requestedTime.toISOString();
+    var segmentTimeString = segmentStart.toISOString();
+    var endTimeString = endTime.toISOString();
+    return segmentTimeString <= requestedTimeString && requestedTimeString <= endTimeString;
+  } else if (type === 'player') {
+    endTime = duration + segmentStart;
+    return segmentStart <= requestedTime && requestedTime <= endTime;
+  }
+};
+/**
+ * Finds a segment that contains the time requested. This might be an estimate or
+ * an accurate match.
+ *
+ * @param {Date|Number} time The streamTime or playerTime to find a matching segment for
+ * @param {"stream" | "player"} type Either the playerTime or streamTime
+ * @param {Object} playlist A playlist object
+ * @return {Object} match
+ * @return {Object} match.segment The matched segment from the playlist
+ * @return {Date|Number} match.estimatedStart The estimated start time of the segment
+ * @return {"accurate" | "estimate"} match.type Whether the match is estimated or accurate
+ */
+
+
+var findSegmentForTime = function findSegmentForTime(time, type, playlist) {
+  if (!playlist.segments || playlist.segments.length === 0) {
+    return null;
+  }
+
+  if (type !== 'player' && type !== 'stream') {
+    return null;
+  }
 
   var manifestTime = 0;
 
   for (var i = 0; i < playlist.segments.length; i++) {
     var segment = playlist.segments[i];
-    var estimatedStart = manifestTime;
     var estimatedEnd = manifestTime + segment.duration;
+    var segmentStart = void 0;
+    var estimatedStart = void 0;
 
-    if (segment.start <= time && time <= segment.end) {
+    if (type === 'player') {
+      segmentStart = segment.start;
+      estimatedStart = manifestTime;
+    } else {
+      // we can rely on the program date time being accurate
+      segmentStart = segment.dateTimeObject;
+      estimatedStart = segment.dateTimeObject;
+    }
+
+    var timeWithinSegmentEnd = typeof segment.start !== 'undefined' && typeof segment.end !== 'undefined' && timeWithinSegment(time, type, segmentStart, segment.end - segment.start);
+    var timeWithinSegmentDuration = timeWithinSegment(time, type, estimatedStart, segment.duration);
+
+    if (timeWithinSegmentEnd) {
       return {
         segment: segment,
         estimatedStart: estimatedStart,
-        estimatedEnd: estimatedEnd,
         type: 'accurate'
       };
-    } else if (estimatedStart <= time && time <= estimatedEnd) {
+    } else if (timeWithinSegmentDuration) {
       return {
         segment: segment,
         estimatedStart: estimatedStart,
-        estimatedEnd: estimatedEnd,
         type: 'estimate'
       };
     }
@@ -26680,6 +26779,109 @@ var findSegmentForTime = function findSegmentForTime(time, playlist) {
 
   return null;
 };
+/**
+ * Finds a segment that contains the given player time(in seconds).
+ *
+ * @param {Number} time The player time to find a match for
+ * @param {Object} playlist A playlist object to search within
+ */
+
+
+var findSegmentForPlayerTime = function findSegmentForPlayerTime(time, playlist) {
+  // Assumptions:
+  // - there will always be a segment.duration
+  // - we can start from zero
+  // - segments are in time order
+  // - segment.start and segment.end only come
+  //    from syncController
+  return findSegmentForTime(time, 'player', playlist);
+};
+/**
+ * Finds a segment that contains the stream time give as an ISO-8601 string.
+ *
+ * @param {String} streamTime The ISO-8601 streamTime to find a match for
+ * @param {Object} playlist A playlist object to search within
+ */
+
+
+var findSegmentForStreamTime = function findSegmentForStreamTime(streamTime, playlist) {
+  var dateTimeObject = void 0;
+
+  try {
+    dateTimeObject = new Date(streamTime);
+  } catch (e) {
+    // TODO something here?
+    return null;
+  } // Assumptions:
+  //  - verifyProgramDateTimeTags has already been run
+  //  - live streams have been started
+
+
+  return findSegmentForTime(dateTimeObject, 'stream', playlist);
+};
+/**
+ * Gives the offset of the comparisonTimestamp from the streamTime timestamp in seconds.
+ * If the offset returned is positive, the streamTime occurs before the comparisonTimestamp.
+ * If the offset is negative, the streamTime occurs before the comparisonTimestamp.
+ *
+ * @param {String} comparisonTimeStamp An ISO-8601 timestamp to compare against
+ * @param {String} streamTime The streamTime as an ISO-8601 string
+ * @return {Number} offset
+ */
+
+
+var getOffsetFromTimestamp = function getOffsetFromTimestamp(comparisonTimeStamp, streamTime) {
+  var segmentDateTime = void 0;
+  var streamDateTime = void 0;
+
+  try {
+    segmentDateTime = new Date(comparisonTimeStamp);
+    streamDateTime = new Date(streamTime);
+  } catch (e) {// TODO handle error
+  }
+
+  var segmentTimeEpoch = segmentDateTime.getTime();
+  var streamTimeEpoch = streamDateTime.getTime();
+  return (streamTimeEpoch - segmentTimeEpoch) / 1000;
+};
+/**
+ * Checks that all segments in this playlist have programDateTime tags.
+ *
+ * @param {Object} playlist A playlist object
+ */
+
+
+var verifyProgramDateTimeTags = function verifyProgramDateTimeTags(playlist) {
+  if (!playlist.segments || playlist.segments.length === 0) {
+    return false;
+  }
+
+  for (var i = 0; i < playlist.segments.length; i++) {
+    var segment = playlist.segments[i];
+
+    if (!segment.dateTimeObject) {
+      return false;
+    }
+  }
+
+  return true;
+};
+/**
+ * Returns the streamTime  of the media given a playlist and a playerTime.
+ * The playlist must have programDateTime tags for a programDateTime tag to be returned.
+ * If the segments containing the time requested have not been buffered yet, an estimate
+ * may be returned to the callback.
+ *
+ * @param {Object} args
+ * @param {Object} args.playlist A playlist object to search within
+ * @param {Number} time A playerTime in seconds
+ * @param {Function} callback(err, streamTime)
+ * @returns {String} err.message A detailed error message
+ * @returns {Object} streamTime
+ * @returns {Number} streamTime.mediaSeconds The streamTime in seconds
+ * @returns {String} streamTime.programDateTime The streamTime as an ISO-8601 String
+ */
+
 
 var getStreamTime = function getStreamTime(_ref) {
   var playlist = _ref.playlist,
@@ -26687,15 +26889,17 @@ var getStreamTime = function getStreamTime(_ref) {
       time = _ref$time === undefined ? undefined : _ref$time,
       callback = _ref.callback;
 
+  if (!callback) {
+    throw new Error('getStreamTime: callback must be provided');
+  }
+
   if (!playlist || time === undefined) {
     return callback({
       message: 'getStreamTime: playlist and time must be provided'
     });
-  } else if (!callback) {
-    throw new Error('getStreamTime: callback must be provided');
   }
 
-  var matchedSegment = findSegmentForTime(time, playlist);
+  var matchedSegment = findSegmentForPlayerTime(time, playlist);
 
   if (!matchedSegment) {
     return callback({
@@ -26722,6 +26926,99 @@ var getStreamTime = function getStreamTime(_ref) {
   }
 
   return callback(null, streamTime);
+};
+/**
+ * Seeks in the player to a time that matches the given streamTime ISO-8601 string.
+ *
+ * @param {Object} args
+ * @param {String} args.streamTime A streamTime to seek to as an ISO-8601 String
+ * @param {Object} args.playlist A playlist to look within
+ * @param {Number} args.retryCount The number of times to try for an accurate seek. Default is 2.
+ * @param {Function} args.seekTo A method to perform a seek
+ * @param {Boolean} args.pauseAfterSeek Whether to end in a paused state after seeking. Default is true.
+ * @param {Object} args.tech The tech to seek on
+ * @param {Function} args.callback(err, newTime) A callback to return the new time to
+ * @returns {String} err.message A detailed error message
+ * @returns {Number} newTime The exact time that was seeked to in seconds
+ */
+
+
+var seekToStreamTime = function seekToStreamTime(_ref2) {
+  var streamTime = _ref2.streamTime,
+      playlist = _ref2.playlist,
+      _ref2$retryCount = _ref2.retryCount,
+      retryCount = _ref2$retryCount === undefined ? 2 : _ref2$retryCount,
+      seekTo = _ref2.seekTo,
+      _ref2$pauseAfterSeek = _ref2.pauseAfterSeek,
+      pauseAfterSeek = _ref2$pauseAfterSeek === undefined ? true : _ref2$pauseAfterSeek,
+      tech = _ref2.tech,
+      callback = _ref2.callback;
+
+  if (!callback) {
+    throw new Error('seekToStreamTime: callback must be provided');
+  }
+
+  if (typeof streamTime === 'undefined' || !playlist || !seekTo) {
+    return callback({
+      message: 'seekToStreamTime: streamTime, seekTo and playlist must be provided'
+    });
+  }
+
+  if (!playlist.endList && !tech.hasStarted_) {
+    return callback({
+      message: 'player must be playing a live stream to start buffering'
+    });
+  }
+
+  if (!verifyProgramDateTimeTags(playlist)) {
+    return callback({
+      message: 'programDateTime tags must be provided in the manifest ' + playlist.resolvedUri
+    });
+  }
+
+  var matchedSegment = findSegmentForStreamTime(streamTime, playlist); // no match
+
+  if (!matchedSegment) {
+    return callback({
+      message: streamTime + ' was not found in the stream'
+    });
+  }
+
+  if (matchedSegment.type === 'estimate') {
+    // we've run out of retries
+    if (retryCount === 0) {
+      return callback({
+        message: streamTime + ' is not buffered yet. Try again'
+      });
+    }
+
+    return seekToStreamTime({
+      streamTime: streamTime,
+      playlist: playlist,
+      retryCount: retryCount - 1,
+      seekTo: seekTo,
+      pauseAfterSeek: pauseAfterSeek,
+      tech: tech,
+      callback: callback
+    });
+  }
+
+  var segment = matchedSegment.segment;
+  var mediaOffset = getOffsetFromTimestamp(segment.dateTimeObject, streamTime);
+  var seekToTime = segment.start + mediaOffset;
+
+  var seekedCallback = function seekedCallback() {
+    return callback(null, tech.currentTime());
+  }; // listen for seeked event
+
+
+  tech.one('seeked', seekedCallback); // pause before seeking as video.js will restore this state
+
+  if (pauseAfterSeek) {
+    tech.pause();
+  }
+
+  seekTo(seekToTime);
 };
 /**
  * ranges
@@ -35210,8 +35507,13 @@ var HtmlMediaSource = function (_videojs$EventTarget) {
         return;
       }
 
-      _this.player_ = videojs$1(video.parentNode); // hls-reset is fired by videojs.Hls on to the tech after the main SegmentLoader
+      _this.player_ = videojs$1(video.parentNode);
+
+      if (!_this.player_) {
+        return;
+      } // hls-reset is fired by videojs.Hls on to the tech after the main SegmentLoader
       // resets its state and flushes the buffer
+
 
       _this.player_.tech_.on('hls-reset', _this.onHlsReset_); // hls-segment-time-mapping is fired by videojs.Hls on to the tech after the main
       // SegmentLoader inspects an MTS segment and has an accurate stream to display
@@ -35270,6 +35572,9 @@ var HtmlMediaSource = function (_videojs$EventTarget) {
 
       if (this.player_.el_) {
         this.player_.off('mediachange', this.onPlayerMediachange_);
+      }
+
+      if (this.player_.tech_ && this.player_.tech_.el_) {
         this.player_.tech_.off('hls-reset', this.onHlsReset_);
         this.player_.tech_.off('hls-segment-time-mapping', this.onHlsSegmentTimeMapping_);
       }
@@ -38420,6 +38725,8 @@ var SegmentLoader = function (_videojs$EventTarget) {
       removeCuesFromTrack(start, end, this.segmentMetadataTrack_);
       var Cue = window$1.WebKitDataCue || window$1.VTTCue;
       var value = {
+        dateTimeObject: segment.dateTimeObject,
+        dateTimeString: segment.dateTimeString,
         bandwidth: segmentInfo.playlist.attributes.BANDWIDTH,
         resolution: segmentInfo.playlist.attributes.RESOLUTION,
         codecs: segmentInfo.playlist.attributes.CODECS,
@@ -42780,7 +43087,7 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$1 = "1.5.0"; // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
+var version$1 = "1.5.1"; // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
 
 videojs$1.use('*', function (player) {
   return {
@@ -43087,7 +43394,8 @@ var HlsHandler = function (_Component) {
               name: 'hls-player-access'
             });
             return _this;
-          }
+          },
+          configurable: true
         });
       } // Set up a reference to the HlsHandler from player.vhs. This allows users to start
       // migrating from player.tech_.hls... to player.vhs... for API access. Although this
@@ -43099,6 +43407,7 @@ var HlsHandler = function (_Component) {
       _player.vhs = _this; // deprecated, for backwards compatibility
 
       _player.dash = _this;
+      _this.player_ = _player;
     }
 
     _this.tech_ = tech;
@@ -43541,6 +43850,16 @@ var HlsHandler = function (_Component) {
         this.qualityLevels_.dispose();
       }
 
+      if (this.player_) {
+        delete this.player_.vhs;
+        delete this.player_.dash;
+        delete this.player_.hls;
+      }
+
+      if (this.tech_ && this.tech_.hls) {
+        delete this.tech_.hls;
+      }
+
       get$1(HlsHandler.prototype.__proto__ || Object.getPrototypeOf(HlsHandler.prototype), 'dispose', this).call(this);
     }
   }, {
@@ -43549,6 +43868,22 @@ var HlsHandler = function (_Component) {
       return getStreamTime({
         playlist: this.masterPlaylistController_.media(),
         time: time,
+        callback: callback
+      });
+    } // the player must be playing before calling this
+
+  }, {
+    key: 'seekToStreamTime',
+    value: function seekToStreamTime$$1(streamTime, callback) {
+      var pauseAfterSeek = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+      var retryCount = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 2;
+      return seekToStreamTime({
+        streamTime: streamTime,
+        playlist: this.masterPlaylistController_.media(),
+        retryCount: retryCount,
+        pauseAfterSeek: pauseAfterSeek,
+        seekTo: this.options_.seekTo,
+        tech: this.options_.tech,
         callback: callback
       });
     }
