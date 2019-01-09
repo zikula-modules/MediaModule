@@ -675,7 +675,7 @@ class MediaController extends AbstractController
 
         $response = new BinaryFileResponse($mediaType->getOriginalWithWatermark($entity, 'path', false));
 
-        if ($request->query->has('inline') && $request->query->get('inline', '0') == '1') {
+        if ($request->query->has('inline') && '1' == $request->query->get('inline', '0')) {
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $entity->getBeautifiedFileName());
         } else {
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $entity->getBeautifiedFileName());

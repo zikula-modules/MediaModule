@@ -162,7 +162,7 @@ class SecurityManager
      * Returns a query builder which will return all collections the current user has
      * $requestedLevel access to. Use "->andWhere" to further strip down the result.
      *
-     * @param string $requestedLevel The requested access level.
+     * @param string $requestedLevel The requested access level
      *
      * @return QueryBuilder
      */
@@ -175,7 +175,7 @@ class SecurityManager
      * Returns a query builder which will return all media the current user has
      * $requestedLevel access to. Use "->andWhere" to further strip down the result.
      *
-     * @param string $requestedLevel The requested access level.
+     * @param string $requestedLevel The requested access level
      *
      * @return QueryBuilder
      */
@@ -190,7 +190,7 @@ class SecurityManager
      * @param int    $requestedLevel The requested permission level. Must be one of the constants from
      *                               the CollectionPermissionSecurityTree class.
      * @param string $type           (media|collections) Will either return media joined by collections or
-     *                               collections only.
+     *                               collections only
      *
      * @return QueryBuilder Select all collections where there is at least on permission which
      *
@@ -416,10 +416,10 @@ class SecurityManager
         // there exists at least one permission returned by the second query builder.
         //
         $qb = $this->em->createQueryBuilder();
-        if ($type == 'collections') {
+        if ('collections' == $type) {
             $qb->select('c')
                 ->from('CmfcmfMediaModule:Collection\CollectionEntity', 'c');
-        } elseif ($type == 'media') {
+        } elseif ('media' == $type) {
             $qb->select('m')
                 ->from('CmfcmfMediaModule:Media\AbstractMediaEntity', 'm')
                 ->leftJoin('m.collection', 'c');

@@ -75,7 +75,7 @@ class ImageEntity extends AbstractFileEntity
     private function cleanData(&$data)
     {
         foreach ($data as $key => $value) {
-            if (substr($key, 0, strlen('UndefinedTag')) == 'UndefinedTag') {
+            if ('UndefinedTag' == substr($key, 0, strlen('UndefinedTag'))) {
                 unset($data[$key]);
                 continue;
             }

@@ -59,7 +59,7 @@ class VersionChecker
         $releases = $this->filterPreReleasesAndDrafts($releases);
         $releases = $this->filterReleasesWithoutZipAsset($releases);
 
-        if (count($releases) == 0) {
+        if (0 == count($releases)) {
             return false;
         }
 
@@ -180,7 +180,7 @@ class VersionChecker
      *
      * @return bool
      *
-     * @throws RuntimeException if something goes wrong with the API call.
+     * @throws RuntimeException if something goes wrong with the API call
      */
     public function checkRateLimit()
     {
@@ -199,7 +199,7 @@ class VersionChecker
      */
     public function getZipAssetFromRelease($release)
     {
-        if (count($release['assets']) == 0) {
+        if (0 == count($release['assets'])) {
             return false;
         }
         foreach ($release['assets'] as $asset) {

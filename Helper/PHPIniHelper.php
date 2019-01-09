@@ -50,7 +50,7 @@ class PHPIniHelper
     /**
      * Converts a PHP filesize like 128M to bytes.
      *
-     * @param string $sSize The PHP filesize.
+     * @param string $sSize the PHP filesize
      *
      * @return int Size in bytes
      *

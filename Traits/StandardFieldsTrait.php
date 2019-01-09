@@ -33,7 +33,7 @@ trait StandardFieldsTrait
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
      * @Assert\DateTime()
-     * @var \DateTimeInterface $createdDate
+     * @var \DateTimeInterface
      */
     protected $createdDate;
 
@@ -49,7 +49,7 @@ trait StandardFieldsTrait
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
      * @Assert\DateTime()
-     * @var \DateTimeInterface $updatedDate
+     * @var \DateTimeInterface
      */
     protected $updatedDate;
 

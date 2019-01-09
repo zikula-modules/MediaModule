@@ -63,7 +63,7 @@ class HookedObjectRepository extends EntityRepository
     /**
      * Deletes all HookedObjects related to the given module name.
      *
-     * @param string $name The module name.
+     * @param string $name the module name
      */
     public function deleteAllOfModule($name)
     {

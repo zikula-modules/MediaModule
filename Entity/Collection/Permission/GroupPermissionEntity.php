@@ -53,7 +53,7 @@ class GroupPermissionEntity extends AbstractPermissionEntity
      */
     public function isTargetingAllGroups()
     {
-        return count($this->groupIds) == 0;
+        return 0 == count($this->groupIds);
     }
 
     /**

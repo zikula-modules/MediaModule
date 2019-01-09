@@ -134,7 +134,7 @@ class TwigExtension extends \Twig_Extension
         }
 
         $newVersionAvailable = $this->variableApi->get('CmfcmfMediaModule', 'newVersionAvailable', false);
-        if ($newVersionAvailable != false) {
+        if (false != $newVersionAvailable) {
             if ($newVersionAvailable == $currentVersion) {
                 // Somehow the user manually upgraded the module.
                 // Remove "Install new version" popup.
@@ -166,7 +166,7 @@ class TwigExtension extends \Twig_Extension
                 return;
             }
             $release = $this->versionChecker->getReleaseToUpgradeTo($currentVersion);
-            if ($release !== false) {
+            if (false !== $release) {
                 $this->variableApi->set('CmfcmfMediaModule', 'newVersionAvailable', $release['tag_name']);
             }
         } catch (RuntimeException $e) {

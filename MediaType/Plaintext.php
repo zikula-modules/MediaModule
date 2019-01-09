@@ -59,7 +59,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 4;
         }
-        if ($mimeType == 'inode/x-empty' && $file->getExtension() == 'txt') {
+        if ('inode/x-empty' == $mimeType && 'txt' == $file->getExtension()) {
             return 4;
         }
 
@@ -67,7 +67,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
     }
 
     /**
-     * @return array A list of supported mime types.
+     * @return array a list of supported mime types
      */
     private function getSupportedMimeTypes()
     {
@@ -96,7 +96,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 4;
         }
-        if ($mimeType == 'inode/x-empty' && pathinfo($name, PATHINFO_EXTENSION) == 'txt') {
+        if ('inode/x-empty' == $mimeType && 'txt' == pathinfo($name, PATHINFO_EXTENSION)) {
             return 4;
         }
 

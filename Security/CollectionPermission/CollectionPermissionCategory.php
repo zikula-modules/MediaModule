@@ -27,8 +27,8 @@ class CollectionPermissionCategory
     private $title;
 
     /**
-     * @param string $id    The permission category id.
-     * @param string $title The permission title.
+     * @param string $id    The permission category id
+     * @param string $title The permission title
      */
     public function __construct($id, $title)
     {

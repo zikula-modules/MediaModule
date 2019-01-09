@@ -243,7 +243,7 @@ class CollectionPermissionSecurityTree
         $vertices[self::PERM_LEVEL_CHANGE_PERMISSIONS] = $vertex;
 
         foreach ($vertices as $permissionLevel => $vertex) {
-            if ($permissionLevel == self::PERM_LEVEL_NONE) {
+            if (self::PERM_LEVEL_NONE == $permissionLevel) {
                 continue;
             }
             $vertex->createEdge($vertices[self::PERM_LEVEL_NONE])

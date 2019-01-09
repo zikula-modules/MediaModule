@@ -38,7 +38,6 @@ class HookedObjectRepositoryTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->repository->getByHookOrCreate($hookStub);
     }*/
-
     public function testTest()
     {
         $this->assertTrue(true);

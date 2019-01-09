@@ -21,7 +21,7 @@ interface UploadableMediaTypeInterface
      *
      * @param File $file
      *
-     * @return int 10 if it perfectly matches, 0 if it can't upload.
+     * @return int 10 if it perfectly matches, 0 if it can't upload
      */
     public function canUpload(File $file);
 
@@ -32,7 +32,7 @@ interface UploadableMediaTypeInterface
      * @param int    $size     The file size
      * @param string $name     The file name
      *
-     * @return int 10 if it perfectly matches, 0 if it can't upload.
+     * @return int 10 if it perfectly matches, 0 if it can't upload
      */
     public function mightUpload($mimeType, $size, $name);
 

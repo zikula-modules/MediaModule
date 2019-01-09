@@ -21,10 +21,10 @@ interface TemplateInterface
     /**
      * Renders the template with the given collection.
      *
-     * @param CollectionEntity    $collectionEntity     The collection to render.
-     * @param MediaTypeCollection $mediaTypeCollection  A collection of media types.
-     * @param bool                $showChildCollections Whether or not to show child collections.
-     * @param array               $options              Collection template specific option array.
+     * @param CollectionEntity    $collectionEntity     the collection to render
+     * @param MediaTypeCollection $mediaTypeCollection  a collection of media types
+     * @param bool                $showChildCollections whether or not to show child collections
+     * @param array               $options              collection template specific option array
      *
      * @return Response
      */

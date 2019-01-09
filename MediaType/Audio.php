@@ -124,7 +124,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 5;
         }
-        if ($file->getMimeType() == 'application/ogg' || ($file->getMimeType() == 'application/octet-stream' && $file->getClientOriginalExtension() == 'mp3')) {
+        if ('application/ogg' == $file->getMimeType() || ('application/octet-stream' == $file->getMimeType() && 'mp3' == $file->getClientOriginalExtension())) {
             // This could be a video or audio file.
             $meta = GenericMetadataReader::readMetadata($file->getPathname());
             if (isset($meta['audio']['dataformat'])) {
@@ -136,7 +136,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     }
 
     /**
-     * @return array A list of supported mime types.
+     * @return array a list of supported mime types
      */
     private function getSupportedMimeTypes()
     {
@@ -154,7 +154,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function mightUpload($mimeType, $size, $name)
     {
-        return in_array($mimeType, $this->getSupportedMimeTypes()) ? 5 : ($mimeType == 'video/ogg' ? 3 : 0);
+        return in_array($mimeType, $this->getSupportedMimeTypes()) ? 5 : ('video/ogg' == $mimeType ? 3 : 0);
     }
 
     public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)

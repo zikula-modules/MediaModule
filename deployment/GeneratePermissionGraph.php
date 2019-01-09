@@ -26,10 +26,10 @@ foreach ($graph->getVertices() as $vertex) {
 
 /** @var Base $edge */
 foreach ($graph->getEdges() as $edge) {
-    if ($edge->getAttribute('edgeType') == CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES) {
+    if (CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES == $edge->getAttribute('edgeType')) {
         $edge->setAttribute('graphviz.label', '<requires>');
         $edge->setAttribute('graphviz.color', 'blue');
-    } elseif ($edge->getAttribute('edgeType') == CollectionPermissionSecurityTree::EDGE_TYPE_CONFLICTS) {
+    } elseif (CollectionPermissionSecurityTree::EDGE_TYPE_CONFLICTS == $edge->getAttribute('edgeType')) {
         $edge->setAttribute('graphviz.label', '<conflicts>');
         $edge->setAttribute('graphviz.color', 'red');
     }
@@ -39,7 +39,7 @@ $graphviz = new \Graphp\GraphViz\GraphViz();
 rename($graphviz->createImageFile($graph), __DIR__ . '/complete-graph.png');
 
 foreach ($graph->getEdges()->getEdgesMatch(function (Base $edge) {
-    return $edge->getAttribute('edgeType') == CollectionPermissionSecurityTree::EDGE_TYPE_CONFLICTS;
+    return CollectionPermissionSecurityTree::EDGE_TYPE_CONFLICTS == $edge->getAttribute('edgeType');
 }) as $edge) {
     $graph->removeEdge($edge);
 }

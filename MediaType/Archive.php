@@ -43,7 +43,7 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
     {
         /** @var ArchiveEntity $entity */
         $meta = [];
-        if ($entity->getNumberOfFiles() !== false) {
+        if (false !== $entity->getNumberOfFiles()) {
             $meta[] = [
                 'title' => $this->translator->trans('Contained files', [], 'cmfcmfmediamodule'),
                 'value' => $entity->getNumberOfFiles()
@@ -70,7 +70,7 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
     }
 
     /**
-     * @return array A list of supported mime types.
+     * @return array a list of supported mime types
      */
     private function getSupportedMimeTypes()
     {

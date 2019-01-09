@@ -60,7 +60,7 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
             ->method('add')
             ->with($this->callback(function ($arr) {
                 return
-                    $arr['module'] == 'CmfcmfMediaModule'
+                    'CmfcmfMediaModule' == $arr['module']
                     && is_readable($arr['path'])
                     && in_array($arr['type'], ['stylesheet', 'javascript'])
                 ;
@@ -91,7 +91,7 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
         $scribiteHelperStub->expects($this->once())
             ->method('add')
             ->with($this->callback(function ($arr) {
-                return $arr['name'] == 'cmfcmfmediamodule'
+                return 'cmfcmfmediamodule' == $arr['name']
                     && is_dir($arr['path'])
                     && is_readable($arr['path']) . '/' . $arr['file']
                     //&& is_readable($arr['img'])

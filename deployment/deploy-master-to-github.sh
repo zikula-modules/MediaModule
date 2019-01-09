@@ -20,7 +20,7 @@ git init
 git config user.name "Travis CI"
 git config user.email "travis@christianflach.de"
 
-git remote add upstream "https://$GH_TOKEN@github.com/cmfcmf/MediaModule.git"
+git remote add upstream "https://$GH_TOKEN@github.com/zikula-modules/MediaModule.git"
 git checkout -b dev-builds
 git add .
 git commit -m "Deploy current master version (${rev}). [ci skip]"

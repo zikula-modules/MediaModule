@@ -152,10 +152,10 @@ class ModuleUpgrader
     /**
      * Execute the upgrade.
      *
-     * @param string         $step           The step to execute.
+     * @param string         $step           The step to execute
      * @param VersionChecker $versionChecker
      *
-     * @return bool Whether or not the upgrade is done.
+     * @return bool Whether or not the upgrade is done
      */
     public function upgrade($step, VersionChecker $versionChecker)
     {
@@ -250,7 +250,7 @@ class ModuleUpgrader
     /**
      * Checks whether a given directory is recursively writable.
      *
-     * @param string $dir The directory to check.
+     * @param string $dir The directory to check
      *
      * @return bool
      */
@@ -351,7 +351,7 @@ class ModuleUpgrader
     /**
      * @param VersionChecker $versionChecker
      *
-     * @return array The release to upgrade to.
+     * @return array The release to upgrade to
      */
     private function getReleaseToUpgradeTo(VersionChecker $versionChecker)
     {

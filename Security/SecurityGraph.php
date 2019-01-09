@@ -52,7 +52,7 @@ class SecurityGraph extends Graph
         $children = new VerticesMap();
         /** @var Directed $edge */
         foreach ($vertex->getEdgesOut() as $edge) {
-            if ($edge->getAttribute('edgeType') == CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES) {
+            if (CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES == $edge->getAttribute('edgeType')) {
                 $end = $edge->getVertexEnd();
                 $children = VerticesMap::factory(
                     $children->getMap() + [$end] + $this->getRequiredVertices($end)->getMap()
@@ -75,7 +75,7 @@ class SecurityGraph extends Graph
         return Vertices::factory(array_map(function (Base $edge) use ($vertex) {
             return $edge->getVertexToFrom($vertex);
         }, $vertex->getEdgesOut()->getEdgesMatch(function (Base $edge) {
-            return $edge->getAttribute('edgeType') == CollectionPermissionSecurityTree::EDGE_TYPE_CONFLICTS;
+            return CollectionPermissionSecurityTree::EDGE_TYPE_CONFLICTS == $edge->getAttribute('edgeType');
         })->getVector()));
     }
 
@@ -91,7 +91,7 @@ class SecurityGraph extends Graph
         $parents = new VerticesMap();
         /** @var Directed $edge */
         foreach ($vertex->getEdgesIn() as $edge) {
-            if ($edge->getAttribute('edgeType') == CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES) {
+            if (CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES == $edge->getAttribute('edgeType')) {
                 $start = $edge->getVertexStart();
                 $parents = VerticesMap::factory(
                     $parents->getMap() + [$start] + $this->getVerticesRequiring($start)->getMap()

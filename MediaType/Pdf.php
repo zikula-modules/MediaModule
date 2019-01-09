@@ -54,7 +54,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
     }
 
     /**
-     * @return array A list of supported mime types.
+     * @return array a list of supported mime types
      */
     private function getSupportedMimeTypes()
     {
@@ -76,7 +76,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
     {
         /** @var ImageEntity $entity */
         //if (!class_exists('Imagick')) {
-            return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize, 'pdf');
+        return $this->getIconThumbnailByFileExtension($entity, $width, $height, $format, $mode, $optimize, 'pdf');
         //} else {
             // Not yet implemented.
             //throw new \LogicException();

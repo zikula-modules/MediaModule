@@ -88,7 +88,7 @@ class MediaType extends AbstractContentType
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getTranslatableDataFields()
     {
@@ -184,7 +184,7 @@ class MediaType extends AbstractContentType
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getAssets($context)
     {
@@ -197,7 +197,7 @@ class MediaType extends AbstractContentType
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getJsEntrypoint($context)
     {

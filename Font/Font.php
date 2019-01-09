@@ -37,11 +37,11 @@ class Font implements FontInterface
     private $googleFontName;
 
     /**
-     * @param string      $id             The unique font id.
-     * @param string      $title          The font title.
-     * @param string      $path           The font path.
-     * @param string|null $googleFontName The name of the corresponding Google font or null if it
-     *                                    doesn't exist.
+     * @param string      $id             the unique font id
+     * @param string      $title          the font title
+     * @param string      $path           the font path
+     * @param string|null $googleFontName the name of the corresponding Google font or null if it
+     *                                    doesn't exist
      */
     public function __construct($id, $title, $path, $googleFontName)
     {

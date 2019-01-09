@@ -69,8 +69,8 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
      */
     public function canUpload(File $file)
     {
-        if ($file->getMimeType() == 'text/plain') {
-            if ($file->getExtension() == 'md' || ($file instanceof UploadedFile && $file->getClientOriginalExtension() == 'md')) {
+        if ('text/plain' == $file->getMimeType()) {
+            if ('md' == $file->getExtension() || ($file instanceof UploadedFile && 'md' == $file->getClientOriginalExtension())) {
                 return 5;
             }
         }
@@ -83,7 +83,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
      */
     public function mightUpload($mimeType, $size, $name)
     {
-        if ($mimeType == 'text/plain' && pathinfo($name, PATHINFO_EXTENSION) == 'md') {
+        if ('text/plain' == $mimeType && 'md' == pathinfo($name, PATHINFO_EXTENSION)) {
             return 5;
         }
 
