@@ -13,12 +13,12 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\SettingsType;
 use Cmfcmf\Module\MediaModule\Helper\PHPIniHelper;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
 
@@ -39,7 +39,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/requirements")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Settings:requirements.html.twig")
      * @Theme("admin")
      */
     public function requirementsAction()
@@ -73,7 +73,6 @@ class SettingsController extends AbstractController
                 'You can upload files of at most %size%. Consider raising "upload_max_filesize" and "post_max_size" in your php.ini file to upload larger files.',
                 ['%size%' => PHPIniHelper::formatFileSize($maxUploadSize)], 'cmfcmfmediamodule'),
         ];
-
 
         $highMemoryRequired = false;
         try {
@@ -180,7 +179,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/general", options={"expose" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Settings:general.html.twig")
      * @Theme("admin")
      *
      * @param Request $request
@@ -191,23 +190,13 @@ class SettingsController extends AbstractController
     {
         $this->ensurePermission();
 
-        $collectionTemplateCollection = $this->get(
-            'cmfcmf_media_module.collection_template_collection');
-        $translator = $this->get('translator');
-        $variableApi = $this->get('zikula_extensions_module.api.variable');
-
-        $form = $this->createForm(new SettingsType(
-            $translator,
-            $variableApi,
-            $collectionTemplateCollection->getCollectionTemplateTitles()
-            )
-        );
+        $form = $this->createForm(SettingsType::class);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $data = $form->getData();
             foreach ($data as $name => $value) {
-                \ModUtil::setVar('CmfcmfMediaModule', $name, $value);
+                $this->setVar($name, $value);
             }
             $this->addFlash('status', $this->__('Settings saved!'));
         }
@@ -219,7 +208,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/scribite", options={"expose" = true})
-     * @Template()
+     * @Template("CmfcmfMediaModule:Settings:scribite.html.twig")
      * @Theme("admin")
      *
      * @return array
@@ -228,26 +217,23 @@ class SettingsController extends AbstractController
     {
         $this->ensurePermission();
 
-        $scribiteInstalled = \ModUtil::available('Scribite');
+        $scribiteInstalled = $this->get('kernel')->isBundle('ZikulaScribiteModule');
         $descriptionEscapingStrategyForCollectionOk = true;
         $descriptionEscapingStrategyForMediaOk = true;
 
         if ($scribiteInstalled) {
-            $mediaBinding = $this->get('hook_dispatcher')->getBindingBetweenAreas(
-                "subscriber.cmfcmfmediamodule.ui_hooks.media",
-                "provider.scribite.ui_hooks.editor");
-            $collectionBinding = $this->get('hook_dispatcher')->getBindingBetweenAreas(
-                "subscriber.cmfcmfmediamodule.ui_hooks.collection",
-                "provider.scribite.ui_hooks.editor");
+            $hookDispatcher = $this->get('hook_dispatcher');
+            $mediaBinding = $hookDispatcher->getBindingBetweenAreas(
+                'subscriber.cmfcmfmediamodule.ui_hooks.media',
+                'provider.zikulascribitemodule.ui_hooks.editor');
+            $collectionBinding = $hookDispatcher->getBindingBetweenAreas(
+                'subscriber.cmfcmfmediamodule.ui_hooks.collections',
+                'provider.zikulascribitemodule.ui_hooks.editor');
 
             $descriptionEscapingStrategyForCollectionOk = !is_object($collectionBinding)
-                || \ModUtil::getVar(
-                    'CmfcmfMediaModule',
-                    'descriptionEscapingStrategyForCollection') == 'raw';
+                || 'raw' == $this->getVar('descriptionEscapingStrategyForCollection');
             $descriptionEscapingStrategyForMediaOk = !is_object($mediaBinding)
-                || \ModUtil::getVar(
-                    'CmfcmfMediaModule',
-                    'descriptionEscapingStrategyForMedia') == 'raw';
+                || 'raw' == $this->getVar('descriptionEscapingStrategyForMedia');
         }
 
         return [

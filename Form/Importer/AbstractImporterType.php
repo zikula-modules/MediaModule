@@ -29,7 +29,7 @@ abstract class AbstractImporterType extends SymfonyAbstractType
         $this->translator = $translator;
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         $type = get_class($this);
         $type = substr($type, strrpos($type, '\\') + 1, -strlen('Type'));

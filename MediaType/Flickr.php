@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\FlickrEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class Flickr extends AbstractMediaType implements WebMediaTypeInterface
 {
@@ -27,7 +26,7 @@ class Flickr extends AbstractMediaType implements WebMediaTypeInterface
 
     public function isEnabled()
     {
-        return \ModUtil::getVar('CmfcmfMediaModule', 'flickrApiKey', '') != "";
+        return "" != $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey', '');
     }
 
     /**
@@ -53,7 +52,7 @@ EOD;
     protected function getWebCreationTemplateArguments()
     {
         return [
-            'flickrId' => \ModUtil::getVar('CmfcmfMediaModule', 'flickrApiKey')
+            'flickrId' => $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey')
         ];
     }
 
@@ -63,7 +62,7 @@ EOD;
         return false;
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         // TODO: Implement getSearchResults() method.
     }

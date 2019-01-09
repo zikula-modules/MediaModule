@@ -12,10 +12,20 @@
 namespace Cmfcmf\Module\MediaModule;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\PasswordPermissionRestrictionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
+use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
+use Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Zikula\CategoriesModule\Entity\CategoryRegistryEntity;
 use Zikula\Core\AbstractExtensionInstaller;
 
 class MediaModuleInstaller extends AbstractExtensionInstaller
@@ -39,7 +49,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         // We need to create and flush the upload collection first, because it has to has the ID 1.
         $this->entityManager->flush();
-        if ($temporaryUploadCollection->getId() != CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID) {
+        if (CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID != $temporaryUploadCollection->getId()) {
             throw new \Exception($this->__f('The id of the generated "temporary upload collection" must be %s, but has a different value. This should not have happened. Please report this error.', ['%s' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID]));
         }
 
@@ -61,9 +71,6 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         $this->entityManager->persist($exampleCollection);
 
         $this->createPermissions($temporaryUploadCollection, $rootCollection);
-
-        $this->hookApi->installSubscriberHooks($this->bundle->getMetaData());
-        $this->hookApi->installProviderHooks($this->bundle->getMetaData());
 
         $this->setVar('descriptionEscapingStrategyForCollection', 'text');
         $this->setVar('descriptionEscapingStrategyForMedia', 'text');
@@ -104,16 +111,16 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             /** @noinspection PhpMissingBreakStatementInspection */
             case '1.0.6':
                 $this->schemaTool->create([
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity',
+                    AbstractPermissionEntity::class,
+                    GroupPermissionEntity::class,
+                    OwnerPermissionEntity::class,
+                    UserPermissionEntity::class,
 
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\PasswordPermissionRestrictionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity',
+                    AbstractPermissionRestrictionEntity::class,
+                    PasswordPermissionRestrictionEntity::class
                 ]);
                 $this->schemaTool->update([
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity'
+                    CollectionEntity::class
                 ]);
 
                 // Create root collection.
@@ -126,10 +133,10 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 $this->entityManager->persist($rootCollection);
 
                 $allCollections = $this->entityManager
-                    ->getRepository('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity')
+                    ->getRepository(CollectionEntity::class)
                     ->findAll();
                 foreach ($allCollections as $collection) {
-                    if ($collection->getParent() === null && $collection->getId() != null) {
+                    if (null === $collection->getParent() && null != $collection->getId()) {
                         // Collection has no parent and isn't the to-be-created root collection.
                         $collection->setParent($rootCollection);
                         $this->entityManager->merge($collection);
@@ -138,28 +145,52 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 $this->entityManager->flush();
 
                 $this->createPermissions(
-                    $this->entityManager->find('Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity', 1),
+                    $this->entityManager->find(CollectionEntity::class, 1),
                     $rootCollection
                 );
             case '1.1.0':
             case '1.1.1':
             case '1.1.2':
                 $this->schemaTool->update([
-                    'Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity'
+                    AbstractWatermarkEntity::class,
+                    TextWatermarkEntity::class
                 ]);
-                $this->entityManager->getConnection()->executeUpdate("UPDATE `cmfcmfmedia_watermarks` SET `fontColor`='#000000ff',`backgroundColor`='#00000000' WHERE `discr`='text'");
+                $this->entityManager->getConnection()->executeUpdate("
+                    UPDATE `cmfcmfmedia_watermarks`
+                    SET `fontColor`='#000000ff', `backgroundColor`='#00000000'
+                    WHERE `discr`='text'
+                ");
 
                 $this->schemaTool->update([
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity',
-                    'Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity',
+                    CollectionEntity::class,
+                    CollectionCategoryAssignmentEntity::class,
+                    AbstractMediaEntity::class,
+                    MediaCategoryAssignmentEntity::class
                 ]);
 
                 $this->createCategoryRegistries();
             case '1.2.0':
             case '1.2.1':
+            case '1.2.2':
+                // fields have changed: createdUserId becomes createdBy, updatedUserId becomes updatedBy
+                $connection = $this->entityManager->getConnection();
+                foreach (['collection', 'media', 'watermarks', 'permission'] as $tableName) {
+                    $sql = '
+                        ALTER TABLE `cmfcmfmedia_' . $tableName . '`
+                        CHANGE `createdUserId` `createdBy` INT(11) DEFAULT NULL
+                    ';
+                    $stmt = $connection->prepare($sql);
+                    $stmt->execute();
+
+                    $sql = '
+                        ALTER TABLE `cmfcmfmedia_' . $tableName . '`
+                        CHANGE `updatedUserId` `updatedBy` INT(11) DEFAULT NULL
+                    ';
+                    $stmt = $connection->prepare($sql);
+                    $stmt->execute();
+                }
+            case '1.3.0':
+            case '2.0.0':
                 return true;
             default:
                 return false;
@@ -174,13 +205,14 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         // @todo Also delete media files?
         $this->schemaTool->drop(static::getEntities());
 
-        $this->hookApi->uninstallSubscriberHooks($this->bundle->getMetaData());
-        $this->hookApi->uninstallProviderHooks($this->bundle->getMetaData());
-
         $this->delVars();
 
-        \CategoryRegistryUtil::deleteEntry('CmfcmfMediaModule');
-        \CategoryRegistryUtil::deleteEntry('CmfcmfMediaModule');
+        // remove category registry entries
+        $registries = $this->container->get('zikula_categories_module.category_registry_repository')->findBy(['modname' => 'CmfcmfMediaModule']);
+        foreach ($registries as $registry) {
+            $this->entityManager->remove($registry);
+        }
+        $this->entityManager->flush();
 
         return true;
     }
@@ -269,7 +301,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         foreach ($ccVersions as $version) {
             foreach ($ccNames as $id => $name) {
-                if ($id == 'CC-BY-NC-ND' && $version == '1.0') {
+                if ('CC-BY-NC-ND' == $id && '1.0' == $version) {
                     // The license image somehow does not exist.
                     continue;
                 }
@@ -281,7 +313,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     ->setImageUrl("https://i.creativecommons.org/l/$urlId/$version/80x15.png")
                     ->setEnabledForWeb(true)
                     ->setEnabledForUpload(true)
-                    ->setOutdated($version != '4.0')
+                    ->setOutdated('4.0' != $version)
                 ;
                 $this->entityManager->persist($license);
             }
@@ -294,7 +326,8 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
      */
     private function createUploadDir()
     {
-        $uploadDirectory = \FileUtil::getDataDirectory() . '/cmfcmf-media-module/media';
+        $dataDirectory = $this->container->getParameter('datadir');
+        $uploadDirectory = $dataDirectory . '/cmfcmf-media-module/media';
 
         if (!is_dir($uploadDirectory)) {
             mkdir($uploadDirectory, 0777, true);
@@ -372,8 +405,21 @@ TXT;
 
     private function createCategoryRegistries()
     {
-        $categoryID = \CategoryUtil::getCategoryByPath('/__SYSTEM__/Modules/Global')['id'];
-        \CategoryRegistryUtil::insertEntry('CmfcmfMediaModule', 'AbstractMediaEntity', 'Main', $categoryID);
-        \CategoryRegistryUtil::insertEntry('CmfcmfMediaModule', 'CollectionEntity', 'Main', $categoryID);
+        $categoryGlobal = $this->container->get('zikula_categories_module.category_repository')->findOneBy(['name' => 'Global']);
+        if (!$categoryGlobal) {
+            return;
+        }
+
+        $entityManager = $this->container->get('doctrine.orm.default_entity_manager');
+        foreach (['AbstractMediaEntity', 'CollectionEntity'] as $entityName) {
+            $registry = new CategoryRegistryEntity();
+            $registry->setModname('CmfcmfMediaModule');
+            $registry->setEntityname($entityName);
+            $registry->setProperty('Main');
+            $registry->setCategory($categoryGlobal);
+
+            $entityManager->persist($registry);
+        }
+        $entityManager->flush();
     }
 }

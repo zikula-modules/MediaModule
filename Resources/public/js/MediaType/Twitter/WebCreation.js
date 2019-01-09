@@ -9,11 +9,11 @@
                 new window.CmfcmfMediaModule.WebCreation.tableColumns.TextColumn('')
             ],
             {
-                /*everything: 'Everything',*/
-                tweets: 'Tweets'/*,
-                users: 'Users'*/
+                /*everything: Translator.__('Everything'),*/
+                tweets: Translator.__('Tweets')/*,
+                users: Translator.__('Users')*/
             },
-            'Search for tweets and users'
+            Translator.__('Search for tweets')
         );
     });
 })(jQuery);

@@ -39,8 +39,8 @@
                         position: evt.newIndex,
                         'new-position': evt.newIndex,
                         'old-position': evt.oldIndex
-                    }).success(function () {
-                        window.toastr['success']('', 'Saved new position.');
+                    }).done(function () {
+                        window.toastr['success']('', Translator.__('Saved new position.'));
                     }).fail(window.CmfcmfMediaModule.Util.Ajax.fail);
                 }
             });

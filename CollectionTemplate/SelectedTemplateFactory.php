@@ -18,13 +18,29 @@ class SelectedTemplateFactory
      */
     private $templateCollection;
 
-    public function __construct(TemplateCollection $templateCollection)
-    {
+    /**
+     * @var string
+     */
+    private $defaultTemplate;
+
+    /**
+     * @param TemplateCollection $templateCollection
+     * @param string             $defaultTemplate
+     */
+    public function __construct(
+        TemplateCollection $templateCollection,
+        $defaultTemplate
+    ) {
         $this->templateCollection = $templateCollection;
+        $this->defaultTemplate = $defaultTemplate;
     }
 
     public function fromDB($jsonOrString)
     {
+        if (!$jsonOrString) {
+            $jsonOrString = $this->defaultTemplate;
+        }
+
         if ($this->isJSON($jsonOrString)) {
             $json = json_decode($jsonOrString, true);
             $template = $json['template'];
@@ -40,7 +56,7 @@ class SelectedTemplateFactory
     public function fromTemplateName($template, array $options)
     {
         $template = $this->templateCollection->getCollectionTemplate($template);
-        if (count($options) == 0) {
+        if (0 == count($options)) {
             $options = $template->getDefaultOptions();
         }
 
@@ -49,6 +65,6 @@ class SelectedTemplateFactory
 
     private function isJSON($string)
     {
-        return strpos($string, '{') !== false;
+        return false !== strpos($string, '{');
     }
 }

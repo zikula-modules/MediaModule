@@ -53,15 +53,18 @@ class TemplateCollection
      */
     public function getCollectionTemplateTitles()
     {
-        return array_map(function (TemplateInterface $template) {
-            return $template->getTitle();
-        }, $this->templates);
+        $choices = [];
+        foreach ($this->templates as $template) {
+            $choices[$template->getTitle()] = $template->getName();
+        }
+
+        return $choices;
     }
 
     /**
      * Returns the specified collection template.
      *
-     * @param string $template The template name.
+     * @param string $template the template name
      *
      * @return TemplateInterface
      */
@@ -77,7 +80,7 @@ class TemplateCollection
     /**
      * Checks whether or not the specified collection template exists.
      *
-     * @param string $template The template name.
+     * @param string $template the template name
      *
      * @return bool
      */

@@ -11,7 +11,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Watermark;
 
-use Cmfcmf\Module\MediaModule\Entity\Watermark\ImageWatermarkEntity;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,49 +22,34 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ImageWatermarkType extends AbstractWatermarkType
 {
     /**
-     * @var ImageWatermarkEntity
-     */
-    protected $entity;
-
-    /**
-     * @param ImageWatermarkEntity|null $entity
-     */
-    public function __construct(ImageWatermarkEntity $entity = null)
-    {
-        $this->entity = $entity;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $file = null;
-        if ($this->entity !== null) {
-            $file = new File($this->entity->getPath());
+        if (isset($options['entity']) && null !== $options['entity'] && $options['entity']->getFileName()) {
+            $file = new File($options['entity']->getPath());
         }
-        $builder
-            ->add('file', 'file', [
-                'multiple' => false,
-                'mapped' => false,
-                'attr' => [
-                    'help' => $this->translator->trans('Image to be used as watermark.', [], 'cmfcmfmediamodule')
-                ],
-                'data' => $file, // @todo Still needed??
-                'required' => $this->entity === null,
-                'constraints' => [
-                    new Assert\File([
-                        // NOTE: If you change the allowed mime types here, make sure to
-                        // also change them in {@link ImageWatermarkEntity}
-                        'mimeTypes' => [
-                            'image/png',
-                            'image/jpeg',
-                            'image/gif'
-                        ]
-                    ])
-                ]
-            ])
-        ;
+        $builder->add('file', FileType::class, [
+            'multiple' => false,
+            'mapped' => false,
+            'attr' => [
+                'help' => $this->translator->trans('Image to be used as watermark.', [], 'cmfcmfmediamodule')
+            ],
+            'data' => $file, // @todo Still needed??
+            'required' => (null === $file),
+            'constraints' => [
+                new Assert\File([
+                    // NOTE: If you change the allowed mime types here, make sure to
+                    // also change them in {@link ImageWatermarkEntity}
+                    'mimeTypes' => [
+                        'image/png',
+                        'image/jpeg',
+                        'image/gif'
+                    ]
+                ])
+            ]
+        ]);
         parent::buildForm($builder, $options);
     }
 }

@@ -11,14 +11,17 @@
 
 namespace Cmfcmf\Module\MediaModule\Tests\Listener;
 
+use Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository\HookedObjectRepository;
 use Cmfcmf\Module\MediaModule\Listener\ModuleListener;
+use Doctrine\ORM\EntityManagerInterface;
+use Zikula\Core\AbstractModule;
 use Zikula\Core\Event\ModuleStateEvent;
 
 class ModuleListenerTest extends \PHPUnit_Framework_TestCase
 {
     public function testIfEventMethodsExist()
     {
-        $emStub = $this->getMockBuilder('Doctrine\ORM\EntityManagerInterface')
+        $emStub = $this->getMockBuilder(EntityManagerInterface::class)
             ->getMockForAbstractClass()
         ;
 
@@ -31,10 +34,10 @@ class ModuleListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testIfNothingHappensWhenModuleIsNotSetAndNameIsEmpty()
     {
-        $emStub = $this->getMockBuilder('Doctrine\ORM\EntityManagerInterface')
+        $emStub = $this->getMockBuilder(EntityManagerInterface::class)
             ->getMockForAbstractClass()
         ;
-        $eventStub = $this->getMockBuilder('Zikula\Core\Event\ModuleStateEvent')
+        $eventStub = $this->getMockBuilder(ModuleStateEvent::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -55,10 +58,10 @@ class ModuleListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testIfItWorksWhenModuleIsNotSetButNameIsSet()
     {
-        $emStub = $this->getMockBuilder('Doctrine\ORM\EntityManagerInterface')
+        $emStub = $this->getMockBuilder(EntityManagerInterface::class)
             ->getMockForAbstractClass()
         ;
-        $repositoryStub = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository\HookedObjectRepository')
+        $repositoryStub = $this->getMockBuilder(HookedObjectRepository::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -80,10 +83,10 @@ class ModuleListenerTest extends \PHPUnit_Framework_TestCase
 
     public function testIfItWorksWhenModuleIsSet()
     {
-        $emStub = $this->getMockBuilder('Doctrine\ORM\EntityManagerInterface')
+        $emStub = $this->getMockBuilder(EntityManagerInterface::class)
             ->getMockForAbstractClass()
         ;
-        $repositoryStub = $this->getMockBuilder('Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository\HookedObjectRepository')
+        $repositoryStub = $this->getMockBuilder(HookedObjectRepository::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -98,7 +101,7 @@ class ModuleListenerTest extends \PHPUnit_Framework_TestCase
             ->with('FooBarModule')
         ;
 
-        $moduleStub = $this->getMockBuilder('Zikula\Core\AbstractModule')
+        $moduleStub = $this->getMockBuilder(AbstractModule::class)
             ->getMock()
         ;
         $r = new \ReflectionClass($moduleStub);

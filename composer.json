@@ -1,7 +1,7 @@
 {
     "name": "cmfcmf/media-module",
-    "version": "1.2.2",
-    "description": "A Zikula 1.4.3+ module to handle all sorts of media.",
+    "version": "2.0.0",
+    "description": "A Zikula 2 module to handle all sorts of media.",
     "type": "zikula-module",
     "license": "MIT",
     "authors": [
@@ -15,35 +15,33 @@
         "psr-4": { "Cmfcmf\\Module\\MediaModule\\": "" }
     },
     "require": {
-        "php": ">5.4.1",
-        "james-heinrich/getid3": "~1.9.9",
-        "knplabs/github-api": "~1.5",
-        "j7mbo/twitter-api-php": "~1.0.5",
-        "google/apiclient": "~1.1.5",
-        "clue/graph": "0.9.*"
+        "clue/graph": "^0.9",
+        "google/apiclient": "^2",
+        "j7mbo/twitter-api-php": "^1",
+        "james-heinrich/getid3": "^1",
+        "knplabs/github-api": "^1",
+        "php": ">=5.5.9",
+        "vierbergenlars/php-semver": "^3"
     },
     "require-dev": {
-        "graphp/graphviz": "0.2.*"
+        "graphp/graphviz": "^0.2"
     },
     "extra": {
         "zikula": {
             "class": "Cmfcmf\\Module\\MediaModule\\CmfcmfMediaModule",
-            "core-compatibility": ">=1.4.3",
+            "core-compatibility": ">=2.0.11 <3.0.0",
             "displayname": "MediaModule",
             "url": "media",
             "oldnames": [],
             "capabilities": {
                 "admin": {"route": "cmfcmfmediamodule_settings_index"},
                 "user": {"route": "cmfcmfmediamodule_collection_displayroot"},
-                "hook_subscriber": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"},
-                "hook_provider": {"class": "Cmfcmf\\Module\\MediaModule\\Container\\HookContainer"},
                 "categorizable": {
                     "entities": [
                         "Cmfcmf\\Module\\MediaModule\\Entity\\Media\\AbstractMediaEntity",
                         "Cmfcmf\\Module\\MediaModule\\Entity\\Collection\\CollectionEntity"
                     ]
-                },
-                "searchable": {"class": "Cmfcmf\\Module\\MediaModule\\Helper\\SearchHelper"}
+                }
             },
             "securityschema": {
                 "CmfcmfMediaModule::": "::"
@@ -51,8 +49,12 @@
         }
     },
     "config": {
+        "vendor-dir": "vendor",
+        "preferred-install": "dist",
+        "optimize-autoloader": true,
         "platform": {
-            "php": "5.4.2"
-        }
+            "php": "5.5.9"
+        },
+        "sort-packages": true
     }
 }

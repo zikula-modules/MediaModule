@@ -1,10 +1,16 @@
+{{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/video-js/video-js.min.css')) }}
+{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/video-js/video.min.js')) }}
+{% if app.request.locale != 'en' %}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/video-js/lang/' ~ app.request.locale ~ '.js')) }}
+{% endif %}
+
 <video width="{{ width|e('html_attr') }}" height="{{ height|e('html_attr') }}" controls>
     <source src="{{ entity.url|e('html_attr') }}" type="{{ entity.mimeType|e('html_attr') }}">
-    {{ __('Your browser does not support the video element.') }}
+    <p class="vjs-no-js">{{ __('To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>.')|raw }}</p>
 </video>
 
 {% if enableYouTubeUpload and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
     <a href="{{ path('cmfcmfmediamodule_mediatype_youtubeupload', {id: entity.id}) }}" class="btn btn-sm btn-default" style="background: #cd201f; color: white">
-        <i class="fa fa-youtube"></i> Upload to YouTube
+        <i class="fa fa-youtube"></i> {{ __('Upload to YouTube') }}
     </a>
 {% endif %}

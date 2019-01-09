@@ -13,7 +13,9 @@ namespace Cmfcmf\Module\MediaModule\Listener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Zikula_Event;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Zikula\Core\Event\GenericEvent;
+use Zikula\ScribiteModule\Event\EditorHelperEvent;
 
 /**
  * Listens to Scribite events.
@@ -21,81 +23,166 @@ use Zikula_Event;
 class ThirdPartyListener implements EventSubscriberInterface
 {
     /**
-     * @var string
-     */
-    private $zikulaRoot;
-
-    /**
      * @var Filesystem
      */
-    private $fs;
+    protected $filesystem;
 
     /**
-     * @var string
+     * @var RequestStack
      */
-    private $resourceRoot;
+    protected $requestStack;
 
     /**
-     * @param string $kernelRootDir The kernel root directory.
+     * @param Filesystem   $filesystem
+     * @param RequestStack $requestStack
      */
-    public function __construct($kernelRootDir)
+    public function __construct(Filesystem $filesystem, RequestStack $requestStack)
     {
-        $this->zikulaRoot = realpath($kernelRootDir . '/..');
-        $this->resourceRoot = realpath(__DIR__ . '/../Resources');
-        $this->fs = new Filesystem();
+        $this->filesystem = $filesystem;
+        $this->requestStack = $requestStack;
     }
 
     /**
-     * {@inheritdoc}
+     * Makes our handlers known to the event system.
      */
     public static function getSubscribedEvents()
     {
         return [
-            'moduleplugin.ckeditor.externalplugins' => 'getCKEditorPlugins',
-            'module.scribite.editorhelpers' => 'getScribiteEditorHelpers'
+            'module.scribite.editorhelpers'           => ['getEditorHelpers', 5],
+            'moduleplugin.ckeditor.externalplugins'   => ['getCKEditorPlugins', 5],
+            'moduleplugin.quill.externalplugins'      => ['getQuillPlugins', 5],
+            'moduleplugin.summernote.externalplugins' => ['getSummernotePlugins', 5],
+            'moduleplugin.tinymce.externalplugins'    => ['getTinyMcePlugins', 5]
         ];
     }
 
     /**
-     * Adds external plugin to CKEditor.
+     * Listener for the `module.scribite.editorhelpers` event.
      *
-     * @param Zikula_Event $event The event instance.
-     */
-    public function getCKEditorPlugins(Zikula_Event $event)
-    {
-        $plugins = $event->getSubject();
-        $plugins->add([
-            'name' => 'cmfcmfmediamodule',
-            'path' => $this->fs->makePathRelative($this->resourceRoot . '/public/js/CKEditorPlugin', $this->zikulaRoot),
-            'file' => 'plugin.js',
-            'img'  => $this->fs->makePathRelative($this->resourceRoot . '/public/images', $this->zikulaRoot) . 'admin.png'
-        ]);
-    }
-
-    /**
-     * Adds extra JS to load on pages using the Scribite editor.
+     * This occurs when Scribite adds pagevars to the editor page.
+     * CmfcmfMediaModule will use this to add a javascript helper to add custom items.
      *
-     * @param Zikula_Event $event
+     * You can access general data available in the event.
+     *
+     * The event name:
+     *     `echo 'Event: ' . $event->getName();`
+     *
+     * @param EditorHelperEvent $event The event instance
      */
-    public function getScribiteEditorHelpers(Zikula_Event $event)
+    public function getEditorHelpers(EditorHelperEvent $event)
     {
-        // intended is using the add() method to add a helper like below
-        $helpers = $event->getSubject();
+        // install assets for Scribite plugins
+        $targetDir = 'web/modules/cmfcmfmedia';
+        if (!$this->filesystem->exists($targetDir)) {
+            $moduleDirectory = str_replace('Listener', '', __DIR__);
+            if (is_dir($originDir = $moduleDirectory . 'Resources/public')) {
+                $this->filesystem->symlink($originDir, $targetDir, true);
+            }
+        }
 
+        $basePath = $this->requestStack->getCurrentRequest()->getBasePath();
+        $helpers = $event->getHelperCollection();
         $helpers->add([
             'module' => 'CmfcmfMediaModule',
             'type'   => 'javascript',
-            'path'   => $this->fs->makePathRelative($this->resourceRoot . '/public/js/vendor', $this->zikulaRoot) . 'toastr.min.js'
+            'path'   => $basePath . '/web/modules/cmfcmfmedia/js/vendor/toastr.min.js'
         ]);
         $helpers->add([
             'module' => 'CmfcmfMediaModule',
             'type'   => 'stylesheet',
-            'path'   => $this->fs->makePathRelative($this->resourceRoot . '/public/css/vendor', $this->zikulaRoot) . 'toastr.min.css'
+            'path'   => $basePath . '/web/modules/cmfcmfmedia/css/vendor/toastr.min.css'
         ]);
         $helpers->add([
             'module' => 'CmfcmfMediaModule',
             'type'   => 'javascript',
-            'path'   => $this->fs->makePathRelative($this->resourceRoot . '/public/js', $this->zikulaRoot) . 'util.js'
+            'path'   => $basePath . '/web/modules/cmfcmfmedia/js/util.js'
+        ]);
+        $helpers->add([
+            'module' => 'CmfcmfMediaModule',
+            'type'   => 'javascript',
+            'path'   => $basePath . '/web/modules/cmfcmfmedia/js/Finder/opener.js'
+        ]);
+    }
+
+    /**
+     * Listener for the `moduleplugin.ckeditor.externalplugins` event.
+     *
+     * Adds external plugin to CKEditor.
+     *
+     * You can access general data available in the event.
+     *
+     * The event name:
+     *     `echo 'Event: ' . $event->getName();`
+     *
+     * @param GenericEvent $event The event instance
+     */
+    public function getCKEditorPlugins(GenericEvent $event)
+    {
+        $event->getSubject()->add([
+            'name' => 'cmfcmfmediamodule',
+            'path' => $this->requestStack->getCurrentRequest()->getBasePath() . '/web/modules/cmfcmfmedia/scribite/CKEditor/cmfcmfmediamodule/',
+            'file' => 'plugin.js',
+            'img'  => 'ed_cmfcmfmediamodule.gif'
+        ]);
+    }
+
+    /**
+     * Listener for the `moduleplugin.quill.externalplugins` event.
+     *
+     * Adds external plugin to Quill.
+     *
+     * You can access general data available in the event.
+     *
+     * The event name:
+     *     `echo 'Event: ' . $event->getName();`
+     *
+     * @param GenericEvent $event The event instance
+     */
+    public function getQuillPlugins(GenericEvent $event)
+    {
+        $event->getSubject()->add([
+            'name' => 'cmfcmfmediamodule',
+            'path' => $this->requestStack->getCurrentRequest()->getBasePath() . '/web/modules/cmfcmfmedia/scribite/Quill/cmfcmfmediamodule/plugin.js'
+        ]);
+    }
+
+    /**
+     * Listener for the `moduleplugin.summernote.externalplugins` event.
+     *
+     * Adds external plugin to Summernote.
+     *
+     * You can access general data available in the event.
+     *
+     * The event name:
+     *     `echo 'Event: ' . $event->getName();`
+     *
+     * @param GenericEvent $event The event instance
+     */
+    public function getSummernotePlugins(GenericEvent $event)
+    {
+        $event->getSubject()->add([
+            'name' => 'cmfcmfmediamodule',
+            'path' => $this->requestStack->getCurrentRequest()->getBasePath() . '/web/modules/cmfcmfmedia/scribite/Summernote/cmfcmfmediamodule/plugin.js'
+        ]);
+    }
+
+    /**
+     * Listener for the `moduleplugin.tinymce.externalplugins` event.
+     *
+     * Adds external plugin to TinyMce.
+     *
+     * You can access general data available in the event.
+     *
+     * The event name:
+     *     `echo 'Event: ' . $event->getName();`
+     *
+     * @param GenericEvent $event The event instance
+     */
+    public function getTinyMcePlugins(GenericEvent $event)
+    {
+        $event->getSubject()->add([
+            'name' => 'cmfcmfmediamodule',
+            'path' => $this->requestStack->getCurrentRequest()->getBasePath() . '/web/modules/cmfcmfmedia/scribite/TinyMce/cmfcmfmediamodule/plugin.js'
         ]);
     }
 }

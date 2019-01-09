@@ -16,12 +16,13 @@ use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
+use Cmfcmf\Module\MediaModule\Traits\StandardFieldsTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Sluggable\Sluggable;
 use Gedmo\Sortable\Sortable;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -51,6 +52,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class AbstractMediaEntity implements Sluggable, Sortable
 {
+    use StandardFieldsTrait;
+
     /**
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -181,38 +184,20 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     private $categoryAssignments;
 
     /**
-     * @ORM\Column(type="integer")
-     * @ZK\StandardFields(type="userid", on="create")
-     *
-     * @var int.
+     * @var RequestStack
      */
-    protected $createdUserId;
+    protected $requestStack;
 
     /**
-     * @ORM\Column(type="integer")
-     * @ZK\StandardFields(type="userid", on="update")
-     *
-     * @var int.
+     * @var string
      */
-    protected $updatedUserId;
+    protected $dataDirectory;
 
     /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
-     *
-     * @var \DateTime.
+     * @param RequestStack $requestStack
+     * @param string       $dataDirectory
      */
-    protected $createdDate;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="update")
-     *
-     * @var \DateTime.
-     */
-    protected $updatedDate;
-
-    public function __construct()
+    public function __construct(RequestStack $requestStack, $dataDirectory = '')
     {
         // Position at the end of the album.
         $this->position = -1;
@@ -221,6 +206,10 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         $this->downloads = 0;
         $this->hookedObjectMedia = new ArrayCollection();
         $this->categoryAssignments = new ArrayCollection();
+
+        // TODO refactor these dependencies out of the entities
+        $this->requestStack = $requestStack;
+        $this->dataDirectory = $dataDirectory;
     }
 
     /**
@@ -236,36 +225,35 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     public function getImagineId()
     {
-        return "media-{$this->id}";
+        return 'media-' . $this->id;
     }
 
     public function getAttribution($format = 'html')
     {
-        if ($this->author === null && $this->authorUrl === null) {
+        if (null === $this->author && null === $this->authorUrl) {
             return null;
         }
-        $dom = \ZLanguage::getModuleDomain('CmfcmfMediaModule');
 
-        if ($format == 'html') {
-            if ($this->authorUrl === null) {
+        if ('html' == $format) {
+            if (null === $this->authorUrl) {
                 $author = htmlentities($this->author);
-            } elseif ($this->author === null) {
+            } elseif (null === $this->author) {
                 $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->authorUrl) . '</a>';
             } else {
                 $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->author) . '</a>';
             }
-        } elseif ($format == 'raw') {
-            $author = "";
-            if ($this->author !== null) {
-                $author .= $this->author . " ";
+        } elseif ('raw' == $format) {
+            $author = '';
+            if (null !== $this->author) {
+                $author .= $this->author . ' ';
             }
-            if ($this->authorUrl !== null) {
-                $author .= "(" . $this->authorUrl . ")";
+            if (null !== $this->authorUrl) {
+                $author .= '(' . $this->authorUrl . ')';
             }
             $author = trim($author);
         }
 
-        return __f('By %s', [$author], $dom);
+        return $author;
     }
 
     /**
@@ -391,86 +379,6 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * @return int
-     */
-    public function getCreatedUserId()
-    {
-        return $this->createdUserId;
-    }
-
-    /**
-     * @param int $createdUserId
-     *
-     * @return $this
-     */
-    public function setCreatedUserId($createdUserId)
-    {
-        $this->createdUserId = $createdUserId;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUpdatedUserId()
-    {
-        return $this->updatedUserId;
-    }
-
-    /**
-     * @param int $updatedUserId
-     *
-     * @return $this
-     */
-    public function setUpdatedUserId($updatedUserId)
-    {
-        $this->updatedUserId = $updatedUserId;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedDate()
-    {
-        return $this->createdDate;
-    }
-
-    /**
-     * @param \DateTime $createdDate
-     *
-     * @return $this
-     */
-    public function setCreatedDate($createdDate)
-    {
-        $this->createdDate = $createdDate;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getUpdatedDate()
-    {
-        return $this->updatedDate;
-    }
-
-    /**
-     * @param \DateTime $updatedDate
-     *
-     * @return $this
-     */
-    public function setUpdatedDate($updatedDate)
-    {
-        $this->updatedDate = $updatedDate;
-
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     public function getPosition()
@@ -568,13 +476,19 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         $type = substr($class, strrpos($class, '\\') + 1, -strlen('Entity'));
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($this);
 
+        $preview = '';
+        if ('Image' == $type) {
+            $preview = $mediaType->renderFullpage($this);
+        }
+
         return [
             'id' => $this->id,
             'type' => $type,
             'title' => $this->title,
+            'preview' => $preview,
             'slug' => $this->slug,
             'description' => $this->description,
-            'license' => $this->getLicense() !== null ? $this->getLicense()->toArray() : null,
+            'license' => null !== $this->getLicense() ? $this->getLicense()->toArray() : null,
             'embedCodes' => [
                 'full' => $mediaType->getEmbedCode($this),
                 'medium' => $mediaType->getEmbedCode($this, 'medium'),
@@ -734,6 +648,35 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     public function setDownloads($downloads)
     {
         $this->downloads = $downloads;
+
+        return $this;
+    }
+
+    protected function getBaseUri()
+    {
+        return $this->requestStack->getCurrentRequest()->getBasePath();
+    }
+
+    /**
+     * @param RequestStack $requestStack
+     *
+     * @return AbstractWatermarkEntity
+     */
+    public function setRequestStack(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+
+        return $this;
+    }
+
+    /**
+     * @param string $dataDirectory
+     *
+     * @return AbstractWatermarkEntity
+     */
+    public function setDataDirectory($dataDirectory)
+    {
+        $this->dataDirectory = $dataDirectory;
 
         return $this;
     }

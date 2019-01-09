@@ -12,17 +12,24 @@
 namespace Cmfcmf\Module\MediaModule\Block;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
+use Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Translation\TranslatorInterface;
 use Zikula\BlocksModule\AbstractBlockHandler;
 
 /**
- * Class PageBlock.
+ * Collection block handler.
  */
 class CollectionBlock extends AbstractBlockHandler
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
     /**
      * @var CollectionRepository
      */
@@ -38,20 +45,15 @@ class CollectionBlock extends AbstractBlockHandler
      */
     private $twig;
 
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
     public function setContainer(ContainerInterface $container = null)
     {
         parent::setContainer($container);
 
+        $this->translator = $container->get('translator');
         $this->collectionRepository = $container->get('doctrine.orm.entity_manager')
             ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
         $this->securityManager = $container->get('cmfcmf_media_module.security_manager');
         $this->twig = $container->get('twig');
-        $this->translator = $container->get('translator');
     }
 
     /**
@@ -78,11 +80,18 @@ class CollectionBlock extends AbstractBlockHandler
             return false;
         }
 
-        $content = $this->get('cmfcmf_media_module.collection_template_collection')->getCollectionTemplate($properties['template'])->render(
+        $selectedTemplateFactory = $this->get('cmfcmf_media_module.collection_template.selected_factory');
+        try {
+            $selectedTemplate = $selectedTemplateFactory->fromDB($properties['template']);
+        } catch (\DomainException $e) {
+            throw new NotFoundHttpException();
+        }
+
+        $content = $selectedTemplate->getTemplate()->render(
             $collection,
             $this->get('cmfcmf_media_module.media_type_collection'),
             isset($properties['showChildCollections']) ? $properties['showChildCollections'] : false,
-            [] // @todo pass template options
+            $selectedTemplate->getOptions()
         );
 
         $hook = '';
@@ -109,20 +118,7 @@ class CollectionBlock extends AbstractBlockHandler
      */
     public function getFormClassName()
     {
-        return 'Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormOptions()
-    {
-        return [
-            'translator' => $this->translator,
-            'securityManager' => $this->securityManager,
-            'templateCollection' => $this->get('cmfcmf_media_module.collection_template_collection'),
-            'collectionRepository' => $this->collectionRepository
-        ];
+        return CollectionBlockType::class;
     }
 
     /**

@@ -11,6 +11,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Media;
 
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class PlaintextType extends AbstractFileType
@@ -23,7 +24,7 @@ class PlaintextType extends AbstractFileType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('useSyntaxHighlighting', 'checkbox', [
+            ->add('useSyntaxHighlighting', CheckboxType::class, [
                 'required' => false,
                 'label' => $this->translator->trans('Use syntax highlighting', [], 'cmfcmfmediamodule')
             ])

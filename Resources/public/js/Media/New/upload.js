@@ -9,7 +9,7 @@
         function onOneFileUpload (file) {
             getMediaTypeFromFiles([fileToArray(file)], function (response) {
                 if (!response.result[0]) {
-                    window.toastr['error']('This media type is currently not supported', "We're sorry!");
+                    window.toastr['error'](Translator.__('This media type is currently not supported'), Translator.__("We're sorry!"));
                     $('#cmfcmfmedia-tab-content').spin(false);
                     return;
                 }
@@ -37,14 +37,14 @@
                 }
                 if (response.notFound > 0) {
                     if (!canUpload) {
-                        window.toastr['error']('Your files are not supported.', 'Cannot upload files!');
+                        window.toastr['error'](Translator.__('These files are not supported.'), Translator.__('Cannot upload files!'));
                         return;
                     }
-                    window.toastr['warning']('Some of your files will not be uploaded.', 'Cannot upload everything!');
+                    window.toastr['warning'](Translator.__('Some of these files will not be uploaded.'), Translator.__('Cannot upload everything!'));
                 }
 
                 openCollectionSelectModal(function (collection) {
-                    console.log('Selected collection', collection);
+                    //console.log('Selected collection', collection);
                     formDataToAdd.collection = collection;
 
                     myDropzone.enqueueFiles(files);
@@ -115,32 +115,32 @@
                 previewsContainer: "#cmfcmfmedia-upload-previews", // Define the container to display the previews
                 clickable: "#cmfcmfmedia-upload-fileinput-btn",
                 dragover: function (event) {
-                    console.log('OVER');
-                    console.log(event);
+                    //console.log('OVER');
+                    //console.log(event);
                 },
                 dragleave: function (event) {
-                    console.log('LEAVE');
-                    console.log(event);
+                    //console.log('LEAVE');
+                    //console.log(event);
                 }
             });
 
             // Update the total progress bar
-            myDropzone.on("totaluploadprogress", function(progress) {
-                document.querySelector("#cmfcmfmedia-upload-total-progress .progress-bar").style.width = progress + "%";
+            myDropzone.on('totaluploadprogress', function(progress) {
+                document.querySelector("#cmfcmfmedia-upload-total-progress .progress-bar").style.width = progress + '%';
             });
 
             // Hide the total progress bar when nothing's uploading anymore
-            myDropzone.on("queuecomplete", function(progress) {
-                document.querySelector("#cmfcmfmedia-upload-total-progress").style.opacity = "0";
+            myDropzone.on('queuecomplete', function(progress) {
+                document.querySelector("#cmfcmfmedia-upload-total-progress").style.opacity = '0';
 
-                window.toastr["success"]('', "Files have been uploaded");
+                window.toastr["success"]('', Translator.__('Files have been uploaded'));
             });
 
-            myDropzone.on("sending", function(file, xhr, formData) {
+            myDropzone.on('sending', function(file, xhr, formData) {
                 // Show the total progress bar when upload starts
-                document.querySelector("#cmfcmfmedia-upload-total-progress").style.opacity = "1";
+                document.querySelector("#cmfcmfmedia-upload-total-progress").style.opacity = '1';
                 // And disable the start button
-                file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
+                file.previewElement.querySelector('.start').setAttribute('disabled', 'disabled');
 
                 Object.keys(formDataToAdd).forEach(function (key) {
                     if (formDataToAdd[key] != null) {
@@ -149,14 +149,14 @@
                 });
             });
 
-            myDropzone.on("addedfile", function(file) {
+            myDropzone.on('addedfile', function(file) {
                 // Hookup the start button
-                file.previewElement.querySelector(".start").onclick = function () {
+                file.previewElement.querySelector('.start').onclick = function () {
                     onOneFileUpload(file);
                 };
             });
 
-            myDropzone.on("success", function (file, response) {
+            myDropzone.on('success', function (file, response) {
                 if (response.openNewTabAndEdit) {
                     var parent = $('#cmfcmfmedia-upload-form-modal-collection-select').data('parent');
                     var parameters = '';
@@ -182,7 +182,7 @@
             // Setup the buttons for all transfers
             // The "add files" button doesn't need to be setup because the config
             // `clickable` has already been specified.
-            $("#cmfcmfmedia-upload-actions").find(".start").click(onAllFilesUpload);
+            $('#cmfcmfmedia-upload-actions').find('.start').click(onAllFilesUpload);
 
             return myDropzone;
         }

@@ -1,15 +1,15 @@
 <fieldset>
-    <legend>{{ __('License') }}</legend>
-    <select class="form-control" title="{{ __('Select license') }}" name="cmfcmfmediamodule[license][]" multiple>
-        <option value="">{{ __('Unknown') }}</option>
+    <legend>{{ __('License', 'cmfcmfmediamodule') }}</legend>
+    <select class="form-control" title="{{ __('Select license', 'cmfcmfmediamodule') }}" name="cmfcmfmediamodule[license][]" multiple>
+        <option value="">{{ __('Unknown', 'cmfcmfmediamodule') }}</option>
         {% for license in preferredLicenses %}
-            <option value="{{ license.id|e('html_attr') }}"{% if license.id in selectedLicenses %} selected{% endif %}>
+            <option value="{{ license.id|e('html_attr') }}"{% if license.id in selectedLicenses %} selected="selected"{% endif %}>
                 {{ license.title }}
             </option>
         {% endfor %}
-        <option disabled>--------------------</option>
+        <option disabled="disabled">--------------------</option>
         {% for license in outdatedLicenses %}
-            <option value="{{ license.id|e('html_attr') }}"{% if license.id in selectedLicenses %} selected{% endif %}>
+            <option value="{{ license.id|e('html_attr') }}"{% if license.id in selectedLicenses %} selected="selected"{% endif %}>
                 {{ license.title }}
             </option>
         {% endfor %}

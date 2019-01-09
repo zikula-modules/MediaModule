@@ -17,6 +17,7 @@ use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Fhaculty\Graph\Edge\Base;
 use Fhaculty\Graph\Vertex;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
@@ -48,7 +49,7 @@ class PermissionLevelType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        if ($options['permissionLevel'] == CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS) {
+        if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS == $options['permissionLevel']) {
             $this->fixSecurityGraph();
         }
         $view->vars['securityGraph'] = $this->securityGraph;
@@ -64,13 +65,13 @@ class PermissionLevelType extends AbstractType
             'expanded' => true,
             'multiple' => true,
             'choices' => function (Options $options) {
-                if ($options['permissionLevel'] == CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS) {
+                if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS == $options['permissionLevel']) {
                     $this->fixSecurityGraph();
                 }
 
-                return array_map(function (Vertex $vertex) {
+                return array_flip(array_map(function (Vertex $vertex) {
                     return $vertex->getAttribute('title');
-                }, $this->securityGraph->getVertices()->getMap());
+                }, $this->securityGraph->getVertices()->getMap()));
             }
         ])->setRequired('permissionLevel');
     }
@@ -80,13 +81,13 @@ class PermissionLevelType extends AbstractType
      */
     public function getParent()
     {
-        return 'choice';
+        return ChoiceType::class;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_permission';
     }

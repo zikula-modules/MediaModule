@@ -27,7 +27,7 @@ class FontCollection
     private $fonts;
 
     /**
-     * @var bool Whether or not the fonts have already been loaded.
+     * @var bool whether or not the fonts have already been loaded
      */
     private $loaded;
 
@@ -76,15 +76,18 @@ class FontCollection
             $this->load();
         }
 
-        return array_map(function (FontInterface $font) {
-            return $font->getTitle();
-        }, $this->getFonts());
+        $choices = [];
+        foreach ($this->getFonts() as $font) {
+            $choices[$font->getTitle()] = $font->getId();
+        }
+
+        return $choices;
     }
 
     /**
      * Returns a font by id.
      *
-     * @param string $id The font id.
+     * @param string $id the font id
      *
      * @return FontInterface
      */
@@ -113,7 +116,7 @@ class FontCollection
 
         $fontUrl = 'https://fonts.googleapis.com/css?family=';
         foreach ($this->getFonts() as $font) {
-            if ($font->getGoogleFontName() !== null) {
+            if (null !== $font->getGoogleFontName()) {
                 $fontUrl .= str_replace('_', '+', $font->getGoogleFontName()) . '|';
             }
         }

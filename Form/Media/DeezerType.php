@@ -11,6 +11,8 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Media;
 
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -27,11 +29,11 @@ class DeezerType extends WebType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('musicType', 'hidden')
-            ->add('musicId', 'hidden')
+            ->add('musicType', HiddenType::class)
+            ->add('musicId', HiddenType::class)
         ;
         if ($options['showPlaylistCheckbox']) {
-            $builder->add('showPlaylist', 'checkbox', [
+            $builder->add('showPlaylist', CheckboxType::class, [
                 'label' => $this->translator->trans('Show playlist', [], 'cmfcmfmediamodule'),
                 'required' => false
             ]);

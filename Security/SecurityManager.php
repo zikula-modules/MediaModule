@@ -19,7 +19,7 @@ use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermission
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Translation\TranslatorInterface;
-use Zikula\PermissionsModule\Api\PermissionApi;
+use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;
 
 class SecurityManager
 {
@@ -29,9 +29,7 @@ class SecurityManager
     private $translator;
 
     /**
-     * @var PermissionApi
-     *
-     * @todo Use Permission API if core_min is 1.4.2.
+     * @var PermissionApiInterface
      */
     private $permissionApi;
 
@@ -55,9 +53,15 @@ class SecurityManager
      */
     private $collectionPermissionContainer;
 
+    /**
+     * @param TranslatorInterface           $translator
+     * @param PermissionApiInterface        $permissionApi
+     * @param EntityManagerInterface        $em
+     * @param CollectionPermissionContainer $collectionPermissionContainer
+     */
     public function __construct(
         TranslatorInterface $translator,
-        PermissionApi $permissionApi,
+        PermissionApiInterface $permissionApi,
         EntityManagerInterface $em,
         CollectionPermissionContainer $collectionPermissionContainer
     ) {
@@ -94,11 +98,11 @@ class SecurityManager
             $class = get_class($objectOrType);
             $type = lcfirst(substr($class, strrpos($class, '/') + 1, -strlen('Entity')));
         } else {
-            $id = "";
+            $id = '';
             $type = $objectOrType;
         }
 
-        return \SecurityUtil::checkPermission(
+        return $this->permissionApi->hasPermission(
             "CmfcmfMediaModule:$type:",
             "$id::",
             $this->levels[$action]
@@ -116,7 +120,7 @@ class SecurityManager
      */
     public function hasPermissionRaw($component, $instance, $level)
     {
-        return \SecurityUtil::checkPermission($component, $instance, $level);
+        return $this->permissionApi->hasPermission($component, $instance, $level);
     }
 
     /**

@@ -8,12 +8,12 @@
                 new window.CmfcmfMediaModule.WebCreation.tableColumns.FirstLineBoldColumn('Result')
             ],
             {
-                tracks: 'Tracks',
-                groups: 'Groups',
-                users: 'Artists',
-                playlists: 'Playlists'
+                tracks: Translator.__('Tracks'),
+                groups: Translator.__('Groups'),
+                users: Translator.__('Artists'),
+                playlists: Translator.__('Playlists')
             },
-            'Search for artist, track, playlist',
+            Translator.__('Search for artist, track, playlist'),
             function (searchInput, dropdownValue, onFinished) {
                 var query = '/' + encodeURIComponent(dropdownValue) + '?q=' + encodeURIComponent(searchInput);
                 
@@ -35,8 +35,8 @@
                                 title = result.full_name;
                                 results.push([
                                     result.avatar_url,
-                                    'User',
-                                    title + "\nFollowers: " + result.followers_count + "\nTracks: " + result.track_count
+                                    Translator.__('User'),
+                                    title + "\n" + Translator.__('Followers') + ': ' + result.followers_count + "\n" + Translator.__('Tracks') + ': ' + result.track_count
                                 ]);
                                 break;
                             case 'track':
@@ -49,25 +49,25 @@
                                 }
                                 results.push([
                                     image,
-                                    'Track',
-                                    title + "\nLicense: " + result.license
+                                    Translator.__('Track'),
+                                    title + "\n" + Translator.__('License') + ': ' + result.license
                                 ]);
                                 break;
                             case 'group':
                                 title = result.name;
                                 results.push([
                                     result.artwork_url,
-                                    'Group',
-                                    title + "\nDescription: " + result.short_description
+                                    Translator.__('Group'),
+                                    title + "\n" + Translator.__('Description') + ': ' + result.short_description
                                 ]);
                                 break;
                             case 'playlist':
                                 title = result.title;
                                 results.push([
                                     result.picture_small,
-                                    'Playlist',
-                                    title + "\nDuration: " + (result.duration / 60) + ' min'
-                                    + "\nTracks: " + result.tracks.length
+                                    Translator.__('Playlist'),
+                                    title + "\n" + Translator.__('Duration') + ': ' + (result.duration / 60) + ' ' + Translator.__('min')
+                                        + "\n" + Translator.__('Tracks') + ': ' + result.tracks.length
                                 ]);
                                 break;
                             default:

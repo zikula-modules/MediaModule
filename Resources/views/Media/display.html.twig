@@ -10,7 +10,7 @@
         <div class="col-lg-9 col-md-9 col-sm-12">
             {{ mediaType.renderFullpage(entity)|raw }}
 
-            {% if entity.description is not empty %}
+            {% if entity.description|default %}
                 {{ entity|cmfcmfmediamodule_getdescription }}
             {% endif %}
         </div>
@@ -19,38 +19,34 @@
                 {% if entity.license %}
                     <p>
                         <strong>{{ __('License') }}</strong>:
-                        {% if entity.license.url is not null %}
+                        {% if entity.license.url|default %}
                             <a href="{{ entity.license.url|e('html_attr') }}">
                         {% endif %}
                             {{ entity.license.title }}
-                        {% if entity.license.url is not null %}
+                        {% if entity.license.url|default %}
                             </a>
                         {% endif %}
                     </p>
                 {% endif %}
                 {% if entity.categoryAssignments|length > 0 %}
-                    <strong>{{ __('Categories') }}</strong>:
+                    <p><strong>{{ __('Categories') }}</strong>:</p>
                     <ul>
                     {% for assignment in entity.categoryAssignments %}
-                        <li>
-                            {{ assignment.category|cmfcmfmediamodule_categorytitle }}
-                        </li>
+                        <li>{{ assignment.category.getDisplay_name(app.request.locale) }}</li>
                     {% endfor %}
                     </ul>
                 {% endif %}
-                {% if entity.authorAvatarUrl is not empty %}
+                {% if entity.authorAvatarUrl|default %}
                     <img src="{{ entity.authorAvatarUrl }}" class="img img-rounded pull-right" alt="{{ __('Author avatar') }}" width="60" height="60" />
                 {% endif %}
-                {% if entity.attribution is not empty %}
-                    <p>
-                        {{ entity.attribution|raw }}
-                    </p>
+                {% if entity.attribution|default %}
+                    <p>{{ __f('By %s', {'%s': entity.attribution})|raw }}</p>
                 {% endif %}
                 <div class="clearfix"></div>
                 <p>
-                    <strong>{{ __('Added by') }}</strong>: {{ entity.createdUserId|cmfcmfmediamodule_unamefromuid }}
-                    {{ __('at ') }} {{ entity.createdDate.format('d.m.Y H:i') }} <!-- @todo Internationalize -->
-                    <img src="{{ entity.createdUserId|cmfcmfmediamodule_avatarfromuid }}" class="img img-rounded pull-right" alt="" width="60" height="60" />
+                    <strong>{{ __('Added by') }}</strong>: {{ entity.createdBy.uid|profileLinkByUserId }}
+                    {{ __('at ') }} {{ entity.createdDate|localizeddate('short', 'short') }}
+                    {{ userAvatar(entity.createdBy.uid, {rating: 'g', class: 'img img-rounded pull-right', width: 60, height: 60}) }}
                     {% if views >= 0 %}
                         <strong>{{ __('Views') }}</strong>: {{ views }}
                     {% endif %}
@@ -58,7 +54,7 @@
                 </p>
             </div>
             {% set extendedMetaInformation = mediaType.extendedMetaInformation(entity) %}
-            {% if extendedMetaInformation is not empty %}
+            {% if extendedMetaInformation|default %}
                 <div class="well well-sm">
                     {% for information in extendedMetaInformation %}
                         <p>
@@ -69,7 +65,7 @@
                 </div>
             {% endif %}
             <div class="list-group">
-                {% if entity.downloadAllowed is defined and entity.downloadAllowed and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
+                {% if entity.downloadAllowed|default and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
                     <a href="{{ path('cmfcmfmediamodule_media_download', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item">
                         <i class="fa fa-fw fa-download"></i>
                         {{ __('Download') }}

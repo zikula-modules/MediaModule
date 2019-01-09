@@ -21,11 +21,10 @@ class GenericMetadataReader
      *
      * @param string $file
      *
-     * @return array The metadata.
+     * @return array the metadata
      */
     public static function readMetadata($file)
     {
-        require_once __DIR__ . '/../vendor/autoload.php';
         $getID3 = new \getID3();
         $meta = $getID3->analyze($file);
         \getid3_lib::CopyTagsToComments($meta);

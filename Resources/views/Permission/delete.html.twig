@@ -10,34 +10,44 @@
             </div>
             <div class="table-responsive">
                 <table class="table">
+                    <colgroup>
+                        <col id="cDescription" />
+                        <col id="cTarget" />
+                        <col id="cCollection" />
+                        <col id="cPermissionLevels" />
+                        <col id="cAppliedToSelf" />
+                        <col id="cAppliedToSubCollections" />
+                        <col id="cGoOn" />
+                        <col id="cValidity" />
+                    </colgroup>
                     <thead>
-                    <tr>
-                        <th>{{ __('Description') }}</th>
-                        <th>{{ __('Target') }}</th>
-                        <th>{{ __('Collection') }}</th>
-                        <th>{{ __('Permissionlevels') }}</th>
-                        <th>{{ __('Applied to self') }}</th>
-                        <th>{{ __('Applied to sub-collections') }}</th>
-                        <th>{{ __('Go on') }}</th>
-                        <th>{{ __('Validity') }}</th>
-                    </tr>
+                        <tr>
+                            <th id="hDescription" scope="col">{{ __('Description') }}</th>
+                            <th id="hTarget" scope="col">{{ __('Target') }}</th>
+                            <th id="hCollection" scope="col">{{ __('Collection') }}</th>
+                            <th id="hPermissionLevels" scope="col">{{ __('Permission levels') }}</th>
+                            <th id="hAppliedToSelf" scope="col">{{ __('Applied to self') }}</th>
+                            <th id="hAppliedToSubCollections" scope="col">{{ __('Applied to sub-collections') }}</th>
+                            <th id="hGoOn" scope="col">{{ __('Go on') }}</th>
+                            <th id="hValidity" scope="col">{{ __('Validity') }}</th>
+                        </tr>
                     </thead>
                     <tbody>
                     <tr>
-                        <td title="{{ permission.description|e('html_attr') }}">
+                        <td headers="hDescription" title="{{ permission.description|e('html_attr') }}">
                             {{ permission.description }}
                         </td>
-                        <td>
+                        <td headers="hTarget">
                             {{ collectionPermission.targets(permission) }}
                         </td>
-                        <td>
+                        <td headers="hCollection">
                             <strong>{{ permission.collection.title }}</strong>
                         </td>
-                        <td>{{ permission.permissionLevels|join(', ') }}</td>
-                        <td>{{ permission.appliedToSelf ? __('yes') : __('no') }}</td>
-                        <td>{{ permission.appliedToSubCollections ? __('yes') : __('no') }}</td>
-                        <td>{{ permission.goOn ? __('yes') : __('no') }}</td>
-                        <td>
+                        <td headers="hPermissionLevels">{{ permission.permissionLevels|join(', ') }}</td>
+                        <td headers="hAppliedToSelf">{{ permission.appliedToSelf ? __('yes') : __('no') }}</td>
+                        <td headers="hAppliedToSubCollections">{{ permission.appliedToSubCollections ? __('yes') : __('no') }}</td>
+                        <td headers="hGoOn">{{ permission.goOn ? __('yes') : __('no') }}</td>
+                        <td headers="hValidity">
                             {% if permission.validAfter is not null %}
                                 {{ permission.validAfter|date }}
                             {% else %}

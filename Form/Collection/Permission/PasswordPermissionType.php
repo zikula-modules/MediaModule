@@ -11,6 +11,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class PasswordPermissionType extends AbstractPermissionType
@@ -20,7 +21,7 @@ class PasswordPermissionType extends AbstractPermissionType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('password', 'password', [
+        $builder->add('password', PasswordType::class, [
             'label' => $this->translator->trans('Password', [], 'cmfcmfmediamodule'),
         ]);
 

@@ -11,6 +11,7 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Media;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class FlickrType extends WebType
@@ -22,10 +23,10 @@ class FlickrType extends WebType
     {
         parent::buildForm($builder, $options);
         $builder
-            ->add('flickrid', 'hidden')
-            ->add('flickrfarm', 'hidden')
-            ->add('flickrsecret', 'hidden')
-            ->add('flickrserver', 'hidden')
+            ->add('flickrid', HiddenType::class)
+            ->add('flickrfarm', HiddenType::class)
+            ->add('flickrsecret', HiddenType::class)
+            ->add('flickrserver', HiddenType::class)
         ;
     }
 }

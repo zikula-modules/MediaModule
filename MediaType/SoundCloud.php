@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\SoundCloudEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, PasteMediaTypeInterface
 {
@@ -27,7 +26,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
 
     public function isEnabled()
     {
-        return \ModUtil::getVar('CmfcmfMediaModule', 'soundCloudApiKey', '') != "";
+        return '' != $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey', '');
     }
 
     /**
@@ -43,7 +42,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
      */
     public function matchesPaste($pastedText)
     {
-        return $this->getTrackFromPastedText($pastedText) !== false ? 10 : 0;
+        return false !== $this->getTrackFromPastedText($pastedText) ? 10 : 0;
     }
 
     /**
@@ -52,12 +51,12 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
     public function getEntityFromPaste($pastedText)
     {
         $trackId = $this->getTrackFromPastedText($pastedText);
-        if ($trackId === false) {
+        if (false === $trackId) {
             throw new \RuntimeException();
         }
 
-        $entity = new SoundCloudEntity();
-        $entity->setUrl('http://www.soundcloud.com');
+        $entity = new SoundCloudEntity($this->requestStack, $this->dataDirectory);
+        $entity->setUrl('https://soundcloud.com/');
         $entity->setMusicId($trackId);
 
         return $entity;
@@ -87,7 +86,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
     public function getWebCreationTemplateArguments()
     {
         return [
-            'clientId' => \ModUtil::getVar('CmfcmfMediaModule', 'soundCloudApiKey')
+            'clientId' => $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey')
         ];
     }
 
@@ -114,7 +113,7 @@ EOD;
         return false;
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         // TODO: Implement getSearchResults() method.
     }

@@ -14,41 +14,52 @@ namespace Cmfcmf\Module\MediaModule\Helper;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Query\Expr\Composite;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Zikula\Core\RouteUrl;
-use Zikula\SearchModule\AbstractSearchable;
+use Zikula\SearchModule\Entity\SearchResultEntity;
+use Zikula\SearchModule\SearchableInterface;
 
-class SearchHelper extends AbstractSearchable
+class SearchHelper implements SearchableInterface
 {
     /**
-     * get the UI options for search form.
-     *
-     * @param bool       $active  if the module should be checked as active
-     * @param array|null $modVars module form vars as previously set
-     *
-     * @return string
+     * @var RequestStack
      */
-    public function getOptions($active, $modVars = null)
-    {
-        return $this->getContainer()->get('templating')
-            ->render('@CmfcmfMediaModule/Search/options.html.twig', ['active' => $active]);
-    }
+    private $requestStack;
 
     /**
-     * Get the search results.
-     *
-     * @param array      $words      array of words to search for
-     * @param string     $searchType AND|OR|EXACT
-     * @param array|null $modVars    module form vars passed though
-     *
-     * @return array
+     * @var SecurityManager
      */
+    private $securityManager;
+
+    /**
+     * @param RequestStack    $requestStack
+     * @param SecurityManager $securityManager
+     */
+    public function __construct(
+        RequestStack $requestStack,
+        SecurityManager $securityManager
+    ) {
+        $this->requestStack = $requestStack;
+        $this->securityManager = $securityManager;
+
+        include_once __DIR__ . '/../bootstrap.php';
+    }
+
+    public function amendForm(FormBuilderInterface $builder)
+    {
+        // nothing
+    }
+
     public function getResults(array $words, $searchType = 'AND', $modVars = null)
     {
         $results = [];
-        $securityManager = $this->getContainer()->get('cmfcmf_media_module.security_manager');
-        $sessionId = $this->container->get('session')->getId();
+        $sessionId = $this->requestStack->getCurrentRequest()->getSession()->getId();
 
-        $qb = $securityManager->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
+        $qb = $this->securityManager->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
         $where = $this->formatWhere($qb, $words, ['c.title'], $searchType);
         $qb->andWhere($where);
         /** @var CollectionEntity[] $collections */
@@ -65,26 +76,66 @@ class SearchHelper extends AbstractSearchable
             ];
         }
 
-        $qb = $securityManager->getMediaWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS);
+        $qb = $this->securityManager->getMediaWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS);
         $where = $this->formatWhere($qb, $words, ['m.title'], $searchType);
         $qb->andWhere($where);
         /** @var AbstractMediaEntity[] $media */
         $media = $qb->getQuery()->execute();
 
         foreach ($media as $medium) {
-            $results[] = [
-                'title' => $medium->getTitle(),
-                'text' => $medium->getDescription(),
-                'module' => 'CmfcmfMediaModule',
-                'created' => $medium->getCreatedDate(),
-                'sesid' => $sessionId,
-                'url' => new RouteUrl('cmfcmfmediamodule_media_display', [
+            $result = new SearchResultEntity();
+            $result->setTitle($medium->getTitle())
+                ->setText($medium->getDescription())
+                ->setModule('CmfcmfMediaModule')
+                ->setCreated($medium->getCreatedDate())
+                ->setSesid($sessionId)
+                ->setUrl(new RouteUrl('cmfcmfmediamodule_media_display', [
                     'slug' => $medium->getSlug(),
                     'collectionSlug' => $medium->getCollection()->getSlug()
-                ])
-            ];
+                ]))
+            ;
+            $results[] = $result;
         }
 
         return $results;
+    }
+
+    public function getErrors()
+    {
+        return [];
+    }
+
+    /**
+     * Construct a QueryBuilder Where orX|andX Expr instance.
+     *
+     * @param QueryBuilder $qb
+     * @param string[] $words  List of words to query for
+     * @param string[] $fields List of fields to include into query
+     * @param string $searchtype AND|OR|EXACT
+     *
+     * @return null|Composite
+     */
+    protected function formatWhere(QueryBuilder $qb, array $words = [], array $fields = [], $searchtype = 'AND')
+    {
+        if (empty($words) || empty($fields)) {
+            return null;
+        }
+
+        $method = ('OR' == $searchtype) ? 'orX' : 'andX';
+        /** @var $where Composite */
+        $where = $qb->expr()->$method();
+        $i = 1;
+        foreach ($words as $word) {
+            $subWhere = $qb->expr()->orX();
+            foreach ($fields as $field) {
+                $expr = $qb->expr()->like($field, "?$i");
+                $subWhere->add($expr);
+                $qb->setParameter($i, '%' . $word . '%');
+                $i++;
+            }
+            $where->add($subWhere);
+        }
+
+        return $where;
     }
 }

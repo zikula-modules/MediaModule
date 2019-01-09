@@ -1,16 +1,17 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2016-11-13 15:44+0100\n"
-"PO-Revision-Date: 2016-11-13 16:03+0100\n"
-"Language-Team: EMAIL@ADDRESS\n"
+"Project-Id-Version: Media 1.3.0\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2018-08-20 15:22+0200\n"
+"Last-Translator: Axel Guckelsberger <info@guite.de>\n"
+"Language-Team: \n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.11\n"
-"Last-Translator: Christian Flach <cmfcmf.flach@gmail.com>\n"
-"Language: de_DE\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 # Desc: /{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
@@ -190,7 +191,9 @@ msgstr "/zugriffsrechte/erstellen/{type}/{collection}/{afterPermission}"
 # Desc: /permissions/ajax/reorder/{permissionId}/{permissionVersion}/{newIndex}.json
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_permission_reorder"
-msgstr "/zugriffsrechte/ajax/umsortieren/{permissionId}/{permissionVersion}/{newIndex}.json"
+msgstr ""
+"/zugriffsrechte/ajax/umsortieren/{permissionId}/{permissionVersion}/"
+"{newIndex}.json"
 
 # Desc: /permissions/show/{slug}
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
@@ -246,3 +249,36 @@ msgstr "/wasserzeichen"
 # Meaning: This is a route from the CmfcmfMediaModuleBundle and will include a translated prefix.
 msgid "cmfcmfmediamodule_watermark_new"
 msgstr "/wasserzeichen/erstellen/{type}"
+
+msgid "doc"
+msgstr "doc"
+
+msgid "fos_js_routing_js"
+msgstr "/js/routing.{_format}"
+
+msgid "home"
+msgstr "/"
+
+msgid "install"
+msgstr "/install/{stage}"
+
+msgid "liip_imagine_filter"
+msgstr "/media/cache/aufloesen/{filter}/{path}"
+
+msgid "liip_imagine_filter_runtime"
+msgstr "/media/cache/aufloesen/{filter}/rc/{hash}/{path}"
+
+msgid "upgrade"
+msgstr "/upgrade/{stage}"
+
+msgid "zikula_hook_hook_changeproviderareaorder"
+msgstr "/hooks/umsortieren"
+
+msgid "zikula_hook_hook_edit"
+msgstr "/hooks/{moduleName}"
+
+msgid "zikula_hook_hook_togglesubscribeareastatus"
+msgstr "/hooks/umschalten"
+
+msgid "zikula_workflow_editor_index"
+msgstr ""

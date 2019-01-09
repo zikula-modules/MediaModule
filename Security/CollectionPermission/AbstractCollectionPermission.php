@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\UsersModule\Api\ApiInterface\CurrentUserApiInterface;
 
 /**
  * Provides convenience methods for collection permissions.
@@ -26,11 +27,20 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
     protected $translator;
 
     /**
-     * @param TranslatorInterface $translator
+     * @var CurrentUserApiInterface
      */
-    public function __construct(TranslatorInterface $translator)
-    {
+    protected $currentUserApi;
+
+    /**
+     * @param TranslatorInterface     $translator
+     * @param CurrentUserApiInterface $currentUserApi
+     */
+    public function __construct(
+        TranslatorInterface $translator,
+        CurrentUserApiInterface $currentUserApi
+    ) {
         $this->translator = $translator;
+        $this->currentUserApi = $currentUserApi;
     }
 
     /**

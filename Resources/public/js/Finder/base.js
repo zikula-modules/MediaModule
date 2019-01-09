@@ -23,7 +23,7 @@
                 return;
             }
 
-            $.getJSON(Routing.generate('cmfcmfmediamodule_finder_ajaxfind'), {q: $searchInput.val()}).success(function (results) {
+            $.getJSON(Routing.generate('cmfcmfmediamodule_finder_ajaxfind'), {q: $searchInput.val()}, function (results) {
                 $cog.addClass('hidden');
 
                 var $table = $('#cmfcmfmedia-finder-table-body');
@@ -36,6 +36,7 @@
 
                     tr += '<td>' + window.CmfcmfMediaModule.Util.htmlEncode(results[i].type) + '</td>';
                     tr += '<td>' + window.CmfcmfMediaModule.Util.htmlEncode(results[i].title) + '</td>';
+                    tr += '<td>' + results[i].preview + '</td>';
                     if (results[i].license) {
                         tr += '<td>';
                         if (results[i].license.url) {
@@ -49,7 +50,7 @@
                     } else {
                         tr += '<td>--</td>';
                     }
-                    tr += '<td><a target="_blank" href="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(Routing.generate('cmfcmfmediamodule_media_display', {slug: results[i].slug, collectionSlug: results[i].collection.slug})) + '">view</a></td>';
+                    tr += '<td><a target="_blank" href="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(Routing.generate('cmfcmfmediamodule_media_display', {slug: results[i].slug, collectionSlug: results[i].collection.slug})) + '">' + Translator.__('view') + '</a></td>';
 
                     tr += '<td>';
 

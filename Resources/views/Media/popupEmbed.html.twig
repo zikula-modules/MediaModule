@@ -2,6 +2,9 @@
 <button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.full|e('html_attr') }}">{{ __('Full') }}</button>
 <button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.medium|e('html_attr') }}">{{ __('Medium') }}</button>
 <button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.small|e('html_attr') }}">{{ __('Small') }}</button>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ ('<a href="' ~ path('cmfcmfmediamodule_media_download', {slug: slug, collectionSlug: collection.slug}) ~ '">' ~ title ~ '</a>')|e('html_attr') }}">{{ __('Link') }}</button>
+
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.link|e('html_attr') }}">{{ __('Link') }}</button>
 <script type="text/javascript">
     (function ($) {
         $('.cmfcmfmedia-btn-popup-embed').click(function () {
@@ -9,6 +12,16 @@
             switch (window.opener.CmfcmfMediaModule.currentEditor) {
                 case 'ckeditor':
                     window.opener.CmfcmfMediaModule.currentEditorInstance.insertHtml(html);
+                    break;
+                case 'quill':
+                    window.opener.CmfcmfMediaModule.currentEditorInstance.clipboard.dangerouslyPasteHTML(window.opener.CmfcmfMediaModule.currentEditorInstance.getLength(), html);
+                    break;
+                case 'summernote':
+                    html = jQuery(html).get(0);
+                    window.opener.CmfcmfMediaModule.currentEditorInstance.invoke('insertNode', html);
+                    break;
+                case 'tinymce':
+                    window.opener.CmfcmfMediaModule.currentEditorInstance.insertContent(html);
                     break;
             }
             window.opener.toastr['success']('The media object has been successfully inserted.', 'Media object inserted');

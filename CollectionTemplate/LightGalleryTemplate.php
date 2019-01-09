@@ -11,6 +11,8 @@
 
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
+use Cmfcmf\Module\MediaModule\Form\CollectionTemplate\LightGalleryType;
+
 /**
  * Displays a light gallery http://sachinchoolur.github.io/lightGallery/.
  */
@@ -26,7 +28,7 @@ class LightGalleryTemplate extends AbstractTemplate
 
     public function getSettingsForm()
     {
-        return 'Cmfcmf\Module\MediaModule\Form\CollectionTemplate\LightGalleryType';
+        return LightGalleryType::class;
     }
 
     public function getDefaultOptions()

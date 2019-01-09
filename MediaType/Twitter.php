@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\TwitterEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteMediaTypeInterface
 {
@@ -28,10 +27,10 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     public function isEnabled()
     {
         return
-            \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiKey') != "" &&
-            \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiSecret') != "" &&
-            \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessToken') != "" &&
-            \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessTokenSecret') != ""
+            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey') &&
+            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret') &&
+            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken') &&
+            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret')
         ;
     }
 
@@ -48,7 +47,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function matchesPaste($pastedText)
     {
-        return $this->extractTweetIdFromPaste($pastedText) !== false ? 10 : 0;
+        return false !== $this->extractTweetIdFromPaste($pastedText) ? 10 : 0;
     }
 
     /**
@@ -56,10 +55,10 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getEntityFromPaste($pastedText)
     {
-        $entity = new TwitterEntity();
+        $entity = new TwitterEntity($this->requestStack, $this->dataDirectory);
 
         $tweetId = $this->extractTweetIdFromPaste($pastedText);
-        if ($tweetId === false) {
+        if (false === $tweetId) {
             throw new \RuntimeException();
         }
         $tweetInfo = $this->getTweetInfo($tweetId);
@@ -79,7 +78,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     private function extractTweetIdFromPaste($pastedText)
     {
         preg_match('#twitter\.com/[A-z]+/status/(\d+)#', $pastedText, $results);
-        if (count($results) == 2) {
+        if (2 == count($results)) {
             return $results[1];
         } else {
             return false;
@@ -117,7 +116,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         ]) . '</div><p></p>';
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         $q = str_replace('&', '', $q);
         $q = str_replace('?', '', $q);
@@ -130,7 +129,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         //    'results' => [],
         //    'more' => false
         //];
-        if ($dropdownValue === null || $dropdownValue == 'tweets') {
+        if (null === $dropdownValue || 'tweets' == $dropdownValue) {
             $tweetResults = $this->getTweetSearchResults($q);
         }
         //if ($dropdownValue === null || $dropdownValue == 'users') {
@@ -194,13 +193,11 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     private function getTwitterApi()
     {
-        require_once __DIR__ . '/../vendor/autoload.php';
-
         $api = new \TwitterAPIExchange([
-            'oauth_access_token' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessToken'),
-            'oauth_access_token_secret' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiAccessTokenSecret'),
-            'consumer_key' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiKey'),
-            'consumer_secret' => \ModUtil::getVar('CmfcmfMediaModule', 'twitterApiSecret')
+            'oauth_access_token' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken'),
+            'oauth_access_token_secret' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret'),
+            'consumer_key' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey'),
+            'consumer_secret' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret')
         ]);
 
         return $api;

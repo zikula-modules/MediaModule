@@ -15,7 +15,7 @@
 
 {%- block widget_attributes -%}
     {% set tmp = false %}
-    {% if attr.help is defined %}
+    {% if attr.help|default %}
         {% set tmp = attr.help %}
         {% set attr = attr|merge({help: false}) %}
     {% endif %}
@@ -49,7 +49,7 @@
                 return $field.closest('form').find('input[id$=\'_token\']').attr('id');
             }
             function createNoOptionsMessage() {
-                var noOptionsMessage = "{{ 'There are no options for this collection template.'|trans }}";
+                var noOptionsMessage = "{{ __('There are no options for this collection template.') }}";
                 $options.html('<div class="alert alert-info">' + noOptionsMessage + '</div>');
             }
 
@@ -104,17 +104,22 @@
     {{ pageAddAsset('javascript',  zasset('@CmfcmfMediaModule:js/Collection/Permission/New.js')) }}
     <div class="table-responsive">
         <table class="table table-condensed table-striped">
-            <thead>
-            <tr>
+            <colgroup>
                 {% for category in securityCategories %}
-                    <th class="text-center">{{ category.title }}</th>
+                    <col id="cCategory{{ loop.index }}" />
                 {% endfor %}
-            </tr>
+            </colgroup>
+            <thead>
+                <tr>
+                    {% for category in securityCategories %}
+                        <th id="hCategory{{ loop.index }}" scope="col" class="text-center">{{ category.title }}</th>
+                    {% endfor %}
+                </tr>
             </thead>
             <tbody>
             <tr>
                 {% for category in securityCategories %}
-                    <td>
+                    <td headers="hCategory{{ loop.index }}">
                         {% for vertex in securityGraph.verticesByCategory(category) %}
                             <label>
                                 <input type="checkbox" class="cmfcmfmedia-security-level"

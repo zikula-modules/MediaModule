@@ -19,15 +19,13 @@ use Cmfcmf\Module\MediaModule\Form\Watermark\ImageWatermarkType;
 use Cmfcmf\Module\MediaModule\Form\Watermark\TextWatermarkType;
 use Doctrine\ORM\OptimisticLockException;
 use Gedmo\Uploadable\Uploadable;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -36,9 +34,8 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class WatermarkController extends AbstractController
 {
     /**
-     * @Route("/")
-     * @Method("GET")
-     * @Template()
+     * @Route("/", methods={"GET"})
+     * @Template("CmfcmfMediaModule:Watermark:index.html.twig")
      */
     public function indexAction()
     {
@@ -55,7 +52,7 @@ class WatermarkController extends AbstractController
 
     /**
      * @Route("/new/{type}", requirements={"type"="image|text"})
-     * @Template(template="CmfcmfMediaModule:Watermark:edit.html.twig")
+     * @Template("CmfcmfMediaModule:Watermark:edit.html.twig")
      *
      * @param Request $request
      * @param $type
@@ -67,18 +64,18 @@ class WatermarkController extends AbstractController
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('watermark', 'new')) {
             throw new AccessDeniedException();
         }
-        if ($type == 'image') {
-            $entity = new ImageWatermarkEntity();
-            $form = new ImageWatermarkType();
-        } elseif ($type == 'text') {
-            $entity = new TextWatermarkEntity();
-            $form = new TextWatermarkType();
+        $dataDirectory = $this->get('service_container')->getParameter('datadir');
+        if ('image' == $type) {
+            $entity = new ImageWatermarkEntity($this->get('request_stack'), $dataDirectory);
+            $form = ImageWatermarkType::class;
+        } elseif ('text' == $type) {
+            $entity = new TextWatermarkEntity($this->get('request_stack'), $dataDirectory);
+            $form = TextWatermarkType::class;
         } else {
             throw new NotFoundHttpException();
         }
-        $form->setTranslator($this->get('translator'));
 
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm($form, $entity, ['entity' => $entity]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -104,8 +101,7 @@ class WatermarkController extends AbstractController
 
     /**
      * @Route("/edit/{id}")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Watermark\AbstractWatermarkEntity")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Watermark:edit.html.twig")
      *
      * @param Request                 $request
      * @param AbstractWatermarkEntity $entity
@@ -119,15 +115,14 @@ class WatermarkController extends AbstractController
         }
 
         if ($entity instanceof ImageWatermarkEntity) {
-            $form = new ImageWatermarkType($entity);
+            $form = ImageWatermarkType::class;
         } elseif ($entity instanceof TextWatermarkEntity) {
-            $form = new TextWatermarkType();
+            $form = TextWatermarkType::class;
         } else {
             throw new \LogicException();
         }
-        $form->setTranslator($this->get('translator'));
 
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm($form, $entity, ['entity' => $entity]);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -138,7 +133,7 @@ class WatermarkController extends AbstractController
         if ($entity instanceof Uploadable) {
             /** @var UploadedFile $file */
             $file = $form->get('file')->getData();
-            if ($file !== null && $file->isValid()) {
+            if (null !== $file && $file->isValid()) {
                 // If the file is invalid, it means that no new file has been selected
                 // to replace the already uploaded file.
                 $manager = $this->get('stof_doctrine_extensions.uploadable.manager');
@@ -154,14 +149,13 @@ class WatermarkController extends AbstractController
             goto edit_error;
         }
 
-        // Cleanup existing thumbnails.
-        /** @var \SystemPlugin_Imagine_Manager $imagineManager */
-        $imagineManager = $this->get('systemplugin.imagine.manager');
-        $imagineManager->setModule('CmfcmfMediaModule');
+        // Cleanup existing thumbnails
+        /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
+        $imagineCacheManager = $this->get('liip_imagine.cache.manager');
 
         /** @var WatermarkRepository $repository */
         $repository = $em->getRepository('CmfcmfMediaModule:Watermark\AbstractWatermarkEntity');
-        $repository->cleanupThumbs($entity, $imagineManager);
+        $repository->cleanupThumbs($entity, $imagineCacheManager);
 
         $this->addFlash('status', $this->__('Watermark updated!'));
 
@@ -174,8 +168,7 @@ class WatermarkController extends AbstractController
 
     /**
      * @Route("/delete/{id}")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:Watermark\AbstractWatermarkEntity")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Watermark:delete.html.twig")
      *
      * @param Request                 $request
      * @param AbstractWatermarkEntity $entity
@@ -192,14 +185,15 @@ class WatermarkController extends AbstractController
             return ['entity' => $entity];
         }
 
-        // Cleanup existing thumbnails.
-        /** @var \SystemPlugin_Imagine_Manager $imagineManager */
-        $imagineManager = $this->get('systemplugin.imagine.manager');
-        $imagineManager->setModule('CmfcmfMediaModule');
-
         $em = $this->getDoctrine()->getManager();
+
+        // Cleanup existing thumbnails
+        /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
+        $imagineCacheManager = $this->get('liip_imagine.cache.manager');
+
+        /** @var WatermarkRepository $repository */
         $repository = $em->getRepository('CmfcmfMediaModule:Watermark\AbstractWatermarkEntity');
-        $repository->cleanupThumbs($entity, $imagineManager);
+        $repository->cleanupThumbs($entity, $imagineCacheManager);
 
         $em->remove($entity);
         $em->flush();

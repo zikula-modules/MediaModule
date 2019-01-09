@@ -18,31 +18,40 @@
 
     <div class="table-responsive">
         <table class="table table-condensed table-striped table-hover">
+            <colgroup>
+                <col id="cId" />
+                <col id="cTitle" />
+                <col id="cContent" />
+                <col id="cPosition" />
+                <col id="cImageSize" />
+                <col id="cRelativeSize" />
+                <col id="cActions" />
+            </colgroup>
             <thead>
-            <tr>
-                <th>{{ __('ID') }}</th>
-                <th>{{ __('Title') }}</th>
-                <th>{{ __('Content') }}</th>
-                <th>{{ __('Position') }}</th>
-                <th>{{ __('Image size') }}</th>
-                <th>{{ __('Relative size') }}</th>
-                <th>{{ __('Actions') }}</th>
-            </tr>
+                <tr>
+                    <th id="hId" scope="col">{{ __('ID') }}</th>
+                    <th id="hTitle" scope="col">{{ __('Title') }}</th>
+                    <th id="hContent" scope="col">{{ __('Content') }}</th>
+                    <th id="hPosition" scope="col">{{ __('Position') }}</th>
+                    <th id="hImageSize" scope="col">{{ __('Image size') }}</th>
+                    <th id="hRelativeSize" scope="col">{{ __('Relative size') }}</th>
+                    <th id="hActions" scope="col">{{ __('Actions') }}</th>
+                </tr>
             </thead>
             <tbody>
             {% for entity in entities %}
                 <tr>
-                    <td>{{ entity.id }}</td>
-                    <td>{{ entity.title }}</td>
-                    <td>{{ entity.viewTableContent|raw }}</td>
-                    <td>{{ entity.positionX }} x {{ entity.positionY }}</td>
-                    <td>{{ entity.minSizeX }} x {{ entity.minSizeY }}</td>
-                    <td>
+                    <td headers="hId">{{ entity.id }}</td>
+                    <th id="hEntity{{ entity.id }}" scope="row" headers="hTitle">{{ entity.title }}</th>
+                    <td headers="hEntity{{ entity.id }} hContent">{{ entity.viewTableContent|raw }}</td>
+                    <td headers="hEntity{{ entity.id }} hPosition">{{ entity.positionX }} x {{ entity.positionY }}</td>
+                    <td headers="hEntity{{ entity.id }} hImageSize">{{ entity.minSizeX }} x {{ entity.minSizeY }}</td>
+                    <td headers="hEntity{{ entity.id }} hRelativeSize">
                         {% if entity.relativeSize is not null %}
                             {{ entity.relativeSize }} %
                         {% endif %}
                     </td>
-                    <td class="text-right">
+                    <td headers="hEntity{{ entity.id }} hActions" class="text-right">
                         {% if cmfcmfmediamodule_hasPermission(entity, 'edit') %}
                             <a href="{{ path('cmfcmfmediamodule_watermark_edit', {id: entity.id}) }}">
                                 <i class="fa fa-edit fa-fw"></i>

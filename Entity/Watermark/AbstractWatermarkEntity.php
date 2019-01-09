@@ -12,11 +12,11 @@
 namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
+use Cmfcmf\Module\MediaModule\Traits\StandardFieldsTrait;
 use Doctrine\ORM\Mapping as ORM;
-use DoctrineExtensions\StandardFields\Mapping\Annotation as ZK;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -33,6 +33,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 abstract class AbstractWatermarkEntity
 {
+    use StandardFieldsTrait;
+
     /**
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
@@ -110,49 +112,27 @@ abstract class AbstractWatermarkEntity
     protected $relativeSize;
 
     /**
-     * @ORM\Column(type="integer")
-     * @ZK\StandardFields(type="userid", on="create")
-     *
-     * No assertions.
-     *
-     * @var int.
+     * @var RequestStack
      */
-    protected $createdUserId;
+    protected $requestStack;
 
     /**
-     * @ORM\Column(type="integer")
-     * @ZK\StandardFields(type="userid", on="update")
-     *
-     * No assertions.
-     *
-     * @var int.
+     * @var string
      */
-    protected $updatedUserId;
+    protected $dataDirectory;
 
     /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
-     *
-     * No assertions.
-     *
-     * @var \DateTime.
+     * @param RequestStack $requestStack
+     * @param string       $dataDirectory
      */
-    protected $createdDate;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="update")
-     *
-     * No assertions.
-     *
-     * @var \DateTime.
-     */
-    protected $updatedDate;
-
-    public function __construct()
+    public function __construct(RequestStack $requestStack, $dataDirectory = '')
     {
         $this->minSizeX = 200;
         $this->minSizeY = 80;
+
+        // TODO refactor these dependencies out of the entities
+        $this->requestStack = $requestStack;
+        $this->dataDirectory = $dataDirectory;
     }
 
     /**
@@ -278,86 +258,6 @@ abstract class AbstractWatermarkEntity
     }
 
     /**
-     * @return int
-     */
-    public function getCreatedUserId()
-    {
-        return $this->createdUserId;
-    }
-
-    /**
-     * @param int $createdUserId
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setCreatedUserId($createdUserId)
-    {
-        $this->createdUserId = $createdUserId;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getUpdatedUserId()
-    {
-        return $this->updatedUserId;
-    }
-
-    /**
-     * @param int $updatedUserId
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setUpdatedUserId($updatedUserId)
-    {
-        $this->updatedUserId = $updatedUserId;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getCreatedDate()
-    {
-        return $this->createdDate;
-    }
-
-    /**
-     * @param \DateTime $createdDate
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setCreatedDate($createdDate)
-    {
-        $this->createdDate = $createdDate;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getUpdatedDate()
-    {
-        return $this->updatedDate;
-    }
-
-    /**
-     * @param \DateTime $updatedDate
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setUpdatedDate($updatedDate)
-    {
-        $this->updatedDate = $updatedDate;
-
-        return $this;
-    }
-
-    /**
      * Get the value of Min Size.
      *
      * @return int
@@ -423,5 +323,29 @@ abstract class AbstractWatermarkEntity
     public function getVersion()
     {
         return $this->version;
+    }
+
+    /**
+     * @param RequestStack $requestStack
+     *
+     * @return AbstractWatermarkEntity
+     */
+    public function setRequestStack(RequestStack $requestStack)
+    {
+        $this->requestStack = $requestStack;
+
+        return $this;
+    }
+
+    /**
+     * @param string $dataDirectory
+     *
+     * @return AbstractWatermarkEntity
+     */
+    public function setDataDirectory($dataDirectory)
+    {
+        $this->dataDirectory = $dataDirectory;
+
+        return $this;
     }
 }

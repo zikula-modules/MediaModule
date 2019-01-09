@@ -1,7 +1,7 @@
 {% extends 'CmfcmfMediaModule:CollectionTemplate:cards.html.twig' %}
 
 {% block media %}
-    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/galleria/galleria-1.4.5.min.js'), 98) }}
+    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/galleria/galleria.min.js'), 98) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/galleria/themes/classic/galleria.classic.min.js'), 99) }}
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/galleria/themes/classic/galleria.classic.css')) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/galleria.js')) }}
@@ -11,7 +11,7 @@
             {% set bigThumbnail = mediaType.thumbnail(media, 'original', 'original', 'url', 'inset') %}
             {% set smallThumbnail = mediaType.thumbnail(media, 'original', options.height, 'url', 'inset') %}
             <a href="{{ bigThumbnail }}">
-                <img src="{{ smallThumbnail }}" data-title="{% if media.title is not empty %}{{ media.title }}{% endif %}" data-description="{% if media.attribution is not empty %}{{ media.attribution|e('html_attr') }}{% endif %}">
+                <img src="{{ smallThumbnail }}" data-title="{% if media.title|default %}{{ media.title }}{% endif %}" data-description="{% if media.attribution|default %}{{ __f('By %s', {'%s': media.attribution})|e('html_attr')|raw }}{% endif %}">
             </a>
         {% endfor %}
     </div>

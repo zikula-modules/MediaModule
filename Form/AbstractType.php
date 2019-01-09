@@ -12,6 +12,7 @@
 namespace Cmfcmf\Module\MediaModule\Form;
 
 use Symfony\Component\Form\AbstractType as BaseAbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -35,7 +36,7 @@ abstract class AbstractType extends BaseAbstractType
     {
         parent::buildForm($builder, $options);
 
-        $builder->add('version', 'hidden');
+        $builder->add('version', HiddenType::class);
     }
 
     /**
@@ -55,7 +56,7 @@ abstract class AbstractType extends BaseAbstractType
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         $class = get_class($this);
         $class = substr($class, strlen('Cmfcmf\\Module\\MediaModule\\Form\\'));

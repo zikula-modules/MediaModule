@@ -16,7 +16,6 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\UrlEntity;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
@@ -27,11 +26,13 @@ SELECT status, uupdate, title, url, filename, description, ddate, hits, submitte
 FROM downloads_downloads
 WHERE cid = ?
 SQL;
+
     const DOWNLOAD_CATEGORY_QUERY = <<<'SQL'
 SELECT cid, pid, title, description
 FROM downloads_categories
 ORDER BY pid ASC
 SQL;
+
     /**
      * @var UploadableManager
      */
@@ -40,7 +41,7 @@ SQL;
     /**
      * @var string
      */
-    private $fileDirectory;
+    private $fileDirectory = '/Downloads';
 
     public function getTitle()
     {
@@ -60,11 +61,11 @@ SQL;
             $conn->executeQuery('SELECT 1 FROM downloads_categories LIMIT 1');
             $conn->executeQuery('SELECT 1 FROM downloads_downloads LIMIT 1');
         } catch (TableNotFoundException $e) {
-            return $this->translator->trans('Please install the Downloads Module or import it\'s tables into the database.');
+            return $this->translator->trans('Please install the Downloads Module or import it\'s tables into the database.', [], 'cmfcmfmediamodule');
         }
-        $fs = new Filesystem();
-        if (!$fs->exists($this->fileDirectory)) {
-            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->fileDirectory], 'cmfcmfmediamodule');
+
+        if (!$this->filesystem->exists($this->dataDirectory . $this->fileDirectory)) {
+            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->dataDirectory . $this->fileDirectory], 'cmfcmfmediamodule');
         }
 
         return true;
@@ -73,11 +74,6 @@ SQL;
     public function setUploadManager(UploadableManager $uploadManager)
     {
         $this->uploadManager = $uploadManager;
-    }
-
-    public function setUserDataDirectory($userDataDir)
-    {
-        $this->fileDirectory = $userDataDir . '/Downloads';
     }
 
     public function import($formData, FlashBagInterface $flashBag)
@@ -101,22 +97,22 @@ SQL;
             $downloadResult = $conn->executeQuery(self::DOWNLOADS_QUERY, [$downloadCollection['cid']]);
             while ($download = $downloadResult->fetch(\PDO::FETCH_ASSOC)) {
                 if (!empty($download['filename'])) {
-                    $file = new File($this->fileDirectory . '/' . $download['filename']);
+                    $file = new File($this->dataDirectory . $this->fileDirectory . '/' . $download['filename']);
                     $mediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
                     $entityClass = $mediaType->getEntityClass();
                     /** @var AbstractFileEntity $entity */
-                    $entity = new $entityClass();
+                    $entity = new $entityClass($this->requestStack, $this->dataDirectory);
                     $this->uploadManager->markEntityToUpload($entity, ImportedFile::fromFile($file));
                 } else {
-                    $entity = new UrlEntity();
+                    $entity = new UrlEntity($this->requestStack, $this->dataDirectory);
                     $entity->setUrl($download['url']);
                 }
                 $entity
                     ->setTitle($download['title'])
                     ->setDescription($download['description'])
                     ->setCollection($collection)
-                    //->setCreatedUserId()
-                    //->setUpdatedUserId()
+                    //->setCreatedBy()
+                    //->setUpdatedBy()
                     ->setCreatedDate(new \DateTime($download['ddate']))
                     ->setUpdatedDate(new \DateTime($download['uupdate']))
                 ;

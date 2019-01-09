@@ -1,5 +1,5 @@
-Zikula 1.4.3+ MediaModule by @cmfcmf
-====================================
+Zikula 2.0.11+ MediaModule by @cmfcmf
+=====================================
 
 [![StyleCI](https://styleci.io/repos/43518681/shield)](https://styleci.io/repos/43518681) 
 [![Build Status](https://travis-ci.org/cmfcmf/MediaModule.svg?branch=master)](https://travis-ci.org/cmfcmf/MediaModule) 
@@ -16,7 +16,7 @@ If you want to test the current version (potentially unstable!), download it fro
 **Downloading directly from master would require you to execute `composer install --no-dev`.**
 
 ## Information
-Read all about the module [at it's website](http://cmfcmf.github.io/MediaModule).
+Read all about the module [at it's website](https://cmfcmf.github.io/MediaModule).
 
 The module supports many media types natively (images, plaintext, MarkDown, videos, audio, pdf, …)
 and further types can be added with ease! 
@@ -44,10 +44,9 @@ If you do so, it's going to break URLs.
 If you find a bug or have problems, please [create an issue](https://github.com/cmfcmf/MediaModule/issues/new)!
 
 ## Extracting translations
-Add `require_once __DIR__ . '/../modules/cmfcmf/media-module/vendor/autoload.php;` to `src/app/autoload.php` and then run
-```
-php app/console translation:extract --enable-extractor=jms_i18n_routing --dir ./modules/cmfcmf/media-module --exclude-dir vendor --output-dir ./modules/cmfcmf/media-module/Resources/translations --keep --output-format=pot de
-```
+Add `require_once __DIR__ . '/../modules/cmfcmf/media-module/vendor/autoload.php';` to `src/app/autoload.php` and then run
+
+`php -dmemory_limit=2G bin/console translation:extract en --bundle=CmfcmfMediaModule --enable-extractor=jms_i18n_routing --output-format=po --exclude-dir=vendor`
 
 ## License and module development
 

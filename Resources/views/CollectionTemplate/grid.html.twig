@@ -3,14 +3,16 @@
 {% block media %}
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/Display/Grid.css')) }}
     {% set attributions = {} %}
+    {% set attributionCounter = 0 %}
     <div class="cmfcmfmedia-display-grid">
         {% for media in collection.media %}
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
             {% set thumbnail = mediaType.thumbnail(media, 300, 200, 'url','inset') %}
             <a href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}"{% if not thumbnail %} style="padding-top: 30px; padding-bottom: 20px; border: 1px solid #cecece;-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px;"{% endif %}>
-                {% if media.attribution is not empty %}
-                    {% set attributions = attributions|merge({('m' ~ loop.index): media.attribution}) %}
-                    <span class="label label-info cmfcmfmedia-display-grid-attribution-label">{{ loop.index }}</span>
+                {% if media.attribution|default %}
+                    {% set attributionCounter = attributionCounter + 1 %}
+                    {% set attributions = attributions|merge({('m' ~ attributionCounter): media.attribution}) %}
+                    <span class="label label-info cmfcmfmedia-display-grid-attribution-label">{{ attributionCounter }}</span>
                 {% endif %}
                 {% if thumbnail %}
                     <img src="{{ thumbnail|e('html_attr') }}" />
@@ -21,11 +23,11 @@
             </a>
         {% endfor %}
     </div>
-    {% if attributions is not empty %}
+    {% if attributions|default %}
         <h4>{{ __('Attributions') }}</h4>
         <ul>
             {% for index, attribution in attributions %}
-                <li>{{ index|slice(1) }}: {{ attribution|raw }}</li>
+                <li>{{ index|slice(1) }}: {{ __f('By %s', {'%s': attribution})|raw }}</li>
             {% endfor %}
         </ul>
     {% endif %}

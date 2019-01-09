@@ -11,34 +11,61 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Collection;
 
-use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection;
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
+use Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class CollectionBlockType extends AbstractType
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @var CollectionRepository
+     */
+    private $collectionRepository;
+
+    /**
+     * @var SecurityManager
+     */
+    private $securityManager;
+
+    /**
+     * @param TranslatorInterface    $translator
+     * @param SecurityManager        $securityManager
+     * @param EntityManagerInterface $em
+     */
+    public function __construct(
+        TranslatorInterface $translator,
+        SecurityManager $securityManager,
+        EntityManagerInterface $em
+    ) {
+        $this->translator = $translator;
+        $this->securityManager = $securityManager;
+        $this->collectionRepository = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var TranslatorInterface $translator */
-        $translator = $options['translator'];
-        /** @var SecurityManager $securityManager */
-        $securityManager = $options['securityManager'];
-        /** @var TemplateCollection $templateCollection */
-        $templateCollection = $options['templateCollection'];
-        /** @var CollectionRepository $collectionRepository */
-        $collectionRepository = $options['collectionRepository'];
+        $securityManager = $this->securityManager;
+        $collectionRepository = $this->collectionRepository;
 
         $collectionOptions = [
             'required' => true,
-            'label' => $translator->trans('Collection', [], 'cmfcmfmediamodule'),
-            'class' => 'CmfcmfMediaModule:Collection\CollectionEntity',
+            'label' => $this->translator->trans('Collection', [], 'cmfcmfmediamodule'),
+            'class' => CollectionEntity::class,
             'query_builder' => function (EntityRepository $er) use ($securityManager) {
                 /** @var CollectionRepository $er */
                 $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
@@ -49,29 +76,26 @@ class CollectionBlockType extends AbstractType
 
                 return $qb;
             },
-            'placeholder' => $translator->trans('Select collection', [], 'cmfcmfmediamodule'),
-            'property' => 'indentedTitle',
+            'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
+            'choice_label' => 'indentedTitle',
             'multiple' => false
         ];
         $builder
-            ->add('id', 'Symfony\Bridge\Doctrine\Form\Type\EntityType', $collectionOptions)
-            ->add('showHooks', 'Symfony\Component\Form\Extension\Core\Type\CheckboxType', [
-                'label' => $translator->trans('Show hooks', [], 'cmfcmfmediamodule'),
+            ->add('id', EntityType::class, $collectionOptions)
+            ->add('showHooks', CheckboxType::class, [
+                'label' => $this->translator->trans('Show hooks', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'disabled' => true
             ])
-            ->add('template', 'Symfony\Component\Form\Extension\Core\Type\ChoiceType', [
-                'label' => $translator->trans('Template', [], 'cmfcmfmediamodule'),
-                'required' => false,
-                'placeholder' => $translator->trans('Default', [], 'cmfcmfmediamodule'),
-                'choices' => $templateCollection->getCollectionTemplateTitles()
+            ->add('template', TemplateType::class, [
+                'label' => $this->translator->trans('Display', [], 'cmfcmfmediamodule'),
             ])
-            ->add('showChildCollections', 'Symfony\Component\Form\Extension\Core\Type\CheckboxType', [
-                'label' => $translator->trans('Show child collections', [], 'cmfcmfmediamodule'),
+            ->add('showChildCollections', CheckboxType::class, [
+                'label' => $this->translator->trans('Show child collections', [], 'cmfcmfmediamodule'),
                 'required' => false
             ])
-            ->add('showEditAndDownloadLinks', 'Symfony\Component\Form\Extension\Core\Type\CheckboxType', [
-                'label' => $translator->trans('Show edit and download links', [], 'cmfcmfmediamodule'),
+            ->add('showEditAndDownloadLinks', CheckboxType::class, [
+                'label' => $this->translator->trans('Show edit and download links', [], 'cmfcmfmediamodule'),
                 'required' => false
             ])
             ->addModelTransformer(new CallbackTransformer(
@@ -89,16 +113,8 @@ class CollectionBlockType extends AbstractType
         ;
     }
 
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_collectionblock';
-    }
-
-    /**
-     * @param OptionsResolver $resolver
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setRequired(['translator', 'securityManager', 'templateCollection', 'collectionRepository']);
     }
 }

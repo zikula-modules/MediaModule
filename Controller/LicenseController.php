@@ -14,13 +14,11 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Form\License\LicenseType;
 use Doctrine\ORM\OptimisticLockException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -29,9 +27,8 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class LicenseController extends AbstractController
 {
     /**
-     * @Route("/")
-     * @Method("GET")
-     * @Template()
+     * @Route("/", methods={"GET"})
+     * @Template("CmfcmfMediaModule:License:index.html.twig")
      *
      * @return array
      */
@@ -52,7 +49,7 @@ class LicenseController extends AbstractController
 
     /**
      * @Route("/new")
-     * @Template(template="CmfcmfMediaModule:License:edit.html.twig")
+     * @Template("CmfcmfMediaModule:License:edit.html.twig")
      *
      * @param Request $request
      *
@@ -65,9 +62,7 @@ class LicenseController extends AbstractController
         }
 
         $entity = new LicenseEntity(null);
-        $form = new LicenseType(false);
-        $form->setTranslator($this->get('translator'));
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm(LicenseType::class, $entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -85,8 +80,7 @@ class LicenseController extends AbstractController
 
     /**
      * @Route("/edit/{id}")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:License\LicenseEntity")
-     * @Template()
+     * @Template("CmfcmfMediaModule:License:edit.html.twig")
      *
      * @param Request       $request
      * @param LicenseEntity $entity
@@ -99,9 +93,7 @@ class LicenseController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $form = new LicenseType(true);
-        $form->setTranslator($this->get('translator'));
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm(LicenseType::class, $entity);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -123,8 +115,7 @@ class LicenseController extends AbstractController
 
     /**
      * @Route("/delete/{id}")
-     * @ParamConverter("entity", class="CmfcmfMediaModule:License\LicenseEntity")
-     * @Template()
+     * @Template("CmfcmfMediaModule:License:delete.html.twig")
      *
      * @param Request       $request
      * @param LicenseEntity $entity

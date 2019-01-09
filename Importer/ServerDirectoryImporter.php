@@ -66,27 +66,27 @@ class ServerDirectoryImporter extends AbstractImporter
             ->depth($formData['importSettings']['includeSubDirectories'] ? '>=0' : '==0')
             ->files()
         ;
-        $collectionMapping = ["" => $rootCollection];
+        $collectionMapping = ['' => $rootCollection];
         $c = 0;
         /** @var SplFileInfo $finderFile */
         foreach ($finder as $finderFile) {
             $file = new File($finderFile->getPathname(), false);
             $selectedMediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
-            if ($selectedMediaType === null) {
+            if (null === $selectedMediaType) {
                 $flashBag->add('warning', $this->translator->trans('Could not import file %file%, because this kind of media isn\'t yet supported by the MediaModule.', ['%file%' => $file->getPathname()], 'cmfcmfmediamodule'));
                 continue;
             }
 
             $entityClass = $selectedMediaType->getEntityClass();
             /** @var AbstractFileEntity $entity */
-            $entity = new $entityClass();
+            $entity = new $entityClass($this->requestStack, $this->dataDirectory);
             $relativePath = $finderFile->getRelativePath();
-            if ($formData['importSettings']['createSubCollectionsForSubDirectories'] && $relativePath != "") {
+            if ($formData['importSettings']['createSubCollectionsForSubDirectories'] && "" != $relativePath) {
                 if (!isset($collectionMapping[$relativePath])) {
                     $collection = new CollectionEntity();
                     $lastSeparator = strrpos($relativePath, DIRECTORY_SEPARATOR);
                     $collection->setParent($collectionMapping[substr($relativePath, 0, (int)$lastSeparator)]);
-                    $collection->setTitle(substr($relativePath, $lastSeparator === false ? 0 : $lastSeparator + 1));
+                    $collection->setTitle(substr($relativePath, false === $lastSeparator ? 0 : $lastSeparator + 1));
                     $this->em->persist($collection);
                     $collectionMapping[$relativePath] = $collection;
                 }
@@ -100,7 +100,7 @@ class ServerDirectoryImporter extends AbstractImporter
             $this->em->persist($entity);
 
             $c++;
-            if ($c % 50 == 0) {
+            if (0 == $c % 50) {
                 $this->em->flush();
             }
         }

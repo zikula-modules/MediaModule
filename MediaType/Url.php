@@ -39,7 +39,7 @@ class Url extends AbstractMediaType implements PasteMediaTypeInterface
      */
     public function matchesPaste($pastedText)
     {
-        return filter_var($pastedText, FILTER_VALIDATE_URL) !== false ? 1 : 0;
+        return false !== filter_var($pastedText, FILTER_VALIDATE_URL) ? 1 : 0;
     }
 
     /**
@@ -47,7 +47,7 @@ class Url extends AbstractMediaType implements PasteMediaTypeInterface
      */
     public function getEntityFromPaste($pastedText)
     {
-        $entity = new UrlEntity();
+        $entity = new UrlEntity($this->requestStack, $this->dataDirectory);
         $entity->setUrl($pastedText);
 
         return $entity;

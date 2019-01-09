@@ -33,20 +33,26 @@ class DoctrineListener implements EventSubscriber
     public function uploadablePostFileProcess(UploadablePostFileProcessEventArgs $args)
     {
         $entity = $args->getEntity();
-        if ($entity instanceof AudioEntity) {
-            /** @var AudioEntity $entity */
-            if ($entity->getMimeType() == 'application/octet-stream') {
-                if (pathinfo($args->getFileInfo()->getName(), PATHINFO_EXTENSION) == 'mp3') {
-                    $om = $args->getEntityManager();
-                    $uow = $om->getUnitOfWork();
-                    $meta = $om->getClassMetadata(get_class($entity));
-                    $config = $args->getListener()->getConfiguration($om, $meta->name);
-
-                    $this->updateField($entity, $uow, $meta, $config['fileMimeTypeField'], 'audio/mp3');
-                    $uow->recomputeSingleEntityChangeSet($meta, $entity);
-                }
-            }
+        if (!($entity instanceof AudioEntity)) {
+            return;
         }
+
+        /** @var AudioEntity $entity */
+        if ('application/octet-stream' != $entity->getMimeType()) {
+            return;
+        }
+
+        if ('mp3' != pathinfo($args->getFileInfo()->getName(), PATHINFO_EXTENSION)) {
+            return;
+        }
+
+        $om = $args->getEntityManager();
+        $uow = $om->getUnitOfWork();
+        $meta = $om->getClassMetadata(get_class($entity));
+        $config = $args->getListener()->getConfiguration($om, $meta->name);
+
+        $this->updateField($entity, $uow, $meta, $config['fileMimeTypeField'], 'audio/mp3');
+        $uow->recomputeSingleEntityChangeSet($meta, $entity);
     }
 
     /**

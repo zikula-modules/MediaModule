@@ -12,13 +12,15 @@
 namespace Cmfcmf\Module\MediaModule\Tests\DependencyInjection;
 
 use Cmfcmf\Module\MediaModule\DependencyInjection\CollectionTemplateCompilerPass;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 class CollectionTemplateCompilerPassTest extends \PHPUnit_Framework_TestCase
 {
     public function testNothingHappensIfCollectionDoesNotExist()
     {
-        $containerMock = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
+        $containerMock = $this->getMockBuilder(ContainerBuilder::class)
             ->disableOriginalConstructor()
             ->setMethods(['has'])
             ->getMock()
@@ -38,7 +40,7 @@ class CollectionTemplateCompilerPassTest extends \PHPUnit_Framework_TestCase
 
     public function testNothingHappensIfNoTaggedServices()
     {
-        $containerMock = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
+        $containerMock = $this->getMockBuilder(ContainerBuilder::class)
             ->disableOriginalConstructor()
             ->setMethods(['has', 'findDefinition', 'findTaggedServiceIds'])
             ->getMock()
@@ -65,7 +67,7 @@ class CollectionTemplateCompilerPassTest extends \PHPUnit_Framework_TestCase
 
     public function testItWorksIfTaggedServicesAvailable()
     {
-        $containerMock = $this->getMockBuilder('Symfony\Component\DependencyInjection\ContainerBuilder')
+        $containerMock = $this->getMockBuilder(ContainerBuilder::class)
             ->disableOriginalConstructor()
             ->setMethods(['has', 'findDefinition', 'findTaggedServiceIds'])
             ->getMock()
@@ -75,7 +77,7 @@ class CollectionTemplateCompilerPassTest extends \PHPUnit_Framework_TestCase
             ->with($this->equalTo('cmfcmf_media_module.collection_template_collection'))
             ->willReturn(true)
         ;
-        $definitionMock = $this->getMockBuilder('Symfony\Component\DependencyInjection\Definition')
+        $definitionMock = $this->getMockBuilder(Definition::class)
             ->disableOriginalConstructor()
             ->setMethods(['addMethodCall'])
             ->getMock()

@@ -13,8 +13,14 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
+use Zikula\Bundle\HookBundle\Hook\DisplayHook;
 use Zikula\Bundle\HookBundle\Hook\DisplayHookResponse;
+use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareHook;
+use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareResponse;
 use Zikula\Bundle\HookBundle\Hook\Hook;
+use Zikula\Bundle\HookBundle\Hook\ProcessHook;
+use Zikula\Bundle\HookBundle\Hook\ValidationHook;
+use Zikula\Bundle\HookBundle\Hook\ValidationProviders;
 use Zikula\Core\Controller\AbstractController as BaseAbstractController;
 use Zikula\Core\UrlInterface;
 
@@ -26,35 +32,35 @@ abstract class AbstractController extends BaseAbstractController
     /**
      * Notifies subscribers of the given hook.
      *
-     * @param Hook $hook
+     * @param string $name Hook event name
+     * @param Hook   $hook Hook interface
      *
      * @return Hook
      */
-    protected function notifyHooks(Hook $hook)
+    protected function dispatchHooks($name, Hook $hook)
     {
-        return $this->get('hook_dispatcher')->dispatch($hook->getName(), $hook);
+        return $this->get('hook_dispatcher')->dispatch($name, $hook);
     }
 
     /**
      * Get the display hook content for the given hook.
      *
      * @param string            $name
-     * @param string            $event
+     * @param string            $hookType
      * @param string|null       $id
      * @param UrlInterface|null $url
      *
      * @return string
      */
-    protected function getDisplayHookContent($name, $event, $id = null, UrlInterface $url = null)
+    protected function getDisplayHookContent($name, $hookType, $id = null, UrlInterface $url = null)
     {
-        $eventName = "cmfcmfmediamodule.ui_hooks.$name.$event";
-        $hook = new \Zikula_DisplayHook($eventName, $id, $url);
+        $eventName = 'cmfcmfmediamodule.ui_hooks.' . $name . '.' . $hookType;
+        $hook = new DisplayHook($id, $url);
         $this->get('hook_dispatcher')->dispatch($eventName, $hook);
         /** @var DisplayHookResponse[] $responses */
         $responses = $hook->getResponses();
 
-        $content = "";
-
+        $content = '';
         foreach ($responses as $result) {
             $result = $result->__toString();
             if (strlen(trim($result)) > 0) {
@@ -62,44 +68,72 @@ abstract class AbstractController extends BaseAbstractController
             }
         }
 
-        return strlen($content) == 0 ? "" : "<div class=\"row\">\n$content</div>";
+        return 0 == strlen($content) ? '' : "<div class=\"row\">\n$content</div>";
     }
 
     /**
      * Applies process hooks.
      *
      * @param string            $name
-     * @param string            $event
+     * @param string            $hookType
      * @param string            $id
      * @param UrlInterface|null $url
      */
-    protected function applyProcessHook($name, $event, $id, UrlInterface $url = null)
+    protected function applyProcessHook($name, $hookType, $id, UrlInterface $url = null)
     {
-        /* @noinspection PhpParamsInspection */
-        $this->notifyHooks(new \Zikula_ProcessHook(
-            "cmfcmfmediamodule.ui_hooks.$name.$event",
-            $id,
-            $url
-        ));
+        $eventName = 'cmfcmfmediamodule.ui_hooks.' . $name . '.' . $hookType;
+        $hook = new ProcessHook($id, $url);
+        $this->dispatchHooks($eventName, $hook);
+    }
+
+    /**
+     * Applies form aware display hooks.
+     *
+     * @param Form              $form
+     * @param string            $name
+     * @param string            $hookType
+     * @param UrlInterface|null $url
+     */
+    protected function applyFormAwareDisplayHook(Form $form, $name, $hookType, UrlInterface $url = null)
+    {
+        $eventName = 'cmfcmfmediamodule.form_aware_hook.' . $name . '.' . $hookType;
+        $hook = new FormAwareHook($form);
+        $this->dispatchHooks($eventName, $hook);
+
+        return $hook;
+    }
+
+    /**
+     * Applies form aware process hooks.
+     *
+     * @param Form                $form
+     * @param string              $name
+     * @param string              $hookType
+     * @param object|array|string $formSubject
+     * @param UrlInterface|null   $url
+     */
+    protected function applyFormAwareProcessHook(Form $form, $name, $hookType, $formSubject, UrlInterface $url = null)
+    {
+        $formResponse = new FormAwareResponse($form, $formSubject, $url);
+        $eventName = 'cmfcmfmediamodule.form_aware_hook.' . $name . '.' . $hookType;
+
+        $this->dispatchHooks($eventName, $formResponse);
     }
 
     /**
      * Checks whether or not the hook validates.
      *
      * @param string $name
-     * @param string $event
+     * @param string $hookType
      *
      * @return bool
      */
-    protected function hookValidates($name, $event)
+    protected function hookValidates($name, $hookType)
     {
-        /* @noinspection PhpParamsInspection */
-        $validationHook = new \Zikula_ValidationHook(
-            "cmfcmfmediamodule.ui_hooks.$name.$event",
-            new \Zikula_Hook_ValidationProviders()
-        );
-        /** @var \Zikula\Bundle\HookBundle\Hook\ValidationProviders $hookvalidators */
-        $hookvalidators = $this->notifyHooks($validationHook)->getValidators();
+        $eventName = 'cmfcmfmediamodule.ui_hooks.' . $name . '.' . $hookType;
+        $validationHook = new ValidationHook();
+        /** @var ValidationProviders $hookvalidators */
+        $hookvalidators = $this->dispatchHooks($eventName, $validationHook)->getValidators();
 
         return !$hookvalidators->hasErrors();
     }
@@ -109,7 +143,7 @@ abstract class AbstractController extends BaseAbstractController
      *
      * @param Form $form
      */
-    protected function hookValidationError($form)
+    protected function hookValidationError(Form $form)
     {
         $form->addError(new FormError($this->__('Hook validation failed!')));
     }

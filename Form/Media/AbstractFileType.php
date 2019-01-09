@@ -11,6 +11,8 @@
 
 namespace Cmfcmf\Module\MediaModule\Form\Media;
 
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class AbstractFileType extends AbstractMediaEntityType
@@ -23,12 +25,12 @@ class AbstractFileType extends AbstractMediaEntityType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('file', 'file', [
+            ->add('file', FileType::class, [
                 'label' => $this->translator->trans('Change file', [], 'cmfcmfmediamodule'),
                 'mapped' => false,
                 'required' => false
             ])
-            ->add('downloadAllowed', 'checkbox', [
+            ->add('downloadAllowed', CheckboxType::class, [
                 'required' => false,
                 'label' => $this->translator->trans('Allow download', [], 'cmfcmfmediamodule')
             ])

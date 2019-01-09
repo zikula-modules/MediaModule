@@ -3,39 +3,48 @@
 {% block content %}
     <div class="table-responsive">
         <table class="table table-condensed table-striped">
+            <colgroup>
+                {#<col id="cPosition" />#}
+                <col id="cId" />
+                <col id="cThumbnail" />
+                <col id="cTitle" />
+                <col id="cCollection" />
+                <col id="cLicense" />
+                <col id="cActions" />
+            </colgroup>
             <thead>
-            <tr>
-                {#<th>{{ __('Position') }}</th>#}
-                <th>{{ __('Id') }}</th>
-                <th>{{ __('Thumbnail') }}</th>
-                <th>{{ __('Title') }}</th>
-                <th>{{ __('Collection') }}</th>
-                <th>{{ __('License') }}</th>
-                <th>{{ __('Actions') }}</th>
-            </tr>
+                <tr>
+                    {#<th id="hPosition" scope="col">{{ __('Position') }}</th>#}
+                    <th id="hId" scope="col">{{ __('Id') }}</th>
+                    <th id="hThumbnail" scope="col">{{ __('Thumbnail') }}</th>
+                    <th id="hTitle" scope="col">{{ __('Title') }}</th>
+                    <th id="hCollection" scope="col">{{ __('Collection') }}</th>
+                    <th id="hLicense" scope="col">{{ __('License') }}</th>
+                    <th id="hActions" scope="col">{{ __('Actions') }}</th>
+                </tr>
             </thead>
             <tbody>
             {% for entity in paginator %}
                 <tr>
-                    {#<td>{{ entity.position }}</td>#}
-                    <td>
+                    {#<td headers="hEntity{{ entity.id }} hId">{{ entity.position }}</td>#}
+                    <td headers="hEntity{{ entity.id }} hThumbnail">
                         <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}">
                             {{ entity.id }}
                         </a>
                     </td>
-                    <td>
+                    <th id="hEntity{{ entity.id }}" scope="row" headers="hId">
                         {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(entity) %}
-                        {% set thumbnail =  mediaType.thumbnail(entity, 200, 100, 'url') %}
+                        {% set thumbnail = mediaType.thumbnail(entity, 200, 100, 'url') %}
                         {% if thumbnail %}
                             <img src="{{ thumbnail|e('html_attr') }}" alt="{{ entity.title|e('html_attr') }}" style="max-width: 200px; max-height: 100px" />
                         {% else %}
                             <i class="fa fa-fw fa-5x {{ mediaType.icon }}"></i>
                         {% endif %}
-                    </td>
-                    <td>{{ entity.title }}</td>
-                    <td>{{ entity.collection.title }}</td>
-                    <td>{% if entity.license %}{{ entity.license.title }}{% else %}--{% endif %}</td>
-                    <td class="text-right">
+                    </th>
+                    <td headers="hEntity{{ entity.id }} hTitle">{{ entity.title }}</td>
+                    <td headers="hEntity{{ entity.id }} hCollection">{{ entity.collection.title }}</td>
+                    <td headers="hEntity{{ entity.id }} hLicense">{% if entity.license %}{{ entity.license.title }}{% else %}--{% endif %}</td>
+                    <td headers="hEntity{{ entity.id }} hActions" class="text-right">
                         <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" title="{{ __('Show')|e('html_attr') }}">
                             <i class="fa fa-fw fa-eye"></i>
                         </a>

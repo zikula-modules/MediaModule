@@ -1,5 +1,5 @@
 {% if hookedObjectMedia is not empty %}
-    <h3>{{ __('Media') }}</h3>
+    <h3>{{ __('Media', 'cmfcmfmediamodule') }}</h3>
     {% for hookedObjectMedium in hookedObjectMedia %}
         <h4>{{ hookedObjectMedium.media.title }}</h4>
         {{ mediaTypeCollection.mediaTypeFromEntity(hookedObjectMedium.media).embedCode(hookedObjectMedium.media, 'medium')|raw }}

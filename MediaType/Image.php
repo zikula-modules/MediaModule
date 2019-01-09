@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\ImageEntity;
+use Imagine\Image\ImageInterface;
 use Symfony\Component\HttpFoundation\File\File;
 
 class Image extends AbstractFileMediaType implements UploadableMediaTypeInterface
@@ -124,7 +125,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         // 32: NoFlashFunction
         // 64: RedEyeReductionMode
 
-        return ($flash & 1) != 0;
+        return 0 != ($flash & 1);
     }
 
     private function convertMeteringMode($meteringMode)
@@ -152,7 +153,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     }
 
     /**
-     * @return array A list of supported mime types.
+     * @return array a list of supported mime types
      */
     private function getSupportedMimeTypes()
     {
@@ -171,20 +172,17 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         return in_array($mimeType, $this->getSupportedMimeTypes()) ? 5 : 0;
     }
 
-    public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = 'outbound', $optimize = true)
+    public function getThumbnail(AbstractMediaEntity $entity, $width, $height, $format = 'html', $mode = ImageInterface::THUMBNAIL_OUTBOUND, $optimize = true)
     {
-        /** @var ImageEntity $entity */
-        if (!in_array($mode, ['inset', 'outbound'])) {
-            throw new \InvalidArgumentException('Invalid mode requested.');
+        if (!in_array($mode, [ImageInterface::THUMBNAIL_INSET, ImageInterface::THUMBNAIL_OUTBOUND])) {
+            $mode = ImageInterface::THUMBNAIL_INSET;
         }
 
-        $this->imagineManager->setPreset(
-            $this->getPreset($entity, $entity->getPath(), $width, $height, $mode, $optimize)
-        );
+        /** @var ImageEntity $entity */
+        $path = $entity->getPath();
+        $imagineOptions = $this->getImagineRuntimeOptions($entity, $path, $width, $height, $mode, $optimize);
+        $url = $this->imagineCacheManager->getBrowserPath($path, 'zkroot', $imagineOptions);
 
-        $path = $this->imagineManager->getThumb($entity->getPath(), $entity->getImagineId());
-
-        $url = \System::getBaseUri() . '/' . $path;
         switch ($format) {
             case 'url':
                 return $url;
@@ -211,8 +209,8 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
                 $code = $this->getThumbnail($entity, 250, 150, 'html', 'inset');
                 break;
         }
-        if ($entity->getAttribution() != null) {
-            $code .= '<p>' . $entity->getAttribution() . '</p>';
+        if (null !== $entity->getAttribution()) {
+            $code .= '<p>' . $this->translator->__f('By %s', ['%s' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
         }
 
         return $code;

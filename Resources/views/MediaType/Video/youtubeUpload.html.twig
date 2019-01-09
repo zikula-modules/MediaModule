@@ -1,8 +1,11 @@
 {% extends 'CmfcmfMediaModule::base.html.twig' %}
 {% block content %}
-    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
-    <div class="alert alert-info">You are about to upload <em>{{ entity.title }}</em> to YouTube.</div>
+    {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
+    <p class="alert alert-info">You are about to upload <em>{{ entity.title }}</em> to YouTube.</p>
     {{ form_start(form) }}
-    {{ form_widget(form) }}
+        <fieldset>
+            <legend>{{ __('Content') }}</legend>
+            {{ form_widget(form) }}
+        </fieldset>
     {{ form_end(form) }}
 {% endblock %}

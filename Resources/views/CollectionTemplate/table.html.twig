@@ -2,13 +2,19 @@
 
 <div class="table-responsive">
     <table class="table table-hover">
+        <colgroup>
+            <col id="cTitle" />
+            <col id="cLicense" />
+            <col id="cAuthor" />
+            <col id="cActions" />
+        </colgroup>
         <thead>
-        <tr>
-            <th>{{ __('Title') }}</th>
-            <th>{{ __('License') }}</th>
-            <th>{{ __('Author') }}</th>
-            <th></th>
-        </tr>
+            <tr>
+                <th id="hTitle" scope="col">{{ __('Title') }}</th>
+                <th id="hLicense" scope="col">{{ __('License') }}</th>
+                <th id="hAuthor" scope="col">{{ __('Author') }}</th>
+                <th id="hActions" scope="col"></th>
+            </tr>
         </thead>
         <tbody>
         {% if showChildCollections %}
@@ -16,7 +22,7 @@
                 {% set parentCollectionPermission = cmfcmfmediamodule_hasPermission(collection.parent, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
                 {% if parentCollectionPermission %}
                     <tr class="active">
-                        <td>
+                        <td headers="hTitle">
                             <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: collection.parent.slug})|e('html_attr') }}">
                                 <i class="fa fa-fw fa-folder-o"></i> ..
                             </a>
@@ -28,16 +34,18 @@
             {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
             {% for child in collection.children %}
                 {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
-                    <td colspan="3">
-                        <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
-                            <i class="fa fa-fw fa-folder-o"></i> {{ child.title }}
-                        </a>
-                    </td>
-                    <td class="text-right">
-                        <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
-                            <i class="fa fa-search"></i> {{ __('View collection') }}
-                        </a>
-                    </td>
+                    <tr>
+                        <th headers="hTitle" scope="row" colspan="3">
+                            <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
+                                <i class="fa fa-fw fa-folder-o"></i> {{ child.title }}
+                            </a>
+                        </th>
+                        <td headers="hActions" class="text-right">
+                            <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
+                                <i class="fa fa-search"></i> {{ __('View collection') }}
+                            </a>
+                        </td>
+                    </tr>
                 {% endif %}
             {% endfor %}
         {% endif %}
@@ -47,7 +55,7 @@
         {% set editMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
         {% for media in collection.media %}
             <tr>
-                <td>
+                <th headers="hTitle" scope="row">
                     {% if viewMediaPermission %}
                         <a href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
                     {% endif %}
@@ -57,8 +65,8 @@
                     {% if viewMediaPermission %}
                         </a>
                     {% endif %}
-                </td>
-                <td>
+                </th>
+                <td headers="hLicense">
                     {% if media.license is not null %}
                         {% if media.license.url is not null %}
                             <a href="{{ media.license.url|e('html_attr') }}" title="{{ media.license.title }}">
@@ -75,14 +83,18 @@
                         {{ __('Unkown') }}
                     {% endif %}
                 </td>
-                <td>{{ media.attribution|raw }}</td>
-                <td class="text-right">
+                <td headers="hAuthor">
+                    {% if media.attribution|default %}
+                        {{ __f('By %s', {'%s': media.attribution})|raw }}
+                    {% endif %}
+                </td>
+                <td headers="hActions" class="text-right">
                     {% if viewMediaPermission %}
                         <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
                             <i class="fa fa-search"></i> {{ __('Details') }}
                         </a>
                     {% endif %}
-                    {% if downloadMediaPermission and media.downloadAllowed is defined and media.downloadAllowed %}
+                    {% if downloadMediaPermission and media.downloadAllowed|default %}
                         <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
                             <i class="fa fa-download"></i> {{ __('Download') }}
                         </a>

@@ -10,36 +10,49 @@
         <i class="fa fa-fw fa-check"></i> {{ __('Embed') }}
     </button>
 
-    <script type="text/javascript">
-        (function ($) {
-            $('#cmfcmfmedia-popup-choose-collections-embed-btn').click(function () {
-                var selectedCollections = $('#cmfcmfmedia-hook-collection-tree').jstree('get_selected', true);
-                if (selectedCollections.length == 0) {
-                    alert('Please select at least one collection to embed or cancel by closing this window!');
-                    return;
-                }
-                var html = '<ul>';
-                for (var i = 0; i < selectedCollections.length; i++) {
-                    console.log(selectedCollections[i]);
-                    var url = Routing.generate('cmfcmfmediamodule_collection_displaybyid', {id: selectedCollections[i].id});
-                    html +=
-                        '<li>' +
-                            '<a href="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(url) + '">' +
-                                window.CmfcmfMediaModule.Util.htmlEncode(selectedCollections[i].original.cmfcmfmediamodule.title) +
-                            '</a>' +
-                        '</li>';
-                }
-                html += '</ul>';
+    {% set customScript %}
+        <script type="text/javascript">
+            (function ($) {
+                $('#cmfcmfmedia-popup-choose-collections-embed-btn').click(function () {
+                    var selectedCollections = $('#cmfcmfmedia-hook-collection-tree').jstree('get_selected', true);
+                    if (selectedCollections.length == 0) {
+                        alert('Please select at least one collection to embed or cancel by closing this window!');
+                        return;
+                    }
+                    var html = '<ul>';
+                    for (var i = 0; i < selectedCollections.length; i++) {
+                        console.log(selectedCollections[i]);
+                        var url = Routing.generate('cmfcmfmediamodule_collection_displaybyid', {id: selectedCollections[i].id});
+                        html +=
+                            '<li>' +
+                                '<a href="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(url) + '">' +
+                                    window.CmfcmfMediaModule.Util.htmlEncode(selectedCollections[i].original.cmfcmfmediamodule.title) +
+                                '</a>' +
+                            '</li>';
+                    }
+                    html += '</ul>';
 
-                switch (window.opener.CmfcmfMediaModule.currentEditor) {
-                    case 'ckeditor':
-                        window.opener.CmfcmfMediaModule.currentEditorInstance.insertHtml(html);
-                        break;
-                }
-                window.opener.toastr['success']('The selected collections have been inserted.', 'Collections inserted');
-                window.opener.focus();
-                window.close();
-            })
-        })(jQuery);
-    </script>
+                    switch (window.opener.CmfcmfMediaModule.currentEditor) {
+                        case 'ckeditor':
+                            window.opener.CmfcmfMediaModule.currentEditorInstance.insertHtml(html);
+                            break;
+                        case 'quill':
+                            window.opener.CmfcmfMediaModule.currentEditorInstance.clipboard.dangerouslyPasteHTML(window.opener.CmfcmfMediaModule.currentEditorInstance.getLength(), html);
+                            break;
+                        case 'summernote':
+                            html = jQuery(html).get(0);
+                            window.opener.CmfcmfMediaModule.currentEditorInstance.invoke('insertNode', html);
+                            break;
+                        case 'tinymce':
+                            window.opener.CmfcmfMediaModule.currentEditorInstance.insertContent(html);
+                            break;
+                    }
+                    window.opener.toastr['success']('The selected collections have been inserted.', 'Collections inserted');
+                    window.opener.focus();
+                    window.close();
+                })
+            })(jQuery);
+        </script>
+    {% endset %}
+    {{ pageAddAsset('footer', customScript) }}
 {% endblock %}

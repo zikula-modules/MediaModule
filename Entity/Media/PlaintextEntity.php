@@ -12,15 +12,20 @@
 namespace Cmfcmf\Module\MediaModule\Entity\Media;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @ORM\Entity()
  */
 class PlaintextEntity extends AbstractFileEntity
 {
-    public function __construct()
+    /**
+     * @param RequestStack $requestStack
+     * @param string       $dataDirectory
+     */
+    public function __construct(RequestStack $requestStack, $dataDirectory = '')
     {
-        parent::__construct();
+        parent::__construct($requestStack, $dataDirectory);
 
         $this->setUseSyntaxHighlighting(true);
     }

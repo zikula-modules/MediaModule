@@ -15,6 +15,7 @@ use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Uploadable\Uploadable;
+use Imagine\Image\Box;
 use Imagine\Image\ImagineInterface;
 
 /**
@@ -55,7 +56,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         $height
     ) {
         $watermarkImage = $imagine->open($this->getPath());
-        if ($this->getRelativeSize() !== null) {
+        if (null !== $this->getRelativeSize()) {
             $y = (int) $height * $this->getRelativeSize() / 100;
             $factor = $y / $watermarkImage->getSize()->getHeight();
             $x = $watermarkImage->getSize()->getWidth() * $factor;
@@ -65,7 +66,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
                 $x = $actualWidth;
                 $y *= $factor;
             }
-            $watermarkImage->resize(new \Imagine\Image\Box($x, $y));
+            $watermarkImage->resize(new Box($x, $y));
         }
 
         return $watermarkImage;
@@ -75,7 +76,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
     {
         unset($defaultPath);
 
-        return \FileUtil::getDataDirectory() . '/cmfcmf-media-module/watermarks';
+        return $this->dataDirectory . '/cmfcmf-media-module/watermarks';
     }
 
     public function getPath()
@@ -83,9 +84,14 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         return $this->getPathToUploadTo(null) . '/' . $this->fileName;
     }
 
+    public function getFileName()
+    {
+        return $this->fileName;
+    }
+
     public function getUrl()
     {
-        return \System::getBaseUri() . '/' . $this->getPath();
+        return $this->requestStack->getCurrentRequest()->getBasePath() . '/' . $this->getPath();
     }
 
     /**
@@ -97,7 +103,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         $title = htmlentities($this->title);
 
         return <<<EOD
-<img class="img-responsive" style="max-width:150px;max-height:100px" src="$src" alt="$title" />
+<img src="$src" alt="$title" class="img-responsive" style="max-width: 150px; max-height: 100px" />
 EOD;
     }
 }

@@ -14,6 +14,7 @@ namespace Cmfcmf\Module\MediaModule\Entity\Media;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Uploadable\Uploadable;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository")
@@ -52,9 +53,13 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
      */
     protected $downloadAllowed;
 
-    public function __construct()
+    /**
+     * @param RequestStack $requestStack
+     * @param string       $dataDirectory
+     */
+    public function __construct(RequestStack $requestStack, $dataDirectory = '')
     {
-        parent::__construct();
+        parent::__construct($requestStack, $dataDirectory);
 
         $this->downloadAllowed = true;
     }
@@ -63,7 +68,7 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
     {
         unset($defaultPath);
 
-        return \FileUtil::getDataDirectory() . '/cmfcmf-media-module/media';
+        return $this->dataDirectory . '/cmfcmf-media-module/media';
     }
 
     public function getPath()
@@ -73,7 +78,7 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
 
     public function getUrl()
     {
-        return \System::getBaseUri() . '/' . $this->getPath();
+        return $this->getBaseUri() . '/' . $this->getPath();
     }
 
     public function getBeautifiedFileName()

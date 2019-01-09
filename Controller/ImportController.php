@@ -13,9 +13,9 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\ImportType;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
 
@@ -23,7 +23,7 @@ class ImportController extends AbstractController
 {
     /**
      * @Route("/import")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Import:select.html.twig")
      * @Theme("admin")
      *
      * @return array
@@ -43,7 +43,7 @@ class ImportController extends AbstractController
 
     /**
      * @Route("/import/{importer}")
-     * @Template()
+     * @Template("CmfcmfMediaModule:Import:execute.html.twig")
      * @Theme("admin")
      *
      * @param Request $request
@@ -62,18 +62,17 @@ class ImportController extends AbstractController
             throw new NotFoundHttpException();
         }
         $importer = $importerCollection->getImporter($importer);
-        if ($importer->checkRequirements() !== true) {
+        if (true !== $importer->checkRequirements()) {
             throw new NotFoundHttpException();
         }
 
-        $importType = new ImportType($importer->getSettingsForm(), $this->get('translator'), $this->get('cmfcmf_media_module.security_manager'));
-        $form = $this->createForm($importType);
+        $form = $this->createForm(ImportType::class, null, ['importerForm' => $importer->getSettingsForm()]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $success = $importer->import($form->getData(), $this->get('session')->getFlashBag());
 
-            if ($success === true) {
+            if (true === $success) {
                 $this->addFlash('status', $this->__('Media imported successfully.'));
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $form->getData()['collection']->getSlug()]);

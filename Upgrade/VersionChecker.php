@@ -74,7 +74,7 @@ class VersionChecker
         // versions.
 
         $highestPatchRelease = $this->getHighestPatchRelease($currentVersion, $releases);
-        if ($highestPatchRelease === false) {
+        if (false === $highestPatchRelease) {
             // Somehow not even the currently installed version could be found in the GitHub releases.
             return false;
         }
@@ -90,7 +90,7 @@ class VersionChecker
         $highestPatchReleaseOfNextMinorVersion = $this->getHighestPatchReleaseOfNextMinorVersion(
             $currentVersion, $releases
         );
-        if ($highestPatchReleaseOfNextMinorVersion === false) {
+        if (false === $highestPatchReleaseOfNextMinorVersion) {
             // No new version available apparently.
             return false;
         }
@@ -107,7 +107,7 @@ class VersionChecker
     private function getHighestPatchRelease(version $currentVersion, $releases)
     {
         $biggestPatchUpdate = new expression(
-            $currentVersion->getMajor() . "." . $currentVersion->getMinor() . ".*"
+            $currentVersion->getMajor() . '.' . $currentVersion->getMinor() . '.*'
         );
 
         foreach ($releases as $release) {
@@ -128,7 +128,7 @@ class VersionChecker
     private function getHighestPatchReleaseOfNextMinorVersion(version $currentVersion, $releases)
     {
         $nextMinorStep = new expression(
-            $currentVersion->getMajor() . "." . ($currentVersion->getMinor() + 1) . ".*"
+            $currentVersion->getMajor() . '.' . ($currentVersion->getMinor() + 1) . '.*'
         );
 
         foreach ($releases as $release) {
@@ -185,7 +185,7 @@ class VersionChecker
     public function checkRateLimit()
     {
         $response = $this->getClient()->getHttpClient()->get('rate_limit');
-        $limit    = GitHubResponseMediator::getContent($response);
+        $limit = GitHubResponseMediator::getContent($response);
 
         return $limit['resources']['core']['remaining'] > 10;
     }
@@ -213,8 +213,6 @@ class VersionChecker
 
     private function getClient()
     {
-        require_once __DIR__ . '/../vendor/autoload.php';
-
         $client = new GitHubClient(
             new GitHubCachedHttpClient(['cache_dir' => $this->githubApiCache])
         );

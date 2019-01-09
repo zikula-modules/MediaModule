@@ -5,6 +5,7 @@
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/slick/slick.css'), 98) }}
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/slick/slick-theme.css'), 99) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/slider.js')) }}
+    {% set customStyle %}
     <style>
         .slick-prev:before, .slick-next:before {
             color: black;
@@ -14,8 +15,10 @@
             margin-right: 20px;
         }
     </style>
+    {% endset %}
+    {{ pageAddAsset('header', customStyle) }}
 
-    <div id="cmfcmfmedia-display-slider">
+    <div class="cmfcmfmedia-display-slider">
         {% for media in collection.media %}
             <div class="img-thumbnail">
                 {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
@@ -28,15 +31,11 @@
                         {{ media|cmfcmfmediamodule_getdescription }}
                     {% endif %}
                 </a>
-                {% if media.title is not empty %}
-                    <h4>
-                        {{ media.title }}
-                    </h4>
+                {% if media.title|default %}
+                    <h4>{{ media.title }}</h4>
                 {% endif %}
-                {% if media.attribution is not empty %}
-                    <h5>
-                        {{ media.attribution|raw }}
-                    </h5>
+                {% if media.attribution|default %}
+                    <h5>{{ __f('By %s', {'%s': media.attribution})|raw }}</h5>
                 {% endif %}
             </div>
         {% endfor %}

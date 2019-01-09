@@ -17,9 +17,9 @@ use Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Zikula\CategoriesModule\Entity\RepositoryInterface\CategoryRegistryRepositoryInterface;
 
 class VerySimpleDownloadsModuleImporter extends AbstractImporter
 {
@@ -29,9 +29,14 @@ class VerySimpleDownloadsModuleImporter extends AbstractImporter
     private $uploadManager;
 
     /**
+     * @var CategoryRegistryRepositoryInterface
+     */
+    private $categoryRegistryRepository;
+
+    /**
      * @var string
      */
-    private $fileDirectory;
+    private $fileDirectory = '/VerySimpleDownload/downloads/fileupload';
 
     public function getTitle()
     {
@@ -59,9 +64,8 @@ class VerySimpleDownloadsModuleImporter extends AbstractImporter
             return $this->translator->trans('Please install the VerySimpleDownloads Module or import it\'s tables into the database.', [], 'cmfcmfmediamodule');
         }
 
-        $fs = new Filesystem();
-        if (!$fs->exists($this->fileDirectory)) {
-            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->fileDirectory], 'cmfcmfmediamodule');
+        if (!$this->filesystem->exists($this->dataDirectory . $this->fileDirectory)) {
+            return $this->translator->trans('The uploaded files are missing. Make sure %path% contains the uploaded files.', ['%path%' => $this->dataDirectory . $this->fileDirectory], 'cmfcmfmediamodule');
         }
 
         return true;
@@ -72,20 +76,24 @@ class VerySimpleDownloadsModuleImporter extends AbstractImporter
         $this->uploadManager = $uploadManager;
     }
 
-    public function setUserDataDirectory($userDataDir)
+    public function setCategoryRegistryRepository(CategoryRegistryRepositoryInterface $categoryRegistryRepository)
     {
-        $this->fileDirectory = $userDataDir . '/VerySimpleDownload/downloads/fileupload';
+        $this->categoryRegistryRepository = $categoryRegistryRepository;
     }
 
     public function import($formData, FlashBagInterface $flashBag)
     {
         /** @var CollectionEntity $collection */
         $collection = $formData['collection'];
-        $categoryRegistry = \CategoryRegistryUtil::getRegisteredModuleCategory('CmfcmfMediaModule', 'AbstractMediaEntity', 'Main');
+        $categoryRegistry = $this->categoryRegistryRepository->findOneBy([
+            'modname' => 'CmfcmfMediaModule',
+            'entityname' => 'AbstractMediaEntity',
+            'property' => 'Main'
+        ]);
 
         $conn = $this->em->getConnection();
         $result = $conn->executeQuery(<<<'SQL'
-SELECT d.id, d.downloadTitle, d.downloadDescription, d.fileUpload, d.createdUserId, d.updatedUserId, d.createdDate, d.updatedDate, c.categoryId
+SELECT d.id, d.downloadTitle, d.downloadDescription, d.fileUpload, d.createdBy, d.updatedBy, d.createdDate, d.updatedDate, c.categoryId
 FROM vesido_download d
 LEFT JOIN vesido_download_category c ON c.entityId = d.id
 SQL
@@ -95,17 +103,17 @@ SQL
             if ($lastId != $download['id']) {
                 $lastId = $download['id'];
 
-                $file = new File($this->fileDirectory . '/' . $download['fileUpload']);
+                $file = new File($this->dataDirectory . $this->fileDirectory . '/' . $download['fileUpload']);
                 $mediaType = $this->mediaTypeCollection->getBestUploadableMediaTypeForFile($file);
                 $entityClass = $mediaType->getEntityClass();
                 /** @var AbstractFileEntity $entity */
-                $entity = new $entityClass();
+                $entity = new $entityClass($this->requestStack, $this->dataDirectory);
                 $entity
                     ->setTitle($download['downloadTitle'])
                     ->setDescription($download['downloadDescription'])
                     ->setCollection($collection)
-                    ->setCreatedUserId($download['createdUserId'])
-                    ->setUpdatedUserId($download['updatedUserId'])
+                    ->setCreatedBy($download['createdBy'])
+                    ->setUpdatedBy($download['updatedBy'])
                     ->setCreatedDate(new \DateTime($download['createdDate']))
                     ->setUpdatedDate(new \DateTime($download['updatedDate']))
                 ;

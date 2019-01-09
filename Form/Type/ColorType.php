@@ -13,10 +13,15 @@ namespace Cmfcmf\Module\MediaModule\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Displays a color selector.
+ *
+ * TODO consider replacing by native color picker
+ * check http://symfony.com/doc/current/reference/forms/types/color.html
+ * NOTE this would process RGB instead of RGBA values!
  */
 class ColorType extends AbstractType
 {
@@ -25,10 +30,10 @@ class ColorType extends AbstractType
         $builder->addViewTransformer(new CallbackTransformer(
             function ($rgba) {
                 if (empty($rgba)) {
-                    return "";
-                } else {
-                    return "#" . substr($rgba, 7, 2) . substr($rgba, 1, 6);
+                    return '';
                 }
+
+                return "#" . substr($rgba, 7, 2) . substr($rgba, 1, 6);
             }, function ($argb) {
                 return "#" . substr($argb, 3, 6) . substr($argb, 1, 2);
             }
@@ -40,13 +45,13 @@ class ColorType extends AbstractType
      */
     public function getParent()
     {
-        return 'text';
+        return TextType::class;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_color';
     }

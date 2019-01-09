@@ -1,33 +1,36 @@
 services:
-  cmfcmf_media_module.importer_collection:
-    class: Cmfcmf\Module\MediaModule\Importer\ImporterCollection
+    cmfcmf_media_module.importer_collection:
+        class: Cmfcmf\Module\MediaModule\Importer\ImporterCollection
 
-  cmfcmf_media_module.importer.abstract_service:
-    abstract: true
-    arguments: [@translator, @form.factory, @cmfcmf_media_module.media_type_collection, "@doctrine.orm.entity_manager"]
+    cmfcmf_media_module.importer.abstract_service:
+        abstract: true
+        arguments:
+            - '@translator'
+            - '@filesystem'
+            - '@form.factory'
+            - '@cmfcmf_media_module.media_type_collection'
+            - '@doctrine.orm.entity_manager'
+            - '@request_stack'
+            - '%datadir%'
 
-  cmfcmf_media_module.importer.server_directory:
-    parent: cmfcmf_media_module.importer.abstract_service
-    class: Cmfcmf\Module\MediaModule\Importer\ServerDirectoryImporter
-    calls:
-      - [setUploadManager, [@stof_doctrine_extensions.uploadable.manager]]
-    tags:
-      - { name: 'cmfcmf_media_module.importer' }
+    cmfcmf_media_module.importer.server_directory:
+        parent: cmfcmf_media_module.importer.abstract_service
+        class: Cmfcmf\Module\MediaModule\Importer\ServerDirectoryImporter
+        calls:
+            - [setUploadManager, ['@stof_doctrine_extensions.uploadable.manager']]
+        tags: ['cmfcmf_media_module.importer']
 
-  cmfcmf_media_module.importer.downloads_module:
-    parent: cmfcmf_media_module.importer.abstract_service
-    class: Cmfcmf\Module\MediaModule\Importer\DownloadsModuleImporter
-    calls:
-      - [setUploadManager, ["@stof_doctrine_extensions.uploadable.manager"]]
-      - [setUserDataDirectory, ["%datadir%"]]
-    tags:
-      - { name: 'cmfcmf_media_module.importer' }
+    cmfcmf_media_module.importer.downloads_module:
+        parent: cmfcmf_media_module.importer.abstract_service
+        class: Cmfcmf\Module\MediaModule\Importer\DownloadsModuleImporter
+        calls:
+            - [setUploadManager, ['@stof_doctrine_extensions.uploadable.manager']]
+        tags: ['cmfcmf_media_module.importer']
 
-  cmfcmf_media_module.importer.very_simple_downloads_module:
-    parent: cmfcmf_media_module.importer.abstract_service
-    class: Cmfcmf\Module\MediaModule\Importer\VerySimpleDownloadsModuleImporter
-    calls:
-      - [setUploadManager, ["@stof_doctrine_extensions.uploadable.manager"]]
-      - [setUserDataDirectory, ["%datadir%"]]
-    tags:
-      - { name: 'cmfcmf_media_module.importer' }
+    cmfcmf_media_module.importer.very_simple_downloads_module:
+        parent: cmfcmf_media_module.importer.abstract_service
+        class: Cmfcmf\Module\MediaModule\Importer\VerySimpleDownloadsModuleImporter
+        calls:
+            - [setUploadManager, ['@stof_doctrine_extensions.uploadable.manager']]
+            - [setCategoryRegistryRepository, ['@zikula_categories_module.category_registry_repository']]
+        tags: ['cmfcmf_media_module.importer']

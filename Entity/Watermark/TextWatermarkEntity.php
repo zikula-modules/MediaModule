@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Imagine\Image\ImagineInterface;
 use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -68,12 +69,16 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
      */
     protected $backgroundColor;
 
-    public function __construct()
+    /**
+     * @param RequestStack $requestStack
+     * @param string       $dataDirectory
+     */
+    public function __construct(RequestStack $requestStack, $dataDirectory = '')
     {
-        parent::__construct();
+        parent::__construct($requestStack, $dataDirectory);
 
-        $this->fontColor = "#000000FF";
-        $this->backgroundColor = "#00000000";
+        $this->fontColor = '#000000FF';
+        $this->backgroundColor = '#00000000';
     }
 
     /**
@@ -99,9 +104,9 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
     public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height)
     {
         $fontPath = $fontCollection->getFontById($this->font)->getPath();
-        if ($this->getAbsoluteSize() !== null) {
+        if (null !== $this->getAbsoluteSize()) {
             $fontSize = $this->getAbsoluteSize();
-        } elseif ($this->getRelativeSize() !== null) {
+        } elseif (null !== $this->getRelativeSize()) {
             $fontSize = (int) $this->getRelativeSize() / 100 * $height;
         } else {
             throw new \LogicException('Either relative or absolute watermark size must be set!');
@@ -128,8 +133,8 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
      */
     public function assertRelativeOrAbsoluteSizeSet()
     {
-        $r = $this->relativeSize !== null;
-        $a = $this->absoluteSize !== null;
+        $r = null !== $this->relativeSize;
+        $a = null !== $this->absoluteSize;
 
         return $r xor $a;
     }

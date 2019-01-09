@@ -2,18 +2,27 @@
 {% block title __('Create or edit collection') %}
 {% block content %}
     {% include 'CmfcmfMediaModule::util.html.twig' %}
-    {% form_theme form 'CmfcmfMediaModule:Form:bootstrap_3.html.twig' %}
-
+    {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ hook|raw }}
-    <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-success">
-            <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
-        </button>
-        <a href="{{ path('cmfcmfmediamodule_collection_displayroot') }}" class="btn btn-default">
-            <i class="fa fa-fw fa-ban"></i> {{  __('Cancel') }}
-        </a>
-    </div>
+        <fieldset>
+            <legend>{{ __('Content') }}</legend>
+            {{ form_widget(form) }}
+            {{ hook|raw }}
+            {% if formHookTemplates|length > 0 %}
+                <fieldset>
+                    {% for hookTemplate in formHookTemplates %}
+                        {{ include(hookTemplate.0, hookTemplate.1, ignore_missing = true) }}
+                    {% endfor %}
+                </fieldset>
+            {% endif %}
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success">
+                    <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
+                </button>
+                <a href="{{ path('cmfcmfmediamodule_collection_displayroot') }}" class="btn btn-default">
+                    <i class="fa fa-fw fa-ban"></i> {{  __('Cancel') }}
+                </a>
+            </div>
+        </fieldset>
     {{ form_end(form) }}
 {% endblock %}

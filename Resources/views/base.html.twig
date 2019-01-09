@@ -1,15 +1,15 @@
 {% block header %}
-    {% if renderRaw is not defined or not renderRaw %}
+    {% if not renderRaw|default %}
         {{ moduleLinks('user', '', 'CmfcmfMediaModule') }}
     {% endif %}
 {% endblock %}
 
-{% if (renderRaw is not defined or not renderRaw) and breadcrumbs is defined %}
-    {% include 'CmfcmfMediaModule::breadcrumbs.html.twig' with {breadcrumbs: breadcrumbs} %}
+{% if not renderRaw|default and breadcrumbs|default %}
+    {% include 'CmfcmfMediaModule::breadcrumbs.html.twig' %}
 {% endif %}
 
 {% block upgradeNotification %}
-    {% if (renderRaw is not defined or not renderRaw) and hasPermission('ZikulaExtensionsModule::', '::', 'ACCESS_ADMIN') and hasPermission('CmfcmfMediaModule:settings:', '::', 'ACCESS_ADMIN') and cmfcmfmediamodule_newversionavailable() %}
+    {% if not renderRaw|default and hasPermission('ZikulaExtensionsModule::', '::', 'ACCESS_ADMIN') and hasPermission('CmfcmfMediaModule:settings:', '::', 'ACCESS_ADMIN') and cmfcmfmediamodule_newversionavailable() %}
         <div class="alert alert-warning">
             <i class="fa fa-fw fa-download fa-2x pull-left"></i>
             {{ __f('The %s version of the MediaModule is available for download. You can apply the automatic upgrade by clicking here:', {'%s': cmfcmfmediamodule_newversionavailable()}) }}
@@ -27,7 +27,7 @@
     {{ pageSetVar('title', title) }}
 {% endif %}
 
-{% if renderRaw is not defined or not renderRaw %}
+{% if not renderRaw|default %}
     {{ showflashes() }}
 {% endif %}
 

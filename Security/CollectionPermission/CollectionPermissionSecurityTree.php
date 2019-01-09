@@ -107,8 +107,6 @@ class CollectionPermissionSecurityTree
     {
         $categories = self::getCategories($translator);
 
-        require_once __DIR__ . '/../../vendor/autoload.php';
-
         $graph = new SecurityGraph();
         /** @var Vertex[] $vertices */
         $vertices = [];

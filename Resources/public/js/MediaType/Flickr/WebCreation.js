@@ -37,9 +37,9 @@
                 new window.CmfcmfMediaModule.WebCreation.tableColumns.UrlColumn('License')
             ],
             {
-                everything: 'Everything'
+                everything: Translator.__('Everything')
             },
-            'Search for images',
+            Translator.__('Search for images'),
             function (searchInput, dropdownValue, onFinished) {
                 var license = '';//encodeURIComponent(license);
 

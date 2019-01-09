@@ -18,9 +18,6 @@ use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -28,7 +25,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
+use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\Core\Response\PlainResponse;
 use Zikula\Core\RouteUrl;
 
@@ -37,7 +37,6 @@ class CollectionController extends AbstractController
     /**
      * @Route("/new/{slug}", requirements={"slug" = ".+"})
      * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
-     * @ParamConverter("parent", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
      * @param Request          $request
      * @param CollectionEntity $parent
@@ -46,7 +45,7 @@ class CollectionController extends AbstractController
      */
     public function newAction(Request $request, CollectionEntity $parent)
     {
-        if ($parent == null) {
+        if (null == $parent) {
             throw new NotFoundHttpException();
         }
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
@@ -54,15 +53,14 @@ class CollectionController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
         $entity = new CollectionEntity();
-        $form = new CollectionType($templateCollection, $parent, $securityManager);
-        $form->setTranslator($this->get('translator'));
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm(CollectionType::class, $entity, [
+            'parent' => $parent
+        ]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            if ($this->hookValidates('collection', 'validate_edit')) {
+            if ($this->hookValidates('collection', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
                 if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity->getParent(), CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
                     throw new AccessDeniedException($this->__('You don\'t have permission to add a sub-collection to the selected parent collection.'));
                 }
@@ -70,29 +68,27 @@ class CollectionController extends AbstractController
                 $em->persist($entity);
                 $em->flush();
 
-                $this->applyProcessHook('collection', 'process_edit', $entity->getId(), new RouteUrl(
-                    'cmfcmfmediamodule_collection_display',
-                    ['slug' => $entity->getSlug()]
-                ));
+                $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
+                $this->applyFormAwareProcessHook($form, 'collection', FormAwareCategory::TYPE_PROCESS_EDIT, $entity, $hookUrl);
+                $this->applyProcessHook('collection', UiHooksCategory::TYPE_PROCESS_EDIT, $entity->getId(), $hookUrl);
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
             }
             $this->hookValidationError($form);
         }
 
+        $formHook = $this->applyFormAwareDisplayHook($form, 'collections', FormAwareCategory::TYPE_EDIT);
+
         return [
             'form' => $form->createView(),
-            'hook' => $this->getDisplayHookContent(
-                'collection',
-                'form_edit'
-            ),
+            'hook' => $this->getDisplayHookContent('collections', UiHooksCategory::TYPE_FORM_EDIT),
+            'formHookTemplates' => $formHook->getTemplates()
         ];
     }
 
     /**
      * @Route("/edit/{slug}", requirements={"slug" = ".+"})
-     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
-     * @Template()
+     * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $entity
@@ -106,17 +102,16 @@ class CollectionController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $templateCollection = $this->get('cmfcmf_media_module.collection_template_collection');
-        $form = new CollectionType($templateCollection, $entity->getParent(), $securityManager);
-        $form->setTranslator($this->get('translator'));
-        $form = $this->createForm($form, $entity);
+        $form = $this->createForm(CollectionType::class, $entity, [
+            'parent' => $entity->getParent()
+        ]);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
             goto edit_error;
         }
 
-        if (!$this->hookValidates('collection', 'validate_edit')) {
+        if (!$this->hookValidates('collection', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
             $this->hookValidationError($form);
             goto edit_error;
         }
@@ -130,29 +125,26 @@ class CollectionController extends AbstractController
             goto edit_error;
         }
 
-        $this->applyProcessHook('collection', 'process_edit', $entity->getId(), new RouteUrl(
-            'cmfcmfmediamodule_collection_display',
-            ['slug' => $entity->getSlug()]
-        ));
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
+        $this->applyFormAwareProcessHook($form, 'collection', FormAwareCategory::TYPE_PROCESS_EDIT, $entity, $hookUrl);
+        $this->applyProcessHook('collection', UiHooksCategory::TYPE_PROCESS_EDIT, $entity->getId(), $hookUrl);
 
         return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
 
         edit_error:
 
+        $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
+        $formHook = $this->applyFormAwareDisplayHook($form, 'collections', FormAwareCategory::TYPE_EDIT, $hookUrl);
+
         return [
             'form' => $form->createView(),
-            'hook' => $this->getDisplayHookContent(
-                'collection',
-                'form_edit',
-                $entity->getId(),
-                new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()])
-            ),
+            'hook' => $this->getDisplayHookContent('collections', UiHooksCategory::TYPE_FORM_EDIT, $entity->getId(), $hookUrl),
+            'formHookTemplates' => $formHook->getTemplates()
         ];
     }
 
     /**
      * @Route("/download/{slug}.zip", requirements={"slug"=".+"})
-     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
      *
      * @param CollectionEntity $entity
      *
@@ -165,12 +157,19 @@ class CollectionController extends AbstractController
         }
         $em = $this->getDoctrine()->getManager();
 
-        \CacheUtil::createLocalDir('CmfcmfMediaModule');
-        $dir = \CacheUtil::getLocalDir('CmfcmfMediaModule');
-        $path = $dir . '/' . uniqid(time(), true) . '.zip';
+        $cacheDirectory = $this->get('service_container')->getParameter('kernel.cache_dir') . '/CmfCmfMediaModule/';
+        $filesystem = $this->get('filesystem');
+        if (!$filesystem->exists($cacheDirectory)) {
+            $filesystem->mkdir($cacheDirectory, 0777);
+        }
+        if (!$filesystem->exists($cacheDirectory)) {
+            $cacheDirectory = sys_get_temp_dir();
+        }
+
+        $path = $cacheDirectory . '/' . uniqid(time(), true) . '.zip';
 
         $zip = new \ZipArchive();
-        if ($zip->open($path, \ZipArchive::CREATE) !== true) {
+        if (true !== $zip->open($path, \ZipArchive::CREATE)) {
             throw new ServiceUnavailableHttpException('Could not create zip archive!');
         }
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
@@ -245,8 +244,7 @@ class CollectionController extends AbstractController
     }
 
     /**
-     * @Route("")
-     * @Method("GET")
+     * @Route("", methods={"GET"})
      *
      * @return RedirectResponse
      */
@@ -263,10 +261,27 @@ class CollectionController extends AbstractController
     }
 
     /**
-     * @Route("/{slug}", requirements={"slug"=".*[^/]"}, options={"expose" = true})
-     * @ParamConverter("entity", class="Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity", options={"slug" = "slug"})
-     * @Method("GET")
-     * @Template()
+     * @Route("/show-by-id/{id}", options={"expose" = true})
+     *
+     * @param CollectionEntity $entity
+     *
+     * @return RedirectResponse
+     */
+    public function displayByIdAction(CollectionEntity $entity)
+    {
+        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
+            throw new AccessDeniedException();
+        }
+
+        return $this->redirectToRoute(
+            'cmfcmfmediamodule_collection_display',
+            ['slug' => $entity->getSlug()]
+        );
+    }
+
+    /**
+     * @Route("/{slug}", methods={"GET"}, requirements={"slug"=".*[^/]"}, options={"expose" = true})
+     * @Template(template="CmfcmfMediaModule:Collection:display.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $entity
@@ -279,10 +294,10 @@ class CollectionController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        if ($entity->getDefaultTemplate() != null) {
+        if (null !== $entity->getDefaultTemplate()) {
             $defaultTemplate = $entity->getDefaultTemplate();
         } else {
-            $defaultTemplate = \ModUtil::getVar('CmfcmfMediaModule', 'defaultCollectionTemplate');
+            $defaultTemplate = $this->getVar('defaultCollectionTemplate');
         }
         $template = $request->query->get('template', $defaultTemplate);
 
@@ -311,12 +326,7 @@ class CollectionController extends AbstractController
         ];
 
         $hookUrl = new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $entity->getSlug()]);
-        $templateVars['hook'] = $this->getDisplayHookContent(
-            'collection',
-            'display_view',
-            $entity->getId(),
-            $hookUrl
-        );
+        $templateVars['hook'] = $this->getDisplayHookContent('collections', UiHooksCategory::TYPE_DISPLAY_VIEW, $entity->getId(), $hookUrl);
         $templateVars['renderRaw'] = $isHook = $request->query->get('isHook', false);
 
         $templateVars['content'] = $selectedTemplate->getTemplate()->render(
@@ -327,24 +337,5 @@ class CollectionController extends AbstractController
         );
 
         return $this->render('CmfcmfMediaModule:Collection:display.html.twig', $templateVars);
-    }
-
-    /**
-     * @Route("/show-by-id/{id}", options={"expose" = true})
-     *
-     * @param CollectionEntity $entity
-     *
-     * @return RedirectResponse
-     */
-    public function displayByIdAction(CollectionEntity $entity)
-    {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
-            throw new AccessDeniedException();
-        }
-
-        return $this->redirectToRoute(
-            'cmfcmfmediamodule_collection_display',
-            ['slug' => $entity->getSlug()]
-        );
     }
 }

@@ -14,13 +14,34 @@ namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Translation\TranslatorInterface;
+use Zikula\GroupsModule\Entity\RepositoryInterface\GroupRepositoryInterface;
+use Zikula\UsersModule\Api\ApiInterface\CurrentUserApiInterface;
 
 /**
- * @todo Once Zikula supports the Symfony group mechanism, retrieve the group
- * from a service instead of using the static method call.
+ * Group based collection permission.
  */
 class GroupCollectionPermission extends AbstractCollectionPermission
 {
+    /**
+     * @var GroupRepositoryInterface
+     */
+    protected $groupRepository;
+
+    /**
+     * @param TranslatorInterface      $translator
+     * @param CurrentUserApiInterface  $currentUserApi
+     * @param GroupRepositoryInterface $groupRepository
+     */
+    public function __construct(
+        TranslatorInterface $translator,
+        CurrentUserApiInterface $currentUserApi,
+        GroupRepositoryInterface $groupRepository
+    ) {
+        parent::__construct($translator, $currentUserApi);
+        $this->groupRepository = $groupRepository;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -37,11 +58,16 @@ class GroupCollectionPermission extends AbstractCollectionPermission
     public function getTargets($permissionEntity)
     {
         $targets = [];
+        if (!count($permissionEntity->getGroupIds())) {
+            return '';
+        }
+
+        $groupNames = $this->groupRepository->getGroupNamesById();
         foreach ($permissionEntity->getGroupIds() as $groupId) {
             if ($groupId == -1) {
                 $targets[] = $this->translator->trans('All groups', [], 'cmfcmfmediamodule');
-            } else {
-                $targets[] = \UserUtil::getGroup($groupId)['name'];
+            } elseif (isset($groupNames[$groupId])) {
+                $targets[] = $groupNames[$groupId];
             }
         }
 
@@ -53,10 +79,13 @@ class GroupCollectionPermission extends AbstractCollectionPermission
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
-        if (php_sapi_name() === 'cli') {
+        if ('cli' === php_sapi_name()) {
             return null;
-        } else {
-            $groupIds = explode(',', \UserUtil::getGroupListForUser());
+        }
+
+        $groupIds = [];
+        foreach ($this->currentUserApi->get('groups') as $group) {
+            $groupIds[] = $group->getGid();
         }
         $groupIds[] = -1;
 

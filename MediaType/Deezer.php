@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\DeezerEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMediaTypeInterface
 {
@@ -38,7 +37,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
      */
     public function matchesPaste($pastedText)
     {
-        return $this->getParametersFromPastedText($pastedText) !== false ? 10 : 0;
+        return false !== $this->getParametersFromPastedText($pastedText) ? 10 : 0;
     }
 
     /**
@@ -47,15 +46,15 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
     public function getEntityFromPaste($pastedText)
     {
         $parameters = $this->getParametersFromPastedText($pastedText);
-        if ($parameters === false) {
+        if (false === $parameters) {
             throw new \RuntimeException();
         }
 
-        $entity = new DeezerEntity();
+        $entity = new DeezerEntity($this->requestStack, $this->dataDirectory);
         if (isset($parameters['title'])) {
             $entity->setTitle($parameters['title']);
         }
-        $entity->setUrl('http://www.deezer.com');
+        $entity->setUrl('https://www.deezer.com');
 
         $entity->setMusicId($parameters['musicId']);
         $entity->setMusicType($parameters['musicType']);
@@ -70,14 +69,14 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         $parameters = [];
         $regex = '#deezer\.com/(.*?)/(\d+)#';
         preg_match($regex, $pastedText, $matches);
-        if (count($matches) == 3) {
+        if (3 == count($matches)) {
             $parameters['musicId'] = $matches[2];
             $parameters['musicType'] = $matches[1];
             $parameters['showPlaylist'] = false;
         } else {
             $regex = '#src=(?:"|\')((?:.*?)deezer\.com/plugins/player(?:.*?))(?:"|\')#';
             preg_match($regex, $pastedText, $matches);
-            if (count($matches) != 2) {
+            if (2 != count($matches)) {
                 return false;
             }
             $url = htmlspecialchars_decode($matches[1]);
@@ -88,7 +87,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
             }
             $parameters['musicId'] = $queryParams['id'];
             $parameters['musicType'] = $queryParams['type'];
-            if ($parameters['musicType'] == 'tracks') {
+            if ('tracks' == $parameters['musicType']) {
                 $parameters['musicType'] = 'track';
             }
             if (isset($queryParams['title'])) {
@@ -117,7 +116,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         $title = urldecode($entity->getTitle());
         $id = $entity->getMusicId();
         $type = $entity->getMusicType();
-        if ($type == 'track') {
+        if ('track' == $type) {
             $type = 'tracks';
         }
         $url = "http://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=$playlist&width=700&height=$height&color=$color&layout=dark&size=medium&type=$type&id=$id&title=$title&app_id=1";
@@ -128,10 +127,10 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         ]);
     }
 
-    public function getEntityFromWeb(Request $request)
+    public function getEntityFromWeb()
     {
         /** @var DeezerEntity $entity */
-        $entity = parent::getEntityFromWeb($request);
+        $entity = parent::getEntityFromWeb();
 
         $this->addExtraData($entity);
 
@@ -143,7 +142,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         /** @var DeezerEntity $entity */
         $type = $entity->getMusicType();
         $id = $entity->getMusicId();
-        if ($type == 'track') {
+        if ('track' == $type) {
             $type = 'album';
             $id = $entity->getExtraData()['album']['id'];
         }
@@ -151,7 +150,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         //if ($mode == 'inset') {
         //    $size = max($width, $height);
         //} else if ($mode == 'outbound') {
-            $size = min($width, $height);
+        $size = min($width, $height);
         //}
         // @todo Ask Deezer whether it is allowed to crop the images.
         $url = "http://api.deezer.com/$type/$id/image?size=" . $size;
@@ -170,9 +169,9 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
      */
     public function addExtraData(DeezerEntity $entity)
     {
-        if ($entity->getMusicType() == 'track' || $entity->getMusicType() == 'album') {
+        if ('track' == $entity->getMusicType() || 'album' == $entity->getMusicType()) {
             $track = $this->doJsonGetRequest('http://api.deezer.com/' . $entity->getMusicType() . '/' . $entity->getMusicId());
-            if ($entity->getMusicType() == 'track') {
+            if ('track' == $entity->getMusicType()) {
                 $entity->addExtraData(['album' => $track['album']]);
             }
             $entity->addExtraData(['artist' => $track['artist']]);
@@ -183,11 +182,11 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
     {
         /** @var DeezerEntity $entity */
         return [
-            'showPlaylistCheckbox' => $entity->getMusicType() == 'playlist'
+            'showPlaylistCheckbox' => 'playlist' == $entity->getMusicType()
         ];
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         // TODO: Implement getSearchResults() method.
     }

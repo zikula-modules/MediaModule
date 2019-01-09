@@ -13,7 +13,6 @@ namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\YouTubeEntity;
-use Symfony\Component\HttpFoundation\Request;
 
 class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteMediaTypeInterface
 {
@@ -27,7 +26,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     public function isEnabled()
     {
-        return \ModUtil::getVar('CmfcmfMediaModule', 'googleApiKey') != "";
+        return '' != $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey');
     }
 
     /**
@@ -43,7 +42,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function matchesPaste($pastedText)
     {
-        return $this->extractYouTubeIdAndTypeFromPaste($pastedText) !== false ? 10 : 0;
+        return false !== $this->extractYouTubeIdAndTypeFromPaste($pastedText) ? 10 : 0;
     }
 
     /**
@@ -51,10 +50,10 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getEntityFromPaste($pastedText)
     {
-        $entity = new YouTubeEntity();
+        $entity = new YouTubeEntity($this->requestStack, $this->dataDirectory);
 
         list($type, $id) = $this->extractYouTubeIdAndTypeFromPaste($pastedText);
-        if ($id === false || !in_array($type, ['playlist', 'video', 'channel', true])) {
+        if (false === $id || !in_array($type, ['playlist', 'video', 'channel', true])) {
             throw new \RuntimeException();
         }
 
@@ -66,17 +65,17 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     private function extractYouTubeIdAndTypeFromPaste($pastedText)
     {
         preg_match('#youtube\.com\/channel\/([a-zA-Z0-9_-]+)#', $pastedText, $results);
-        if (count($results) == 2) {
+        if (2 == count($results)) {
             return ['channel', $results[1]];
         }
 
         preg_match('#youtube(?:-nocookie)?\.com\/[a-zA-Z0-9_\-\/\=\?\&]+list=([a-zA-Z0-9_-]+)#', $pastedText, $results);
-        if (count($results) == 2) {
+        if (2 == count($results)) {
             return ['playlist', $results[1]];
         }
 
         preg_match('#(?:youtube(?:-nocookie)?\.com\/\S*(?:(?:\/e(?:mbed))?\/|watch\?(?:\S*?&?v\=))|youtu\.be\/)([a-zA-Z0-9_-]{6,11})#', $pastedText, $results);
-        if (count($results) == 2) {
+        if (2 == count($results)) {
             return ['video', $results[1]];
         }
 
@@ -118,7 +117,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         ]);
     }
 
-    public function getSearchResults(Request $request, $q, $dropdownValue = null)
+    public function getSearchResults($q, $dropdownValue = null)
     {
         $youtube = $this->getYouTubeApi();
 
@@ -234,11 +233,9 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     private function getYouTubeApi()
     {
-        require_once __DIR__ . '/../vendor/autoload.php';
-
         $client = new \Google_Client();
         $client->setApplicationName('Zikula Media Module by @cmfcmf');
-        $client->setDeveloperKey(\ModUtil::getVar('CmfcmfMediaModule', 'googleApiKey'));
+        $client->setDeveloperKey($this->variableApi->get('CmfcmfMediaModule', 'googleApiKey'));
 
         return new \Google_Service_YouTube($client);
     }
