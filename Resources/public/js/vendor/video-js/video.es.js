@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.4.1 <http://videojs.com/>
+ * Video.js 7.4.2 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -10,21 +10,21 @@
  * <https://github.com/mozilla/vtt.js/blob/master/LICENSE>
  */
 
-import safeParseTuple from 'safe-json-parse/tuple';
-import vtt from 'videojs-vtt.js';
-import tsml from 'tsml';
-import xhr from 'xhr';
-import URLToolkit from 'url-toolkit';
 import window$1 from 'global/window';
-import { Parser } from 'm3u8-parser';
 import document from 'global/document';
+import tsml from 'tsml';
+import safeParseTuple from 'safe-json-parse/tuple';
+import xhr from 'xhr';
+import vtt from 'videojs-vtt.js';
+import URLToolkit from 'url-toolkit';
+import { Parser } from 'm3u8-parser';
 import { parse, parseUTCTiming } from 'mpd-parser';
 import mp4probe from 'mux.js/lib/mp4/probe';
 import { CaptionParser } from 'mux.js/lib/mp4';
 import tsInspector from 'mux.js/lib/tools/ts-inspector.js';
 import { Decrypter, AsyncStream, decrypt } from 'aes-decrypter';
 
-var version = "7.4.1";
+var version = "7.4.2";
 
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
@@ -2176,7 +2176,7 @@ var bind = function bind(context, fn, uid) {
  * @param    {Function} fn
  *           The function to be throttled.
  *
- * @param    {Number}   wait
+ * @param    {number}   wait
  *           The number of milliseconds by which to throttle.
  *
  * @return   {Function}
@@ -3147,8 +3147,10 @@ function () {
       this.player_ = player = this; // eslint-disable-line
     } else {
       this.player_ = player;
-    } // Make a copy of prototype.options_ to protect against overriding defaults
+    } // Hold the reference to the parent component via `addChild` method
 
+
+    this.parentComponent_ = null; // Make a copy of prototype.options_ to protect against overriding defaults
 
     this.options_ = mergeOptions({}, this.options_); // Updated options with supplied options
 
@@ -3231,6 +3233,7 @@ function () {
     this.children_ = null;
     this.childIndex_ = null;
     this.childNameIndex_ = null;
+    this.parentComponent_ = null;
 
     if (this.el_) {
       // Remove element from DOM
@@ -3522,7 +3525,12 @@ function () {
       component = child;
     }
 
+    if (component.parentComponent_) {
+      component.parentComponent_.removeChild(component);
+    }
+
     this.children_.splice(index, 0, component);
+    component.parentComponent_ = this;
 
     if (typeof component.id === 'function') {
       this.childIndex_[component.id()] = component;
@@ -3579,6 +3587,7 @@ function () {
       return;
     }
 
+    component.parentComponent_ = null;
     this.childIndex_[component.id()] = null;
     this.childNameIndex_[component.name()] = null;
     var compEl = component.el();
@@ -5106,7 +5115,8 @@ var apiMap = [['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'full
 ['mozRequestFullScreen', 'mozCancelFullScreen', 'mozFullScreenElement', 'mozFullScreenEnabled', 'mozfullscreenchange', 'mozfullscreenerror'], // Microsoft
 ['msRequestFullscreen', 'msExitFullscreen', 'msFullscreenElement', 'msFullscreenEnabled', 'MSFullscreenChange', 'MSFullscreenError']];
 var specApi = apiMap[0];
-var browserApi; // determine the supported set of functions
+var browserApi;
+var prefixedAPI = true; // determine the supported set of functions
 
 for (var i = 0; i < apiMap.length; i++) {
   // check for exitFullscreen function
@@ -5121,6 +5131,8 @@ if (browserApi) {
   for (var _i = 0; _i < browserApi.length; _i++) {
     FullscreenApi[specApi[_i]] = browserApi[_i];
   }
+
+  prefixedAPI = browserApi[0] !== specApi[0];
 }
 
 /**
@@ -6896,7 +6908,7 @@ var getAbsoluteURL = function getAbsoluteURL(url) {
  * @param    {string} path
  *           The fileName path like '/path/to/file.mp4'
  *
- * @returns  {string}
+ * @return  {string}
  *           The extension in lower case or an empty string if no
  *           extension could be found.
  */
@@ -11047,7 +11059,7 @@ function (_Component) {
 
   var _proto = TimeDisplay.prototype;
 
-  _proto.createEl = function createEl$$1(plainName) {
+  _proto.createEl = function createEl$$1() {
     var className = this.buildCSSClass();
 
     var el = _Component.prototype.createEl.call(this, 'div', {
@@ -11455,21 +11467,20 @@ function (_TimeDisplay) {
     return 'vjs-remaining-time';
   };
   /**
-   * The remaining time display prefixes numbers with a "minus" character.
+   * Create the `Component`'s DOM element with the "minus" characted prepend to the time
    *
-   * @param  {number} time
-   *         A numeric time, in seconds.
-   *
-   * @return {string}
-   *         A formatted time
-   *
-   * @private
+   * @return {Element}
+   *         The element that was created.
    */
 
 
-  _proto.formatTime_ = function formatTime_(time) {
-    // TODO: The "-" should be decorative, and not announced by a screen reader
-    return '-' + _TimeDisplay.prototype.formatTime_.call(this, time);
+  _proto.createEl = function createEl$$1() {
+    var el = _TimeDisplay.prototype.createEl.call(this);
+
+    el.insertBefore(createEl('span', {}, {
+      'aria-hidden': true
+    }, '-'), this.contentEl_);
+    return el;
   };
   /**
    * Update remaining time display.
@@ -12641,12 +12652,6 @@ function (_Slider) {
 
     if (liveTracker && liveTracker.isLive()) {
       duration = this.player_.liveTracker.liveCurrentTime();
-    }
-
-    if (liveTracker && liveTracker.seekableEnd() === Infinity) {
-      this.disable();
-    } else {
-      this.enable();
     } // machine readable value of progress bar (percentage complete)
 
 
@@ -20190,7 +20195,13 @@ function (_Component) {
 
     _this.one('play', _this.listenForUserActivity_);
 
-    _this.on('fullscreenchange', _this.handleFullscreenChange_);
+    if (FullscreenApi.fullscreenchange) {
+      _this.on(FullscreenApi.fullscreenchange, _this.handleFullscreenChange_);
+
+      if (IE_VERSION || IS_FIREFOX && prefixedAPI) {
+        _this.on(document, FullscreenApi.fullscreenchange, _this.handleFullscreenChange_);
+      }
+    }
 
     _this.on('stageclick', _this.handleStageClick_);
 
@@ -20224,7 +20235,11 @@ function (_Component) {
      */
     this.trigger('dispose'); // prevent dispose from being called twice
 
-    this.off('dispose');
+    this.off('dispose'); // make sure to remove fs handler on IE from the document
+
+    if (IE_VERSION || IS_FIREFOX && prefixedAPI) {
+      this.off(document, FullscreenApi.fullscreenchange, this.handleFullscreenChange_);
+    }
 
     if (this.styleEl_ && this.styleEl_.parentNode) {
       this.styleEl_.parentNode.removeChild(this.styleEl_);
@@ -21401,6 +21416,7 @@ function (_Component) {
 
   _proto.handleTechSeeked_ = function handleTechSeeked_() {
     this.removeClass('vjs-seeking');
+    this.removeClass('vjs-ended');
     /**
      * Fired when the player has finished jumping to a new time
      *
@@ -21613,21 +21629,6 @@ function (_Component) {
     event.preventDefault();
   };
   /**
-   * Fired when the player switches in or out of fullscreen mode
-   *
-   * @private
-   * @listens Player#fullscreenchange
-   */
-
-
-  _proto.handleFullscreenChange_ = function handleFullscreenChange_() {
-    if (this.isFullscreen()) {
-      this.addClass('vjs-fullscreen');
-    } else {
-      this.removeClass('vjs-fullscreen');
-    }
-  };
-  /**
    * native click events on the SWF aren't triggered on IE11, Win8.1RT
    * use stageclick events triggered from inside the SWF instead
    *
@@ -21638,6 +21639,60 @@ function (_Component) {
 
   _proto.handleStageClick_ = function handleStageClick_() {
     this.reportUserActivity();
+  };
+  /**
+   * Fired when the player switches in or out of fullscreen mode
+   *
+   * @private
+   * @listens Player#fullscreenchange
+   * @listens Player#webkitfullscreenchange
+   * @listens Player#mozfullscreenchange
+   * @listens Player#MSFullscreenChange
+   * @fires Player#fullscreenchange
+   */
+
+
+  _proto.handleFullscreenChange_ = function handleFullscreenChange_(event, retriggerEvent) {
+    if (event === void 0) {
+      event = {};
+    }
+
+    if (retriggerEvent === void 0) {
+      retriggerEvent = true;
+    }
+
+    if (this.isFullscreen()) {
+      this.addClass('vjs-fullscreen');
+    } else {
+      this.removeClass('vjs-fullscreen');
+    }
+
+    if (prefixedAPI && retriggerEvent) {
+      /**
+       * @event Player#fullscreenchange
+       * @type {EventTarget~Event}
+       */
+      this.trigger('fullscreenchange');
+    }
+  };
+  /**
+   * when the document fschange event triggers it calls this
+   */
+
+
+  _proto.documentFullscreenChange_ = function documentFullscreenChange_(e) {
+    var fsApi = FullscreenApi;
+    this.isFullscreen(document[fsApi.fullscreenElement]); // If cancelling fullscreen, remove event listener.
+
+    if (this.isFullscreen() === false) {
+      off(document, fsApi.fullscreenchange, bind(this, this.documentFullscreenChange_));
+
+      if (prefixedAPI) {
+        this.handleFullscreenChange_({}, false);
+      } else {
+        this.on(FullscreenApi.fullscreenchange, this.handleFullscreenChange_);
+      }
+    }
   };
   /**
    * Handle Tech Fullscreen Change
@@ -22277,25 +22332,16 @@ function (_Component) {
     if (fsApi.requestFullscreen) {
       // the browser supports going fullscreen at the element level so we can
       // take the controls fullscreen as well as the video
-      // Trigger fullscreenchange event after change
+      if (!prefixedAPI) {
+        this.off(FullscreenApi.fullscreenchange, this.handleFullscreenChange_);
+      } // Trigger fullscreenchange event after change
       // We have to specifically add this each time, and remove
       // when canceling fullscreen. Otherwise if there's multiple
       // players on a page, they would all be reacting to the same fullscreen
       // events
-      on(document, fsApi.fullscreenchange, bind(this, function documentFullscreenChange(e) {
-        this.isFullscreen(document[fsApi.fullscreenElement]); // If cancelling fullscreen, remove event listener.
-
-        if (this.isFullscreen() === false) {
-          off(document, fsApi.fullscreenchange, documentFullscreenChange);
-        }
-        /**
-         * @event Player#fullscreenchange
-         * @type {EventTarget~Event}
-         */
 
 
-        this.trigger('fullscreenchange');
-      }));
+      on(document, fsApi.fullscreenchange, bind(this, this.documentFullscreenChange_));
       this.el_[fsApi.requestFullscreen]();
     } else if (this.tech_.supportsFullScreen()) {
       // we can't take the video.js controls fullscreen but we can go fullscreen
@@ -22325,6 +22371,8 @@ function (_Component) {
     this.isFullscreen(false); // Check for browser element fullscreen support
 
     if (fsApi.requestFullscreen) {
+      // remove the document level handler if we're getting called directly.
+      off(document, fsApi.fullscreenchange, bind(this, this.documentFullscreenChange_));
       document[fsApi.exitFullscreen]();
     } else if (this.tech_.supportsFullScreen()) {
       this.techCall_('exitFullScreen');
@@ -23204,8 +23252,20 @@ function (_Component) {
 
     this.on('mousedown', handleMouseDown);
     this.on('mousemove', handleMouseMove);
-    this.on('mouseup', handleMouseUp); // Listen for keyboard navigation
+    this.on('mouseup', handleMouseUp);
+    var controlBar = this.getChild('controlBar');
+
+    if (controlBar) {
+      controlBar.on('mouseenter', function (event) {
+        this.player().cache_.inactivityTimeout = this.player().options_.inactivityTimeout;
+        this.player().options_.inactivityTimeout = 0;
+      });
+      controlBar.on('mouseleave', function (event) {
+        this.player().options_.inactivityTimeout = this.player().cache_.inactivityTimeout;
+      });
+    } // Listen for keyboard navigation
     // Shouldn't need to use inProgress interval because of key repeat
+
 
     this.on('keydown', handleActivity);
     this.on('keyup', handleActivity); // Run an interval every 250 milliseconds instead of stuffing everything into
@@ -25188,7 +25248,7 @@ videojs$1.url = Url;
 
 /**
  * @videojs/http-streaming
- * @version 1.5.1
+ * @version 1.6.0
  * @copyright 2018 Brightcove, Inc
  * @license Apache-2.0
  */
@@ -42574,6 +42634,8 @@ var PlaybackWatcher = function () {
     this.tech_ = options.tech;
     this.seekable = options.seekable;
     this.seekTo = options.seekTo;
+    this.allowSeeksWithinUnsafeLiveWindow = options.allowSeeksWithinUnsafeLiveWindow;
+    this.media = options.media;
     this.consecutiveUpdates = 0;
     this.lastRecordedTime = null;
     this.timer_ = null;
@@ -42712,17 +42774,23 @@ var PlaybackWatcher = function () {
     key: 'fixesBadSeeks_',
     value: function fixesBadSeeks_() {
       var seeking = this.tech_.seeking();
+
+      if (!seeking) {
+        return false;
+      }
+
       var seekable = this.seekable();
       var currentTime = this.tech_.currentTime();
+      var isAfterSeekableRange = this.afterSeekableWindow_(seekable, currentTime, this.media(), this.allowSeeksWithinUnsafeLiveWindow);
       var seekTo = void 0;
 
-      if (seeking && this.afterSeekableWindow_(seekable, currentTime)) {
+      if (isAfterSeekableRange) {
         var seekableEnd = seekable.end(seekable.length - 1); // sync to live point (if VOD, our seekable was updated and we're simply adjusting)
 
         seekTo = seekableEnd;
       }
 
-      if (seeking && this.beforeSeekableWindow_(seekable, currentTime)) {
+      if (this.beforeSeekableWindow_(seekable, currentTime)) {
         var seekableStart = seekable.start(0); // sync to the beginning of the live window
         // provide a buffer of .1 seconds to handle rounding/imprecise numbers
 
@@ -42843,13 +42911,22 @@ var PlaybackWatcher = function () {
     }
   }, {
     key: 'afterSeekableWindow_',
-    value: function afterSeekableWindow_(seekable, currentTime) {
+    value: function afterSeekableWindow_(seekable, currentTime, playlist) {
+      var allowSeeksWithinUnsafeLiveWindow = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
       if (!seekable.length) {
         // we can't make a solid case if there's no seekable, default to false
         return false;
       }
 
-      if (currentTime > seekable.end(seekable.length - 1) + SAFE_TIME_DELTA) {
+      var allowedEnd = seekable.end(seekable.length - 1) + SAFE_TIME_DELTA;
+      var isLive = !playlist.endList;
+
+      if (isLive && allowSeeksWithinUnsafeLiveWindow) {
+        allowedEnd = seekable.end(seekable.length - 1) + playlist.targetDuration * 3;
+      }
+
+      if (currentTime > allowedEnd) {
         return true;
       }
 
@@ -43085,7 +43162,7 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$1 = "1.5.1"; // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
+var version$1 = "1.6.0"; // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
 
 videojs$1.use('*', function (player) {
   return {
@@ -43540,6 +43617,9 @@ var HlsHandler = function (_Component) {
       this.playbackWatcher_ = new PlaybackWatcher(videojs$1.mergeOptions(this.options_, {
         seekable: function seekable$$1() {
           return _this3.seekable();
+        },
+        media: function media() {
+          return _this3.masterPlaylistController_.media();
         }
       }));
       this.masterPlaylistController_.on('error', function () {
