@@ -6,9 +6,9 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Christian Flach",
-            "homepage": "http://christianflach.de/",
-            "email": "hi@christianflach.de"
+            "name": "Zikula",
+            "homepage": "https://ziku.la/",
+            "email": "vorstand@ziku.la"
         }
     ],
     "autoload": {

@@ -1,23 +1,21 @@
-Zikula 2.0.11+ MediaModule by @cmfcmf
-=====================================
+Zikula 2.0.11+ media module
+===========================
 
 [![StyleCI](https://styleci.io/repos/43518681/shield)](https://styleci.io/repos/43518681) 
-[![Build Status](https://travis-ci.org/cmfcmf/MediaModule.svg?branch=master)](https://travis-ci.org/cmfcmf/MediaModule) 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/cmfcmf/MediaModule/?branch=master)
-[![MIT License](https://img.shields.io/github/license/cmfcmf/MediaModule.svg)]()
+[![Build Status](https://travis-ci.org/zikula-modules/MediaModule.svg?branch=master)](https://travis-ci.org/zikula-modules/MediaModule) 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/?branch=master)
+[![MIT License](https://img.shields.io/github/license/zikula-modules/MediaModule.svg)]()
 
 ## Installation 
-1. **Download the module from https://github.com/cmfcmf/MediaModule/releases/latest.**
+1. **Download the module from https://github.com/zikula-modules/MediaModule/releases/latest.**
 2. Install to `modules/cmfcmf/media-module` (but other locations should work aswell!).
 
-If you want to test the current version (potentially unstable!), download it from here: https://github.com/cmfcmf/MediaModule/raw/dev-builds/MediaModule.zip
+If you want to test the current version (potentially unstable!), download it from here: https://github.com/zikula-modules/MediaModule/raw/dev-builds/MediaModule.zip
 
 **Downloading directly from master would require you to execute `composer install --no-dev`.**
 
 ## Information
-Read all about the module [at it's website](https://cmfcmf.github.io/MediaModule).
-
 The module supports many media types natively (images, plaintext, MarkDown, videos, audio, pdf, …)
 and further types can be added with ease! 
 
@@ -41,7 +39,7 @@ If you do so, it's going to break URLs.
   the URL and access the un-watermarked files.
 
 ## Talk to me!
-If you find a bug or have problems, please [create an issue](https://github.com/cmfcmf/MediaModule/issues/new)!
+If you find a bug or have problems, please [create an issue](https://github.com/zikula-modules/MediaModule/issues/new)!
 
 ## Extracting translations
 Add `require_once __DIR__ . '/../modules/cmfcmf/media-module/vendor/autoload.php';` to `src/app/autoload.php` and then run
@@ -51,7 +49,3 @@ Add `require_once __DIR__ . '/../modules/cmfcmf/media-module/vendor/autoload.php
 ## License and module development
 
 The code is MIT licensed, see the `License.md` file for further information.
-
-*It took me quite some time to create this module. I don't really need it for myself, but I didn't
-want another year of Zikula without a proper Media Module. That's why I created it. I'm happy about
-all possible support I can get from you, especially if you earn money with the module.*

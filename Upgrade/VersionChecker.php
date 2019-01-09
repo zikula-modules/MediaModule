@@ -24,7 +24,7 @@ use vierbergenlars\SemVer\version;
  */
 class VersionChecker
 {
-    const GITHUB_USER = 'cmfcmf';
+    const GITHUB_USER = 'zikula-modules';
 
     const GITHUB_REPO = 'MediaModule';
 
