@@ -66,7 +66,7 @@ after_success:
     - composer install --no-dev --prefer-dist
     - rm auth.json
     - zip -qr MediaModule.zip .
-    - cd ../Zikula_Core-1.4.3
+    - cd ../2.0
     - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && test $TRAVIS_PHP_VERSION == "5.6" && bash ../deployment/deploy-master-to-github.sh
 
 # before_deploy:
