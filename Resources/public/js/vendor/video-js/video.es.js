@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.4.2 <http://videojs.com/>
+ * Video.js 7.4.3 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -24,7 +24,7 @@ import { CaptionParser } from 'mux.js/lib/mp4';
 import tsInspector from 'mux.js/lib/tools/ts-inspector.js';
 import { Decrypter, AsyncStream, decrypt } from 'aes-decrypter';
 
-var version = "7.4.2";
+var version = "7.4.3";
 
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
@@ -5116,7 +5116,7 @@ var apiMap = [['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'full
 ['msRequestFullscreen', 'msExitFullscreen', 'msFullscreenElement', 'msFullscreenEnabled', 'MSFullscreenChange', 'MSFullscreenError']];
 var specApi = apiMap[0];
 var browserApi;
-var prefixedAPI = true; // determine the supported set of functions
+var prefixedAPI = false; // determine the supported set of functions
 
 for (var i = 0; i < apiMap.length; i++) {
   // check for exitFullscreen function
@@ -5132,7 +5132,7 @@ if (browserApi) {
     FullscreenApi[specApi[_i]] = browserApi[_i];
   }
 
-  prefixedAPI = browserApi[0] !== specApi[0];
+  prefixedAPI = browserApi[0] === specApi[0];
 }
 
 /**
@@ -14891,27 +14891,35 @@ function (_MenuItem) {
   var _proto = TextTrackMenuItem.prototype;
 
   _proto.handleClick = function handleClick(event) {
-    var kind = this.track.kind;
-    var kinds = this.track.kinds;
+    var referenceTrack = this.track;
     var tracks = this.player_.textTracks();
-
-    if (!kinds) {
-      kinds = [kind];
-    }
 
     _MenuItem.prototype.handleClick.call(this, event);
 
     if (!tracks) {
       return;
-    }
+    } // Determine the relevant kind(s) of tracks for this component and filter
+    // out empty kinds.
+
+
+    var kinds = (referenceTrack.kinds || [referenceTrack.kind]).filter(Boolean);
 
     for (var i = 0; i < tracks.length; i++) {
-      var track = tracks[i];
+      var track = tracks[i]; // If the track from the text tracks list is not of the right kind,
+      // skip it. We do not want to affect tracks of incompatible kind(s).
 
-      if (track === this.track && kinds.indexOf(track.kind) > -1) {
+      if (kinds.indexOf(track.kind) === -1) {
+        continue;
+      } // If this text track is the component's track and it is not showing,
+      // set it to showing.
+
+
+      if (track === referenceTrack) {
         if (track.mode !== 'showing') {
           track.mode = 'showing';
-        }
+        } // If this text track is not the component's track and it is not
+        // disabled, set it to disabled.
+
       } else if (track.mode !== 'disabled') {
         track.mode = 'disabled';
       }
@@ -17191,7 +17199,10 @@ function (_Component) {
 
   _proto.createEl = function createEl() {
     return _Component.prototype.createEl.call(this, 'iframe', {
-      className: 'vjs-resize-manager'
+      className: 'vjs-resize-manager',
+      tabIndex: -1
+    }, {
+      'aria-hidden': 'true'
     });
   };
   /**
@@ -20195,14 +20206,6 @@ function (_Component) {
 
     _this.one('play', _this.listenForUserActivity_);
 
-    if (FullscreenApi.fullscreenchange) {
-      _this.on(FullscreenApi.fullscreenchange, _this.handleFullscreenChange_);
-
-      if (IE_VERSION || IS_FIREFOX && prefixedAPI) {
-        _this.on(document, FullscreenApi.fullscreenchange, _this.handleFullscreenChange_);
-      }
-    }
-
     _this.on('stageclick', _this.handleStageClick_);
 
     _this.breakpoints(_this.options_.breakpoints);
@@ -20235,11 +20238,7 @@ function (_Component) {
      */
     this.trigger('dispose'); // prevent dispose from being called twice
 
-    this.off('dispose'); // make sure to remove fs handler on IE from the document
-
-    if (IE_VERSION || IS_FIREFOX && prefixedAPI) {
-      this.off(document, FullscreenApi.fullscreenchange, this.handleFullscreenChange_);
-    }
+    this.off('dispose');
 
     if (this.styleEl_ && this.styleEl_.parentNode) {
       this.styleEl_.parentNode.removeChild(this.styleEl_);
@@ -21641,38 +21640,15 @@ function (_Component) {
     this.reportUserActivity();
   };
   /**
-   * Fired when the player switches in or out of fullscreen mode
-   *
    * @private
-   * @listens Player#fullscreenchange
-   * @listens Player#webkitfullscreenchange
-   * @listens Player#mozfullscreenchange
-   * @listens Player#MSFullscreenChange
-   * @fires Player#fullscreenchange
    */
 
 
-  _proto.handleFullscreenChange_ = function handleFullscreenChange_(event, retriggerEvent) {
-    if (event === void 0) {
-      event = {};
-    }
-
-    if (retriggerEvent === void 0) {
-      retriggerEvent = true;
-    }
-
+  _proto.toggleFullscreenClass_ = function toggleFullscreenClass_() {
     if (this.isFullscreen()) {
       this.addClass('vjs-fullscreen');
     } else {
       this.removeClass('vjs-fullscreen');
-    }
-
-    if (prefixedAPI && retriggerEvent) {
-      /**
-       * @event Player#fullscreenchange
-       * @type {EventTarget~Event}
-       */
-      this.trigger('fullscreenchange');
     }
   };
   /**
@@ -21686,12 +21662,14 @@ function (_Component) {
 
     if (this.isFullscreen() === false) {
       off(document, fsApi.fullscreenchange, bind(this, this.documentFullscreenChange_));
+    }
 
-      if (prefixedAPI) {
-        this.handleFullscreenChange_({}, false);
-      } else {
-        this.on(FullscreenApi.fullscreenchange, this.handleFullscreenChange_);
-      }
+    if (!prefixedAPI) {
+      /**
+       * @event Player#fullscreenchange
+       * @type {EventTarget~Event}
+       */
+      this.trigger('fullscreenchange');
     }
   };
   /**
@@ -22307,6 +22285,7 @@ function (_Component) {
   _proto.isFullscreen = function isFullscreen(isFS) {
     if (isFS !== undefined) {
       this.isFullscreen_ = !!isFS;
+      this.toggleFullscreenClass_();
       return;
     }
 
@@ -22332,15 +22311,11 @@ function (_Component) {
     if (fsApi.requestFullscreen) {
       // the browser supports going fullscreen at the element level so we can
       // take the controls fullscreen as well as the video
-      if (!prefixedAPI) {
-        this.off(FullscreenApi.fullscreenchange, this.handleFullscreenChange_);
-      } // Trigger fullscreenchange event after change
+      // Trigger fullscreenchange event after change
       // We have to specifically add this each time, and remove
       // when canceling fullscreen. Otherwise if there's multiple
       // players on a page, they would all be reacting to the same fullscreen
       // events
-
-
       on(document, fsApi.fullscreenchange, bind(this, this.documentFullscreenChange_));
       this.el_[fsApi.requestFullscreen]();
     } else if (this.tech_.supportsFullScreen()) {
@@ -22371,8 +22346,6 @@ function (_Component) {
     this.isFullscreen(false); // Check for browser element fullscreen support
 
     if (fsApi.requestFullscreen) {
-      // remove the document level handler if we're getting called directly.
-      off(document, fsApi.fullscreenchange, bind(this, this.documentFullscreenChange_));
       document[fsApi.exitFullscreen]();
     } else if (this.tech_.supportsFullScreen()) {
       this.techCall_('exitFullScreen');
