@@ -1,6 +1,6 @@
 {
     "name": "cmfcmf/media-module",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "A Zikula 2 module to handle all sorts of media.",
     "type": "zikula-module",
     "license": "MIT",
