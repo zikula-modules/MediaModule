@@ -22,6 +22,7 @@ class ArchiveEntity extends AbstractFileEntity
     {
         parent::onNewFile($info);
 
+        $limit = 1000;
         $files = [];
         switch ($info['fileMimeType']) {
             case 'application/x-gzip':
@@ -44,7 +45,27 @@ class ArchiveEntity extends AbstractFileEntity
                 /** @var \PharFileInfo $file */
                 foreach ($tar as $file) {
                     $files[] = $file->getFilename();
-                    if ($i >= 1000) {
+                    if ($file->isDir()) {
+                        $dir = new \PharData($file->getPathname());
+                        foreach ($dir as $child) {
+                            $files[] = $file->getFilename() . '/' . $child->getFilename();
+                            if ($child->isDir()) {
+                                $subdir = new \PharData($child->getPathname());
+                                foreach ($subdir as $grandchild) {
+                                    $files[] = $file->getFilename() . '/' . $child->getFilename() . '/' . $grandchild->getFilename();
+                                    if ($i >= $limit) {
+                                        break;
+                                    }
+                                    $i++;
+                                }
+                            }
+                            if ($i >= $limit) {
+                                break;
+                            }
+                            $i++;
+                        }
+                    }
+                    if ($i >= $limit) {
                         break;
                     }
                     $i++;
@@ -53,14 +74,39 @@ class ArchiveEntity extends AbstractFileEntity
             case 'application/x-zip-compressed':
             case 'application/zip':
             case 'multipart/x-zip':
+                if (!class_exists('ZipArchive')) {
+                    break;
+                }
                 $zip = new \ZipArchive();
                 $zip->open($info['filePath']);
                 $this->setNumberOfFiles($zip->numFiles);
-                for ($i = 0; $i < $zip->numFiles && $i < 1000; $i++) {
+                for ($i = 0; $i < $zip->numFiles && $i < $limit; $i++) {
                     $file = $zip->statIndex($i);
                     $files[] = $file['name'];
                 }
                 break;
+            case 'application/x-rar-compressed':
+            case 'application/rar':
+                if (!class_exists('RarArchive')) {
+                    break;
+                }
+                $rar = \RarArchive::open($filePath);
+                if (!$rar) {
+                    break;
+                }
+
+                $entries = $rar->getEntries();
+                $this->setNumberOfFiles(count($entries));
+
+                $i = 0;
+                foreach ($entries as $entry) {
+                    $files[] = $entry->getName();
+                    if ($i >= $limit) {
+                        break;
+                    }
+                    $i++;
+                }
+                $rar->close();
             default:
                 throw new \LogicException();
         }
