@@ -109,7 +109,7 @@ class CollectionUiHooksProvider extends AbstractUiHooksProvider
         $collectionData = $this->requestStack->getCurrentRequest()
             ->request->get('cmfcmfmediamodule[collections]', '[]', true);
         $collectionData = isset($_POST['cmfcmfmediamodule']['collections']) ? $_POST['cmfcmfmediamodule']['collections'] : [];
-        $collectionIds = json_decode($collectionData);
+        $collectionIds = is_array($collectionData) ? $collectionData : json_decode($collectionData);
 
         $this->entities = [];
         $validationResponse = new ValidationResponse('collections', $collectionIds);
