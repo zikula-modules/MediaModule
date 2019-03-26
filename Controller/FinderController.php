@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -67,7 +69,7 @@ class FinderController extends AbstractController
             ->getMediaWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS);
         $mediaResults = $qb
             ->andWhere($qb->expr()->like('m.title', ':q'))
-            ->setParameter('q', "%$q%")
+            ->setParameter('q', "%${q}%")
             ->getQuery()
             ->execute();
 
@@ -83,7 +85,7 @@ class FinderController extends AbstractController
             ->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS);
         $collectionResults = $qb
             ->andWhere($qb->expr()->like('c.title', ':q'))
-            ->setParameter('q', "%$q%")
+            ->setParameter('q', "%${q}%")
             ->getQuery()
             ->execute();
 
@@ -110,7 +112,7 @@ class FinderController extends AbstractController
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
-        if (null != $hookedObjectId) {
+        if (null !== $hookedObjectId) {
             $em = $this->getDoctrine()->getManager();
             $hookedObjectEntity = $em
                 ->find('CmfcmfMediaModule:HookedObject\HookedObjectEntity', $hookedObjectId);
@@ -120,7 +122,7 @@ class FinderController extends AbstractController
 
         $qb = $securityManager
             ->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
-        if ('#' == $parentId) {
+        if ('#' === $parentId) {
             $qb->andWhere($qb->expr()->isNull('c.parent'));
         } else {
             $qb->andWhere($qb->expr()->eq('c.parent', ':parentId'))

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -26,7 +28,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
 
     public function isEnabled()
     {
-        return '' != $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey');
+        return '' !== $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey');
     }
 
     /**
@@ -65,17 +67,17 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     private function extractYouTubeIdAndTypeFromPaste($pastedText)
     {
         preg_match('#youtube\.com\/channel\/([a-zA-Z0-9_-]+)#', $pastedText, $results);
-        if (2 == count($results)) {
+        if (2 === count($results)) {
             return ['channel', $results[1]];
         }
 
         preg_match('#youtube(?:-nocookie)?\.com\/[a-zA-Z0-9_\-\/\=\?\&]+list=([a-zA-Z0-9_-]+)#', $pastedText, $results);
-        if (2 == count($results)) {
+        if (2 === count($results)) {
             return ['playlist', $results[1]];
         }
 
         preg_match('#(?:youtube(?:-nocookie)?\.com\/\S*(?:(?:\/e(?:mbed))?\/|watch\?(?:\S*?&?v\=))|youtu\.be\/)([a-zA-Z0-9_-]{6,11})#', $pastedText, $results);
-        if (2 == count($results)) {
+        if (2 === count($results)) {
             return ['video', $results[1]];
         }
 

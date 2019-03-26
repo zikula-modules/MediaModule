@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -13,7 +15,7 @@ namespace Cmfcmf\Module\MediaModule\Tests\Font;
 
 use Cmfcmf\Module\MediaModule\Font\Font;
 
-class FontTest extends \PHPUnit_Framework_TestCase
+class FontTest extends \PHPUnit\Framework\TestCase
 {
     public function testWithGoogleFontName()
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -53,7 +55,7 @@ class GroupPermissionEntity extends AbstractPermissionEntity
      */
     public function isTargetingAllGroups()
     {
-        return 0 == count($this->groupIds);
+        return 0 === count($this->groupIds);
     }
 
     /**

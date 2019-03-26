@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -56,7 +58,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
     {
         $path = $this->fileLocator->locate($identifier);
 
-        return str_replace('\\', '/', substr($path, strlen($this->zikulaRoot) + 1));
+        return str_replace('\\', '/', mb_substr($path, mb_strlen($this->zikulaRoot) + 1));
     }
 
     public function getUrlToFile($identifier)
@@ -66,12 +68,12 @@ abstract class AbstractFileMediaType extends AbstractMediaType
 
     protected function getImagineRuntimeOptions(AbstractFileEntity $entity, $file, $width, $height, $mode, $optimize)
     {
-        if ('original' == $height || 'original' == $width) {
+        if ('original' === $height || 'original' === $width) {
             $size = getimagesize($entity->getPath());
-            if ('original' == $width) {
+            if ('original' === $width) {
                 $width = $size[0];
             }
-            if ('original' == $height) {
+            if ('original' === $height) {
                 $height = $size[1];
             }
         }

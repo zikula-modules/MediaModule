@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -16,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
-class ImporterCompilerPassTest extends \PHPUnit_Framework_TestCase
+class ImporterCompilerPassTest extends \PHPUnit\Framework\TestCase
 {
     public function testNothingHappensIfCollectionDoesNotExist()
     {

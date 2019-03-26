@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -109,7 +111,7 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
         // TODO migrate this to a FormAware hook provider
         $mediaIds = $this->requestStack->getCurrentRequest()
             ->request->get('cmfcmfmediamodule[media]', [], true);
-        $mediaIds = isset($_POST['cmfcmfmediamodule']['media']) ? $_POST['cmfcmfmediamodule']['media'] : [];
+        $mediaIds = $_POST['cmfcmfmediamodule']['media'] ?? [];
 
         $this->entities = [];
         $validationResponse = new ValidationResponse('media', $mediaIds);

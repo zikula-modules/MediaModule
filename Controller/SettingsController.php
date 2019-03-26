@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -231,9 +233,9 @@ class SettingsController extends AbstractController
                 'provider.zikulascribitemodule.ui_hooks.editor');
 
             $descriptionEscapingStrategyForCollectionOk = !is_object($collectionBinding)
-                || 'raw' == $this->getVar('descriptionEscapingStrategyForCollection');
+                || 'raw' === $this->getVar('descriptionEscapingStrategyForCollection');
             $descriptionEscapingStrategyForMediaOk = !is_object($mediaBinding)
-                || 'raw' == $this->getVar('descriptionEscapingStrategyForMedia');
+                || 'raw' === $this->getVar('descriptionEscapingStrategyForMedia');
         }
 
         return [

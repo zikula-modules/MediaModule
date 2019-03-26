@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -90,7 +92,7 @@ class CollectionBlock extends AbstractBlockHandler
         $content = $selectedTemplate->getTemplate()->render(
             $collection,
             $this->get('cmfcmf_media_module.media_type_collection'),
-            isset($properties['showChildCollections']) ? $properties['showChildCollections'] : false,
+            $properties['showChildCollections'] ?? false,
             $selectedTemplate->getOptions()
         );
 

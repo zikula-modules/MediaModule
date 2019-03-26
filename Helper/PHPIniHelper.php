@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -62,9 +64,9 @@ class PHPIniHelper
         if (is_numeric($sSize)) {
             return $sSize;
         }
-        $sSuffix = substr($sSize, -1);
-        $iValue = substr($sSize, 0, -1);
-        switch (strtoupper($sSuffix)) {
+        $sSuffix = mb_substr($sSize, -1);
+        $iValue = mb_substr($sSize, 0, -1);
+        switch (mb_strtoupper($sSuffix)) {
             /** @noinspection PhpMissingBreakStatementInspection */
             case 'P':
                 $iValue *= 1024;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -49,7 +51,7 @@ class PermissionLevelType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS == $options['permissionLevel']) {
+        if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS === $options['permissionLevel']) {
             $this->fixSecurityGraph();
         }
         $view->vars['securityGraph'] = $this->securityGraph;
@@ -65,7 +67,7 @@ class PermissionLevelType extends AbstractType
             'expanded' => true,
             'multiple' => true,
             'choices' => function (Options $options) {
-                if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS == $options['permissionLevel']) {
+                if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS === $options['permissionLevel']) {
                     $this->fixSecurityGraph();
                 }
 

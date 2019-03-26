@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -38,7 +40,7 @@ class FontLoader implements FontLoaderInterface
             $title = str_replace('_', ' ', $fontName);
 
             $fonts[] = new Font(
-                "cmfcmfmediamodule:$fontName",
+                "cmfcmfmediamodule:${fontName}",
                 $title,
                 $file->getPathname(),
                 $fontName);

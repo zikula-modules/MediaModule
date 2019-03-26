@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -108,7 +110,7 @@ class CollectionUiHooksProvider extends AbstractUiHooksProvider
         // TODO migrate this to a FormAware hook provider
         $collectionData = $this->requestStack->getCurrentRequest()
             ->request->get('cmfcmfmediamodule[collections]', '[]', true);
-        $collectionData = isset($_POST['cmfcmfmediamodule']['collections']) ? $_POST['cmfcmfmediamodule']['collections'] : [];
+        $collectionData = $_POST['cmfcmfmediamodule']['collections'] ?? [];
         $collectionIds = is_array($collectionData) ? $collectionData : json_decode($collectionData);
 
         $this->entities = [];

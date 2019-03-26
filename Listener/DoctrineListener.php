@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -38,11 +40,11 @@ class DoctrineListener implements EventSubscriber
         }
 
         /** @var AudioEntity $entity */
-        if ('application/octet-stream' != $entity->getMimeType()) {
+        if ('application/octet-stream' !== $entity->getMimeType()) {
             return;
         }
 
-        if ('mp3' != pathinfo($args->getFileInfo()->getName(), PATHINFO_EXTENSION)) {
+        if ('mp3' !== pathinfo($args->getFileInfo()->getName(), PATHINFO_EXTENSION)) {
             return;
         }
 

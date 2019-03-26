@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -11,17 +13,17 @@
 
 namespace Cmfcmf\Module\MediaModule;
 
-use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionCategoryAssignmentEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\OwnerPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
-use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\PasswordPermissionRestrictionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\PasswordPermissionRestrictionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\UserPermissionEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
+use Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
@@ -49,7 +51,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         // We need to create and flush the upload collection first, because it has to has the ID 1.
         $this->entityManager->flush();
-        if (CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID != $temporaryUploadCollection->getId()) {
+        if (CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID !== $temporaryUploadCollection->getId()) {
             throw new \Exception($this->__f('The id of the generated "temporary upload collection" must be %s, but has a different value. This should not have happened. Please report this error.', ['%s' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID]));
         }
 
@@ -136,7 +138,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     ->getRepository(CollectionEntity::class)
                     ->findAll();
                 foreach ($allCollections as $collection) {
-                    if (null === $collection->getParent() && null != $collection->getId()) {
+                    if (null === $collection->getParent() && null !== $collection->getId()) {
                         // Collection has no parent and isn't the to-be-created root collection.
                         $collection->setParent($rootCollection);
                         $this->entityManager->merge($collection);
@@ -301,19 +303,19 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         foreach ($ccVersions as $version) {
             foreach ($ccNames as $id => $name) {
-                if ('CC-BY-NC-ND' == $id && '1.0' == $version) {
+                if ('CC-BY-NC-ND' === $id && '1.0' === $version) {
                     // The license image somehow does not exist.
                     continue;
                 }
-                $urlId = strtolower(substr($id, 3));
-                $license = new LicenseEntity("$id-$version");
+                $urlId = mb_strtolower(mb_substr($id, 3));
+                $license = new LicenseEntity("${id}-${version}");
                 $license
-                    ->setTitle("$name $version")
-                    ->setUrl("http://creativecommons.org/licenses/$urlId/$version/")
-                    ->setImageUrl("https://i.creativecommons.org/l/$urlId/$version/80x15.png")
+                    ->setTitle("${name} ${version}")
+                    ->setUrl("http://creativecommons.org/licenses/${urlId}/${version}/")
+                    ->setImageUrl("https://i.creativecommons.org/l/${urlId}/${version}/80x15.png")
                     ->setEnabledForWeb(true)
                     ->setEnabledForUpload(true)
-                    ->setOutdated('4.0' != $version)
+                    ->setOutdated('4.0' !== $version)
                 ;
                 $this->entityManager->persist($license);
             }
@@ -333,7 +335,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
             mkdir($uploadDirectory, 0777, true);
         }
 
-        $htaccess = <<<TXT
+        $htaccess = <<<'TXT'
 deny from all
 <FilesMatch "(?i)\.(css|js|rss|png|gif|jpg|jpeg|psd|svg|txt|rtf|xml|pdf|sdt|odt|doc|docx|pps|ppt|pptx|xls|xlsx|mp3|wav|wma|avi|flv|mov|mp4|rm|vob|wmv|gz|rar|tar.gz|zip|ogg|webm)$">
 order allow,deny

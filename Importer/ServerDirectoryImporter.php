@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -81,12 +83,12 @@ class ServerDirectoryImporter extends AbstractImporter
             /** @var AbstractFileEntity $entity */
             $entity = new $entityClass($this->requestStack, $this->dataDirectory);
             $relativePath = $finderFile->getRelativePath();
-            if ($formData['importSettings']['createSubCollectionsForSubDirectories'] && "" != $relativePath) {
+            if ($formData['importSettings']['createSubCollectionsForSubDirectories'] && "" !== $relativePath) {
                 if (!isset($collectionMapping[$relativePath])) {
                     $collection = new CollectionEntity();
-                    $lastSeparator = strrpos($relativePath, DIRECTORY_SEPARATOR);
-                    $collection->setParent($collectionMapping[substr($relativePath, 0, (int)$lastSeparator)]);
-                    $collection->setTitle(substr($relativePath, false === $lastSeparator ? 0 : $lastSeparator + 1));
+                    $lastSeparator = mb_strrpos($relativePath, DIRECTORY_SEPARATOR);
+                    $collection->setParent($collectionMapping[mb_substr($relativePath, 0, (int)$lastSeparator)]);
+                    $collection->setTitle(mb_substr($relativePath, false === $lastSeparator ? 0 : $lastSeparator + 1));
                     $this->em->persist($collection);
                     $collectionMapping[$relativePath] = $collection;
                 }
@@ -100,7 +102,7 @@ class ServerDirectoryImporter extends AbstractImporter
             $this->em->persist($entity);
 
             $c++;
-            if (0 == $c % 50) {
+            if (0 === $c % 50) {
                 $this->em->flush();
             }
         }

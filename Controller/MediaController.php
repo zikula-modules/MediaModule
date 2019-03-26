@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -96,7 +98,7 @@ class MediaController extends AbstractController
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA
         );
-        $isTemporaryUploadCollection = CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID == $entity->getCollection()->getId();
+        $isTemporaryUploadCollection = CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID === $entity->getCollection()->getId();
         $justUploadedIds = $request->getSession()->get('cmfcmfmediamodule_just_uploaded', []);
 
         if (!$editPermission && !($isTemporaryUploadCollection && in_array($entity->getId(), $justUploadedIds))) {
@@ -105,7 +107,7 @@ class MediaController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
         $parent = $request->query->get('parent', null);
-        if (null != $parent) {
+        if (null !== $parent) {
             $parent = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->findOneBy(['slug' => $parent]);
         }
 
@@ -222,9 +224,8 @@ class MediaController extends AbstractController
                 $this->applyProcessHook('media', UiHooksCategory::TYPE_PROCESS_DELETE, $id, $hookUrl);
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getCollection()->getSlug()]);
-            } else {
-                $request->getSession()->getFlashbag()->add('error', $this->__('Hook validation failed!'));
             }
+            $request->getSession()->getFlashbag()->add('error', $this->__('Hook validation failed!'));
         }
 
         $hookUrl = new RouteUrl('cmfcmfmediamodule_media_edit', [
@@ -427,7 +428,7 @@ class MediaController extends AbstractController
             throw new NotFoundHttpException();
         }
         $dropdownValue = $request->request->get('dropdownValue', null);
-        if ('' == $dropdownValue) {
+        if ('' === $dropdownValue) {
             $dropdownValue = null;
         }
 
@@ -472,7 +473,7 @@ class MediaController extends AbstractController
             } else {
                 $result[$c] = $selectedMediaType->getAlias();
 
-                if ($lastResult != -1 && $lastResult != $result[$c]) {
+                if ($lastResult !== -1 && $lastResult !== $result[$c]) {
                     $multiple = true;
                 }
                 $lastResult = $result[$c];
@@ -506,11 +507,11 @@ class MediaController extends AbstractController
             $em = $this->getDoctrine()->getManager();
 
             $collection = $request->request->get('collection', null);
-            if (null == $collection) {
+            if (null === $collection) {
                 $collection = CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID;
             }
 
-            if (1 != $request->files->count()) {
+            if (1 !== $request->files->count()) {
                 return new Response(null, Response::HTTP_BAD_REQUEST);
             }
 
@@ -567,7 +568,7 @@ class MediaController extends AbstractController
             return $this->json([
                 'msg' => $this->__('File uploaded!'),
                 'editUrl' => $this->generateUrl('cmfcmfmediamodule_media_edit', ['slug' => $entity->getSlug(), 'collectionSlug' => $entity->getCollection()->getSlug()]),
-                'openNewTabAndEdit' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID == $collection
+                'openNewTabAndEdit' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID === $collection
             ], Response::HTTP_OK);
         } catch (\Exception $e) {
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -615,11 +616,11 @@ class MediaController extends AbstractController
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
         $class = get_class($entity);
-        $type = substr($class, strrpos($class, '\\') + 1, -strlen('Entity'));
+        $type = mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('Entity'));
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($entity);
 
         $preview = '';
-        if ('Image' == $type) {
+        if ('Image' === $type) {
             $preview = $mediaType->renderFullpage($entity);
         }
 
@@ -675,7 +676,7 @@ class MediaController extends AbstractController
 
         $response = new BinaryFileResponse($mediaType->getOriginalWithWatermark($entity, 'path', false));
 
-        if ($request->query->has('inline') && '1' == $request->query->get('inline', '0')) {
+        if ($request->query->has('inline') && '1' === $request->query->get('inline', '0')) {
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $entity->getBeautifiedFileName());
         } else {
             $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $entity->getBeautifiedFileName());

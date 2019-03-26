@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -110,7 +112,7 @@ class MediaTypeCollection
         $class = get_class($entity);
         $class = explode('\\', $class);
         $class = $class[count($class) - 1];
-        $class = substr($class, 0, -strlen('Entity'));
+        $class = mb_substr($class, 0, -mb_strlen('Entity'));
 
         return $this->getMediaType(lcfirst($class));
     }

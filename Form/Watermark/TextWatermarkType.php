@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -13,9 +15,9 @@ namespace Cmfcmf\Module\MediaModule\Form\Watermark;
 
 use Cmfcmf\Module\MediaModule\Form\Type\ColorType;
 use Cmfcmf\Module\MediaModule\Form\Type\FontType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Form type for a text watermark.

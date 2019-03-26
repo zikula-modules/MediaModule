@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -59,7 +61,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 4;
         }
-        if ('inode/x-empty' == $mimeType && 'txt' == $file->getExtension()) {
+        if ('inode/x-empty' === $mimeType && 'txt' === $file->getExtension()) {
             return 4;
         }
 
@@ -96,7 +98,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 4;
         }
-        if ('inode/x-empty' == $mimeType && 'txt' == pathinfo($name, PATHINFO_EXTENSION)) {
+        if ('inode/x-empty' === $mimeType && 'txt' === pathinfo($name, PATHINFO_EXTENSION)) {
             return 4;
         }
 

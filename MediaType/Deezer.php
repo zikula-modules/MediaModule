@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -69,14 +71,14 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         $parameters = [];
         $regex = '#deezer\.com/(.*?)/(\d+)#';
         preg_match($regex, $pastedText, $matches);
-        if (3 == count($matches)) {
+        if (3 === count($matches)) {
             $parameters['musicId'] = $matches[2];
             $parameters['musicType'] = $matches[1];
             $parameters['showPlaylist'] = false;
         } else {
             $regex = '#src=(?:"|\')((?:.*?)deezer\.com/plugins/player(?:.*?))(?:"|\')#';
             preg_match($regex, $pastedText, $matches);
-            if (2 != count($matches)) {
+            if (2 !== count($matches)) {
                 return false;
             }
             $url = htmlspecialchars_decode($matches[1]);
@@ -87,7 +89,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
             }
             $parameters['musicId'] = $queryParams['id'];
             $parameters['musicType'] = $queryParams['type'];
-            if ('tracks' == $parameters['musicType']) {
+            if ('tracks' === $parameters['musicType']) {
                 $parameters['musicType'] = 'track';
             }
             if (isset($queryParams['title'])) {
@@ -116,10 +118,10 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         $title = urldecode($entity->getTitle());
         $id = $entity->getMusicId();
         $type = $entity->getMusicType();
-        if ('track' == $type) {
+        if ('track' === $type) {
             $type = 'tracks';
         }
-        $url = "http://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=$playlist&width=700&height=$height&color=$color&layout=dark&size=medium&type=$type&id=$id&title=$title&app_id=1";
+        $url = "http://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=${playlist}&width=700&height=${height}&color=${color}&layout=dark&size=medium&type=${type}&id=${id}&title=${title}&app_id=1";
 
         return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Deezer:fullpage.html.twig', [
             'url' => $url,
@@ -142,7 +144,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         /** @var DeezerEntity $entity */
         $type = $entity->getMusicType();
         $id = $entity->getMusicId();
-        if ('track' == $type) {
+        if ('track' === $type) {
             $type = 'album';
             $id = $entity->getExtraData()['album']['id'];
         }
@@ -153,7 +155,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         $size = min($width, $height);
         //}
         // @todo Ask Deezer whether it is allowed to crop the images.
-        $url = "http://api.deezer.com/$type/$id/image?size=" . $size;
+        $url = "http://api.deezer.com/${type}/${id}/image?size=" . $size;
 
         switch ($format) {
             case 'url':
@@ -169,9 +171,9 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
      */
     public function addExtraData(DeezerEntity $entity)
     {
-        if ('track' == $entity->getMusicType() || 'album' == $entity->getMusicType()) {
+        if ('track' === $entity->getMusicType() || 'album' === $entity->getMusicType()) {
             $track = $this->doJsonGetRequest('http://api.deezer.com/' . $entity->getMusicType() . '/' . $entity->getMusicId());
-            if ('track' == $entity->getMusicType()) {
+            if ('track' === $entity->getMusicType()) {
                 $entity->addExtraData(['album' => $track['album']]);
             }
             $entity->addExtraData(['artist' => $track['artist']]);
@@ -182,7 +184,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
     {
         /** @var DeezerEntity $entity */
         return [
-            'showPlaylistCheckbox' => 'playlist' == $entity->getMusicType()
+            'showPlaylistCheckbox' => 'playlist' === $entity->getMusicType()
         ];
     }
 

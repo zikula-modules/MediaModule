@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -81,10 +83,10 @@ class LinkContainer implements LinkContainerInterface
         if (!class_exists('\\Fhaculty\\Graph\\Graph')) {
             include_once __DIR__ . '/../bootstrap.php';
         }
-        if (self::TYPE_ADMIN == $type) {
+        if (self::TYPE_ADMIN === $type) {
             return $this->adminLinks();
         }
-        if (self::TYPE_USER == $type) {
+        if (self::TYPE_USER === $type) {
             return $this->userLinks();
         }
 

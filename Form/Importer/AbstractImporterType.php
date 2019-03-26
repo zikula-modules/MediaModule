@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -32,9 +34,9 @@ abstract class AbstractImporterType extends SymfonyAbstractType
     public function getBlockPrefix()
     {
         $type = get_class($this);
-        $type = substr($type, strrpos($type, '\\') + 1, -strlen('Type'));
-        $type = strtolower($type);
+        $type = mb_substr($type, mb_strrpos($type, '\\') + 1, -mb_strlen('Type'));
+        $type = mb_strtolower($type);
 
-        return "cmfcmfmediamodule_importer_$type";
+        return "cmfcmfmediamodule_importer_${type}";
     }
 }

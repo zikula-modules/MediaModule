@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -56,7 +58,7 @@ class SelectedTemplateFactory
     public function fromTemplateName($template, array $options)
     {
         $template = $this->templateCollection->getCollectionTemplate($template);
-        if (0 == count($options)) {
+        if (0 === count($options)) {
             $options = $template->getDefaultOptions();
         }
 
@@ -65,6 +67,6 @@ class SelectedTemplateFactory
 
     private function isJSON($string)
     {
-        return false !== strpos($string, '{');
+        return false !== mb_strpos($string, '{');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -49,7 +51,7 @@ class OwnerCollectionPermission extends AbstractCollectionPermission
 
         $userId = $this->currentUserApi->get('uid');
 
-        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_op", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_op.id");
+        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_op", Expr\Join::WITH, "${permissionAlias}.id = {$permissionAlias}_op.id");
         $qb->setParameter('opUserId', $userId);
 
         return $qb->expr()->eq('c.createdBy', ':opUserId');

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -143,7 +145,7 @@ class CollectionType extends AbstractType
                     );
                     $qb->orderBy('c.root', 'ASC')
                         ->addOrderBy('c.lft', 'ASC');
-                    if (null != $theCollection->getId()) {
+                    if (null !== $theCollection->getId()) {
                         // The collection is currently edited. Make sure it's not placed into
                         // itself or one of it's children.
                         $childrenQuery = $er->getChildrenQuery($theCollection);

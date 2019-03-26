@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -77,7 +79,7 @@ class MediaTypeController extends AbstractController
         $youtube = new Google_Service_YouTube($client);
 
         if ($request->query->has('code')) {
-            if (strval($request->getSession()->get('cmfcmfmediamodule_youtube_oauth_state')) !== strval($request->query->get('state'))) {
+            if ((string) ($request->getSession()->get('cmfcmfmediamodule_youtube_oauth_state')) !== (string) ($request->query->get('state'))) {
                 die('The session state did not match.');
             }
 
@@ -99,7 +101,7 @@ class MediaTypeController extends AbstractController
             $authUrl = $client->createAuthUrl();
             $htmlBody = <<<END
     <h3>Authorization Required</h3>
-    <p>You need to <a href="$authUrl">authorize access</a> before proceeding.<p>
+    <p>You need to <a href="${authUrl}">authorize access</a> before proceeding.<p>
 END;
 
             return new Response($htmlBody);

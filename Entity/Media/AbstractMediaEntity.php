@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -156,7 +158,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
      * @ORM\ManyToOne(targetEntity="Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity", fetch="EAGER")
      *
      * @var LicenseEntity|null
-     **/
+     */
     protected $license;
 
     /**
@@ -218,7 +220,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     public function makeNonPrimaryOnDelete()
     {
         $primaryMedium = $this->collection->getPrimaryMedium();
-        if ($primaryMedium && $primaryMedium->getId() == $this->id) {
+        if ($primaryMedium && $primaryMedium->getId() === $this->id) {
             $this->collection->setPrimaryMedium(null);
         }
     }
@@ -234,7 +236,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             return null;
         }
 
-        if ('html' == $format) {
+        if ('html' === $format) {
             if (null === $this->authorUrl) {
                 $author = htmlentities($this->author);
             } elseif (null === $this->author) {
@@ -242,7 +244,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             } else {
                 $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->author) . '</a>';
             }
-        } elseif ('raw' == $format) {
+        } elseif ('raw' === $format) {
             $author = '';
             if (null !== $this->author) {
                 $author .= $this->author . ' ';
@@ -473,11 +475,11 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection, $includeCollection = true)
     {
         $class = get_class($this);
-        $type = substr($class, strrpos($class, '\\') + 1, -strlen('Entity'));
+        $type = mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('Entity'));
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($this);
 
         $preview = '';
-        if ('Image' == $type) {
+        if ('Image' === $type) {
             $preview = $mediaType->renderFullpage($this);
         }
 
@@ -602,8 +604,8 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     {
         foreach ($collection as $key => $collectionAssignment) {
             /** @var MediaCategoryAssignmentEntity $collectionAssignment */
-            if ($collectionAssignment->getCategoryRegistryId() == $element->getCategoryRegistryId()
-                && $collectionAssignment->getCategory() == $element->getCategory()
+            if ($collectionAssignment->getCategoryRegistryId() === $element->getCategoryRegistryId()
+                && $collectionAssignment->getCategory() === $element->getCategory()
             ) {
                 return $key;
             }

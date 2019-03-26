@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -69,8 +71,8 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
      */
     public function canUpload(File $file)
     {
-        if ('text/plain' == $file->getMimeType()) {
-            if ('md' == $file->getExtension() || ($file instanceof UploadedFile && 'md' == $file->getClientOriginalExtension())) {
+        if ('text/plain' === $file->getMimeType()) {
+            if ('md' === $file->getExtension() || ($file instanceof UploadedFile && 'md' === $file->getClientOriginalExtension())) {
                 return 5;
             }
         }
@@ -83,7 +85,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
      */
     public function mightUpload($mimeType, $size, $name)
     {
-        if ('text/plain' == $mimeType && 'md' == pathinfo($name, PATHINFO_EXTENSION)) {
+        if ('text/plain' === $mimeType && 'md' === pathinfo($name, PATHINFO_EXTENSION)) {
             return 5;
         }
 

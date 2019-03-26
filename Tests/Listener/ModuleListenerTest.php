@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -17,7 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Zikula\Core\AbstractModule;
 use Zikula\Core\Event\ModuleStateEvent;
 
-class ModuleListenerTest extends \PHPUnit_Framework_TestCase
+class ModuleListenerTest extends \PHPUnit\Framework\TestCase
 {
     public function testIfEventMethodsExist()
     {

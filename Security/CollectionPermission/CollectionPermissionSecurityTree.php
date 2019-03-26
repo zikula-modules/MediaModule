@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -243,7 +245,7 @@ class CollectionPermissionSecurityTree
         $vertices[self::PERM_LEVEL_CHANGE_PERMISSIONS] = $vertex;
 
         foreach ($vertices as $permissionLevel => $vertex) {
-            if (self::PERM_LEVEL_NONE == $permissionLevel) {
+            if (self::PERM_LEVEL_NONE === $permissionLevel) {
                 continue;
             }
             $vertex->createEdge($vertices[self::PERM_LEVEL_NONE])
