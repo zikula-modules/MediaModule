@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -12,10 +14,10 @@
 namespace Cmfcmf\Module\MediaModule\Tests\Font;
 
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
-use Cmfcmf\Module\MediaModule\Font\FontLoaderInterface;
 use Cmfcmf\Module\MediaModule\Font\FontInterface;
+use Cmfcmf\Module\MediaModule\Font\FontLoaderInterface;
 
-class FontCollectionTest extends \PHPUnit_Framework_TestCase
+class FontCollectionTest extends \PHPUnit\Framework\TestCase
 {
     public function testNoFontsIfNoLoaderProvided()
     {

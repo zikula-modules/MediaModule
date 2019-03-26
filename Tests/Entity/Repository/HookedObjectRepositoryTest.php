@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -15,7 +17,7 @@ namespace Cmfcmf\Module\MediaModule\Tests\Entity\Repository;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Zikula\Bundle\HookBundle\Hook\Hook;*/
 
-class HookedObjectRepositoryTest extends \PHPUnit_Framework_TestCase
+class HookedObjectRepositoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var HookedObjectRepository

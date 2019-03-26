@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -65,10 +67,10 @@ class WatermarkController extends AbstractController
             throw new AccessDeniedException();
         }
         $dataDirectory = $this->get('service_container')->getParameter('datadir');
-        if ('image' == $type) {
+        if ('image' === $type) {
             $entity = new ImageWatermarkEntity($this->get('request_stack'), $dataDirectory);
             $form = ImageWatermarkType::class;
-        } elseif ('text' == $type) {
+        } elseif ('text' === $type) {
             $entity = new TextWatermarkEntity($this->get('request_stack'), $dataDirectory);
             $form = TextWatermarkType::class;
         } else {

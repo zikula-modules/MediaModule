@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -64,7 +66,7 @@ class GroupCollectionPermission extends AbstractCollectionPermission
 
         $groupNames = $this->groupRepository->getGroupNamesById();
         foreach ($permissionEntity->getGroupIds() as $groupId) {
-            if ($groupId == -1) {
+            if ($groupId === -1) {
                 $targets[] = $this->translator->trans('All groups', [], 'cmfcmfmediamodule');
             } elseif (isset($groupNames[$groupId])) {
                 $targets[] = $groupNames[$groupId];
@@ -89,11 +91,11 @@ class GroupCollectionPermission extends AbstractCollectionPermission
         }
         $groupIds[] = -1;
 
-        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_gp", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_gp.id");
+        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_gp", Expr\Join::WITH, "${permissionAlias}.id = {$permissionAlias}_gp.id");
 
         $or = $qb->expr()->orX();
         foreach ($groupIds as $c => $groupId) {
-            $or->add(self::whereInSimpleArray($qb, "{$permissionAlias}_gp", "group$c", $groupId, 'groupIds'));
+            $or->add(self::whereInSimpleArray($qb, "{$permissionAlias}_gp", "group${c}", $groupId, 'groupIds'));
         }
 
         return $or;

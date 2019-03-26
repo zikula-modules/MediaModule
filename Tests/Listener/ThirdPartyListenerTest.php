@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -14,14 +16,14 @@ namespace Cmfcmf\Module\MediaModule\Tests\Listener;
 use Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener;
 use Symfony\Component\Filesystem\Filesystem;
 
-class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
+class ThirdPartyListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ThirdPartyListener
      */
     private $listener;
 
-    public function setUp()
+    protected function setUp()
     {
         if (!interface_exists('\\Zikula\\ScribiteModule\\Editor\\EditorHelperInterface')) {
             $this->markTestSkipped(
@@ -60,7 +62,7 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
             ->method('add')
             ->with($this->callback(function ($arr) {
                 return
-                    'CmfcmfMediaModule' == $arr['module']
+                    'CmfcmfMediaModule' === $arr['module']
                     && is_readable($arr['path'])
                     && in_array($arr['type'], ['stylesheet', 'javascript'])
                 ;
@@ -91,7 +93,7 @@ class ThirdPartyListenerTest extends \PHPUnit_Framework_TestCase
         $scribiteHelperStub->expects($this->once())
             ->method('add')
             ->with($this->callback(function ($arr) {
-                return 'cmfcmfmediamodule' == $arr['name']
+                return 'cmfcmfmediamodule' === $arr['name']
                     && is_dir($arr['path'])
                     && is_readable($arr['path']) . '/' . $arr['file']
                     //&& is_readable($arr['img'])

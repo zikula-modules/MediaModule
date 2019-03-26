@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -134,8 +136,8 @@ class TwigExtension extends \Twig_Extension
         }
 
         $newVersionAvailable = $this->variableApi->get('CmfcmfMediaModule', 'newVersionAvailable', false);
-        if (false != $newVersionAvailable) {
-            if ($newVersionAvailable == $currentVersion) {
+        if (false !== $newVersionAvailable) {
+            if ($newVersionAvailable === $currentVersion) {
                 // Somehow the user manually upgraded the module.
                 // Remove "Install new version" popup.
                 $this->variableApi->set('CmfcmfMediaModule', 'newVersionAvailable', false);

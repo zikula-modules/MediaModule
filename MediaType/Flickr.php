@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -26,7 +28,7 @@ class Flickr extends AbstractMediaType implements WebMediaTypeInterface
 
     public function isEnabled()
     {
-        return "" != $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey', '');
+        return "" !== $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey', '');
     }
 
     /**
@@ -45,7 +47,7 @@ class Flickr extends AbstractMediaType implements WebMediaTypeInterface
         $url = htmlentities($url);
 
         return <<<EOD
-<img src="$url" class="img-responsive" alt="$title" />
+<img src="${url}" class="img-responsive" alt="${title}" />
 EOD;
     }
 

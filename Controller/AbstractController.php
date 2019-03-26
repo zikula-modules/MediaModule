@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -13,10 +15,10 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
-use Zikula\Bundle\HookBundle\Hook\DisplayHook;
-use Zikula\Bundle\HookBundle\Hook\DisplayHookResponse;
 use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareHook;
 use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareResponse;
+use Zikula\Bundle\HookBundle\Hook\DisplayHook;
+use Zikula\Bundle\HookBundle\Hook\DisplayHookResponse;
 use Zikula\Bundle\HookBundle\Hook\Hook;
 use Zikula\Bundle\HookBundle\Hook\ProcessHook;
 use Zikula\Bundle\HookBundle\Hook\ValidationHook;
@@ -63,12 +65,12 @@ abstract class AbstractController extends BaseAbstractController
         $content = '';
         foreach ($responses as $result) {
             $result = $result->__toString();
-            if (strlen(trim($result)) > 0) {
-                $content .= "<div class=\"col-xs-12\">$result</div>\n";
+            if (mb_strlen(trim($result)) > 0) {
+                $content .= "<div class=\"col-xs-12\">${result}</div>\n";
             }
         }
 
-        return 0 == strlen($content) ? '' : "<div class=\"row\">\n$content</div>";
+        return 0 === mb_strlen($content) ? '' : "<div class=\"row\">\n${content}</div>";
     }
 
     /**

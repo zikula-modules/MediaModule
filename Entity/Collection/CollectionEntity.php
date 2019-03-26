@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -118,7 +120,7 @@ class CollectionEntity implements Node, Sluggable
      * No assertions.
      *
      * @var AbstractMediaEntity[]|ArrayCollection
-     **/
+     */
     protected $media;
 
     /**
@@ -127,7 +129,7 @@ class CollectionEntity implements Node, Sluggable
      * No assertions.
      *
      * @var AbstractMediaEntity
-     **/
+     */
     protected $primaryMedium;
 
     /**
@@ -275,10 +277,10 @@ class CollectionEntity implements Node, Sluggable
         $children = true;
 
         $isSelected = false;
-        if (null != $hookedObjectEntity) {
+        if (null !== $hookedObjectEntity) {
             /** @var HookedObjectCollectionEntity $hookedObjectCollectionEntity */
             foreach ($hookedObjectEntity->getHookedObjectCollections() as $hookedObjectCollectionEntity) {
-                if ($this->id == $hookedObjectCollectionEntity->getCollection()->getId()) {
+                if ($this->id === $hookedObjectCollectionEntity->getCollection()->getId()) {
                     $isSelected = true;
                     break;
                 }
@@ -681,8 +683,8 @@ class CollectionEntity implements Node, Sluggable
     {
         foreach ($collection as $key => $collectionAssignment) {
             /** @var CollectionCategoryAssignmentEntity $collectionAssignment */
-            if ($collectionAssignment->getCategoryRegistryId() == $element->getCategoryRegistryId()
-                && $collectionAssignment->getCategory() == $element->getCategory()
+            if ($collectionAssignment->getCategoryRegistryId() === $element->getCategoryRegistryId()
+                && $collectionAssignment->getCategory() === $element->getCategory()
             ) {
                 return $key;
             }

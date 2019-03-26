@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -72,7 +74,7 @@ trait StandardFieldsTrait
      */
     public function setCreatedBy($createdBy)
     {
-        if ($this->createdBy != $createdBy) {
+        if ($this->createdBy !== $createdBy) {
             $this->createdBy = $createdBy;
         }
     }
@@ -96,7 +98,7 @@ trait StandardFieldsTrait
      */
     public function setCreatedDate($createdDate)
     {
-        if ($this->createdDate != $createdDate) {
+        if ($this->createdDate !== $createdDate) {
             $this->createdDate = $createdDate;
         }
     }
@@ -120,7 +122,7 @@ trait StandardFieldsTrait
      */
     public function setUpdatedBy($updatedBy)
     {
-        if ($this->updatedBy != $updatedBy) {
+        if ($this->updatedBy !== $updatedBy) {
             $this->updatedBy = $updatedBy;
         }
     }
@@ -144,7 +146,7 @@ trait StandardFieldsTrait
      */
     public function setUpdatedDate($updatedDate)
     {
-        if ($this->updatedDate != $updatedDate) {
+        if ($this->updatedDate !== $updatedDate) {
             $this->updatedDate = $updatedDate;
         }
     }

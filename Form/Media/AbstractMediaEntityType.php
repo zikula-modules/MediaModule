@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -108,7 +110,7 @@ abstract class AbstractMediaEntityType extends AbstractType
         ];
 
         $securityManager = $this->securityManager;
-        $allowTemporaryUploadCollection = isset($options['allowTemporaryUploadCollection']) ? $options['allowTemporaryUploadCollection'] : false;
+        $allowTemporaryUploadCollection = $options['allowTemporaryUploadCollection'] ?? false;
         $collectionOptions = [
             'required' => true,
             'label' => $this->translator->trans('Collection', [], 'cmfcmfmediamodule'),

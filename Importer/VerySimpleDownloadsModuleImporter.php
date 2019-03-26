@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -100,7 +102,7 @@ SQL
         );
         $lastId = -1;
         while ($download = $result->fetch(\PDO::FETCH_ASSOC)) {
-            if ($lastId != $download['id']) {
+            if ($lastId !== $download['id']) {
                 $lastId = $download['id'];
 
                 $file = new File($this->dataDirectory . $this->fileDirectory . '/' . $download['fileUpload']);

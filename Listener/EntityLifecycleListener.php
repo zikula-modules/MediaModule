@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -75,6 +77,6 @@ class EntityLifecycleListener implements EventSubscriber, ContainerAwareInterfac
     {
         $entityClassParts = explode('\\', get_class($entity));
 
-        return 'Cmfcmf' == $entityClassParts[0] && 'MediaModule' == $entityClassParts[2];
+        return 'Cmfcmf' === $entityClassParts[0] && 'MediaModule' === $entityClassParts[2];
     }
 }

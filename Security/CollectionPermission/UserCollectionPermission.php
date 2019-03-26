@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -86,7 +88,7 @@ class UserCollectionPermission extends AbstractCollectionPermission
             $userId = UsersConstant::USER_ID_ANONYMOUS;
         }
 
-        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_up", Expr\Join::WITH, "$permissionAlias.id = {$permissionAlias}_up.id");
+        $qb->leftJoin($this->getEntityClass(), "{$permissionAlias}_up", Expr\Join::WITH, "${permissionAlias}.id = {$permissionAlias}_up.id");
 
         return self::whereInSimpleArray($qb, "{$permissionAlias}_up", 'user', $userId, 'userIds');
     }

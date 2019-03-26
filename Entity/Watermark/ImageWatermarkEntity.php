@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -103,7 +105,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         $title = htmlentities($this->title);
 
         return <<<EOD
-<img src="$src" alt="$title" class="img-responsive" style="max-width: 150px; max-height: 100px" />
+<img src="${src}" alt="${title}" class="img-responsive" style="max-width: 150px; max-height: 100px" />
 EOD;
     }
 }

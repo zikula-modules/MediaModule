@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -48,7 +50,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
      */
     public function getId()
     {
-        return strtolower($this->getType());
+        return mb_strtolower($this->getType());
     }
 
     /**
@@ -66,7 +68,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
     {
         $class = get_class($this);
 
-        return substr($class, strrpos($class, '\\') + 1, -strlen('CollectionPermission'));
+        return mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('CollectionPermission'));
     }
 
     /**
@@ -94,10 +96,10 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
         $qb->setParameter($type . '4', "%," . $value . ",%");
 
         return $qb->expr()->orX(
-            $qb->expr()->eq("$entity.$field", ':' . $type . '1'),
-            $qb->expr()->like("$entity.$field", ':' . $type . '2'),
-            $qb->expr()->like("$entity.$field", ':' . $type . '3'),
-            $qb->expr()->like("$entity.$field", ':' . $type . '4')
+            $qb->expr()->eq("${entity}.${field}", ':' . $type . '1'),
+            $qb->expr()->like("${entity}.${field}", ':' . $type . '2'),
+            $qb->expr()->like("${entity}.${field}", ':' . $type . '3'),
+            $qb->expr()->like("${entity}.${field}", ':' . $type . '4')
         );
     }
 }

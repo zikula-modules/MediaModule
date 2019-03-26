@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -59,7 +61,7 @@ class VersionChecker
         $releases = $this->filterPreReleasesAndDrafts($releases);
         $releases = $this->filterReleasesWithoutZipAsset($releases);
 
-        if (0 == count($releases)) {
+        if (0 === count($releases)) {
             return false;
         }
 
@@ -160,7 +162,7 @@ class VersionChecker
     private function filterReleasesWithoutZipAsset($releases)
     {
         return array_filter($releases, function ($release) {
-            return false != $this->getZipAssetFromRelease($release);
+            return false !== $this->getZipAssetFromRelease($release);
         });
     }
 
@@ -199,7 +201,7 @@ class VersionChecker
      */
     public function getZipAssetFromRelease($release)
     {
-        if (0 == count($release['assets'])) {
+        if (0 === count($release['assets'])) {
             return false;
         }
         foreach ($release['assets'] as $asset) {

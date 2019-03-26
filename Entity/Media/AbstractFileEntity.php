@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -93,11 +95,11 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
         $filename = mb_ereg_replace("([\\.]{2,})", '', $filename);
         $extension = pathinfo($this->getFileName(), PATHINFO_EXTENSION);
 
-        if (substr($filename, -strlen($extension) - 1) == ".$extension") {
-            $filename = substr($filename, 0, -strlen($extension) - 1);
+        if (mb_substr($filename, -mb_strlen($extension) - 1) === ".${extension}") {
+            $filename = mb_substr($filename, 0, -mb_strlen($extension) - 1);
         }
 
-        return "$filename.$extension";
+        return "${filename}.${extension}";
     }
 
     public function onNewFile(array $info)

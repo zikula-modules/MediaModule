@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -46,7 +48,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     public function getName()
     {
-        return strtolower($this->getType());
+        return mb_strtolower($this->getType());
     }
 
     /**
@@ -59,7 +61,7 @@ abstract class AbstractTemplate implements TemplateInterface
     {
         $class = get_class($this);
 
-        return substr($class, strrpos($class, '\\') + 1, -strlen('Template'));
+        return mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('Template'));
     }
 
     /**

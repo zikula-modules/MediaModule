@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -33,9 +35,9 @@ class ColorType extends AbstractType
                     return '';
                 }
 
-                return "#" . substr($rgba, 7, 2) . substr($rgba, 1, 6);
+                return "#" . mb_substr($rgba, 7, 2) . mb_substr($rgba, 1, 6);
             }, function ($argb) {
-                return "#" . substr($argb, 3, 6) . substr($argb, 1, 2);
+                return "#" . mb_substr($argb, 3, 6) . mb_substr($argb, 1, 2);
             }
         ));
     }

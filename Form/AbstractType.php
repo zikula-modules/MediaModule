@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -45,8 +47,8 @@ abstract class AbstractType extends BaseAbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $class = get_class($this);
-        $class = substr($class, strlen('Cmfcmf\\Module\\MediaModule\\Form\\'));
-        $class = substr($class, 0, -strlen('Type')) . 'Entity';
+        $class = mb_substr($class, mb_strlen('Cmfcmf\\Module\\MediaModule\\Form\\'));
+        $class = mb_substr($class, 0, -mb_strlen('Type')) . 'Entity';
 
         $resolver->setDefaults([
             'data_class' => 'Cmfcmf\\Module\\MediaModule\\Entity\\' . $class
@@ -59,9 +61,9 @@ abstract class AbstractType extends BaseAbstractType
     public function getBlockPrefix()
     {
         $class = get_class($this);
-        $class = substr($class, strlen('Cmfcmf\\Module\\MediaModule\\Form\\'));
+        $class = mb_substr($class, mb_strlen('Cmfcmf\\Module\\MediaModule\\Form\\'));
         $class = str_replace('\\', '_', $class);
 
-        return 'cmfcmfmediamodule_' . strtolower($class);
+        return 'cmfcmfmediamodule_' . mb_strtolower($class);
     }
 }

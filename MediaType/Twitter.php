@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -27,10 +29,10 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     public function isEnabled()
     {
         return
-            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey') &&
-            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret') &&
-            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken') &&
-            '' != $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret')
+            '' !== $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey') &&
+            '' !== $this->variableApi->get('CmfcmfMediaModule', 'twitterApiSecret') &&
+            '' !== $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessToken') &&
+            '' !== $this->variableApi->get('CmfcmfMediaModule', 'twitterApiAccessTokenSecret')
         ;
     }
 
@@ -78,11 +80,11 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     private function extractTweetIdFromPaste($pastedText)
     {
         preg_match('#twitter\.com/[A-z]+/status/(\d+)#', $pastedText, $results);
-        if (2 == count($results)) {
+        if (2 === count($results)) {
             return $results[1];
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -129,7 +131,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
         //    'results' => [],
         //    'more' => false
         //];
-        if (null === $dropdownValue || 'tweets' == $dropdownValue) {
+        if (null === $dropdownValue || 'tweets' === $dropdownValue) {
             $tweetResults = $this->getTweetSearchResults($q);
         }
         //if ($dropdownValue === null || $dropdownValue == 'users') {
@@ -146,7 +148,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     {
         $api = $this->getTwitterApi();
 
-        $response = $api->setGetfield("?count=100&q=$q")
+        $response = $api->setGetfield("?count=100&q=${q}")
             ->buildOauth('https://api.twitter.com/1.1/search/tweets.json', 'GET')
             ->performRequest()
         ;

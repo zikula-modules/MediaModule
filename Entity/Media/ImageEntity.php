@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -75,7 +77,7 @@ class ImageEntity extends AbstractFileEntity
     private function cleanData(&$data)
     {
         foreach ($data as $key => $value) {
-            if ('UndefinedTag' == substr($key, 0, strlen('UndefinedTag'))) {
+            if ('UndefinedTag' === mb_substr($key, 0, mb_strlen('UndefinedTag'))) {
                 unset($data[$key]);
                 continue;
             }

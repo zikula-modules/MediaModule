@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -45,7 +47,7 @@ class CollectionController extends AbstractController
      */
     public function newAction(Request $request, CollectionEntity $parent)
     {
-        if (null == $parent) {
+        if (null === $parent) {
             throw new NotFoundHttpException();
         }
         $securityManager = $this->get('cmfcmf_media_module.security_manager');
@@ -186,7 +188,7 @@ class CollectionController extends AbstractController
                 $originalFilename = pathinfo($filename, PATHINFO_BASENAME);
 
                 for ($i = 1; in_array($filename, $usedFileNames, true); ++$i) {
-                    $filename = "$originalFilename ($i)" . (empty($originalFileExtension) ?: ".$originalFileExtension");
+                    $filename = "${originalFilename} (${i})" . (empty($originalFileExtension) ?: ".${originalFileExtension}");
                 }
                 $zip->addFile($mediaType->getOriginalWithWatermark($media, 'path', false), $filename);
                 $hasContent = true;

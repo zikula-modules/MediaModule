@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -41,14 +43,14 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         $url = $this->getOriginalWithWatermark($entity, 'url', true);
         $url = htmlentities($url);
 
-        return "<img class=\"img-responsive\" src=\"$url\" />";
+        return "<img class=\"img-responsive\" src=\"${url}\" />";
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)
     {
         $data = $entity->getExtraData();
         $meta = [];
-        if (isset($data['resolution_x']) && isset($data['resolution_y'])) {
+        if (isset($data['resolution_x'], $data['resolution_y'])) {
             $meta[] = [
                 'title' => $this->translator->trans('Resolution', [], 'cmfcmfmediamodule'),
                 'value' => $data['resolution_x'] . ' x ' . $data['resolution_y']
@@ -125,7 +127,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         // 32: NoFlashFunction
         // 64: RedEyeReductionMode
 
-        return 0 != ($flash & 1);
+        return 0 !== ($flash & 1);
     }
 
     private function convertMeteringMode($meteringMode)

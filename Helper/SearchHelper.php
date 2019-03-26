@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -15,8 +17,8 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query\Expr\Composite;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Zikula\Core\RouteUrl;
@@ -121,14 +123,14 @@ class SearchHelper implements SearchableInterface
             return null;
         }
 
-        $method = ('OR' == $searchtype) ? 'orX' : 'andX';
+        $method = ('OR' === $searchtype) ? 'orX' : 'andX';
         /** @var $where Composite */
-        $where = $qb->expr()->$method();
+        $where = $qb->expr()->{$method}();
         $i = 1;
         foreach ($words as $word) {
             $subWhere = $qb->expr()->orX();
             foreach ($fields as $field) {
-                $expr = $qb->expr()->like($field, "?$i");
+                $expr = $qb->expr()->like($field, "?${i}");
                 $subWhere->add($expr);
                 $qb->setParameter($i, '%' . $word . '%');
                 $i++;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -36,7 +38,7 @@ class SecurityGraph extends Graph
     public function getVerticesByCategory(CollectionPermissionCategory $securityCategory)
     {
         return $this->getVertices()->getVerticesMatch(function (Vertex $vertex) use ($securityCategory) {
-            return $vertex->getGroup() == $securityCategory->getId();
+            return $vertex->getGroup() === $securityCategory->getId();
         });
     }
 
@@ -52,7 +54,7 @@ class SecurityGraph extends Graph
         $children = new VerticesMap();
         /** @var Directed $edge */
         foreach ($vertex->getEdgesOut() as $edge) {
-            if (CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES == $edge->getAttribute('edgeType')) {
+            if (CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES === $edge->getAttribute('edgeType')) {
                 $end = $edge->getVertexEnd();
                 $children = VerticesMap::factory(
                     $children->getMap() + [$end] + $this->getRequiredVertices($end)->getMap()
@@ -75,7 +77,7 @@ class SecurityGraph extends Graph
         return Vertices::factory(array_map(function (Base $edge) use ($vertex) {
             return $edge->getVertexToFrom($vertex);
         }, $vertex->getEdgesOut()->getEdgesMatch(function (Base $edge) {
-            return CollectionPermissionSecurityTree::EDGE_TYPE_CONFLICTS == $edge->getAttribute('edgeType');
+            return CollectionPermissionSecurityTree::EDGE_TYPE_CONFLICTS === $edge->getAttribute('edgeType');
         })->getVector()));
     }
 
@@ -91,7 +93,7 @@ class SecurityGraph extends Graph
         $parents = new VerticesMap();
         /** @var Directed $edge */
         foreach ($vertex->getEdgesIn() as $edge) {
-            if (CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES == $edge->getAttribute('edgeType')) {
+            if (CollectionPermissionSecurityTree::EDGE_TYPE_REQUIRES === $edge->getAttribute('edgeType')) {
                 $start = $edge->getVertexStart();
                 $parents = VerticesMap::factory(
                     $parents->getMap() + [$start] + $this->getVerticesRequiring($start)->getMap()

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -96,15 +98,15 @@ class SecurityManager
             }
             $id = $objectOrType->getId();
             $class = get_class($objectOrType);
-            $type = lcfirst(substr($class, strrpos($class, '/') + 1, -strlen('Entity')));
+            $type = lcfirst(mb_substr($class, mb_strrpos($class, '/') + 1, -mb_strlen('Entity')));
         } else {
             $id = '';
             $type = $objectOrType;
         }
 
         return $this->permissionApi->hasPermission(
-            "CmfcmfMediaModule:$type:",
-            "$id::",
+            "CmfcmfMediaModule:${type}:",
+            "${id}::",
             $this->levels[$action]
         );
     }
@@ -416,10 +418,10 @@ class SecurityManager
         // there exists at least one permission returned by the second query builder.
         //
         $qb = $this->em->createQueryBuilder();
-        if ('collections' == $type) {
+        if ('collections' === $type) {
             $qb->select('c')
                 ->from('CmfcmfMediaModule:Collection\CollectionEntity', 'c');
-        } elseif ('media' == $type) {
+        } elseif ('media' === $type) {
             $qb->select('m')
                 ->from('CmfcmfMediaModule:Media\AbstractMediaEntity', 'm')
                 ->leftJoin('m.collection', 'c');
@@ -453,10 +455,10 @@ class SecurityManager
         $parentCollectionsQB = $this->em->createQueryBuilder();
         $parentCollectionsQB->select($alias)
             ->from('CmfcmfMediaModule:Collection\CollectionEntity', $alias)
-            ->where($parentCollectionsQB->expr()->lte("$alias.lft", 'c.lft'))
-            ->andWhere($parentCollectionsQB->expr()->gte("$alias.rgt", 'c.rgt'))
-            ->andWhere($parentCollectionsQB->expr()->eq("$alias.root", 'c.root'))
-            ->orderBy("$alias.lft", 'ASC');
+            ->where($parentCollectionsQB->expr()->lte("${alias}.lft", 'c.lft'))
+            ->andWhere($parentCollectionsQB->expr()->gte("${alias}.rgt", 'c.rgt'))
+            ->andWhere($parentCollectionsQB->expr()->eq("${alias}.root", 'c.root'))
+            ->orderBy("${alias}.lft", 'ASC');
 
         return $parentCollectionsQB;
     }

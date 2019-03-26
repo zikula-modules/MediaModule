@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -26,7 +28,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
 
     public function isEnabled()
     {
-        return '' != $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey', '');
+        return '' !== $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey', '');
     }
 
     /**
@@ -99,10 +101,10 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
     {
         $url = urlencode($entity->getUrl());
         $url = <<<EOD
-https://w.soundcloud.com/player/?url=$url&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true
+https://w.soundcloud.com/player/?url=${url}&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true
 EOD;
         $code = <<<EOD
-<iframe scrolling="no" frameborder="0" allowTransparency="true" src="$url" width="100%" height="166"></iframe>
+<iframe scrolling="no" frameborder="0" allowTransparency="true" src="${url}" width="100%" height="166"></iframe>
 EOD;
 
         return $code;

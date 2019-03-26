@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -192,7 +194,7 @@ class CollectionType extends AbstractContentType
     private function customInit()
     {
         $this->bundleName = 'CmfcmfMediaModule';
-        $this->domain = strtolower($this->bundleName);
+        $this->domain = mb_strtolower($this->bundleName);
 
         include_once __DIR__ . '/../bootstrap.php';
     }

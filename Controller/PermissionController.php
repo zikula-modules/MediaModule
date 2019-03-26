@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -106,7 +108,7 @@ class PermissionController extends AbstractController
         /** @var AbstractPermissionEntity $entity */
         $entity->setCollection($collection);
         $entity->setPosition($afterPermission->getPosition() + 1);
-        if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS == $permissionLevel) {
+        if (CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS === $permissionLevel) {
             $entity->setGoOn(true);
         }
 
@@ -313,7 +315,7 @@ class PermissionController extends AbstractController
         if (null === $permissionEntity) {
             throw new AccessDeniedException();
         }
-        if ($permissionEntity->getCreatedBy()->getUid() == $this->get('zikula_users_module.current_user')->get('uid')) {
+        if ($permissionEntity->getCreatedBy()->getUid() === $this->get('zikula_users_module.current_user')->get('uid')) {
             if ($securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS)) {
                 return CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS;
             }

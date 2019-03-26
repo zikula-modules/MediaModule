@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -100,10 +102,10 @@ class CustomImageFilter implements LoaderInterface
         // It will already be correctly sized for the thumbnail.
 
         $wWidth = $wHeight = 0;
-        if (isset($options['mode']) && ImageInterface::THUMBNAIL_OUTBOUND == $options['mode']) {
+        if (isset($options['mode']) && ImageInterface::THUMBNAIL_OUTBOUND === $options['mode']) {
             $wWidth = $options['width'];
             $wHeight = $options['height'];
-        } elseif (!isset($options['mode']) || ImageInterface::THUMBNAIL_INSET == $options['mode']) {
+        } elseif (!isset($options['mode']) || ImageInterface::THUMBNAIL_INSET === $options['mode']) {
             $imageSize = getimagesize($options['file']);
 
             $ratios = [

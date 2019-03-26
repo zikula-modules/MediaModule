@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -94,7 +96,7 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
         // TODO migrate this to a FormAware hook provider
         $licenseIds = $this->requestStack->getCurrentRequest()
             ->request->get('cmfcmfmediamodule[license]', [], true);
-        $licenseIds = isset($_POST['cmfcmfmediamodule']['license']) ? $_POST['cmfcmfmediamodule']['license'] : [];
+        $licenseIds = $_POST['cmfcmfmediamodule']['license'] ?? [];
 
         $this->entities = [];
         $validationResponse = new ValidationResponse('license', $licenseIds);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -77,7 +79,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         if (isset($extraData['video'])) {
             $video = $extraData['video'];
 
-            if (isset($video['resolution_x']) && isset($video['resolution_y'])) {
+            if (isset($video['resolution_x'], $video['resolution_y'])) {
                 $meta[] = [
                     'title' => $this->translator->trans('Resolution', [], 'cmfcmfmediamodule'),
                     'value' => $video['resolution_x'] . " x " . $video['resolution_y']
@@ -131,7 +133,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 5;
         }
-        if ('application/ogg' == $file->getMimeType()) {
+        if ('application/ogg' === $file->getMimeType()) {
             // This could be a video or audio file.
             $meta = GenericMetadataReader::readMetadata($file->getPathname());
             if (isset($meta['video']['dataformat'])) {
@@ -196,7 +198,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             $seconds = "0" . $seconds;
         }
 
-        $time = "$minutes:$seconds";
+        $time = "${minutes}:${seconds}";
 
         return $this->translator->trans("%s min", ['%s' => $time], 'cmfcmfmediamodule');
     }

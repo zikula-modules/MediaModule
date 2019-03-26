@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -178,7 +180,7 @@ class MediaType extends AbstractContentType
     private function customInit()
     {
         $this->bundleName = 'CmfcmfMediaModule';
-        $this->domain = strtolower($this->bundleName);
+        $this->domain = mb_strtolower($this->bundleName);
 
         include_once __DIR__ . '/../bootstrap.php';
     }
@@ -201,10 +203,10 @@ class MediaType extends AbstractContentType
      */
     public function getJsEntrypoint($context)
     {
-        if (ContentTypeInterface::CONTEXT_EDIT == $context) {
+        if (ContentTypeInterface::CONTEXT_EDIT === $context) {
             return 'contentInitMediaEdit';
         }
-        if (ContentTypeInterface::CONTEXT_TRANSLATION == $context) {
+        if (ContentTypeInterface::CONTEXT_TRANSLATION === $context) {
             return 'contentInitMediaTranslation';
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -113,7 +115,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         }
 
         $str2col = function ($str) {
-            return (new RGB())->color(substr($str, 0, 7), (int)round(hexdec(substr($str, 7, 2)) / 2.55));
+            return (new RGB())->color(mb_substr($str, 0, 7), (int)round(hexdec(mb_substr($str, 7, 2)) / 2.55));
         };
 
         $font = $imagine->font($fontPath, $fontSize, $str2col($this->fontColor));
