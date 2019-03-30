@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.5.1 <http://videojs.com/>
+ * Video.js 7.5.3 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -27,7 +27,7 @@ var mp4 = require('mux.js/lib/mp4');
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.5.1";
+var version = "7.5.3";
 
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
@@ -6208,36 +6208,35 @@ function (_TrackList) {
       return;
     }
 
-    if (!this.enabledChange_) {
-      this.enabledChange_ = function () {
-        // when we are disabling other tracks (since we don't support
-        // more than one track at a time) we will set changing_
-        // to true so that we don't trigger additional change events
-        if (_this2.changing_) {
-          return;
-        }
+    track.enabledChange_ = function () {
+      // when we are disabling other tracks (since we don't support
+      // more than one track at a time) we will set changing_
+      // to true so that we don't trigger additional change events
+      if (_this2.changing_) {
+        return;
+      }
 
-        _this2.changing_ = true;
-        disableOthers(_this2, track);
-        _this2.changing_ = false;
+      _this2.changing_ = true;
+      disableOthers(_this2, track);
+      _this2.changing_ = false;
 
-        _this2.trigger('change');
-      };
-    }
+      _this2.trigger('change');
+    };
     /**
      * @listens AudioTrack#enabledchange
      * @fires TrackList#change
      */
 
 
-    track.addEventListener('enabledchange', this.enabledChange_);
+    track.addEventListener('enabledchange', track.enabledChange_);
   };
 
   _proto.removeTrack = function removeTrack(rtrack) {
     _TrackList.prototype.removeTrack.call(this, rtrack);
 
-    if (rtrack.removeEventListener && this.enabledChange_) {
-      rtrack.removeEventListener('enabledchange', this.enabledChange_);
+    if (rtrack.removeEventListener && rtrack.enabledChange_) {
+      rtrack.removeEventListener('enabledchange', rtrack.enabledChange_);
+      rtrack.enabledChange_ = null;
     }
   };
 
@@ -6348,33 +6347,32 @@ function (_TrackList) {
       return;
     }
 
-    if (!this.selectedChange_) {
-      this.selectedChange_ = function () {
-        if (_this2.changing_) {
-          return;
-        }
+    track.selectedChange_ = function () {
+      if (_this2.changing_) {
+        return;
+      }
 
-        _this2.changing_ = true;
-        disableOthers$1(_this2, track);
-        _this2.changing_ = false;
+      _this2.changing_ = true;
+      disableOthers$1(_this2, track);
+      _this2.changing_ = false;
 
-        _this2.trigger('change');
-      };
-    }
+      _this2.trigger('change');
+    };
     /**
      * @listens VideoTrack#selectedchange
      * @fires TrackList#change
      */
 
 
-    track.addEventListener('selectedchange', this.selectedChange_);
+    track.addEventListener('selectedchange', track.selectedChange_);
   };
 
   _proto.removeTrack = function removeTrack(rtrack) {
     _TrackList.prototype.removeTrack.call(this, rtrack);
 
-    if (rtrack.removeEventListener && this.selectedChange_) {
-      rtrack.removeEventListener('selectedchange', this.selectedChange_);
+    if (rtrack.removeEventListener && rtrack.selectedChange_) {
+      rtrack.removeEventListener('selectedchange', rtrack.selectedChange_);
+      rtrack.selectedChange_ = null;
     }
   };
 
@@ -17564,12 +17562,31 @@ function (_Component) {
 
     _this.reset_();
 
-    _this.on(_this.player_, 'durationchange', _this.handleDurationchange);
+    _this.on(_this.player_, 'durationchange', _this.handleDurationchange); // we don't need to track live playback if the document is hidden,
+    // also, tracking when the document is hidden can
+    // cause the CPU to spike and eventually crash the page on IE11.
+
+
+    if (IE_VERSION && 'hidden' in document && 'visibilityState' in document) {
+      _this.on(document, 'visibilitychange', _this.handleVisibilityChange);
+    }
 
     return _this;
   }
 
   var _proto = LiveTracker.prototype;
+
+  _proto.handleVisibilityChange = function handleVisibilityChange() {
+    if (this.player_.duration() !== Infinity) {
+      return;
+    }
+
+    if (document.hidden) {
+      this.stopTracking();
+    } else {
+      this.startTracking();
+    }
+  };
 
   _proto.isBehind_ = function isBehind_() {
     // don't report that we are behind until a timeupdate has been seen
