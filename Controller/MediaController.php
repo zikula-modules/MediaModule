@@ -144,8 +144,8 @@ class MediaController extends AbstractController
 
             // Cleanup existing thumbnails
             /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
-            $imagineCacheManager = $this->get('liip_imagine.cache.manager');
-            $imagineCacheManager->remove($entity->getPath(), ['thumbnail', 'cmfcmfmediamodule.custom_image_filter']);
+            //$imagineCacheManager = $this->get('liip_imagine.cache.manager');
+            //$imagineCacheManager->remove($entity->getPath(), ['thumbnail', 'cmfcmfmediamodule.custom_image_filter']);
         }
 
         try {
