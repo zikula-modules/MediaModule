@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.5.3 <http://videojs.com/>
+ * Video.js 7.5.4 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -27,7 +27,7 @@ var mp4 = require('mux.js/lib/mp4');
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.5.3";
+var version = "7.5.4";
 
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
@@ -5130,11 +5130,10 @@ function bufferedPercent(buffered, duration) {
 
 var FullscreenApi = {}; // browser API methods
 
-var apiMap = [['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'fullscreenEnabled', 'fullscreenchange', 'fullscreenerror'], // WebKit
-['webkitRequestFullscreen', 'webkitExitFullscreen', 'webkitFullscreenElement', 'webkitFullscreenEnabled', 'webkitfullscreenchange', 'webkitfullscreenerror'], // Old WebKit (Safari 5.1)
-['webkitRequestFullScreen', 'webkitCancelFullScreen', 'webkitCurrentFullScreenElement', 'webkitCancelFullScreen', 'webkitfullscreenchange', 'webkitfullscreenerror'], // Mozilla
-['mozRequestFullScreen', 'mozCancelFullScreen', 'mozFullScreenElement', 'mozFullScreenEnabled', 'mozfullscreenchange', 'mozfullscreenerror'], // Microsoft
-['msRequestFullscreen', 'msExitFullscreen', 'msFullscreenElement', 'msFullscreenEnabled', 'MSFullscreenChange', 'MSFullscreenError']];
+var apiMap = [['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'fullscreenEnabled', 'fullscreenchange', 'fullscreenerror', 'fullscreen'], // WebKit
+['webkitRequestFullscreen', 'webkitExitFullscreen', 'webkitFullscreenElement', 'webkitFullscreenEnabled', 'webkitfullscreenchange', 'webkitfullscreenerror', '-webkit-full-screen'], // Mozilla
+['mozRequestFullScreen', 'mozCancelFullScreen', 'mozFullScreenElement', 'mozFullScreenEnabled', 'mozfullscreenchange', 'mozfullscreenerror', '-moz-full-screen'], // Microsoft
+['msRequestFullscreen', 'msExitFullscreen', 'msFullscreenElement', 'msFullscreenEnabled', 'MSFullscreenChange', 'MSFullscreenError', '-ms-fullscreen']];
 var specApi = apiMap[0];
 var browserApi;
 var prefixedAPI = false; // determine the supported set of functions
@@ -5434,6 +5433,10 @@ function (_Component) {
    *
    * @param {string} [options.label]
    *        A text label for the modal, primarily for accessibility.
+   *
+   * @param {boolean} [options.pauseOnOpen=true]
+   *        If `true`, playback will will be paused if playing when
+   *        the modal opens, and resumed when it closes.
    *
    * @param {boolean} [options.temporary=true]
    *        If `true`, the modal can only be opened once; it will be
@@ -9334,7 +9337,9 @@ function mediate(middleware, tech, method, arg) {
 
   var callMethod = 'call' + toTitleCase(method);
   var middlewareValue = middleware.reduce(middlewareIterator(callMethod), arg);
-  var terminated = middlewareValue === TERMINATOR;
+  var terminated = middlewareValue === TERMINATOR; // deprecated. The `null` return value should instead return TERMINATOR to
+  // prevent confusion if a techs method actually returns null.
+
   var returnValue = terminated ? null : tech[method](middlewareValue);
   executeRight(middleware, method, returnValue, terminated);
   return returnValue;
@@ -20353,7 +20358,11 @@ function (_Component) {
     } // Run base component initializing with new options
 
 
-    _this = _Component.call(this, null, options, ready) || this; // create logger
+    _this = _Component.call(this, null, options, ready) || this; // Create bound methods for document listeners.
+
+    _this.boundDocumentFullscreenChange_ = bind(_assertThisInitialized(_assertThisInitialized(_this)), _this.documentFullscreenChange_);
+    _this.boundFullWindowOnEscKey_ = bind(_assertThisInitialized(_assertThisInitialized(_this)), _this.fullWindowOnEscKey);
+    _this.boundHandleKeyPress_ = bind(_assertThisInitialized(_assertThisInitialized(_this)), _this.handleKeyPress); // create logger
 
     _this.log = createLogger$1(_this.id_); // Tracks when a tech changes the poster
 
@@ -20402,10 +20411,13 @@ function (_Component) {
     // May be turned back on by HTML5 tech if nativeControlsForTouch is true
 
     tag.controls = false;
-    tag.removeAttribute('controls'); // the attribute overrides the option
+    tag.removeAttribute('controls');
+    _this.changingSrc_ = false;
+    _this.playCallbacks_ = [];
+    _this.playTerminatedQueue_ = []; // the attribute overrides the option
 
     if (tag.hasAttribute('autoplay')) {
-      _this.options_.autoplay = true;
+      _this.autoplay(true);
     } else {
       // otherwise use the setter to validate and
       // set the correct value.
@@ -20522,9 +20534,6 @@ function (_Component) {
 
     _this.responsive(_this.options_.responsive);
 
-    _this.changingSrc_ = false;
-    _this.playWaitingForReady_ = false;
-    _this.playOnLoadstart_ = null;
     return _this;
   }
   /**
@@ -20550,7 +20559,11 @@ function (_Component) {
      */
     this.trigger('dispose'); // prevent dispose from being called twice
 
-    this.off('dispose');
+    this.off('dispose'); // Make sure all player-specific document listeners are unbound. This is
+
+    off(document, FullscreenApi.fullscreenchange, this.boundDocumentFullscreenChange_);
+    off(document, 'keydown', this.boundFullWindowOnEscKey_);
+    off(document, 'keydown', this.boundHandleKeyPress_);
 
     if (this.styleEl_ && this.styleEl_.parentNode) {
       this.styleEl_.parentNode.removeChild(this.styleEl_);
@@ -21319,35 +21332,38 @@ function (_Component) {
 
       _this5.muted(true);
 
-      var playPromise = _this5.play();
+      var restoreMuted = function restoreMuted() {
+        _this5.muted(previouslyMuted);
+      }; // restore muted on play terminatation
 
-      if (!playPromise || !playPromise.then || !playPromise.catch) {
+
+      _this5.playTerminatedQueue_.push(restoreMuted);
+
+      var mutedPromise = _this5.play();
+
+      if (!isPromise(mutedPromise)) {
         return;
       }
 
-      return playPromise.catch(function (e) {
-        // restore old value of muted on failure
-        _this5.muted(previouslyMuted);
-      });
+      return mutedPromise.catch(restoreMuted);
     };
 
-    var promise;
+    var promise; // if muted defaults to true
+    // the only thing we can do is call play
 
-    if (type === 'any') {
+    if (type === 'any' && this.muted() !== true) {
       promise = this.play();
 
-      if (promise && promise.then && promise.catch) {
-        promise.catch(function () {
-          return muted();
-        });
+      if (isPromise(promise)) {
+        promise = promise.catch(muted);
       }
-    } else if (type === 'muted') {
+    } else if (type === 'muted' && this.muted() !== true) {
       promise = muted();
     } else {
       promise = this.play();
     }
 
-    if (!promise || !promise.then || !promise.catch) {
+    if (!isPromise(promise)) {
       return;
     }
 
@@ -21995,10 +22011,10 @@ function (_Component) {
 
   _proto.documentFullscreenChange_ = function documentFullscreenChange_(e) {
     var fsApi = FullscreenApi;
-    this.isFullscreen(document[fsApi.fullscreenElement] === this.el()); // If cancelling fullscreen, remove event listener.
+    this.isFullscreen(document[fsApi.fullscreenElement] === this.el() || this.el().matches(':' + fsApi.fullscreen)); // If cancelling fullscreen, remove event listener.
 
     if (this.isFullscreen() === false) {
-      off(document, fsApi.fullscreenchange, bind(this, this.documentFullscreenChange_));
+      off(document, fsApi.fullscreenchange, this.boundDocumentFullscreenChange_);
     }
 
     if (!prefixedAPI) {
@@ -22237,48 +22253,73 @@ function (_Component) {
       callback = silencePromise;
     }
 
-    // If this is called while we have a play queued up on a loadstart, remove
-    // that listener to avoid getting in a potentially bad state.
-    if (this.playOnLoadstart_) {
-      this.off('loadstart', this.playOnLoadstart_);
-    } // If the player/tech is not ready, queue up another call to `play()` for
-    // when it is. This will loop back into this method for another attempt at
-    // playback when the tech is ready.
+    this.playCallbacks_.push(callback);
+    var isSrcReady = Boolean(!this.changingSrc_ && (this.src() || this.currentSrc())); // treat calls to play_ somewhat like the `one` event function
+
+    if (this.waitToPlay_) {
+      this.off(['ready', 'loadstart'], this.waitToPlay_);
+      this.waitToPlay_ = null;
+    } // if the player/tech is not ready or the src itself is not ready
+    // queue up a call to play on `ready` or `loadstart`
 
 
-    if (!this.isReady_) {
-      // Bail out if we're already waiting for `ready`!
-      if (this.playWaitingForReady_) {
-        return;
-      }
+    if (!this.isReady_ || !isSrcReady) {
+      this.waitToPlay_ = function (e) {
+        _this9.play_();
+      };
 
-      this.playWaitingForReady_ = true;
-      this.ready(function () {
-        _this9.playWaitingForReady_ = false;
-        callback(_this9.play());
-      }); // If the player/tech is ready and we have a source, we can attempt playback.
-    } else if (!this.changingSrc_ && (this.src() || this.currentSrc())) {
-      callback(this.techGet_('play'));
-      return; // If the tech is ready, but we do not have a source, we'll need to wait
-      // for both the `ready` and a `loadstart` when the source is finally
-      // resolved by middleware and set on the player.
-      //
-      // This can happen if `play()` is called while changing sources or before
-      // one has been set on the player.
-    } else {
-      this.playOnLoadstart_ = function () {
-        _this9.playOnLoadstart_ = null;
-        callback(_this9.play());
-      }; // if we are in Safari, there is a high chance that loadstart will trigger after the gesture timeperiod
+      this.one(['ready', 'loadstart'], this.waitToPlay_); // if we are in Safari, there is a high chance that loadstart will trigger after the gesture timeperiod
       // in that case, we need to prime the video element by calling load so it'll be ready in time
 
-
-      if (IS_ANY_SAFARI || IS_IOS) {
+      if (!isSrcReady && (IS_ANY_SAFARI || IS_IOS)) {
         this.load();
       }
 
-      this.one('loadstart', this.playOnLoadstart_);
+      return;
+    } // If the player/tech is ready and we have a source, we can attempt playback.
+
+
+    var val = this.techGet_('play'); // play was terminated if the returned value is null
+
+    if (val === null) {
+      this.runPlayTerminatedQueue_();
+    } else {
+      this.runPlayCallbacks_(val);
     }
+  }
+  /**
+   * These functions will be run when if play is terminated. If play
+   * runPlayCallbacks_ is run these function will not be run. This allows us
+   * to differenciate between a terminated play and an actual call to play.
+   */
+  ;
+
+  _proto.runPlayTerminatedQueue_ = function runPlayTerminatedQueue_() {
+    var queue = this.playTerminatedQueue_.slice(0);
+    this.playTerminatedQueue_ = [];
+    queue.forEach(function (q) {
+      q();
+    });
+  }
+  /**
+   * When a callback to play is delayed we have to run these
+   * callbacks when play is actually called on the tech. This function
+   * runs the callbacks that were delayed and accepts the return value
+   * from the tech.
+   *
+   * @param {undefined|Promise} val
+   *        The return value from the tech.
+   */
+  ;
+
+  _proto.runPlayCallbacks_ = function runPlayCallbacks_(val) {
+    var callbacks = this.playCallbacks_.slice(0);
+    this.playCallbacks_ = []; // clear play terminatedQueue since we finished a real play
+
+    this.playTerminatedQueue_ = [];
+    callbacks.forEach(function (cb) {
+      cb(val);
+    });
   }
   /**
    * Pause the video playback
@@ -22687,7 +22728,7 @@ function (_Component) {
       // when canceling fullscreen. Otherwise if there's multiple
       // players on a page, they would all be reacting to the same fullscreen
       // events
-      on(document, fsApi.fullscreenchange, bind(this, this.documentFullscreenChange_));
+      on(document, fsApi.fullscreenchange, this.boundDocumentFullscreenChange_);
       this.el_[fsApi.requestFullscreen]();
     } else if (this.tech_.supportsFullScreen()) {
       // we can't take the video.js controls fullscreen but we can go fullscreen
@@ -22743,7 +22784,7 @@ function (_Component) {
 
     this.docOrigOverflow = document.documentElement.style.overflow; // Add listener for esc key to exit fullscreen
 
-    on(document, 'keydown', bind(this, this.fullWindowOnEscKey)); // Hide any scroll bars
+    on(document, 'keydown', this.boundFullWindowOnEscKey_); // Hide any scroll bars
 
     document.documentElement.style.overflow = 'hidden'; // Apply fullscreen styles
 
@@ -22782,7 +22823,7 @@ function (_Component) {
 
   _proto.exitFullWindow = function exitFullWindow() {
     this.isFullWindow = false;
-    off(document, 'keydown', this.fullWindowOnEscKey); // Unhide scroll bars.
+    off(document, 'keydown', this.boundFullWindowOnEscKey_); // Unhide scroll bars.
 
     document.documentElement.style.overflow = this.docOrigOverflow; // Remove fullscreen styles
 
@@ -22810,8 +22851,8 @@ function (_Component) {
 
   _proto.handleFocus = function handleFocus(event) {
     // call off first to make sure we don't keep adding keydown handlers
-    off(document, 'keydown', bind(this, this.handleKeyPress));
-    on(document, 'keydown', bind(this, this.handleKeyPress));
+    off(document, 'keydown', this.boundHandleKeyPress_);
+    on(document, 'keydown', this.boundHandleKeyPress_);
   }
   /**
    * Called when a `Player` loses focus. Turns off the listener for
@@ -22825,7 +22866,7 @@ function (_Component) {
   ;
 
   _proto.handleBlur = function handleBlur(event) {
-    off(document, 'keydown', bind(this, this.handleKeyPress));
+    off(document, 'keydown', this.boundHandleKeyPress_);
   }
   /**
    * Called when this Player has focus and a key gets pressed down, or when
@@ -23167,6 +23208,21 @@ function (_Component) {
   ;
 
   _proto.reset = function reset() {
+    var _this13 = this;
+
+    var PromiseClass = this.options_.Promise || window$1.Promise;
+
+    if (this.paused() || !PromiseClass) {
+      this.doReset_();
+    } else {
+      var playPromise = this.play();
+      silencePromise(playPromise.then(function () {
+        return _this13.doReset_();
+      }));
+    }
+  };
+
+  _proto.doReset_ = function doReset_() {
     if (this.tech_) {
       this.tech_.clearTracks('text');
     }
@@ -23341,7 +23397,7 @@ function (_Component) {
       this.options_.autoplay = true;
     }
 
-    techAutoplay = techAutoplay || this.options_.autoplay; // if we don't have a tech then we do not queue up
+    techAutoplay = typeof techAutoplay === 'undefined' ? this.options_.autoplay : techAutoplay; // if we don't have a tech then we do not queue up
     // a setAutoplay call on tech ready. We do this because the
     // autoplay option will be passed in the constructor and we
     // do not need to set it twice
@@ -23747,9 +23803,10 @@ function (_Component) {
     this.on('mousedown', handleMouseDown);
     this.on('mousemove', handleMouseMove);
     this.on('mouseup', handleMouseUp);
-    var controlBar = this.getChild('controlBar');
+    var controlBar = this.getChild('controlBar'); // Fixes bug on Android & iOS where when tapping progressBar (when control bar is displayed)
+    // controlBar would no longer be hidden by default timeout.
 
-    if (controlBar) {
+    if (controlBar && !IS_IOS && !IS_ANDROID) {
       controlBar.on('mouseenter', function (event) {
         this.player().cache_.inactivityTimeout = this.player().options_.inactivityTimeout;
         this.player().options_.inactivityTimeout = 0;
@@ -24074,14 +24131,14 @@ function (_Component) {
   ;
 
   _proto.createModal = function createModal(content, options) {
-    var _this13 = this;
+    var _this14 = this;
 
     options = options || {};
     options.content = content || '';
     var modal = new ModalDialog(this, options);
     this.addChild(modal);
     modal.on('dispose', function () {
-      _this13.removeChild(modal);
+      _this14.removeChild(modal);
     });
     modal.open();
     return modal;
@@ -24312,7 +24369,7 @@ function (_Component) {
   ;
 
   _proto.loadMedia = function loadMedia(media, ready) {
-    var _this14 = this;
+    var _this15 = this;
 
     if (!media || typeof media !== 'object') {
       return;
@@ -24344,7 +24401,7 @@ function (_Component) {
 
     if (Array.isArray(textTracks)) {
       textTracks.forEach(function (tt) {
-        return _this14.addRemoteTextTrack(tt, false);
+        return _this15.addRemoteTextTrack(tt, false);
       });
     }
 
