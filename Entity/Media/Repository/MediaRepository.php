@@ -31,6 +31,7 @@ class MediaRepository extends EntityRepository
     {
         $qb = $this->createQueryBuilder('m');
         $query = $qb->select('m')
+            ->orderBy('m.title')
             ->setFirstResult($page * $perPage)
             ->setMaxResults($perPage)
         ;
