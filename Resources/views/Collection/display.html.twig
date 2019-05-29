@@ -48,23 +48,26 @@
                 </a>
             {% endif %}
             {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
-            {% set enhancePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS')) %}
-            {% set changePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS')) %}
             {% if editCollectionPermission %}
                 <a href="{{ path('cmfcmfmediamodule_collection_edit', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
                     <i class="fa fa-edit"></i> {{ __('Edit collection') }}
                 </a>
-            {% endif %}
-            {% if editCollectionPermission %}
+                {# disabled for performance reasons
+                    {% set enhancePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS')) %}
+                    {% set changePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS')) %}
+                    <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
+                        <i class="fa fa-user-secret"></i>
+                        {% if changePermissionsPermission %}
+                            {{ __('View and change permissions') }}
+                        {% elseif enhancePermissionsPermission %}
+                            {{ __('Invite people and view permissions') }}
+                        {% else %}
+                            {{ __('View permissions') }}
+                        {% endif %}
+                    </a>
+                #}
                 <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
-                    <i class="fa fa-user-secret"></i>
-                    {% if changePermissionsPermission %}
-                        {{ __('View and change permissions') }}
-                    {% elseif enhancePermissionsPermission %}
-                        {{ __('Invite people and view permissions') }}
-                    {% else %}
-                        {{ __('View permissions') }}
-                    {% endif %}
+                    <i class="fa fa-user-secret"></i> {{ __('View permissions') }}
                 </a>
             {% endif %}
             {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION')) %}
