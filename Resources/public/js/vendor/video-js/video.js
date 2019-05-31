@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.5.4 <http://videojs.com/>
+ * Video.js 7.5.5 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -18,7 +18,7 @@
   window$1 = window$1 && window$1.hasOwnProperty('default') ? window$1['default'] : window$1;
   document = document && document.hasOwnProperty('default') ? document['default'] : document;
 
-  var version = "7.5.4";
+  var version = "7.5.5";
 
   function _inheritsLoose(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype);
@@ -4217,7 +4217,7 @@
       this.el_.blur();
     }
     /**
-     * When this Component receives a keydown event which it does not process,
+     * When this Component receives a `keydown` event which it does not process,
      *  it passes the event to the Player for handling.
      *
      * @param {EventTarget~Event} event
@@ -4225,10 +4225,27 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
+    _proto.handleKeyDown = function handleKeyDown(event) {
       if (this.player_) {
-        this.player_.handleKeyPress(event);
+        // We only stop propagation here because we want unhandled events to fall
+        // back to the browser.
+        event.stopPropagation();
+        this.player_.handleKeyDown(event);
       }
+    }
+    /**
+     * Many components used to have a `handleKeyPress` method, which was poorly
+     * named because it listened to a `keydown` event. This method name now
+     * delegates to `handleKeyDown`. This means anyone calling `handleKeyPress`
+     * will not see their method calls stop working.
+     *
+     * @param {EventTarget~Event} event
+     *        The event that caused this function to be called.
+     */
+    ;
+
+    _proto.handleKeyPress = function handleKeyPress(event) {
+      this.handleKeyDown(event);
     }
     /**
      * Emit a 'tap' events when touch event support gets detected. This gets used to
@@ -5741,22 +5758,6 @@
       return MODAL_CLASS_NAME + " vjs-hidden " + _Component.prototype.buildCSSClass.call(this);
     }
     /**
-     * Handles `keydown` events on the document, looking for ESC, which closes
-     * the modal.
-     *
-     * @param {EventTarget~Event} event
-     *        The keypress that triggered this event.
-     *
-     * @listens keydown
-     */
-    ;
-
-    _proto.handleKeyPress = function handleKeyPress(event) {
-      if (keycode.isEventKey(event, 'Escape') && this.closeable()) {
-        this.close();
-      }
-    }
-    /**
      * Returns the label string for this modal. Primarily used for accessibility.
      *
      * @return {string}
@@ -5819,10 +5820,7 @@
           player.pause();
         }
 
-        if (this.closeable()) {
-          this.on(this.el_.ownerDocument, 'keydown', bind(this, this.handleKeyPress));
-        } // Hide controls and note if they were enabled.
-
+        this.on('keydown', this.handleKeyDown); // Hide controls and note if they were enabled.
 
         this.hadControls_ = player.controls();
         player.controls(false);
@@ -5887,9 +5885,7 @@
         player.play();
       }
 
-      if (this.closeable()) {
-        this.off(this.el_.ownerDocument, 'keydown', bind(this, this.handleKeyPress));
-      }
+      this.off('keydown', this.handleKeyDown);
 
       if (this.hadControls_) {
         player.controls(true);
@@ -6075,7 +6071,6 @@
       if (playerEl.contains(activeEl) || playerEl === activeEl) {
         this.previouslyActiveEl_ = activeEl;
         this.focus();
-        this.on(document, 'keydown', this.handleKeyDown);
       }
     }
     /**
@@ -6090,8 +6085,6 @@
         this.previouslyActiveEl_.focus();
         this.previouslyActiveEl_ = null;
       }
-
-      this.off(document, 'keydown', this.handleKeyDown);
     }
     /**
      * Keydown handler. Attached when modal is focused.
@@ -6101,7 +6094,16 @@
     ;
 
     _proto.handleKeyDown = function handleKeyDown(event) {
-      // exit early if it isn't a tab key
+      // Do not allow keydowns to reach out of the modal dialog.
+      event.stopPropagation();
+
+      if (keycode.isEventKey(event, 'Escape') && this.closeable()) {
+        event.preventDefault();
+        this.close();
+        return;
+      } // exit early if it isn't a tab key
+
+
       if (!keycode.isEventKey(event, 'Tab')) {
         return;
       }
@@ -12209,8 +12211,8 @@
   Component.registerComponent('MediaLoader', MediaLoader);
 
   /**
-   * Clickable Component which is clickable or keyboard actionable,
-   * but is not a native HTML button.
+   * Component which is clickable or keyboard actionable, but is not a
+   * native HTML button.
    *
    * @extends Component
    */
@@ -12241,7 +12243,7 @@
       return _this;
     }
     /**
-     * Create the `Component`s DOM element.
+     * Create the `ClickableComponent`s DOM element.
      *
      * @param {string} [tag=div]
      *        The element's node type.
@@ -12301,7 +12303,7 @@
       _Component.prototype.dispose.call(this);
     }
     /**
-     * Create a control text element on this `Component`
+     * Create a control text element on this `ClickableComponent`
      *
      * @param {Element} [el]
      *        Parent element for the control text.
@@ -12327,7 +12329,7 @@
       return this.controlTextEl_;
     }
     /**
-     * Get or set the localize text to use for the controls on the `Component`.
+     * Get or set the localize text to use for the controls on the `ClickableComponent`.
      *
      * @param {string} [text]
      *        Control text for element.
@@ -12370,7 +12372,7 @@
       return "vjs-control vjs-button " + _Component.prototype.buildCSSClass.call(this);
     }
     /**
-     * Enable this `Component`s element.
+     * Enable this `ClickableComponent`
      */
     ;
 
@@ -12385,12 +12387,11 @@
         }
 
         this.on(['tap', 'click'], this.handleClick);
-        this.on('focus', this.handleFocus);
-        this.on('blur', this.handleBlur);
+        this.on('keydown', this.handleKeyDown);
       }
     }
     /**
-     * Disable this `Component`s element.
+     * Disable this `ClickableComponent`
      */
     ;
 
@@ -12404,26 +12405,14 @@
       }
 
       this.off(['tap', 'click'], this.handleClick);
-      this.off('focus', this.handleFocus);
-      this.off('blur', this.handleBlur);
+      this.off('keydown', this.handleKeyDown);
     }
     /**
-     * This gets called when a `ClickableComponent` gets:
-     * - Clicked (via the `click` event, listening starts in the constructor)
-     * - Tapped (via the `tap` event, listening starts in the constructor)
-     * - The following things happen in order:
-     *   1. {@link ClickableComponent#handleFocus} is called via a `focus` event on the
-     *      `ClickableComponent`.
-     *   2. {@link ClickableComponent#handleFocus} adds a listener for `keydown` on using
-     *      {@link ClickableComponent#handleKeyPress}.
-     *   3. `ClickableComponent` has not had a `blur` event (`blur` means that focus was lost). The user presses
-     *      the space or enter key.
-     *   4. {@link ClickableComponent#handleKeyPress} calls this function with the `keydown`
-     *      event as a parameter.
+     * Event handler that is called when a `ClickableComponent` receives a
+     * `click` or `tap` event.
      *
      * @param {EventTarget~Event} event
-     *        The `keydown`, `tap`, or `click` event that caused this function to be
-     *        called.
+     *        The `tap` or `click` event that caused this function to be called.
      *
      * @listens tap
      * @listens click
@@ -12433,23 +12422,10 @@
 
     _proto.handleClick = function handleClick(event) {}
     /**
-     * This gets called when a `ClickableComponent` gains focus via a `focus` event.
-     * Turns on listening for `keydown` events. When they happen it
-     * calls `this.handleKeyPress`.
+     * Event handler that is called when a `ClickableComponent` receives a
+     * `keydown` event.
      *
-     * @param {EventTarget~Event} event
-     *        The `focus` event that caused this function to be called.
-     *
-     * @listens focus
-     */
-    ;
-
-    _proto.handleFocus = function handleFocus(event) {
-      on(document, 'keydown', bind(this, this.handleKeyPress));
-    }
-    /**
-     * Called when this ClickableComponent has focus and a key gets pressed down. By
-     * default it will call `this.handleClick` when the key is space or enter.
+     * By default, if the key is Space or Enter, it will trigger a `click` event.
      *
      * @param {EventTarget~Event} event
      *        The `keydown` event that caused this function to be called.
@@ -12458,29 +12434,18 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
-      // Support Space or Enter key operation to fire a click event
+    _proto.handleKeyDown = function handleKeyDown(event) {
+      // Support Space or Enter key operation to fire a click event. Also,
+      // prevent the event from propagating through the DOM and triggering
+      // Player hotkeys.
       if (keycode.isEventKey(event, 'Space') || keycode.isEventKey(event, 'Enter')) {
         event.preventDefault();
+        event.stopPropagation();
         this.trigger('click');
       } else {
         // Pass keypress handling up for unsupported keys
-        _Component.prototype.handleKeyPress.call(this, event);
+        _Component.prototype.handleKeyDown.call(this, event);
       }
-    }
-    /**
-     * Called when a `ClickableComponent` loses focus. Turns off the listener for
-     * `keydown` events. Which Stops `this.handleKeyPress` from getting called.
-     *
-     * @param {EventTarget~Event} event
-     *        The `blur` event that caused this function to be called.
-     *
-     * @listens blur
-     */
-    ;
-
-    _proto.handleBlur = function handleBlur(event) {
-      off(document, 'keydown', bind(this, this.handleKeyPress));
     };
 
     return ClickableComponent;
@@ -12604,14 +12569,13 @@
         return;
       }
 
+      this.player_.tech(true).focus();
+
       if (this.player_.paused()) {
         silencePromise(this.player_.play());
       } else {
         this.player_.pause();
-      } // call handleFocus manually to get hotkeys working
-
-
-      this.player_.handleFocus({});
+      }
     };
 
     return PosterImage;
@@ -13149,12 +13113,19 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
-      // Ignore Space or Enter key operation, which is handled by the browser for a button.
-      if (!(keycode.isEventKey(event, 'Space') || keycode.isEventKey(event, 'Enter'))) {
-        // Pass keypress handling up for unsupported keys
-        _ClickableComponent.prototype.handleKeyPress.call(this, event);
-      }
+    _proto.handleKeyDown = function handleKeyDown(event) {
+      // Ignore Space or Enter key operation, which is handled by the browser for
+      // a button - though not for its super class, ClickableComponent. Also,
+      // prevent the event from propagating through the DOM and triggering Player
+      // hotkeys. We do not preventDefault here because we _want_ the browser to
+      // handle it.
+      if (keycode.isEventKey(event, 'Space') || keycode.isEventKey(event, 'Enter')) {
+        event.stopPropagation();
+        return;
+      } // Pass keypress handling up for unsupported keys
+
+
+      _ClickableComponent.prototype.handleKeyDown.call(this, event);
     };
 
     return Button;
@@ -13214,9 +13185,8 @@
       var playPromise = this.player_.play(); // exit early if clicked via the mouse
 
       if (this.mouseused_ && event.clientX && event.clientY) {
-        silencePromise(playPromise); // call handleFocus manually to get hotkeys working
-
-        this.player_.handleFocus({});
+        silencePromise(playPromise);
+        this.player_.tech(true).focus();
         return;
       }
 
@@ -13224,7 +13194,7 @@
       var playToggle = cb && cb.getChild('playToggle');
 
       if (!playToggle) {
-        this.player_.focus();
+        this.player_.tech(true).focus();
         return;
       }
 
@@ -13239,10 +13209,10 @@
       }
     };
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
+    _proto.handleKeyDown = function handleKeyDown(event) {
       this.mouseused_ = false;
 
-      _Button.prototype.handleKeyPress.call(this, event);
+      _Button.prototype.handleKeyDown.call(this, event);
     };
 
     _proto.handleMouseDown = function handleMouseDown(event) {
@@ -13306,24 +13276,9 @@
       return "vjs-close-button " + _Button.prototype.buildCSSClass.call(this);
     }
     /**
-     * This gets called when a `CloseButton` has focus and `keydown` is triggered via a key
-     * press.
-     *
-     * @param {EventTarget~Event} event
-     *        The event that caused this function to get called.
-     *
-     * @listens keydown
-     */
-    ;
-
-    _proto.handleKeyPress = function handleKeyPress(event) {} // Override the default `Button` behavior, and don't pass the keypress event
-    //  up to the player because this button is part of a `ModalDialog`, which
-    //  doesn't pass keypresses to the player either.
-
-    /**
      * This gets called when a `CloseButton` gets clicked. See
-     * {@link ClickableComponent#handleClick} for more information on when this will be
-     * triggered
+     * {@link ClickableComponent#handleClick} for more information on when
+     * this will be triggered
      *
      * @param {EventTarget~Event} event
      *        The `keydown`, `tap`, or `click` event that caused this function to be
@@ -14389,8 +14344,7 @@
 
       this.on('mousedown', this.handleMouseDown);
       this.on('touchstart', this.handleMouseDown);
-      this.on('focus', this.handleFocus);
-      this.on('blur', this.handleBlur);
+      this.on('keydown', this.handleKeyDown);
       this.on('click', this.handleClick);
       this.on(this.player_, 'controlsvisible', this.update);
 
@@ -14415,8 +14369,7 @@
       var doc = this.bar.el_.ownerDocument;
       this.off('mousedown', this.handleMouseDown);
       this.off('touchstart', this.handleMouseDown);
-      this.off('focus', this.handleFocus);
-      this.off('blur', this.handleBlur);
+      this.off('keydown', this.handleKeyDown);
       this.off('click', this.handleClick);
       this.off(this.player_, 'controlsvisible', this.update);
       this.off(doc, 'mousemove', this.handleMouseMove);
@@ -14629,19 +14582,6 @@
       return position.x;
     }
     /**
-     * Handle a `focus` event on this `Slider`.
-     *
-     * @param {EventTarget~Event} event
-     *        The `focus` event that caused this function to run.
-     *
-     * @listens focus
-     */
-    ;
-
-    _proto.handleFocus = function handleFocus() {
-      this.on(this.bar.el_.ownerDocument, 'keydown', this.handleKeyPress);
-    }
-    /**
      * Handle a `keydown` event on the `Slider`. Watches for left, rigth, up, and down
      * arrow keys. This function will only be called when the slider has focus. See
      * {@link Slider#handleFocus} and {@link Slider#handleBlur}.
@@ -14653,31 +14593,20 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
+    _proto.handleKeyDown = function handleKeyDown(event) {
       // Left and Down Arrows
       if (keycode.isEventKey(event, 'Left') || keycode.isEventKey(event, 'Down')) {
         event.preventDefault();
+        event.stopPropagation();
         this.stepBack(); // Up and Right Arrows
       } else if (keycode.isEventKey(event, 'Right') || keycode.isEventKey(event, 'Up')) {
         event.preventDefault();
+        event.stopPropagation();
         this.stepForward();
       } else {
-        // Pass keypress handling up for unsupported keys
-        _Component.prototype.handleKeyPress.call(this, event);
+        // Pass keydown handling up for unsupported keys
+        _Component.prototype.handleKeyDown.call(this, event);
       }
-    }
-    /**
-     * Handle a `blur` event on this `Slider`.
-     *
-     * @param {EventTarget~Event} event
-     *        The `blur` event that caused this function to run.
-     *
-     * @listens blur
-     */
-    ;
-
-    _proto.handleBlur = function handleBlur() {
-      this.off(this.bar.el_.ownerDocument, 'keydown', this.handleKeyPress);
     }
     /**
      * Listener for click events on slider, used to prevent clicks
@@ -14689,7 +14618,7 @@
     ;
 
     _proto.handleClick = function handleClick(event) {
-      event.stopImmediatePropagation();
+      event.stopPropagation();
       event.preventDefault();
     }
     /**
@@ -15537,29 +15466,35 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
+    _proto.handleKeyDown = function handleKeyDown(event) {
       if (keycode.isEventKey(event, 'Space') || keycode.isEventKey(event, 'Enter')) {
         event.preventDefault();
+        event.stopPropagation();
         this.handleAction(event);
       } else if (keycode.isEventKey(event, 'Home')) {
         event.preventDefault();
+        event.stopPropagation();
         this.player_.currentTime(0);
       } else if (keycode.isEventKey(event, 'End')) {
         event.preventDefault();
+        event.stopPropagation();
         this.player_.currentTime(this.player_.duration());
       } else if (/^[0-9]$/.test(keycode(event))) {
         event.preventDefault();
+        event.stopPropagation();
         var gotoFraction = (keycode.codes[keycode(event)] - keycode.codes['0']) * 10.0 / 100.0;
         this.player_.currentTime(this.player_.duration() * gotoFraction);
       } else if (keycode.isEventKey(event, 'PgDn')) {
         event.preventDefault();
+        event.stopPropagation();
         this.player_.currentTime(this.player_.currentTime() - STEP_SECONDS * PAGE_KEY_MULTIPLIER);
       } else if (keycode.isEventKey(event, 'PgUp')) {
         event.preventDefault();
+        event.stopPropagation();
         this.player_.currentTime(this.player_.currentTime() + STEP_SECONDS * PAGE_KEY_MULTIPLIER);
       } else {
-        // Pass keypress handling up for unsupported keys
-        _Slider.prototype.handleKeyPress.call(this, event);
+        // Pass keydown handling up for unsupported keys
+        _Slider.prototype.handleKeyDown.call(this, event);
       }
     };
 
@@ -16666,7 +16601,7 @@
 
       _this.focusedChild_ = -1;
 
-      _this.on('keydown', _this.handleKeyPress); // All the menu item instances share the same blur handler provided by the menu container.
+      _this.on('keydown', _this.handleKeyDown); // All the menu item instances share the same blur handler provided by the menu container.
 
 
       _this.boundHandleBlur_ = bind(_assertThisInitialized(_assertThisInitialized(_this)), _this.handleBlur);
@@ -16850,13 +16785,15 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
+    _proto.handleKeyDown = function handleKeyDown(event) {
       // Left and Down Arrows
       if (keycode.isEventKey(event, 'Left') || keycode.isEventKey(event, 'Down')) {
         event.preventDefault();
+        event.stopPropagation();
         this.stepForward(); // Up and Right Arrows
       } else if (keycode.isEventKey(event, 'Right') || keycode.isEventKey(event, 'Up')) {
         event.preventDefault();
+        event.stopPropagation();
         this.stepBack();
       }
     }
@@ -16975,15 +16912,13 @@
 
       _this.on(_this.menuButton_, 'click', _this.handleClick);
 
-      _this.on(_this.menuButton_, 'focus', _this.handleFocus);
-
-      _this.on(_this.menuButton_, 'blur', _this.handleBlur);
+      _this.on(_this.menuButton_, 'keydown', _this.handleKeyDown);
 
       _this.on(_this.menuButton_, 'mouseenter', function () {
         _this.menu.show();
       });
 
-      _this.on('keydown', _this.handleSubmenuKeyPress);
+      _this.on('keydown', _this.handleSubmenuKeyDown);
 
       return _this;
     }
@@ -17188,37 +17123,8 @@
       this.menuButton_.blur();
     }
     /**
-     * This gets called when a `MenuButton` gains focus via a `focus` event.
-     * Turns on listening for `keydown` events. When they happen it
-     * calls `this.handleKeyPress`.
-     *
-     * @param {EventTarget~Event} event
-     *        The `focus` event that caused this function to be called.
-     *
-     * @listens focus
-     */
-    ;
-
-    _proto.handleFocus = function handleFocus() {
-      on(document, 'keydown', bind(this, this.handleKeyPress));
-    }
-    /**
-     * Called when a `MenuButton` loses focus. Turns off the listener for
-     * `keydown` events. Which Stops `this.handleKeyPress` from getting called.
-     *
-     * @param {EventTarget~Event} event
-     *        The `blur` event that caused this function to be called.
-     *
-     * @listens blur
-     */
-    ;
-
-    _proto.handleBlur = function handleBlur() {
-      off(document, 'keydown', bind(this, this.handleKeyPress));
-    }
-    /**
      * Handle tab, escape, down arrow, and up arrow keys for `MenuButton`. See
-     * {@link ClickableComponent#handleKeyPress} for instances where this is called.
+     * {@link ClickableComponent#handleKeyDown} for instances where this is called.
      *
      * @param {EventTarget~Event} event
      *        The `keydown` event that caused this function to be called.
@@ -17227,7 +17133,7 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
+    _proto.handleKeyDown = function handleKeyDown(event) {
       // Escape or Tab unpress the 'button'
       if (keycode.isEventKey(event, 'Esc') || keycode.isEventKey(event, 'Tab')) {
         if (this.buttonPressed_) {
@@ -17249,6 +17155,19 @@
       }
     }
     /**
+     * This method name now delegates to `handleSubmenuKeyDown`. This means
+     * anyone calling `handleSubmenuKeyPress` will not see their method calls
+     * stop working.
+     *
+     * @param {EventTarget~Event} event
+     *        The event that caused this function to be called.
+     */
+    ;
+
+    _proto.handleSubmenuKeyPress = function handleSubmenuKeyPress(event) {
+      this.handleSubmenuKeyDown(event);
+    }
+    /**
      * Handle a `keydown` event on a sub-menu. The listener for this is added in
      * the constructor.
      *
@@ -17259,7 +17178,7 @@
      */
     ;
 
-    _proto.handleSubmenuKeyPress = function handleSubmenuKeyPress(event) {
+    _proto.handleSubmenuKeyDown = function handleSubmenuKeyDown(event) {
       // Escape or Tab unpress the 'button'
       if (keycode.isEventKey(event, 'Esc') || keycode.isEventKey(event, 'Tab')) {
         if (this.buttonPressed_) {
@@ -17474,7 +17393,7 @@
     }
     /**
      * Ignore keys which are used by the menu, but pass any other ones up. See
-     * {@link ClickableComponent#handleKeyPress} for instances where this is called.
+     * {@link ClickableComponent#handleKeyDown} for instances where this is called.
      *
      * @param {EventTarget~Event} event
      *        The `keydown` event that caused this function to be called.
@@ -17483,12 +17402,12 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
+    _proto.handleKeyDown = function handleKeyDown(event) {
       if (!MenuKeys.some(function (key) {
         return keycode.isEventKey(event, key);
       })) {
-        // Pass keypress handling up for unused keys
-        _ClickableComponent.prototype.handleKeyPress.call(this, event);
+        // Pass keydown handling up for unused keys
+        _ClickableComponent.prototype.handleKeyDown.call(this, event);
       }
     }
     /**
@@ -17568,7 +17487,10 @@
       options.label = track.label || track.language || 'Unknown';
       options.selected = track.mode === 'showing';
       _this = _MenuItem.call(this, player, options) || this;
-      _this.track = track;
+      _this.track = track; // Determine the relevant kind(s) of tracks for this component and filter
+      // out empty kinds.
+
+      _this.kinds = (options.kinds || [options.kind || _this.track.kind]).filter(Boolean);
 
       var changeHandler = function changeHandler() {
         for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -17651,17 +17573,13 @@
 
       if (!tracks) {
         return;
-      } // Determine the relevant kind(s) of tracks for this component and filter
-      // out empty kinds.
-
-
-      var kinds = (referenceTrack.kinds || [referenceTrack.kind]).filter(Boolean);
+      }
 
       for (var i = 0; i < tracks.length; i++) {
         var track = tracks[i]; // If the track from the text tracks list is not of the right kind,
         // skip it. We do not want to affect tracks of incompatible kind(s).
 
-        if (kinds.indexOf(track.kind) === -1) {
+        if (this.kinds.indexOf(track.kind) === -1) {
           continue;
         } // If this text track is the component's track and it is not showing,
         // set it to showing.
@@ -17750,6 +17668,9 @@
       // Requires options['kind']
       options.track = {
         player: player,
+        // it is no longer necessary to store `kind` or `kinds` on the track itself
+        // since they are now stored in the `kinds` property of all instances of
+        // TextTrackMenuItem, but this will remain for backwards compatibility
         kind: options.kind,
         kinds: options.kinds,
         default: false,
@@ -17904,6 +17825,8 @@
         if (this.kinds_.indexOf(track.kind) > -1) {
           var item = new TrackMenuItem(this.player_, {
             track: track,
+            kinds: this.kinds_,
+            kind: this.kind_,
             // MenuItem is selectable
             selectable: true,
             // MenuItem is NOT multiSelectable (i.e. only one can be marked "selected" at a time)
@@ -19855,7 +19778,6 @@
 
     _proto.conditionalBlur_ = function conditionalBlur_() {
       this.previouslyActiveEl_ = null;
-      this.off(document, 'keydown', this.handleKeyDown);
       var cb = this.player_.controlBar;
       var subsCapsBtn = cb && cb.subsCapsButton;
       var ccBtn = cb && cb.captionsButton;
@@ -22838,8 +22760,7 @@
       _this = _Component.call(this, null, options, ready) || this; // Create bound methods for document listeners.
 
       _this.boundDocumentFullscreenChange_ = bind(_assertThisInitialized(_assertThisInitialized(_this)), _this.documentFullscreenChange_);
-      _this.boundFullWindowOnEscKey_ = bind(_assertThisInitialized(_assertThisInitialized(_this)), _this.fullWindowOnEscKey);
-      _this.boundHandleKeyPress_ = bind(_assertThisInitialized(_assertThisInitialized(_this)), _this.handleKeyPress); // create logger
+      _this.boundFullWindowOnEscKey_ = bind(_assertThisInitialized(_assertThisInitialized(_this)), _this.fullWindowOnEscKey); // create logger
 
       _this.log = createLogger$1(_this.id_); // Tracks when a tech changes the poster
 
@@ -23001,11 +22922,9 @@
 
       _this.one('play', _this.listenForUserActivity_);
 
-      _this.on('focus', _this.handleFocus);
-
-      _this.on('blur', _this.handleBlur);
-
       _this.on('stageclick', _this.handleStageClick_);
+
+      _this.on('keydown', _this.handleKeyDown);
 
       _this.breakpoints(_this.options_.breakpoints);
 
@@ -23040,7 +22959,6 @@
 
       off(document, FullscreenApi.fullscreenchange, this.boundDocumentFullscreenChange_);
       off(document, 'keydown', this.boundFullWindowOnEscKey_);
-      off(document, 'keydown', this.boundHandleKeyPress_);
 
       if (this.styleEl_ && this.styleEl_.parentNode) {
         this.styleEl_.parentNode.removeChild(this.styleEl_);
@@ -24488,7 +24406,16 @@
 
     _proto.documentFullscreenChange_ = function documentFullscreenChange_(e) {
       var fsApi = FullscreenApi;
-      this.isFullscreen(document[fsApi.fullscreenElement] === this.el() || this.el().matches(':' + fsApi.fullscreen)); // If cancelling fullscreen, remove event listener.
+      var el = this.el();
+      var isFs = document[fsApi.fullscreenElement] === el;
+
+      if (!isFs && el.matches) {
+        isFs = el.matches(':' + fsApi.fullscreen);
+      } else if (!isFs && el.msMatchesSelector) {
+        isFs = el.msMatchesSelector(':' + fsApi.fullscreen);
+      }
+
+      this.isFullscreen(isFs); // If cancelling fullscreen, remove event listener.
 
       if (this.isFullscreen() === false) {
         off(document, fsApi.fullscreenchange, this.boundDocumentFullscreenChange_);
@@ -25178,6 +25105,20 @@
         return;
       }
 
+      if (prefixedAPI) {
+        var fsApi = FullscreenApi;
+        var el = this.el();
+        var isFs = document[fsApi.fullscreenElement] === el;
+
+        if (!isFs && el.matches) {
+          isFs = el.matches(':' + fsApi.fullscreen);
+        } else if (!isFs && el.msMatchesSelector) {
+          isFs = el.msMatchesSelector(':' + fsApi.fullscreen);
+        }
+
+        return isFs;
+      }
+
       return !!this.isFullscreen_;
     }
     /**
@@ -25315,37 +25256,6 @@
       this.trigger('exitFullWindow');
     }
     /**
-     * This gets called when a `Player` gains focus via a `focus` event.
-     * Turns on listening for `keydown` events. When they happen it
-     * calls `this.handleKeyPress`.
-     *
-     * @param {EventTarget~Event} event
-     *        The `focus` event that caused this function to be called.
-     *
-     * @listens focus
-     */
-    ;
-
-    _proto.handleFocus = function handleFocus(event) {
-      // call off first to make sure we don't keep adding keydown handlers
-      off(document, 'keydown', this.boundHandleKeyPress_);
-      on(document, 'keydown', this.boundHandleKeyPress_);
-    }
-    /**
-     * Called when a `Player` loses focus. Turns off the listener for
-     * `keydown` events. Which Stops `this.handleKeyPress` from getting called.
-     *
-     * @param {EventTarget~Event} event
-     *        The `blur` event that caused this function to be called.
-     *
-     * @listens blur
-     */
-    ;
-
-    _proto.handleBlur = function handleBlur(event) {
-      off(document, 'keydown', this.boundHandleKeyPress_);
-    }
-    /**
      * Called when this Player has focus and a key gets pressed down, or when
      * any Component of this player receives a key press that it doesn't handle.
      * This allows player-wide hotkeys (either as defined below, or optionally
@@ -25358,13 +25268,39 @@
      */
     ;
 
-    _proto.handleKeyPress = function handleKeyPress(event) {
-      if (this.options_.userActions && this.options_.userActions.hotkeys && this.options_.userActions.hotkeys !== false) {
-        if (typeof this.options_.userActions.hotkeys === 'function') {
-          this.options_.userActions.hotkeys.call(this, event);
-        } else {
-          this.handleHotkeys(event);
+    _proto.handleKeyDown = function handleKeyDown(event) {
+      var userActions = this.options_.userActions; // Bail out if hotkeys are not configured.
+
+      if (!userActions || !userActions.hotkeys) {
+        return;
+      } // Function that determines whether or not to exclude an element from
+      // hotkeys handling.
+
+
+      var excludeElement = function excludeElement(el) {
+        var tagName = el.tagName.toLowerCase(); // These tags will be excluded entirely.
+
+        var excludedTags = ['textarea']; // Inputs matching these types will still trigger hotkey handling as
+        // they are not text inputs.
+
+        var allowedInputTypes = ['button', 'checkbox', 'hidden', 'radio', 'reset', 'submit'];
+
+        if (tagName === 'input') {
+          return allowedInputTypes.indexOf(el.type) === -1;
         }
+
+        return excludedTags.indexOf(tagName) !== -1;
+      }; // Bail out if the user is focused on an interactive form element.
+
+
+      if (excludeElement(this.el_.ownerDocument.activeElement)) {
+        return;
+      }
+
+      if (typeof userActions.hotkeys === 'function') {
+        userActions.hotkeys.call(this, event);
+      } else {
+        this.handleHotkeys(event);
       }
     }
     /**
@@ -25398,6 +25334,7 @@
 
       if (fullscreenKey.call(this, event)) {
         event.preventDefault();
+        event.stopPropagation();
         var FSToggle = Component.getComponent('FullscreenToggle');
 
         if (document[FullscreenApi.fullscreenEnabled] !== false) {
@@ -25405,10 +25342,12 @@
         }
       } else if (muteKey.call(this, event)) {
         event.preventDefault();
+        event.stopPropagation();
         var MuteToggle = Component.getComponent('MuteToggle');
         MuteToggle.prototype.handleClick.call(this);
       } else if (playPauseKey.call(this, event)) {
         event.preventDefault();
+        event.stopPropagation();
         var PlayToggle = Component.getComponent('PlayToggle');
         PlayToggle.prototype.handleClick.call(this);
       }
