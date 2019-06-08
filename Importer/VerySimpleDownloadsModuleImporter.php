@@ -114,11 +114,11 @@ SQL
                     ->setTitle($download['downloadTitle'])
                     ->setDescription($download['downloadDescription'])
                     ->setCollection($collection)
-                    ->setCreatedBy($download['createdBy'])
-                    ->setUpdatedBy($download['updatedBy'])
-                    ->setCreatedDate(new \DateTime($download['createdDate']))
-                    ->setUpdatedDate(new \DateTime($download['updatedDate']))
                 ;
+                $entity->setCreatedBy($download['createdBy']);
+                $entity->setUpdatedBy($download['updatedBy']);
+                $entity->setCreatedDate(new \DateTime($download['createdDate']));
+                $entity->setUpdatedDate(new \DateTime($download['updatedDate']));
 
                 $this->uploadManager->markEntityToUpload($entity, ImportedFile::fromFile($file));
             }

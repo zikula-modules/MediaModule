@@ -113,11 +113,11 @@ SQL;
                     ->setTitle($download['title'])
                     ->setDescription($download['description'])
                     ->setCollection($collection)
-                    //->setCreatedBy()
-                    //->setUpdatedBy()
-                    ->setCreatedDate(new \DateTime($download['ddate']))
-                    ->setUpdatedDate(new \DateTime($download['uupdate']))
                 ;
+                //$entity->setCreatedBy();
+                //$entity->setUpdatedBy();
+                $entity->setCreatedDate(new \DateTime($download['ddate']));
+                $entity->setUpdatedDate(new \DateTime($download['uupdate']));
                 $this->em->persist($entity);
             }
         }
