@@ -473,7 +473,7 @@ class MediaController extends AbstractController
             } else {
                 $result[$c] = $selectedMediaType->getAlias();
 
-                if ($lastResult !== -1 && $lastResult !== $result[$c]) {
+                if (-1 !== $lastResult && $lastResult !== $result[$c]) {
                     $multiple = true;
                 }
                 $lastResult = $result[$c];

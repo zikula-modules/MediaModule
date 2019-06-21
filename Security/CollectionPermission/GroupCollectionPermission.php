@@ -66,7 +66,7 @@ class GroupCollectionPermission extends AbstractCollectionPermission
 
         $groupNames = $this->groupRepository->getGroupNamesById();
         foreach ($permissionEntity->getGroupIds() as $groupId) {
-            if ($groupId === -1) {
+            if (-1 === $groupId) {
                 $targets[] = $this->translator->trans('All groups', [], 'cmfcmfmediamodule');
             } elseif (isset($groupNames[$groupId])) {
                 $targets[] = $groupNames[$groupId];
