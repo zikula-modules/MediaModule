@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.6.0 <http://videojs.com/>
+ * Video.js 7.6.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -28,7 +28,7 @@ var mp4 = require('mux.js/lib/mp4');
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.6.0";
+var version = "7.6.1";
 
 function _inheritsLoose(subClass, superClass) {
   subClass.prototype = Object.create(superClass.prototype);
@@ -552,8 +552,8 @@ function computedStyle(el, prop) {
   }
 
   if (typeof window$1.getComputedStyle === 'function') {
-    var cs = window$1.getComputedStyle(el);
-    return cs ? cs[prop] : '';
+    var computedStyleValue = window$1.getComputedStyle(el);
+    return computedStyleValue ? computedStyleValue.getPropertyValue(prop) || computedStyleValue[prop] : '';
   }
 
   return '';
@@ -1348,7 +1348,7 @@ function isSingleLeftClick(event) {
   // `button` and `buttons` equal to 0
 
 
-  if (event.button === 0 && event.buttons === 0) {
+  if (event.type === 'mouseup' && event.button === 0 && event.buttons === 0) {
     return true;
   }
 
@@ -2163,6 +2163,7 @@ var setTextContent = function setTextContent(el, content) {
  * @file fn.js
  * @module fn
  */
+var UPDATE_REFRESH_INTERVAL = 30;
 /**
  * Bind (a.k.a proxy or context). A simple method for changing the context of
  * a function.
@@ -2191,15 +2192,12 @@ var bind = function bind(context, fn, uid) {
   } // Create the new function that changes the context
 
 
-  var bound = function bound() {
-    return fn.apply(context, arguments);
-  }; // Allow for the ability to individualize this function
+  var bound = fn.bind(context); // Allow for the ability to individualize this function
   // Needed in the case where multiple objects might share the same prototype
   // IF both items add an event listener with the same function, then you try to remove just one
   // it will remove both because they both have the same guid.
   // when using this, you need to use the bind method when you remove the listener as well.
   // currently used in text tracks
-
 
   bound.guid = uid ? uid + '_' + fn.guid : fn.guid;
   return bound;
@@ -4223,17 +4221,13 @@ function () {
       throw new Error('currentDimension only accepts width or height value');
     }
 
-    if (typeof window$1.getComputedStyle === 'function') {
-      var computedStyle = window$1.getComputedStyle(this.el_);
-      computedWidthOrHeight = computedStyle.getPropertyValue(widthOrHeight) || computedStyle[widthOrHeight];
-    } // remove 'px' from variable and parse as integer
-
+    computedWidthOrHeight = computedStyle(this.el_, widthOrHeight); // remove 'px' from variable and parse as integer
 
     computedWidthOrHeight = parseFloat(computedWidthOrHeight); // if the computed value is still 0, it's possible that the browser is lying
     // and we want to check the offset values.
     // This code also runs wherever getComputedStyle doesn't exist.
 
-    if (computedWidthOrHeight === 0) {
+    if (computedWidthOrHeight === 0 || isNaN(computedWidthOrHeight)) {
       var rule = "offset" + toTitleCase(widthOrHeight);
       computedWidthOrHeight = this.el_[rule];
     }
@@ -7110,7 +7104,7 @@ var getAbsoluteURL = function getAbsoluteURL(url) {
 
 var getFileExtension = function getFileExtension(path) {
   if (typeof path === 'string') {
-    var splitPathRe = /^(\/?)([\s\S]*?)((?:\.{1,2}|[^\/]+?)(\.([^\.\/\?]+)))(?:[\/]*|[\?].*)$/i;
+    var splitPathRe = /^(\/?)([\s\S]*?)((?:\.{1,2}|[^\/]+?)(\.([^\.\/\?]+)))(?:[\/]*|[\?].*)$/;
     var pathParts = splitPathRe.exec(path);
 
     if (pathParts) {
@@ -7233,20 +7227,14 @@ var loadTrack = function loadTrack(src, track) {
       if (track.tech_) {
         // to prevent use before define eslint error, we define loadHandler
         // as a let here
-        var loadHandler;
+        track.tech_.any(['vttjsloaded', 'vttjserror'], function (event) {
+          if (event.type === 'vttjserror') {
+            log.error("vttjs failed to load, stopping trying to process " + track.src);
+            return;
+          }
 
-        var errorHandler = function errorHandler() {
-          log.error("vttjs failed to load, stopping trying to process " + track.src);
-          track.tech_.off('vttjsloaded', loadHandler);
-        };
-
-        loadHandler = function loadHandler() {
-          track.tech_.off('vttjserror', errorHandler);
           return parseCues(responseBody, track);
-        };
-
-        track.tech_.one('vttjsloaded', loadHandler);
-        track.tech_.one('vttjserror', errorHandler);
+        });
       }
     } else {
       parseCues(responseBody, track);
@@ -9797,10 +9785,12 @@ var filterSource = function filterSource(src) {
 
 
 function fixSource(src) {
-  var mimetype = getMimetype(src.src);
+  if (!src.type) {
+    var mimetype = getMimetype(src.src);
 
-  if (!src.type && mimetype) {
-    src.type = mimetype;
+    if (mimetype) {
+      src.type = mimetype;
+    }
   }
 
   return src;
@@ -11127,8 +11117,6 @@ function (_Button) {
     } else {
       this.player_.pause();
     }
-
-    event.stopPropagation();
   }
   /**
    * This gets called once after the video has ended and the user seeks so that
@@ -11332,7 +11320,7 @@ function (_Component) {
     var _this;
 
     _this = _Component.call(this, player, options) || this;
-    _this.throttledUpdateContent = throttle(bind(_assertThisInitialized(_this), _this.updateContent), 25);
+    _this.throttledUpdateContent = throttle(bind(_assertThisInitialized(_this), _this.updateContent), UPDATE_REFRESH_INTERVAL);
 
     _this.on(player, 'timeupdate', _this.throttledUpdateContent);
 
@@ -12089,7 +12077,8 @@ function (_Component) {
     this.on('mousedown', this.handleMouseDown);
     this.on('touchstart', this.handleMouseDown);
     this.on('keydown', this.handleKeyDown);
-    this.on('click', this.handleClick);
+    this.on('click', this.handleClick); // TODO: deprecated, controlsvisible does not seem to be fired
+
     this.on(this.player_, 'controlsvisible', this.update);
 
     if (this.playerEvent) {
@@ -12295,10 +12284,10 @@ function (_Component) {
     var percentage = (progress * 100).toFixed(2) + '%';
     var style = bar.el().style; // Set the new bar width or height
 
-    if (this.vertical()) {
-      style.height = percentage;
-    } else {
-      style.width = percentage;
+    var sizeKey = this.vertical() ? 'height' : 'width';
+
+    if (style[sizeKey] !== percentage) {
+      style[sizeKey] = percentage;
     }
 
     return progress;
@@ -12523,18 +12512,32 @@ var TimeTooltip =
 function (_Component) {
   _inheritsLoose(TimeTooltip, _Component);
 
-  function TimeTooltip() {
-    return _Component.apply(this, arguments) || this;
+  /**
+   * Creates an instance of this class.
+   *
+   * @param {Player} player
+   *        The {@link Player} that this class should be attached to.
+   *
+   * @param {Object} [options]
+   *        The key/value store of player options.
+   */
+  function TimeTooltip(player, options) {
+    var _this;
+
+    _this = _Component.call(this, player, options) || this;
+    _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+    return _this;
   }
-
-  var _proto = TimeTooltip.prototype;
-
   /**
    * Create the time tooltip DOM element
    *
    * @return {Element}
    *         The element that was created.
    */
+
+
+  var _proto = TimeTooltip.prototype;
+
   _proto.createEl = function createEl() {
     return _Component.prototype.createEl.call(this, 'div', {
       className: 'vjs-time-tooltip'
@@ -12600,7 +12603,7 @@ function (_Component) {
   /**
    * Write the time to the tooltip DOM element.
    *
-   * @param {String} content
+   * @param {string} content
    *        The formatted time for the tooltip.
    */
   ;
@@ -12628,7 +12631,7 @@ function (_Component) {
   ;
 
   _proto.updateTime = function updateTime(seekBarRect, seekBarPoint, time, cb) {
-    var _this = this;
+    var _this2 = this;
 
     // If there is an existing rAF ID, cancel it so we don't over-queue.
     if (this.rafId_) {
@@ -12638,10 +12641,10 @@ function (_Component) {
     this.rafId_ = this.requestAnimationFrame(function () {
       var content;
 
-      var duration = _this.player_.duration();
+      var duration = _this2.player_.duration();
 
-      if (_this.player_.liveTracker && _this.player_.liveTracker.isLive()) {
-        var liveWindow = _this.player_.liveTracker.liveWindow();
+      if (_this2.player_.liveTracker && _this2.player_.liveTracker.isLive()) {
+        var liveWindow = _this2.player_.liveTracker.liveWindow();
 
         var secondsBehind = liveWindow - seekBarPoint * liveWindow;
         content = (secondsBehind < 1 ? '' : '-') + formatTime(secondsBehind, liveWindow);
@@ -12649,7 +12652,7 @@ function (_Component) {
         content = formatTime(time, duration);
       }
 
-      _this.update(seekBarRect, seekBarPoint, content);
+      _this2.update(seekBarRect, seekBarPoint, content);
 
       if (cb) {
         cb();
@@ -12674,18 +12677,32 @@ var PlayProgressBar =
 function (_Component) {
   _inheritsLoose(PlayProgressBar, _Component);
 
-  function PlayProgressBar() {
-    return _Component.apply(this, arguments) || this;
+  /**
+   * Creates an instance of this class.
+   *
+   * @param {Player} player
+   *        The {@link Player} that this class should be attached to.
+   *
+   * @param {Object} [options]
+   *        The key/value store of player options.
+   */
+  function PlayProgressBar(player, options) {
+    var _this;
+
+    _this = _Component.call(this, player, options) || this;
+    _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+    return _this;
   }
-
-  var _proto = PlayProgressBar.prototype;
-
   /**
    * Create the the DOM element for this class.
    *
    * @return {Element}
    *         The element that was created.
    */
+
+
+  var _proto = PlayProgressBar.prototype;
+
   _proto.createEl = function createEl() {
     return _Component.prototype.createEl.call(this, 'div', {
       className: 'vjs-play-progress vjs-slider-bar'
@@ -12764,7 +12781,7 @@ function (_Component) {
     var _this;
 
     _this = _Component.call(this, player, options) || this;
-    _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), 25);
+    _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
     return _this;
   }
   /**
@@ -12823,7 +12840,7 @@ var STEP_SECONDS = 5; // The multiplier of STEP_SECONDS that PgUp/PgDown move th
 
 var PAGE_KEY_MULTIPLIER = 12; // The interval at which the bar should update as it progresses.
 
-var UPDATE_REFRESH_INTERVAL = 30;
+var UPDATE_REFRESH_INTERVAL$1 = 30;
 /**
  * Seek bar and container for the progress bars. Uses {@link PlayProgressBar}
  * as its `bar`.
@@ -12864,7 +12881,7 @@ function (_Slider) {
   var _proto = SeekBar.prototype;
 
   _proto.setEventHandlers_ = function setEventHandlers_() {
-    this.update = throttle(bind(this, this.update), UPDATE_REFRESH_INTERVAL);
+    this.update = throttle(bind(this, this.update), UPDATE_REFRESH_INTERVAL$1);
     this.on(this.player_, 'timeupdate', this.update);
     this.on(this.player_, 'ended', this.handleEnded);
     this.on(this.player_, 'durationchange', this.update);
@@ -12901,7 +12918,7 @@ function (_Slider) {
     this.clearInterval(this.updateInterval);
     this.updateInterval = this.setInterval(function () {
       _this2.requestAnimationFrame(_this2.update);
-    }, UPDATE_REFRESH_INTERVAL);
+    }, UPDATE_REFRESH_INTERVAL$1);
   };
 
   _proto.disableInterval_ = function disableInterval_(e) {
@@ -13299,8 +13316,8 @@ function (_Component) {
     var _this;
 
     _this = _Component.call(this, player, options) || this;
-    _this.handleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), 25);
-    _this.throttledHandleMouseSeek = throttle(bind(_assertThisInitialized(_this), _this.handleMouseSeek), 25);
+    _this.handleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
+    _this.throttledHandleMouseSeek = throttle(bind(_assertThisInitialized(_this), _this.handleMouseSeek), UPDATE_REFRESH_INTERVAL);
 
     _this.enable();
 
@@ -13999,7 +14016,7 @@ function (_Component) {
     _this = _Component.call(this, player, options) || this; // hide this control if volume support is missing
 
     checkVolumeSupport(_assertThisInitialized(_this), player);
-    _this.throttledHandleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), 25);
+    _this.throttledHandleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
 
     _this.on('mousedown', _this.handleMouseDown);
 
@@ -17073,8 +17090,13 @@ function (_Component) {
 
 
 ControlBar.prototype.options_ = {
-  children: ['playToggle', 'volumePanel', 'currentTimeDisplay', 'timeDivider', 'durationDisplay', 'progressControl', 'liveDisplay', 'seekToLive', 'remainingTimeDisplay', 'customControlSpacer', 'playbackRateMenuButton', 'chaptersButton', 'descriptionsButton', 'subsCapsButton', 'audioTrackButton', 'pictureInPictureToggle', 'fullscreenToggle']
+  children: ['playToggle', 'volumePanel', 'currentTimeDisplay', 'timeDivider', 'durationDisplay', 'progressControl', 'liveDisplay', 'seekToLive', 'remainingTimeDisplay', 'customControlSpacer', 'playbackRateMenuButton', 'chaptersButton', 'descriptionsButton', 'subsCapsButton', 'audioTrackButton', 'fullscreenToggle']
 };
+
+if ('exitPictureInPicture' in document) {
+  ControlBar.prototype.options_.children.splice(ControlBar.prototype.options_.children.length - 1, 0, 'pictureInPictureToggle');
+}
+
 Component.registerComponent('ControlBar', ControlBar);
 
 /**
@@ -21795,22 +21817,22 @@ function (_Component) {
       updateSourceCaches(eventSrc); // if the `sourceset` `src` was an empty string
       // wait for a `loadstart` to update the cache to `currentSrc`.
       // If a sourceset happens before a `loadstart`, we reset the state
-      // as this function will be called again.
 
       if (!event.src) {
-        var updateCache = function updateCache(e) {
-          if (e.type !== 'sourceset') {
-            var techSrc = _this6.techGet('currentSrc');
-
-            _this6.lastSource_.tech = techSrc;
-
-            _this6.updateSourceCaches_(techSrc);
+        this.tech_.any(['sourceset', 'loadstart'], function (e) {
+          // if a sourceset happens before a `loadstart` there
+          // is nothing to do as this `handleTechSourceset_`
+          // will be called again and this will be handled there.
+          if (e.type === 'sourceset') {
+            return;
           }
 
-          _this6.tech_.off(['sourceset', 'loadstart'], updateCache);
-        };
+          var techSrc = _this6.techGet('currentSrc');
 
-        this.tech_.one(['sourceset', 'loadstart'], updateCache);
+          _this6.lastSource_.tech = techSrc;
+
+          _this6.updateSourceCaches_(techSrc);
+        });
       }
     }
 
