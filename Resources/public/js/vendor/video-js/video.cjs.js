@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.6.1 <http://videojs.com/>
+ * Video.js 7.6.3 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -14,7 +14,6 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var window$1 = _interopDefault(require('global/window'));
 var document = _interopDefault(require('global/document'));
-var tsml = _interopDefault(require('tsml'));
 var safeParseTuple = _interopDefault(require('safe-json-parse/tuple'));
 var keycode = _interopDefault(require('keycode'));
 var XHR = _interopDefault(require('xhr'));
@@ -28,69 +27,7 @@ var mp4 = require('mux.js/lib/mp4');
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.6.1";
-
-function _inheritsLoose(subClass, superClass) {
-  subClass.prototype = Object.create(superClass.prototype);
-  subClass.prototype.constructor = subClass;
-  subClass.__proto__ = superClass;
-}
-
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-function isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-
-  try {
-    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function _construct(Parent, args, Class) {
-  if (isNativeReflectConstruct()) {
-    _construct = Reflect.construct;
-  } else {
-    _construct = function _construct(Parent, args, Class) {
-      var a = [null];
-      a.push.apply(a, args);
-      var Constructor = Function.bind.apply(Parent, a);
-      var instance = new Constructor();
-      if (Class) _setPrototypeOf(instance, Class.prototype);
-      return instance;
-    };
-  }
-
-  return _construct.apply(null, arguments);
-}
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
-function _taggedTemplateLiteralLoose(strings, raw) {
-  if (!raw) {
-    raw = strings.slice(0);
-  }
-
-  strings.raw = raw;
-  return strings;
-}
+var version = "7.6.3";
 
 /**
  * @file create-logger.js
@@ -559,15 +496,10 @@ function computedStyle(el, prop) {
   return '';
 }
 
-function _templateObject() {
-  var data = _taggedTemplateLiteralLoose(["Setting attributes in the second argument of createEl()\n                has been deprecated. Use the third argument instead.\n                createEl(type, properties, attributes). Attempting to set ", " to ", "."]);
-
-  _templateObject = function _templateObject() {
-    return data;
-  };
-
-  return data;
-}
+/**
+ * @file dom.js
+ * @module dom
+ */
 /**
  * Detect if a value is a string with any non-whitespace characters.
  *
@@ -724,7 +656,7 @@ function createEl(tagName, properties, attributes, content) {
     // same object, but that doesn't work so well.
 
     if (propName.indexOf('aria-') !== -1 || propName === 'role' || propName === 'type') {
-      log.warn(tsml(_templateObject(), propName, val));
+      log.warn('Setting attributes in the second argument of createEl()\n' + 'has been deprecated. Use the third argument instead.\n' + ("createEl(type, properties, attributes). Attempting to set " + propName + " to " + val + "."));
       el.setAttribute(propName, val); // Handle textContent since it's not supported everywhere and we have a
       // method for it.
     } else if (propName === 'textContent') {
@@ -1433,6 +1365,23 @@ var Dom = /*#__PURE__*/Object.freeze({
 });
 
 /**
+ * @file dom-data.js
+ * @module dom-data
+ */
+
+/**
+ * Element Data Store.
+ *
+ * Allows for binding data to an element without putting it directly on the
+ * element. Ex. Event listeners are stored here.
+ * (also from jsninja.com, slightly modified and updated for closure compiler)
+ *
+ * @type {Object}
+ * @private
+ */
+var DomData = new WeakMap();
+
+/**
  * @file guid.js
  * @module guid
  */
@@ -1451,103 +1400,6 @@ var _guid = 1;
 
 function newGUID() {
   return _guid++;
-}
-
-/**
- * @file dom-data.js
- * @module dom-data
- */
-/**
- * Element Data Store.
- *
- * Allows for binding data to an element without putting it directly on the
- * element. Ex. Event listeners are stored here.
- * (also from jsninja.com, slightly modified and updated for closure compiler)
- *
- * @type {Object}
- * @private
- */
-
-var elData = {};
-/*
- * Unique attribute name to store an element's guid in
- *
- * @type {String}
- * @constant
- * @private
- */
-
-var elIdAttr = 'vdata' + Math.floor(window$1.performance && window$1.performance.now() || Date.now());
-/**
- * Returns the cache object where data for an element is stored
- *
- * @param {Element} el
- *        Element to store data for.
- *
- * @return {Object}
- *         The cache object for that el that was passed in.
- */
-
-function getData(el) {
-  var id = el[elIdAttr];
-
-  if (!id) {
-    id = el[elIdAttr] = newGUID();
-  }
-
-  if (!elData[id]) {
-    elData[id] = {};
-  }
-
-  return elData[id];
-}
-/**
- * Returns whether or not an element has cached data
- *
- * @param {Element} el
- *        Check if this element has cached data.
- *
- * @return {boolean}
- *         - True if the DOM element has cached data.
- *         - False otherwise.
- */
-
-function hasData(el) {
-  var id = el[elIdAttr];
-
-  if (!id) {
-    return false;
-  }
-
-  return !!Object.getOwnPropertyNames(elData[id]).length;
-}
-/**
- * Delete data for the element from the cache and the guid attr from getElementById
- *
- * @param {Element} el
- *        Remove cached data for this element.
- */
-
-function removeData(el) {
-  var id = el[elIdAttr];
-
-  if (!id) {
-    return;
-  } // Remove all stored data
-
-
-  delete elData[id]; // Remove the elIdAttr property from the DOM node
-
-  try {
-    delete el[elIdAttr];
-  } catch (e) {
-    if (el.removeAttribute) {
-      el.removeAttribute(elIdAttr);
-    } else {
-      // IE doesn't appear to support removeAttribute on the document element
-      el[elIdAttr] = null;
-    }
-  }
 }
 
 /**
@@ -1570,7 +1422,11 @@ function removeData(el) {
  */
 
 function _cleanUpEvents(elem, type) {
-  var data = getData(elem); // Remove the events of a particular type if there are none left
+  if (!DomData.has(elem)) {
+    return;
+  }
+
+  var data = DomData.get(elem); // Remove the events of a particular type if there are none left
 
   if (data.handlers[type].length === 0) {
     delete data.handlers[type]; // data.handlers[type] = null;
@@ -1593,7 +1449,7 @@ function _cleanUpEvents(elem, type) {
 
 
   if (Object.getOwnPropertyNames(data).length === 0) {
-    removeData(elem);
+    DomData["delete"](elem);
   }
 }
 /**
@@ -1780,7 +1636,11 @@ function on(elem, type, fn) {
     return _handleMultipleEvents(on, elem, type, fn);
   }
 
-  var data = getData(elem); // We need a place to store all our handler data
+  if (!DomData.has(elem)) {
+    DomData.set(elem, {});
+  }
+
+  var data = DomData.get(elem); // We need a place to store all our handler data
 
   if (!data.handlers) {
     data.handlers = {};
@@ -1858,11 +1718,11 @@ function on(elem, type, fn) {
 
 function off(elem, type, fn) {
   // Don't want to add a cache object through getElData if not needed
-  if (!hasData(elem)) {
+  if (!DomData.has(elem)) {
     return;
   }
 
-  var data = getData(elem); // If no events exist, nothing to unbind
+  var data = DomData.get(elem); // If no events exist, nothing to unbind
 
   if (!data.handlers) {
     return;
@@ -1934,7 +1794,7 @@ function trigger(elem, event, hash) {
   // Fetches element data and a reference to the parent (for bubbling).
   // Don't want to add a data object to cache for every parent,
   // so checking hasElData first.
-  var elemData = hasData(elem) ? getData(elem) : {};
+  var elemData = DomData.has(elem) ? DomData.get(elem) : {};
   var parent = elem.parentNode || elem.ownerDocument; // type = event.type || event,
   // handler;
   // If an event name was passed as a string, creates an event out of it
@@ -1960,7 +1820,11 @@ function trigger(elem, event, hash) {
   if (parent && !event.isPropagationStopped() && event.bubbles === true) {
     trigger.call(null, parent, event, hash); // If at the top of the DOM, triggers the default action unless disabled.
   } else if (!parent && !event.defaultPrevented && event.target && event.target[event.type]) {
-    var targetData = getData(event.target); // Checks if the target has a default action for this event.
+    if (!DomData.has(event.target)) {
+      DomData.set(event.target, {});
+    }
+
+    var targetData = DomData.get(event.target); // Checks if the target has a default action for this event.
 
     if (event.target[event.type]) {
       // Temporarily disables event dispatching on the target as we have already executed the handler.
@@ -3123,10 +2987,28 @@ function stateful(target, defaultState) {
 }
 
 /**
- * @file to-title-case.js
- * @module to-title-case
+ * @file string-cases.js
+ * @module to-lower-case
  */
 
+/**
+ * Lowercase the first letter of a string.
+ *
+ * @param {string} string
+ *        String to be lowercased
+ *
+ * @return {string}
+ *         The string with a lowercased first letter
+ */
+var toLowerCase = function toLowerCase(string) {
+  if (typeof string !== 'string') {
+    return string;
+  }
+
+  return string.replace(/./, function (w) {
+    return w.toLowerCase();
+  });
+};
 /**
  * Uppercase the first letter of a string.
  *
@@ -3136,13 +3018,16 @@ function stateful(target, defaultState) {
  * @return {string}
  *         The string with an uppercased first letter
  */
-function toTitleCase(string) {
+
+var toTitleCase = function toTitleCase(string) {
   if (typeof string !== 'string') {
     return string;
   }
 
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+  return string.replace(/./, function (w) {
+    return w.toUpperCase();
+  });
+};
 /**
  * Compares the TitleCase versions of the two strings for equality.
  *
@@ -3156,9 +3041,9 @@ function toTitleCase(string) {
  *         Whether the TitleCase versions of the strings are equal
  */
 
-function titleCaseEquals(str1, str2) {
+var titleCaseEquals = function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
-}
+};
 
 /**
  * @file merge-options.js
@@ -3294,7 +3179,11 @@ function () {
     stateful(this, this.constructor.defaultState);
     this.children_ = [];
     this.childIndex_ = {};
-    this.childNameIndex_ = {}; // Add any child components in options
+    this.childNameIndex_ = {};
+    this.setTimeoutIds_ = new Set();
+    this.setIntervalIds_ = new Set();
+    this.rafIds_ = new Set();
+    this.clearingTimersOnDispose_ = false; // Add any child components in options
 
     if (options.initChildren !== false) {
       this.initChildren();
@@ -3352,7 +3241,10 @@ function () {
         this.el_.parentNode.removeChild(this.el_);
       }
 
-      removeData(this.el_);
+      if (DomData.has(this.el_)) {
+        DomData["delete"](this.el_);
+      }
+
       this.el_ = null;
     } // remove reference to the player after disposing of the element
 
@@ -3571,7 +3463,6 @@ function () {
       return;
     }
 
-    name = toTitleCase(name);
     return this.childNameIndex_[name];
   }
   /**
@@ -3649,6 +3540,7 @@ function () {
 
     if (componentName) {
       this.childNameIndex_[componentName] = component;
+      this.childNameIndex_[toLowerCase(componentName)] = component;
     } // Add the UI object's element to the container div (box)
     // Having an element is not required
 
@@ -3696,7 +3588,8 @@ function () {
 
     component.parentComponent_ = null;
     this.childIndex_[component.id()] = null;
-    this.childNameIndex_[component.name()] = null;
+    this.childNameIndex_[toTitleCase(component.name())] = null;
+    this.childNameIndex_[toLowerCase(component.name())] = null;
     var compEl = component.el();
 
     if (compEl && compEl.parentNode === this.contentEl()) {
@@ -4521,20 +4414,17 @@ function () {
 
     // declare as variables so they are properly available in timeout function
     // eslint-disable-next-line
-    var timeoutId, disposeFn;
+    var timeoutId;
     fn = bind(this, fn);
+    this.clearTimersOnDispose_();
     timeoutId = window$1.setTimeout(function () {
-      _this2.off('dispose', disposeFn);
+      if (_this2.setTimeoutIds_.has(timeoutId)) {
+        _this2.setTimeoutIds_["delete"](timeoutId);
+      }
 
       fn();
     }, timeout);
-
-    disposeFn = function disposeFn() {
-      return _this2.clearTimeout(timeoutId);
-    };
-
-    disposeFn.guid = "vjs-timeout-" + timeoutId;
-    this.on('dispose', disposeFn);
+    this.setTimeoutIds_.add(timeoutId);
     return timeoutId;
   }
   /**
@@ -4555,12 +4445,11 @@ function () {
   ;
 
   _proto.clearTimeout = function clearTimeout(timeoutId) {
-    window$1.clearTimeout(timeoutId);
+    if (this.setTimeoutIds_.has(timeoutId)) {
+      this.setTimeoutIds_["delete"](timeoutId);
+      window$1.clearTimeout(timeoutId);
+    }
 
-    var disposeFn = function disposeFn() {};
-
-    disposeFn.guid = "vjs-timeout-" + timeoutId;
-    this.off('dispose', disposeFn);
     return timeoutId;
   }
   /**
@@ -4586,17 +4475,10 @@ function () {
   ;
 
   _proto.setInterval = function setInterval(fn, interval) {
-    var _this3 = this;
-
     fn = bind(this, fn);
+    this.clearTimersOnDispose_();
     var intervalId = window$1.setInterval(fn, interval);
-
-    var disposeFn = function disposeFn() {
-      return _this3.clearInterval(intervalId);
-    };
-
-    disposeFn.guid = "vjs-interval-" + intervalId;
-    this.on('dispose', disposeFn);
+    this.setIntervalIds_.add(intervalId);
     return intervalId;
   }
   /**
@@ -4617,12 +4499,11 @@ function () {
   ;
 
   _proto.clearInterval = function clearInterval(intervalId) {
-    window$1.clearInterval(intervalId);
+    if (this.setIntervalIds_.has(intervalId)) {
+      this.setIntervalIds_["delete"](intervalId);
+      window$1.clearInterval(intervalId);
+    }
 
-    var disposeFn = function disposeFn() {};
-
-    disposeFn.guid = "vjs-interval-" + intervalId;
-    this.off('dispose', disposeFn);
     return intervalId;
   }
   /**
@@ -4653,31 +4534,27 @@ function () {
   ;
 
   _proto.requestAnimationFrame = function requestAnimationFrame(fn) {
-    var _this4 = this;
+    var _this3 = this;
 
-    // declare as variables so they are properly available in rAF function
+    // Fall back to using a timer.
+    if (!this.supportsRaf_) {
+      return this.setTimeout(fn, 1000 / 60);
+    }
+
+    this.clearTimersOnDispose_(); // declare as variables so they are properly available in rAF function
     // eslint-disable-next-line
-    var id, disposeFn;
 
-    if (this.supportsRaf_) {
-      fn = bind(this, fn);
-      id = window$1.requestAnimationFrame(function () {
-        _this4.off('dispose', disposeFn);
+    var id;
+    fn = bind(this, fn);
+    id = window$1.requestAnimationFrame(function () {
+      if (_this3.rafIds_.has(id)) {
+        _this3.rafIds_["delete"](id);
+      }
 
-        fn();
-      });
-
-      disposeFn = function disposeFn() {
-        return _this4.cancelAnimationFrame(id);
-      };
-
-      disposeFn.guid = "vjs-raf-" + id;
-      this.on('dispose', disposeFn);
-      return id;
-    } // Fall back to using a timer.
-
-
-    return this.setTimeout(fn, 1000 / 60);
+      fn();
+    });
+    this.rafIds_.add(id);
+    return id;
   }
   /**
    * Cancels a queued callback passed to {@link Component#requestAnimationFrame}
@@ -4698,18 +4575,47 @@ function () {
   ;
 
   _proto.cancelAnimationFrame = function cancelAnimationFrame(id) {
-    if (this.supportsRaf_) {
+    // Fall back to using a timer.
+    if (!this.supportsRaf_) {
+      return this.clearTimeout(id);
+    }
+
+    if (this.rafIds_.has(id)) {
+      this.rafIds_["delete"](id);
       window$1.cancelAnimationFrame(id);
+    }
 
-      var disposeFn = function disposeFn() {};
+    return id;
+  }
+  /**
+   * A function to setup `requestAnimationFrame`, `setTimeout`,
+   * and `setInterval`, clearing on dispose.
+   *
+   * > Previously each timer added and removed dispose listeners on it's own.
+   * For better performance it was decided to batch them all, and use `Set`s
+   * to track outstanding timer ids.
+   *
+   * @private
+   */
+  ;
 
-      disposeFn.guid = "vjs-raf-" + id;
-      this.off('dispose', disposeFn);
-      return id;
-    } // Fall back to using a timer.
+  _proto.clearTimersOnDispose_ = function clearTimersOnDispose_() {
+    var _this4 = this;
 
+    if (this.clearingTimersOnDispose_) {
+      return;
+    }
 
-    return this.clearTimeout(id);
+    this.clearingTimersOnDispose_ = true;
+    this.one('dispose', function () {
+      [['rafIds_', 'cancelAnimationFrame'], ['setTimeoutIds_', 'clearTimeout'], ['setIntervalIds_', 'clearInterval']].forEach(function (_ref) {
+        var idName = _ref[0],
+            cancelName = _ref[1];
+
+        _this4[idName].forEach(_this4[cancelName], _this4);
+      });
+      _this4.clearingTimersOnDispose_ = false;
+    });
   }
   /**
    * Register a `Component` with `videojs` given the name and the component.
@@ -4777,6 +4683,7 @@ function () {
     }
 
     Component.components_[name] = ComponentToRegister;
+    Component.components_[toLowerCase(name)] = ComponentToRegister;
     return ComponentToRegister;
   }
   /**
@@ -4796,15 +4703,11 @@ function () {
   ;
 
   Component.getComponent = function getComponent(name) {
-    if (!name) {
+    if (!name || !Component.components_) {
       return;
     }
 
-    name = toTitleCase(name);
-
-    if (Component.components_ && Component.components_[name]) {
-      return Component.components_[name];
-    }
+    return Component.components_[name];
   };
 
   return Component;
@@ -4821,6 +4724,59 @@ function () {
 
 Component.prototype.supportsRaf_ = typeof window$1.requestAnimationFrame === 'function' && typeof window$1.cancelAnimationFrame === 'function';
 Component.registerComponent('Component', Component);
+
+function _inheritsLoose(subClass, superClass) {
+  subClass.prototype = Object.create(superClass.prototype);
+  subClass.prototype.constructor = subClass;
+  subClass.__proto__ = superClass;
+}
+
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+function isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function _construct(Parent, args, Class) {
+  if (isNativeReflectConstruct()) {
+    _construct = Reflect.construct;
+  } else {
+    _construct = function _construct(Parent, args, Class) {
+      var a = [null];
+      a.push.apply(a, args);
+      var Constructor = Function.bind.apply(Parent, a);
+      var instance = new Constructor();
+      if (Class) _setPrototypeOf(instance, Class.prototype);
+      return instance;
+    };
+  }
+
+  return _construct.apply(null, arguments);
+}
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+
+  return self;
+}
 
 /**
  * @file browser.js
@@ -8899,6 +8855,7 @@ function (_Component) {
 
     name = toTitleCase(name);
     Tech.techs_[name] = tech;
+    Tech.techs_[toLowerCase(name)] = tech;
 
     if (name !== 'Tech') {
       // camel case the techName for use in techOrder
@@ -8923,11 +8880,11 @@ function (_Component) {
       return;
     }
 
-    name = toTitleCase(name);
-
     if (Tech.techs_ && Tech.techs_[name]) {
       return Tech.techs_[name];
     }
+
+    name = toTitleCase(name);
 
     if (window$1 && window$1.videojs && window$1.videojs[name]) {
       log.warn("The " + name + " tech was added to the videojs object when it should be registered using videojs.registerTech(name, tech)");
@@ -10056,6 +10013,8 @@ function (_Component) {
       this.el_.removeAttribute('tabIndex');
     }
 
+    this.off('mouseover', this.handleMouseOver);
+    this.off('mouseout', this.handleMouseOut);
     this.off(['tap', 'click'], this.handleClick);
     this.off('keydown', this.handleKeyDown);
   }
@@ -14354,7 +14313,17 @@ function (_Component) {
 
     _this = _Component.call(this, player, options) || this;
 
-    _this.on(player, ['loadstart'], _this.volumePanelState_); // while the slider is active (the mouse has been pressed down and
+    _this.on(player, ['loadstart'], _this.volumePanelState_);
+
+    _this.on(_this.muteToggle, 'keyup', _this.handleKeyPress);
+
+    _this.on(_this.volumeControl, 'keyup', _this.handleVolumeControlKeyUp);
+
+    _this.on('keydown', _this.handleKeyPress);
+
+    _this.on('mouseover', _this.handleMouseOver);
+
+    _this.on('mouseout', _this.handleMouseOut); // while the slider is active (the mouse has been pressed down and
     // is dragging) we do not want to hide the VolumeBar
 
 
@@ -14428,6 +14397,80 @@ function (_Component) {
     return _Component.prototype.createEl.call(this, 'div', {
       className: "vjs-volume-panel vjs-control " + orientationClass
     });
+  }
+  /**
+   * Dispose of the `volume-panel` and all child components.
+   */
+  ;
+
+  _proto.dispose = function dispose() {
+    this.handleMouseOut();
+
+    _Component.prototype.dispose.call(this);
+  }
+  /**
+   * Handles `keyup` events on the `VolumeControl`, looking for ESC, which closes
+   * the volume panel and sets focus on `MuteToggle`.
+   *
+   * @param {EventTarget~Event} event
+   *        The `keyup` event that caused this function to be called.
+   *
+   * @listens keyup
+   */
+  ;
+
+  _proto.handleVolumeControlKeyUp = function handleVolumeControlKeyUp(event) {
+    if (keycode.isEventKey(event, 'Esc')) {
+      this.muteToggle.focus();
+    }
+  }
+  /**
+   * This gets called when a `VolumePanel` gains hover via a `mouseover` event.
+   * Turns on listening for `mouseover` event. When they happen it
+   * calls `this.handleMouseOver`.
+   *
+   * @param {EventTarget~Event} event
+   *        The `mouseover` event that caused this function to be called.
+   *
+   * @listens mouseover
+   */
+  ;
+
+  _proto.handleMouseOver = function handleMouseOver(event) {
+    this.addClass('vjs-hover');
+    on(document, 'keyup', bind(this, this.handleKeyPress));
+  }
+  /**
+   * This gets called when a `VolumePanel` gains hover via a `mouseout` event.
+   * Turns on listening for `mouseout` event. When they happen it
+   * calls `this.handleMouseOut`.
+   *
+   * @param {EventTarget~Event} event
+   *        The `mouseout` event that caused this function to be called.
+   *
+   * @listens mouseout
+   */
+  ;
+
+  _proto.handleMouseOut = function handleMouseOut(event) {
+    this.removeClass('vjs-hover');
+    off(document, 'keyup', bind(this, this.handleKeyPress));
+  }
+  /**
+   * Handles `keyup` event on the document or `keydown` event on the `VolumePanel`,
+   * looking for ESC, which hides the `VolumeControl`.
+   *
+   * @param {EventTarget~Event} event
+   *        The keypress that triggered this event.
+   *
+   * @listens keydown | keyup
+   */
+  ;
+
+  _proto.handleKeyPress = function handleKeyPress(event) {
+    if (keycode.isEventKey(event, 'Esc')) {
+      this.handleMouseOut();
+    }
   };
 
   return VolumePanel;
@@ -14792,8 +14835,14 @@ function (_Component) {
     _this.on(_this.menuButton_, 'keydown', _this.handleKeyDown);
 
     _this.on(_this.menuButton_, 'mouseenter', function () {
+      _this.addClass('vjs-hover');
+
       _this.menu.show();
+
+      on(document, 'keyup', bind(_assertThisInitialized(_this), _this.handleMenuKeyUp));
     });
+
+    _this.on('mouseleave', _this.handleMouseLeave);
 
     _this.on('keydown', _this.handleSubmenuKeyDown);
 
@@ -14964,6 +15013,16 @@ function (_Component) {
     return this.menuButton_.controlText(text, el);
   }
   /**
+   * Dispose of the `menu-button` and all child components.
+   */
+  ;
+
+  _proto.dispose = function dispose() {
+    this.handleMouseLeave();
+
+    _Component.prototype.dispose.call(this);
+  }
+  /**
    * Handle a click on a `MenuButton`.
    * See {@link ClickableComponent#handleClick} for instances where this is called.
    *
@@ -14982,6 +15041,20 @@ function (_Component) {
     } else {
       this.pressButton();
     }
+  }
+  /**
+   * Handle `mouseleave` for `MenuButton`.
+   *
+   * @param {EventTarget~Event} event
+   *        The `mouseleave` event that caused this function to be called.
+   *
+   * @listens mouseleave
+   */
+  ;
+
+  _proto.handleMouseLeave = function handleMouseLeave(event) {
+    this.removeClass('vjs-hover');
+    off(document, 'keyup', bind(this, this.handleMenuKeyUp));
   }
   /**
    * Set the focus to the actual button, not to this element
@@ -15029,6 +15102,23 @@ function (_Component) {
         event.preventDefault();
         this.pressButton();
       }
+    }
+  }
+  /**
+   * Handle a `keyup` event on a `MenuButton`. The listener for this is added in
+   * the constructor.
+   *
+   * @param {EventTarget~Event} event
+   *        Key press event
+   *
+   * @listens keyup
+   */
+  ;
+
+  _proto.handleMenuKeyUp = function handleMenuKeyUp(event) {
+    // Escape hides popup menu
+    if (keycode.isEventKey(event, 'Esc') || keycode.isEventKey(event, 'Tab')) {
+      this.removeClass('vjs-hover');
     }
   }
   /**
@@ -18435,15 +18525,6 @@ var setupSourceset = function setupSourceset(tech) {
   };
 };
 
-function _templateObject$1() {
-  var data = _taggedTemplateLiteralLoose(["Text Tracks are being loaded from another origin but the crossorigin attribute isn't used.\n            This may prevent text tracks from loading."]);
-
-  _templateObject$1 = function _templateObject() {
-    return data;
-  };
-
-  return data;
-}
 /**
  * HTML5 Media Controller - Wrapper for HTML5 Media API
  *
@@ -18525,7 +18606,7 @@ function (_Tech) {
     _this.proxyNativeTracks_();
 
     if (_this.featuresNativeTextTracks && crossoriginTracks) {
-      log.warn(tsml(_templateObject$1()));
+      log.warn('Text Tracks are being loaded from another origin but the crossorigin attribute isn\'t used.\n' + 'This may prevent text tracks from loading.');
     } // prevent iOS Safari from disabling metadata text tracks during native playback
 
 
@@ -20371,15 +20452,6 @@ Html5.nativeSourceHandler.dispose = function () {}; // Register the native sourc
 Html5.registerSourceHandler(Html5.nativeSourceHandler);
 Tech.registerTech('Html5', Html5);
 
-function _templateObject$2() {
-  var data = _taggedTemplateLiteralLoose(["\n        Using the tech directly can be dangerous. I hope you know what you're doing.\n        See https://github.com/videojs/video.js/issues/2617 for more info.\n      "]);
-
-  _templateObject$2 = function _templateObject() {
-    return data;
-  };
-
-  return data;
-}
 // on the player when they happen
 
 var TECH_EVENTS_RETRIGGER = [
@@ -21492,7 +21564,7 @@ function (_Component) {
 
   _proto.tech = function tech(safety) {
     if (safety === undefined) {
-      log.warn(tsml(_templateObject$2()));
+      log.warn('Using the tech directly can be dangerous. I hope you know what you\'re doing.\n' + 'See https://github.com/videojs/video.js/issues/2617 for more info.\n');
     }
 
     return this.tech_;
@@ -23295,17 +23367,22 @@ function (_Component) {
 
 
     var excludeElement = function excludeElement(el) {
-      var tagName = el.tagName.toLowerCase(); // These tags will be excluded entirely.
+      var tagName = el.tagName.toLowerCase(); // The first and easiest test is for `contenteditable` elements.
 
-      var excludedTags = ['textarea']; // Inputs matching these types will still trigger hotkey handling as
+      if (el.isContentEditable) {
+        return true;
+      } // Inputs matching these types will still trigger hotkey handling as
       // they are not text inputs.
+
 
       var allowedInputTypes = ['button', 'checkbox', 'hidden', 'radio', 'reset', 'submit'];
 
       if (tagName === 'input') {
         return allowedInputTypes.indexOf(el.type) === -1;
-      }
+      } // The final test is by tag name. These tags will be excluded entirely.
 
+
+      var excludedTags = ['textarea'];
       return excludedTags.indexOf(tagName) !== -1;
     }; // Bail out if the user is focused on an interactive form element.
 
