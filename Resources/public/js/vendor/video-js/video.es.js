@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.6.3 <http://videojs.com/>
+ * Video.js 7.6.5 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -21,11 +21,11 @@ import { Parser } from 'm3u8-parser';
 import { parse, parseUTCTiming } from 'mpd-parser';
 import mp4Inspector from 'mux.js/lib/tools/mp4-inspector';
 import mp4probe from 'mux.js/lib/mp4/probe';
-import { CaptionParser } from 'mux.js/lib/mp4';
+import CaptionParser from 'mux.js/lib/mp4/caption-parser';
 import tsInspector from 'mux.js/lib/tools/ts-inspector.js';
 import { Decrypter, AsyncStream, decrypt } from 'aes-decrypter';
 
-var version = "7.6.3";
+var version = "7.6.5";
 
 /**
  * @file create-logger.js
@@ -1363,6 +1363,139 @@ var Dom = /*#__PURE__*/Object.freeze({
 });
 
 /**
+ * @file setup.js - Functions for setting up a player without
+ * user interaction based on the data-setup `attribute` of the video tag.
+ *
+ * @module setup
+ */
+var _windowLoaded = false;
+var videojs;
+/**
+ * Set up any tags that have a data-setup `attribute` when the player is started.
+ */
+
+var autoSetup = function autoSetup() {
+  // Protect against breakage in non-browser environments and check global autoSetup option.
+  if (!isReal() || videojs.options.autoSetup === false) {
+    return;
+  }
+
+  var vids = Array.prototype.slice.call(document.getElementsByTagName('video'));
+  var audios = Array.prototype.slice.call(document.getElementsByTagName('audio'));
+  var divs = Array.prototype.slice.call(document.getElementsByTagName('video-js'));
+  var mediaEls = vids.concat(audios, divs); // Check if any media elements exist
+
+  if (mediaEls && mediaEls.length > 0) {
+    for (var i = 0, e = mediaEls.length; i < e; i++) {
+      var mediaEl = mediaEls[i]; // Check if element exists, has getAttribute func.
+
+      if (mediaEl && mediaEl.getAttribute) {
+        // Make sure this player hasn't already been set up.
+        if (mediaEl.player === undefined) {
+          var options = mediaEl.getAttribute('data-setup'); // Check if data-setup attr exists.
+          // We only auto-setup if they've added the data-setup attr.
+
+          if (options !== null) {
+            // Create new video.js instance.
+            videojs(mediaEl);
+          }
+        } // If getAttribute isn't defined, we need to wait for the DOM.
+
+      } else {
+        autoSetupTimeout(1);
+        break;
+      }
+    } // No videos were found, so keep looping unless page is finished loading.
+
+  } else if (!_windowLoaded) {
+    autoSetupTimeout(1);
+  }
+};
+/**
+ * Wait until the page is loaded before running autoSetup. This will be called in
+ * autoSetup if `hasLoaded` returns false.
+ *
+ * @param {number} wait
+ *        How long to wait in ms
+ *
+ * @param {module:videojs} [vjs]
+ *        The videojs library function
+ */
+
+
+function autoSetupTimeout(wait, vjs) {
+  if (vjs) {
+    videojs = vjs;
+  }
+
+  window$1.setTimeout(autoSetup, wait);
+}
+/**
+ * Used to set the internal tracking of window loaded state to true.
+ *
+ * @private
+ */
+
+
+function setWindowLoaded() {
+  _windowLoaded = true;
+  window$1.removeEventListener('load', setWindowLoaded);
+}
+
+if (isReal()) {
+  if (document.readyState === 'complete') {
+    setWindowLoaded();
+  } else {
+    /**
+     * Listen for the load event on window, and set _windowLoaded to true.
+     *
+     * We use a standard event listener here to avoid incrementing the GUID
+     * before any players are created.
+     *
+     * @listens load
+     */
+    window$1.addEventListener('load', setWindowLoaded);
+  }
+}
+
+/**
+ * @file stylesheet.js
+ * @module stylesheet
+ */
+/**
+ * Create a DOM syle element given a className for it.
+ *
+ * @param {string} className
+ *        The className to add to the created style element.
+ *
+ * @return {Element}
+ *         The element that was created.
+ */
+
+var createStyleElement = function createStyleElement(className) {
+  var style = document.createElement('style');
+  style.className = className;
+  return style;
+};
+/**
+ * Add text to a DOM element.
+ *
+ * @param {Element} el
+ *        The Element to add text content to.
+ *
+ * @param {string} content
+ *        The text to add to the element.
+ */
+
+var setTextContent = function setTextContent(el, content) {
+  if (el.styleSheet) {
+    el.styleSheet.cssText = content;
+  } else {
+    el.textContent = content;
+  }
+};
+
+/**
  * @file dom-data.js
  * @module dom-data
  */
@@ -1383,12 +1516,20 @@ var DomData = new WeakMap();
  * @file guid.js
  * @module guid
  */
-
+// Default value for GUIDs. This allows us to reset the GUID counter in tests.
+//
+// The initial GUID is 3 because some users have come to rely on the first
+// default player ID ending up as `vjs_video_3`.
+//
+// See: https://github.com/videojs/video.js/pull/6216
+var _initialGuid = 3;
 /**
  * Unique ID for an element or function
+ *
  * @type {Number}
  */
-var _guid = 1;
+
+var _guid = _initialGuid;
 /**
  * Get a unique auto-incrementing ID by number that has not been returned before.
  *
@@ -1901,125 +2042,6 @@ var Events = /*#__PURE__*/Object.freeze({
   one: one,
   any: any
 });
-
-/**
- * @file setup.js - Functions for setting up a player without
- * user interaction based on the data-setup `attribute` of the video tag.
- *
- * @module setup
- */
-var _windowLoaded = false;
-var videojs;
-/**
- * Set up any tags that have a data-setup `attribute` when the player is started.
- */
-
-var autoSetup = function autoSetup() {
-  // Protect against breakage in non-browser environments and check global autoSetup option.
-  if (!isReal() || videojs.options.autoSetup === false) {
-    return;
-  }
-
-  var vids = Array.prototype.slice.call(document.getElementsByTagName('video'));
-  var audios = Array.prototype.slice.call(document.getElementsByTagName('audio'));
-  var divs = Array.prototype.slice.call(document.getElementsByTagName('video-js'));
-  var mediaEls = vids.concat(audios, divs); // Check if any media elements exist
-
-  if (mediaEls && mediaEls.length > 0) {
-    for (var i = 0, e = mediaEls.length; i < e; i++) {
-      var mediaEl = mediaEls[i]; // Check if element exists, has getAttribute func.
-
-      if (mediaEl && mediaEl.getAttribute) {
-        // Make sure this player hasn't already been set up.
-        if (mediaEl.player === undefined) {
-          var options = mediaEl.getAttribute('data-setup'); // Check if data-setup attr exists.
-          // We only auto-setup if they've added the data-setup attr.
-
-          if (options !== null) {
-            // Create new video.js instance.
-            videojs(mediaEl);
-          }
-        } // If getAttribute isn't defined, we need to wait for the DOM.
-
-      } else {
-        autoSetupTimeout(1);
-        break;
-      }
-    } // No videos were found, so keep looping unless page is finished loading.
-
-  } else if (!_windowLoaded) {
-    autoSetupTimeout(1);
-  }
-};
-/**
- * Wait until the page is loaded before running autoSetup. This will be called in
- * autoSetup if `hasLoaded` returns false.
- *
- * @param {number} wait
- *        How long to wait in ms
- *
- * @param {module:videojs} [vjs]
- *        The videojs library function
- */
-
-
-function autoSetupTimeout(wait, vjs) {
-  if (vjs) {
-    videojs = vjs;
-  }
-
-  window$1.setTimeout(autoSetup, wait);
-}
-
-if (isReal() && document.readyState === 'complete') {
-  _windowLoaded = true;
-} else {
-  /**
-   * Listen for the load event on window, and set _windowLoaded to true.
-   *
-   * @listens load
-   */
-  one(window$1, 'load', function () {
-    _windowLoaded = true;
-  });
-}
-
-/**
- * @file stylesheet.js
- * @module stylesheet
- */
-/**
- * Create a DOM syle element given a className for it.
- *
- * @param {string} className
- *        The className to add to the created style element.
- *
- * @return {Element}
- *         The element that was created.
- */
-
-var createStyleElement = function createStyleElement(className) {
-  var style = document.createElement('style');
-  style.className = className;
-  return style;
-};
-/**
- * Add text to a DOM element.
- *
- * @param {Element} el
- *        The Element to add text content to.
- *
- * @param {string} content
- *        The text to add to the element.
- */
-
-var setTextContent = function setTextContent(el, content) {
-  if (el.styleSheet) {
-    el.styleSheet.cssText = content;
-  } else {
-    el.textContent = content;
-  }
-};
 
 /**
  * @file fn.js
@@ -17918,6 +17940,23 @@ function (_Component) {
 
 Component.registerComponent('ResizeManager', ResizeManager);
 
+/**
+ * Computes the median of an array.
+ *
+ * @param {number[]} arr
+ *        Input array of numbers.
+ *
+ * @return {number}
+ *        Median value.
+ */
+var median = function median(arr) {
+  var mid = Math.floor(arr.length / 2);
+  var sortedList = [].concat(arr).sort(function (a, b) {
+    return a - b;
+  });
+  return arr.length % 2 !== 0 ? sortedList[mid] : (sortedList[mid - 1] + sortedList[mid]) / 2;
+};
+
 /* track when we are at the live edge, and other helpers for live playback */
 
 var LiveTracker =
@@ -17969,13 +18008,12 @@ function (_Component) {
     }
 
     var liveCurrentTime = this.liveCurrentTime();
-    var currentTime = this.player_.currentTime();
-    var seekableIncrement = this.seekableIncrement_; // the live edge window is the amount of seconds away from live
+    var currentTime = this.player_.currentTime(); // the live edge window is the amount of seconds away from live
     // that a player can be, but still be considered live.
     // we add 0.07 because the live tracking happens every 30ms
     // and we want some wiggle room for short segment live playback
 
-    var liveEdgeWindow = seekableIncrement * 2 + 0.07; // on Android liveCurrentTime can bee Infinity, because seekableEnd
+    var liveEdgeWindow = this.seekableIncrement_ * 2 + 0.07; // on Android liveCurrentTime can bee Infinity, because seekableEnd
     // can be Infinity, so we handle that case.
 
     return liveCurrentTime !== Infinity && liveCurrentTime - liveEdgeWindow >= currentTime;
@@ -17997,7 +18035,14 @@ function (_Component) {
 
     if (newSeekEnd !== this.lastSeekEnd_) {
       if (this.lastSeekEnd_) {
-        this.seekableIncrement_ = Math.abs(newSeekEnd - this.lastSeekEnd_);
+        // we try to get the best fit value for the seeking increment
+        // variable from the last 12 values.
+        this.seekableIncrementList_ = this.seekableIncrementList_.slice(-11);
+        this.seekableIncrementList_.push(Math.abs(newSeekEnd - this.lastSeekEnd_));
+
+        if (this.seekableIncrementList_.length > 3) {
+          this.seekableIncrement_ = median(this.seekableIncrementList_);
+        }
       }
 
       this.pastSeekEnd_ = 0;
@@ -18079,6 +18124,7 @@ function (_Component) {
     this.clearInterval(this.trackingInterval_);
     this.trackingInterval_ = null;
     this.seekableIncrement_ = 12;
+    this.seekableIncrementList_ = [];
     this.off(this.player_, 'play', this.trackLive_);
     this.off(this.player_, 'pause', this.trackLive_);
     this.off(this.player_, 'play', this.handlePlay);
@@ -26468,7 +26514,7 @@ videojs$1.url = Url;
 
 /**
  * @videojs/http-streaming
- * @version 1.10.3
+ * @version 1.10.6
  * @copyright 2019 Brightcove, Inc
  * @license Apache-2.0
  */
@@ -28492,7 +28538,7 @@ var filterRanges = function filterRanges(timeRanges, predicate) {
 
 var findRange = function findRange(buffered, time) {
   return filterRanges(buffered, function (start, end) {
-    return start - TIME_FUDGE_FACTOR <= time && end + TIME_FUDGE_FACTOR >= time;
+    return start - SAFE_TIME_DELTA <= time && end + SAFE_TIME_DELTA >= time;
   });
 };
 /**
@@ -28921,9 +28967,161 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
      * Copyright (c) Brightcove
      * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
      *
+     * A lightweight readable stream implemention that handles event dispatching.
+     * Objects that inherit from streams should call init in their constructors.
+     */
+    var Stream = function Stream() {
+      this.init = function () {
+        var listeners = {};
+        /**
+         * Add a listener for a specified event type.
+         * @param type {string} the event name
+         * @param listener {function} the callback to be invoked when an event of
+         * the specified type occurs
+         */
+
+        this.on = function (type, listener) {
+          if (!listeners[type]) {
+            listeners[type] = [];
+          }
+
+          listeners[type] = listeners[type].concat(listener);
+        };
+        /**
+         * Remove a listener for a specified event type.
+         * @param type {string} the event name
+         * @param listener {function} a function previously registered for this
+         * type of event through `on`
+         */
+
+
+        this.off = function (type, listener) {
+          var index;
+
+          if (!listeners[type]) {
+            return false;
+          }
+
+          index = listeners[type].indexOf(listener);
+          listeners[type] = listeners[type].slice();
+          listeners[type].splice(index, 1);
+          return index > -1;
+        };
+        /**
+         * Trigger an event of the specified type on this stream. Any additional
+         * arguments to this function are passed as parameters to event listeners.
+         * @param type {string} the event name
+         */
+
+
+        this.trigger = function (type) {
+          var callbacks, i, length, args;
+          callbacks = listeners[type];
+
+          if (!callbacks) {
+            return;
+          } // Slicing the arguments on every invocation of this method
+          // can add a significant amount of overhead. Avoid the
+          // intermediate object creation for the common case of a
+          // single callback argument
+
+
+          if (arguments.length === 2) {
+            length = callbacks.length;
+
+            for (i = 0; i < length; ++i) {
+              callbacks[i].call(this, arguments[1]);
+            }
+          } else {
+            args = [];
+            i = arguments.length;
+
+            for (i = 1; i < arguments.length; ++i) {
+              args.push(arguments[i]);
+            }
+
+            length = callbacks.length;
+
+            for (i = 0; i < length; ++i) {
+              callbacks[i].apply(this, args);
+            }
+          }
+        };
+        /**
+         * Destroys the stream and cleans up.
+         */
+
+
+        this.dispose = function () {
+          listeners = {};
+        };
+      };
+    };
+    /**
+     * Forwards all `data` events on this stream to the destination stream. The
+     * destination stream should provide a method `push` to receive the data
+     * events as they arrive.
+     * @param destination {stream} the stream that will receive all `data` events
+     * @param autoFlush {boolean} if false, we will not call `flush` on the destination
+     *                            when the current stream emits a 'done' event
+     * @see http://nodejs.org/api/stream.html#stream_readable_pipe_destination_options
+     */
+
+
+    Stream.prototype.pipe = function (destination) {
+      this.on('data', function (data) {
+        destination.push(data);
+      });
+      this.on('done', function (flushSource) {
+        destination.flush(flushSource);
+      });
+      this.on('partialdone', function (flushSource) {
+        destination.partialFlush(flushSource);
+      });
+      this.on('endedtimeline', function (flushSource) {
+        destination.endTimeline(flushSource);
+      });
+      this.on('reset', function (flushSource) {
+        destination.reset(flushSource);
+      });
+      return destination;
+    }; // Default stream functions that are expected to be overridden to perform
+    // actual work. These are provided by the prototype as a sort of no-op
+    // implementation so that we don't have to check for their existence in the
+    // `pipe` function above.
+
+
+    Stream.prototype.push = function (data) {
+      this.trigger('data', data);
+    };
+
+    Stream.prototype.flush = function (flushSource) {
+      this.trigger('done', flushSource);
+    };
+
+    Stream.prototype.partialFlush = function (flushSource) {
+      this.trigger('partialdone', flushSource);
+    };
+
+    Stream.prototype.endTimeline = function (flushSource) {
+      this.trigger('endedtimeline', flushSource);
+    };
+
+    Stream.prototype.reset = function (flushSource) {
+      this.trigger('reset', flushSource);
+    };
+
+    var stream = Stream;
+    /**
+     * mux.js
+     *
+     * Copyright (c) Brightcove
+     * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
+     *
      * Functions that generate fragmented MP4s suitable for use with Media
      * Source Extensions.
      */
+
     var UINT32_MAX = Math.pow(2, 32) - 1;
     var box, dinf, esds, ftyp, mdat, mfhd, minf, moof, moov, mvex, mvhd, trak, tkhd, mdia, mdhd, hdlr, sdtp, stbl, stsd, traf, trex, trun, types, MAJOR_BRAND, MINOR_VERSION, AVC1_BRAND, VIDEO_HDLR, AUDIO_HDLR, HDLR_TYPES, VMHD, SMHD, DREF, STCO, STSC, STSZ, STTS; // pre-calculate constants
 
@@ -28950,6 +29148,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         // codingname
         mvex: [],
         mvhd: [],
+        pasp: [],
         sdtp: [],
         smhd: [],
         stbl: [],
@@ -29234,7 +29433,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
             pps = track.pps || [],
             sequenceParameterSets = [],
             pictureParameterSets = [],
-            i; // assemble the SPSs
+            i,
+            avc1Box; // assemble the SPSs
 
         for (i = 0; i < sps.length; i++) {
           sequenceParameterSets.push((sps[i].byteLength & 0xFF00) >>> 8);
@@ -29250,7 +29450,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           pictureParameterSets = pictureParameterSets.concat(Array.prototype.slice.call(pps[i]));
         }
 
-        return box(types.avc1, new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // reserved
+        avc1Box = [types.avc1, new Uint8Array([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // reserved
         0x00, 0x01, // data_reference_index
         0x00, 0x00, // pre_defined
         0x00, 0x00, // reserved
@@ -29269,13 +29469,22 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         track.profileCompatibility, // profile_compatibility
         track.levelIdc, // AVCLevelIndication
         0xff // lengthSizeMinusOne, hard-coded to 4 bytes
-        ].concat([sps.length // numOfSequenceParameterSets
-        ]).concat(sequenceParameterSets).concat([pps.length // numOfPictureParameterSets
-        ]).concat(pictureParameterSets))), // "PPS"
-        box(types.btrt, new Uint8Array([0x00, 0x1c, 0x9c, 0x80, // bufferSizeDB
+        ].concat([sps.length], // numOfSequenceParameterSets
+        sequenceParameterSets, // "SPS"
+        [pps.length], // numOfPictureParameterSets
+        pictureParameterSets // "PPS"
+        ))), box(types.btrt, new Uint8Array([0x00, 0x1c, 0x9c, 0x80, // bufferSizeDB
         0x00, 0x2d, 0xc6, 0xc0, // maxBitrate
-        0x00, 0x2d, 0xc6, 0xc0])) // avgBitrate
-        );
+        0x00, 0x2d, 0xc6, 0xc0 // avgBitrate
+        ]))];
+
+        if (track.sarRatio) {
+          var hSpacing = track.sarRatio[0],
+              vSpacing = track.sarRatio[1];
+          avc1Box.push(box(types.pasp, new Uint8Array([(hSpacing & 0xFF000000) >> 24, (hSpacing & 0xFF0000) >> 16, (hSpacing & 0xFF00) >> 8, hSpacing & 0xFF, (vSpacing & 0xFF000000) >> 24, (vSpacing & 0xFF0000) >> 16, (vSpacing & 0xFF00) >> 8, vSpacing & 0xFF])));
+        }
+
+        return box.apply(null, avc1Box);
       };
 
       audioSample = function audioSample(track) {
@@ -29491,357 +29700,6 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
      * Copyright (c) Brightcove
      * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
      */
-
-    var toUnsigned = function toUnsigned(value) {
-      return value >>> 0;
-    };
-
-    var bin = {
-      toUnsigned: toUnsigned
-    };
-    var toUnsigned$1 = bin.toUnsigned;
-
-    var _findBox, parseType, timescale, startTime, getVideoTrackIds; // Find the data for a box specified by its path
-
-
-    _findBox = function findBox(data, path) {
-      var results = [],
-          i,
-          size,
-          type,
-          end,
-          subresults;
-
-      if (!path.length) {
-        // short-circuit the search for empty paths
-        return null;
-      }
-
-      for (i = 0; i < data.byteLength;) {
-        size = toUnsigned$1(data[i] << 24 | data[i + 1] << 16 | data[i + 2] << 8 | data[i + 3]);
-        type = parseType(data.subarray(i + 4, i + 8));
-        end = size > 1 ? i + size : data.byteLength;
-
-        if (type === path[0]) {
-          if (path.length === 1) {
-            // this is the end of the path and we've found the box we were
-            // looking for
-            results.push(data.subarray(i + 8, end));
-          } else {
-            // recursively search for the next box along the path
-            subresults = _findBox(data.subarray(i + 8, end), path.slice(1));
-
-            if (subresults.length) {
-              results = results.concat(subresults);
-            }
-          }
-        }
-
-        i = end;
-      } // we've finished searching all of data
-
-
-      return results;
-    };
-    /**
-     * Returns the string representation of an ASCII encoded four byte buffer.
-     * @param buffer {Uint8Array} a four-byte buffer to translate
-     * @return {string} the corresponding string
-     */
-
-
-    parseType = function parseType(buffer) {
-      var result = '';
-      result += String.fromCharCode(buffer[0]);
-      result += String.fromCharCode(buffer[1]);
-      result += String.fromCharCode(buffer[2]);
-      result += String.fromCharCode(buffer[3]);
-      return result;
-    };
-    /**
-     * Parses an MP4 initialization segment and extracts the timescale
-     * values for any declared tracks. Timescale values indicate the
-     * number of clock ticks per second to assume for time-based values
-     * elsewhere in the MP4.
-     *
-     * To determine the start time of an MP4, you need two pieces of
-     * information: the timescale unit and the earliest base media decode
-     * time. Multiple timescales can be specified within an MP4 but the
-     * base media decode time is always expressed in the timescale from
-     * the media header box for the track:
-     * ```
-     * moov > trak > mdia > mdhd.timescale
-     * ```
-     * @param init {Uint8Array} the bytes of the init segment
-     * @return {object} a hash of track ids to timescale values or null if
-     * the init segment is malformed.
-     */
-
-
-    timescale = function timescale(init) {
-      var result = {},
-          traks = _findBox(init, ['moov', 'trak']); // mdhd timescale
-
-
-      return traks.reduce(function (result, trak) {
-        var tkhd, version, index, id, mdhd;
-        tkhd = _findBox(trak, ['tkhd'])[0];
-
-        if (!tkhd) {
-          return null;
-        }
-
-        version = tkhd[0];
-        index = version === 0 ? 12 : 20;
-        id = toUnsigned$1(tkhd[index] << 24 | tkhd[index + 1] << 16 | tkhd[index + 2] << 8 | tkhd[index + 3]);
-        mdhd = _findBox(trak, ['mdia', 'mdhd'])[0];
-
-        if (!mdhd) {
-          return null;
-        }
-
-        version = mdhd[0];
-        index = version === 0 ? 12 : 20;
-        result[id] = toUnsigned$1(mdhd[index] << 24 | mdhd[index + 1] << 16 | mdhd[index + 2] << 8 | mdhd[index + 3]);
-        return result;
-      }, result);
-    };
-    /**
-     * Determine the base media decode start time, in seconds, for an MP4
-     * fragment. If multiple fragments are specified, the earliest time is
-     * returned.
-     *
-     * The base media decode time can be parsed from track fragment
-     * metadata:
-     * ```
-     * moof > traf > tfdt.baseMediaDecodeTime
-     * ```
-     * It requires the timescale value from the mdhd to interpret.
-     *
-     * @param timescale {object} a hash of track ids to timescale values.
-     * @return {number} the earliest base media decode start time for the
-     * fragment, in seconds
-     */
-
-
-    startTime = function startTime(timescale, fragment) {
-      var trafs, baseTimes, result; // we need info from two childrend of each track fragment box
-
-      trafs = _findBox(fragment, ['moof', 'traf']); // determine the start times for each track
-
-      baseTimes = [].concat.apply([], trafs.map(function (traf) {
-        return _findBox(traf, ['tfhd']).map(function (tfhd) {
-          var id, scale, baseTime; // get the track id from the tfhd
-
-          id = toUnsigned$1(tfhd[4] << 24 | tfhd[5] << 16 | tfhd[6] << 8 | tfhd[7]); // assume a 90kHz clock if no timescale was specified
-
-          scale = timescale[id] || 90e3; // get the base media decode time from the tfdt
-
-          baseTime = _findBox(traf, ['tfdt']).map(function (tfdt) {
-            var version, result;
-            version = tfdt[0];
-            result = toUnsigned$1(tfdt[4] << 24 | tfdt[5] << 16 | tfdt[6] << 8 | tfdt[7]);
-
-            if (version === 1) {
-              result *= Math.pow(2, 32);
-              result += toUnsigned$1(tfdt[8] << 24 | tfdt[9] << 16 | tfdt[10] << 8 | tfdt[11]);
-            }
-
-            return result;
-          })[0];
-          baseTime = baseTime || Infinity; // convert base time to seconds
-
-          return baseTime / scale;
-        });
-      })); // return the minimum
-
-      result = Math.min.apply(null, baseTimes);
-      return isFinite(result) ? result : 0;
-    };
-    /**
-      * Find the trackIds of the video tracks in this source.
-      * Found by parsing the Handler Reference and Track Header Boxes:
-      *   moov > trak > mdia > hdlr
-      *   moov > trak > tkhd
-      *
-      * @param {Uint8Array} init - The bytes of the init segment for this source
-      * @return {Number[]} A list of trackIds
-      *
-      * @see ISO-BMFF-12/2015, Section 8.4.3
-     **/
-
-
-    getVideoTrackIds = function getVideoTrackIds(init) {
-      var traks = _findBox(init, ['moov', 'trak']);
-
-      var videoTrackIds = [];
-      traks.forEach(function (trak) {
-        var hdlrs = _findBox(trak, ['mdia', 'hdlr']);
-
-        var tkhds = _findBox(trak, ['tkhd']);
-
-        hdlrs.forEach(function (hdlr, index) {
-          var handlerType = parseType(hdlr.subarray(8, 12));
-          var tkhd = tkhds[index];
-          var view;
-          var version;
-          var trackId;
-
-          if (handlerType === 'vide') {
-            view = new DataView(tkhd.buffer, tkhd.byteOffset, tkhd.byteLength);
-            version = view.getUint8(0);
-            trackId = version === 0 ? view.getUint32(12) : view.getUint32(20);
-            videoTrackIds.push(trackId);
-          }
-        });
-      });
-      return videoTrackIds;
-    };
-
-    var probe = {
-      findBox: _findBox,
-      parseType: parseType,
-      timescale: timescale,
-      startTime: startTime,
-      videoTrackIds: getVideoTrackIds
-    };
-    /**
-     * mux.js
-     *
-     * Copyright (c) Brightcove
-     * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
-     *
-     * A lightweight readable stream implemention that handles event dispatching.
-     * Objects that inherit from streams should call init in their constructors.
-     */
-
-    var Stream = function Stream() {
-      this.init = function () {
-        var listeners = {};
-        /**
-         * Add a listener for a specified event type.
-         * @param type {string} the event name
-         * @param listener {function} the callback to be invoked when an event of
-         * the specified type occurs
-         */
-
-        this.on = function (type, listener) {
-          if (!listeners[type]) {
-            listeners[type] = [];
-          }
-
-          listeners[type] = listeners[type].concat(listener);
-        };
-        /**
-         * Remove a listener for a specified event type.
-         * @param type {string} the event name
-         * @param listener {function} a function previously registered for this
-         * type of event through `on`
-         */
-
-
-        this.off = function (type, listener) {
-          var index;
-
-          if (!listeners[type]) {
-            return false;
-          }
-
-          index = listeners[type].indexOf(listener);
-          listeners[type] = listeners[type].slice();
-          listeners[type].splice(index, 1);
-          return index > -1;
-        };
-        /**
-         * Trigger an event of the specified type on this stream. Any additional
-         * arguments to this function are passed as parameters to event listeners.
-         * @param type {string} the event name
-         */
-
-
-        this.trigger = function (type) {
-          var callbacks, i, length, args;
-          callbacks = listeners[type];
-
-          if (!callbacks) {
-            return;
-          } // Slicing the arguments on every invocation of this method
-          // can add a significant amount of overhead. Avoid the
-          // intermediate object creation for the common case of a
-          // single callback argument
-
-
-          if (arguments.length === 2) {
-            length = callbacks.length;
-
-            for (i = 0; i < length; ++i) {
-              callbacks[i].call(this, arguments[1]);
-            }
-          } else {
-            args = [];
-            i = arguments.length;
-
-            for (i = 1; i < arguments.length; ++i) {
-              args.push(arguments[i]);
-            }
-
-            length = callbacks.length;
-
-            for (i = 0; i < length; ++i) {
-              callbacks[i].apply(this, args);
-            }
-          }
-        };
-        /**
-         * Destroys the stream and cleans up.
-         */
-
-
-        this.dispose = function () {
-          listeners = {};
-        };
-      };
-    };
-    /**
-     * Forwards all `data` events on this stream to the destination stream. The
-     * destination stream should provide a method `push` to receive the data
-     * events as they arrive.
-     * @param destination {stream} the stream that will receive all `data` events
-     * @param autoFlush {boolean} if false, we will not call `flush` on the destination
-     *                            when the current stream emits a 'done' event
-     * @see http://nodejs.org/api/stream.html#stream_readable_pipe_destination_options
-     */
-
-
-    Stream.prototype.pipe = function (destination) {
-      this.on('data', function (data) {
-        destination.push(data);
-      });
-      this.on('done', function (flushSource) {
-        destination.flush(flushSource);
-      });
-      return destination;
-    }; // Default stream functions that are expected to be overridden to perform
-    // actual work. These are provided by the prototype as a sort of no-op
-    // implementation so that we don't have to check for their existence in the
-    // `pipe` function above.
-
-
-    Stream.prototype.push = function (data) {
-      this.trigger('data', data);
-    };
-
-    Stream.prototype.flush = function (flushSource) {
-      this.trigger('done', flushSource);
-    };
-
-    var stream = Stream;
-    /**
-     * mux.js
-     *
-     * Copyright (c) Brightcove
-     * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
-     */
     // Convert an array of nal units into an array of frames with each frame being
     // composed of the nal units that make up that frame
     // Also keep track of cummulative data about the frame from the nal units such
@@ -29851,7 +29709,11 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       var i,
           currentNal,
           currentFrame = [],
-          frames = [];
+          frames = []; // TODO added for LHLS, make sure this is OK
+
+      frames.byteLength = 0;
+      frames.nalCount = 0;
+      frames.duration = 0;
       currentFrame.byteLength = 0;
 
       for (i = 0; i < nalUnits.length; i++) {
@@ -29861,7 +29723,11 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           // Since the very first nal unit is expected to be an AUD
           // only push to the frames array when currentFrame is not empty
           if (currentFrame.length) {
-            currentFrame.duration = currentNal.dts - currentFrame.dts;
+            currentFrame.duration = currentNal.dts - currentFrame.dts; // TODO added for LHLS, make sure this is OK
+
+            frames.byteLength += currentFrame.byteLength;
+            frames.nalCount += currentFrame.length;
+            frames.duration += currentFrame.duration;
             frames.push(currentFrame);
           }
 
@@ -29886,8 +29752,12 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       if (frames.length && (!currentFrame.duration || currentFrame.duration <= 0)) {
         currentFrame.duration = frames[frames.length - 1].duration;
       } // Push the final frame
+      // TODO added for LHLS, make sure this is OK
 
 
+      frames.byteLength += currentFrame.byteLength;
+      frames.nalCount += currentFrame.length;
+      frames.duration += currentFrame.duration;
       frames.push(currentFrame);
       return frames;
     }; // Convert an array of frames into an array of Gop with each Gop being composed
@@ -30084,6 +29954,38 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       }
 
       return data;
+    }; // generate the track's sample table from a frame
+
+
+    var generateSampleTableForFrame = function generateSampleTableForFrame(frame, baseDataOffset) {
+      var sample,
+          dataOffset = baseDataOffset || 0,
+          samples = [];
+      sample = sampleForFrame(frame, dataOffset);
+      samples.push(sample);
+      return samples;
+    }; // generate the track's raw mdat data from a frame
+
+
+    var concatenateNalDataForFrame = function concatenateNalDataForFrame(frame) {
+      var i,
+          currentNal,
+          dataOffset = 0,
+          nalsByteLength = frame.byteLength,
+          numberOfNals = frame.length,
+          totalByteLength = nalsByteLength + 4 * numberOfNals,
+          data = new Uint8Array(totalByteLength),
+          view = new DataView(data.buffer); // For each NAL..
+
+      for (i = 0; i < frame.length; i++) {
+        currentNal = frame[i];
+        view.setUint32(dataOffset, currentNal.data.byteLength);
+        dataOffset += 4;
+        data.set(currentNal.data, dataOffset);
+        dataOffset += currentNal.data.byteLength;
+      }
+
+      return data;
     };
 
     var frameUtils = {
@@ -30091,7 +29993,9 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       groupFramesIntoGops: groupFramesIntoGops,
       extendFirstKeyFrame: extendFirstKeyFrame,
       generateSampleTable: generateSampleTable,
-      concatenateNalData: concatenateNalData
+      concatenateNalData: concatenateNalData,
+      generateSampleTableForFrame: generateSampleTableForFrame,
+      concatenateNalDataForFrame: concatenateNalDataForFrame
     };
     /**
      * mux.js
@@ -30151,7 +30055,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         videoTsToSeconds,
         audioTsToSeconds,
         audioTsToVideoTs,
-        videoTsToAudioTs;
+        videoTsToAudioTs,
+        metadataTsToSeconds;
 
     secondsToVideoTs = function secondsToVideoTs(seconds) {
       return seconds * ONE_SECOND_IN_TS;
@@ -30176,14 +30081,25 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
     videoTsToAudioTs = function videoTsToAudioTs(timestamp, sampleRate) {
       return secondsToAudioTs(videoTsToSeconds(timestamp), sampleRate);
     };
+    /**
+     * Adjust ID3 tag or caption timing information by the timeline pts values
+     * (if keepOriginalTimestamps is false) and convert to seconds
+     */
+
+
+    metadataTsToSeconds = function metadataTsToSeconds(timestamp, timelineStartPts, keepOriginalTimestamps) {
+      return videoTsToSeconds(keepOriginalTimestamps ? timestamp : timestamp - timelineStartPts);
+    };
 
     var clock = {
+      ONE_SECOND_IN_TS: ONE_SECOND_IN_TS,
       secondsToVideoTs: secondsToVideoTs,
       secondsToAudioTs: secondsToAudioTs,
       videoTsToSeconds: videoTsToSeconds,
       audioTsToSeconds: audioTsToSeconds,
       audioTsToVideoTs: audioTsToVideoTs,
-      videoTsToAudioTs: videoTsToAudioTs
+      videoTsToAudioTs: videoTsToAudioTs,
+      metadataTsToSeconds: metadataTsToSeconds
     };
     /**
      * mux.js
@@ -30191,8 +30107,6 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
      * Copyright (c) Brightcove
      * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
      */
-
-    var ONE_SECOND_IN_TS$1 = 90000; // 90kHz clock
 
     /**
      * Sum the `byteLength` properties of the data in each AAC frame
@@ -30220,7 +30134,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           audioFillFrameCount = 0,
           audioFillDuration = 0,
           silentFrame,
-          i;
+          i,
+          firstFrame;
 
       if (!frames.length) {
         return;
@@ -30228,7 +30143,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
       baseMediaDecodeTimeTs = clock.audioTsToVideoTs(track.baseMediaDecodeTime, track.samplerate); // determine frame clock duration based on sample rate, round up to avoid overfills
 
-      frameDuration = Math.ceil(ONE_SECOND_IN_TS$1 / (track.samplerate / 1024));
+      frameDuration = Math.ceil(clock.ONE_SECOND_IN_TS / (track.samplerate / 1024));
 
       if (audioAppendStartTs && videoBaseMediaDecodeTime) {
         // insert the shortest possible amount (audio gap or audio to video gap)
@@ -30240,7 +30155,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       // than a half second
 
 
-      if (audioFillFrameCount < 1 || audioFillDuration > ONE_SECOND_IN_TS$1 / 2) {
+      if (audioFillFrameCount < 1 || audioFillDuration > clock.ONE_SECOND_IN_TS / 2) {
         return;
       }
 
@@ -30253,8 +30168,11 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       }
 
       for (i = 0; i < audioFillFrameCount; i++) {
-        frames.splice(i, 0, {
-          data: silentFrame
+        firstFrame = frames[0];
+        frames.splice(0, 0, {
+          data: silentFrame,
+          dts: firstFrame.dts - frameDuration,
+          pts: firstFrame.pts - frameDuration
         });
       }
 
@@ -30332,8 +30250,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
      * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
      */
 
-    var ONE_SECOND_IN_TS$2 = 90000; // 90kHz clock
-
+    var ONE_SECOND_IN_TS$1 = clock.ONE_SECOND_IN_TS;
     /**
      * Store information about the start and end of the track and the
      * duration for each frame/sample we process in order to calculate
@@ -30419,7 +30336,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       if (track.type === 'audio') {
         // Audio has a different clock equal to the sampling_rate so we need to
         // scale the PTS values into the clock rate of the track
-        scale = track.samplerate / ONE_SECOND_IN_TS$2;
+        scale = track.samplerate / ONE_SECOND_IN_TS$1;
         baseMediaDecodeTime *= scale;
         baseMediaDecodeTime = Math.floor(baseMediaDecodeTime);
       }
@@ -30630,6 +30547,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
       this.ccStreams_.forEach(function (cc) {
         cc.on('data', this.trigger.bind(this, 'data'));
+        cc.on('partialdone', this.trigger.bind(this, 'partialdone'));
         cc.on('done', this.trigger.bind(this, 'done'));
       }, this);
     };
@@ -30692,12 +30610,16 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       this.latestDts_ = event.dts;
     };
 
-    CaptionStream.prototype.flush = function () {
+    CaptionStream.prototype.flushCCStreams = function (flushType) {
+      this.ccStreams_.forEach(function (cc) {
+        return flushType === 'flush' ? cc.flush() : cc.partialFlush();
+      }, this);
+    };
+
+    CaptionStream.prototype.flushStream = function (flushType) {
       // make sure we actually parsed captions before proceeding
       if (!this.captionPackets_.length) {
-        this.ccStreams_.forEach(function (cc) {
-          cc.flush();
-        }, this);
+        this.flushCCStreams(flushType);
         return;
       } // In Chrome, the Array#sort function is not stable so add a
       // presortIndex that we can use to ensure we get a stable-sort
@@ -30723,10 +30645,16 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
       }, this);
       this.captionPackets_.length = 0;
-      this.ccStreams_.forEach(function (cc) {
-        cc.flush();
-      }, this);
-      return;
+      this.flushCCStreams(flushType);
+    };
+
+    CaptionStream.prototype.flush = function () {
+      return this.flushStream('flush');
+    }; // Only called if handling partial data
+
+
+    CaptionStream.prototype.partialFlush = function () {
+      return this.flushStream('partialFlush');
     };
 
     CaptionStream.prototype.reset = function () {
@@ -31523,6 +31451,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
     };
     var MAX_TS = 8589934592;
     var RO_THRESH = 4294967296;
+    var TYPE_SHARED = 'shared';
 
     var handleRollover = function handleRollover(value, reference) {
       var direction = 1;
@@ -31549,11 +31478,16 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
     var TimestampRolloverStream = function TimestampRolloverStream(type) {
       var lastDTS, referenceDTS;
-      TimestampRolloverStream.prototype.init.call(this);
-      this.type_ = type;
+      TimestampRolloverStream.prototype.init.call(this); // The "shared" type is used in cases where a stream will contain muxed
+      // video and audio. We could use `undefined` here, but having a string
+      // makes debugging a little clearer.
+
+      this.type_ = type || TYPE_SHARED;
 
       this.push = function (data) {
-        if (data.type !== this.type_) {
+        // Any "shared" rollover streams will accept _all_ data. Otherwise,
+        // streams will only accept data that matches their type.
+        if (this.type_ !== TYPE_SHARED && data.type !== this.type_) {
           return;
         }
 
@@ -31572,9 +31506,19 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         this.trigger('done');
       };
 
+      this.endTimeline = function () {
+        this.flush();
+        this.trigger('endedtimeline');
+      };
+
       this.discontinuity = function () {
         referenceDTS = void 0;
         lastDTS = void 0;
+      };
+
+      this.reset = function () {
+        this.discontinuity();
+        this.trigger('reset');
       };
     };
 
@@ -31897,6 +31841,16 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
         this.trigger('done');
       };
+
+      this.endTimeline = function () {
+        this.flush();
+        this.trigger('endedtimeline');
+      };
+
+      this.reset = function () {
+        bytesInBuffer = 0;
+        this.trigger('reset');
+      };
     };
 
     _TransportPacketStream.prototype = new stream();
@@ -32092,6 +32046,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         data: [],
         size: 0
       },
+          programMapTable,
           parsePes = function parsePes(payload, pes) {
         var ptsDtsFlags; // get the packet length, this will be 0 for video
 
@@ -32231,8 +32186,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
             var event = {
               type: 'metadata',
               tracks: []
-            },
-                programMapTable = data.programMapTable; // translate audio and video streams to tracks
+            };
+            programMapTable = data.programMapTable; // translate audio and video streams to tracks
 
             if (programMapTable.video !== null) {
               event.tracks.push({
@@ -32260,6 +32215,14 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           }
         })[data.type]();
       };
+
+      this.reset = function () {
+        video.size = 0;
+        video.data.length = 0;
+        audio.size = 0;
+        audio.data.length = 0;
+        this.trigger('reset');
+      };
       /**
        * Flush any remaining input. Video PES packets may be of variable
        * length. Normally, the start of a new video packet can trigger the
@@ -32271,12 +32234,16 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
        */
 
 
-      this.flush = function () {
+      this.flushStreams_ = function () {
         // !!THIS ORDER IS IMPORTANT!!
         // video first then audio
         flushStream(video, 'video');
         flushStream(audio, 'audio');
         flushStream(timedMetadata, 'timed-metadata');
+      };
+
+      this.flush = function () {
+        this.flushStreams_();
         this.trigger('done');
       };
     };
@@ -32301,6 +32268,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
     }
 
     var m2ts_1 = m2ts;
+    var ONE_SECOND_IN_TS$2 = clock.ONE_SECOND_IN_TS;
 
     var _AdtsStream;
 
@@ -32314,20 +32282,24 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
      * @see http://wiki.multimedia.cx/?title=Understanding_AAC
      */
 
-    _AdtsStream = function AdtsStream() {
-      var buffer;
+    _AdtsStream = function AdtsStream(handlePartialSegments) {
+      var buffer,
+          frameNum = 0;
 
       _AdtsStream.prototype.init.call(this);
 
       this.push = function (packet) {
         var i = 0,
-            frameNum = 0,
             frameLength,
             protectionSkipBytes,
             frameEnd,
             oldBuffer,
             sampleCount,
             adtsFrameDuration;
+
+        if (!handlePartialSegments) {
+          frameNum = 0;
+        }
 
         if (packet.type !== 'audio') {
           // ignore non-audio data
@@ -32348,7 +32320,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
 
         while (i + 5 < buffer.length) {
-          // Loook for the start of an ADTS header..
+          // Look for the start of an ADTS header..
           if (buffer[i] !== 0xFF || (buffer[i + 1] & 0xF6) !== 0xF0) {
             // If a valid header was not found,  jump one forward and attempt to
             // find a valid ADTS header starting at the next byte
@@ -32363,7 +32335,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
           frameLength = (buffer[i + 3] & 0x03) << 11 | buffer[i + 4] << 3 | (buffer[i + 5] & 0xe0) >> 5;
           sampleCount = ((buffer[i + 6] & 0x03) + 1) * 1024;
-          adtsFrameDuration = sampleCount * 90000 / ADTS_SAMPLING_FREQUENCIES[(buffer[i + 2] & 0x3c) >>> 2];
+          adtsFrameDuration = sampleCount * ONE_SECOND_IN_TS$2 / ADTS_SAMPLING_FREQUENCIES[(buffer[i + 2] & 0x3c) >>> 2];
           frameEnd = i + frameLength; // If we don't have enough data to actually finish this ADTS frame, return
           // and wait for more data
 
@@ -32383,21 +32355,32 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
             // assume ISO/IEC 14496-12 AudioSampleEntry default of 16
             samplesize: 16,
             data: buffer.subarray(i + 7 + protectionSkipBytes, frameEnd)
-          }); // If the buffer is empty, clear it and return
+          });
+          frameNum++; // If the buffer is empty, clear it and return
 
           if (buffer.byteLength === frameEnd) {
             buffer = undefined;
             return;
-          }
+          } // Remove the finished frame from the buffer and start the process again
 
-          frameNum++; // Remove the finished frame from the buffer and start the process again
 
           buffer = buffer.subarray(frameEnd);
         }
       };
 
       this.flush = function () {
+        frameNum = 0;
         this.trigger('done');
+      };
+
+      this.reset = function () {
+        buffer = void 0;
+        this.trigger('reset');
+      };
+
+      this.endTimeline = function () {
+        buffer = void 0;
+        this.trigger('endedtimeline');
       };
     };
 
@@ -32589,7 +32572,9 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           swapBuffer.set(buffer);
           swapBuffer.set(data.data, buffer.byteLength);
           buffer = swapBuffer;
-        } // Rec. ITU-T H.264, Annex B
+        }
+
+        var len = buffer.byteLength; // Rec. ITU-T H.264, Annex B
         // scan for NAL unit boundaries
         // a match looks like this:
         // 0 0 1 .. NAL .. 0 0 1
@@ -32599,8 +32584,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         // ^ sync point        ^ i
         // advance the sync point to a NAL start, if necessary
 
-
-        for (; syncPoint < buffer.byteLength - 3; syncPoint++) {
+        for (; syncPoint < len - 3; syncPoint++) {
           if (buffer[syncPoint + 2] === 1) {
             // the sync point is properly aligned
             i = syncPoint + 5;
@@ -32608,7 +32592,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           }
         }
 
-        while (i < buffer.byteLength) {
+        while (i < len) {
           // look at the current byte to determine if we've hit the end of
           // a NAL unit boundary
           switch (buffer[i]) {
@@ -32630,7 +32614,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
               do {
                 i++;
-              } while (buffer[i] !== 1 && i < buffer.length);
+              } while (buffer[i] !== 1 && i < len);
 
               syncPoint = i - 2;
               i += 3;
@@ -32663,6 +32647,12 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         syncPoint = 0;
       };
 
+      this.reset = function () {
+        buffer = null;
+        syncPoint = 0;
+        this.trigger('reset');
+      };
+
       this.flush = function () {
         // deliver the last buffered NAL unit
         if (buffer && buffer.byteLength > 3) {
@@ -32673,6 +32663,11 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         buffer = null;
         syncPoint = 0;
         this.trigger('done');
+      };
+
+      this.endTimeline = function () {
+        this.flush();
+        this.trigger('endedtimeline');
       };
     };
 
@@ -32786,9 +32781,30 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       nalByteStream.on('done', function () {
         self.trigger('done');
       });
+      nalByteStream.on('partialdone', function () {
+        self.trigger('partialdone');
+      });
+      nalByteStream.on('reset', function () {
+        self.trigger('reset');
+      });
+      nalByteStream.on('endedtimeline', function () {
+        self.trigger('endedtimeline');
+      });
 
       this.flush = function () {
         nalByteStream.flush();
+      };
+
+      this.partialFlush = function () {
+        nalByteStream.partialFlush();
+      };
+
+      this.reset = function () {
+        nalByteStream.reset();
+      };
+
+      this.endTimeline = function () {
+        nalByteStream.endTimeline();
       };
       /**
        * Advance the ExpGolomb decoder past a scaling list. The scaling
@@ -33068,7 +33084,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           levelIdc: levelIdc,
           profileCompatibility: profileCompatibility,
           width: Math.ceil(((picWidthInMbsMinus1 + 1) * 16 - frameCropLeftOffset * 2 - frameCropRightOffset * 2) * sarScale),
-          height: (2 - frameMbsOnlyFlag) * (picHeightInMapUnitsMinus1 + 1) * 16 - frameCropTopOffset * 2 - frameCropBottomOffset * 2
+          height: (2 - frameMbsOnlyFlag) * (picHeightInMapUnitsMinus1 + 1) * 16 - frameCropTopOffset * 2 - frameCropBottomOffset * 2,
+          sarRatio: sarRatio
         };
       };
     };
@@ -33139,7 +33156,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       return highTwo | middle | lowThree;
     };
 
-    var parseType$1 = function parseType(header, byteIndex) {
+    var parseType = function parseType(header, byteIndex) {
       if (header[byteIndex] === 'I'.charCodeAt(0) && header[byteIndex + 1] === 'D'.charCodeAt(0) && header[byteIndex + 2] === '3'.charCodeAt(0)) {
         return 'timed-metadata';
       } else if (header[byteIndex] & 0xff === 0xff && (header[byteIndex + 1] & 0xf0) === 0xf0) {
@@ -33222,7 +33239,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       isLikelyAacData: isLikelyAacData,
       parseId3TagSize: parseId3TagSize,
       parseAdtsSize: parseAdtsSize,
-      parseType: parseType$1,
+      parseType: parseType,
       parseSampleRate: parseSampleRate,
       parseAacTimestamp: parseAacTimestamp
     }; // Constants
@@ -33321,15 +33338,26 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           everything = new Uint8Array();
         }
       };
+
+      this.reset = function () {
+        everything = new Uint8Array();
+        this.trigger('reset');
+      };
+
+      this.endTimeline = function () {
+        everything = new Uint8Array();
+        this.trigger('endedtimeline');
+      };
     };
 
     _AacStream.prototype = new stream();
     var aac = _AacStream;
     var H264Stream = h264.H264Stream;
-    var isLikelyAacData$1 = utils.isLikelyAacData; // constants
+    var isLikelyAacData$1 = utils.isLikelyAacData;
+    var ONE_SECOND_IN_TS$3 = clock.ONE_SECOND_IN_TS; // constants
 
     var AUDIO_PROPERTIES = ['audioobjecttype', 'channelcount', 'samplerate', 'samplingfrequencyindex', 'samplesize'];
-    var VIDEO_PROPERTIES = ['width', 'height', 'profileIdc', 'levelIdc', 'profileCompatibility']; // object types
+    var VIDEO_PROPERTIES = ['width', 'height', 'profileIdc', 'levelIdc', 'profileCompatibility', 'sarRatio']; // object types
 
     var _VideoSegmentStream, _AudioSegmentStream, _Transmuxer, _CoalesceStream;
     /**
@@ -33422,7 +33450,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       };
 
       this.flush = function () {
-        var frames, moof, mdat, boxes; // return early if no audio data has been observed
+        var frames, moof, mdat, boxes, frameDuration; // return early if no audio data has been observed
 
         if (adtsFrames.length === 0) {
           this.trigger('done', 'AudioSegmentStream');
@@ -33445,11 +33473,29 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         boxes.set(moof);
         boxes.set(mdat, moof.byteLength);
         trackDecodeInfo.clearDtsInfo(track);
+        frameDuration = Math.ceil(ONE_SECOND_IN_TS$3 * 1024 / track.samplerate); // TODO this check was added to maintain backwards compatibility (particularly with
+        // tests) on adding the timingInfo event. However, it seems unlikely that there's a
+        // valid use-case where an init segment/data should be triggered without associated
+        // frames. Leaving for now, but should be looked into.
+
+        if (frames.length) {
+          this.trigger('timingInfo', {
+            start: frames[0].dts,
+            end: frames[0].dts + frames.length * frameDuration
+          });
+        }
+
         this.trigger('data', {
           track: track,
           boxes: boxes
         });
         this.trigger('done', 'AudioSegmentStream');
+      };
+
+      this.reset = function () {
+        trackDecodeInfo.clearDtsInfo(track);
+        adtsFrames = [];
+        this.trigger('reset');
       };
     };
 
@@ -33633,7 +33679,11 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         }));
         firstGop = gops[0];
         lastGop = gops[gops.length - 1];
-        this.trigger('segmentTimingInfo', generateVideoSegmentTimingInfo(track.baseMediaDecodeTime, firstGop.dts, firstGop.pts, lastGop.dts + lastGop.duration, lastGop.pts + lastGop.duration, prependedContentDuration)); // save all the nals in the last GOP into the gop cache
+        this.trigger('segmentTimingInfo', generateVideoSegmentTimingInfo(track.baseMediaDecodeTime, firstGop.dts, firstGop.pts, lastGop.dts + lastGop.duration, lastGop.pts + lastGop.duration, prependedContentDuration));
+        this.trigger('timingInfo', {
+          start: gops[0].dts,
+          end: gops[gops.length - 1].dts + gops[gops.length - 1].duration
+        }); // save all the nals in the last GOP into the gop cache
 
         this.gopCache_.unshift({
           gop: gops.pop(),
@@ -33661,6 +33711,14 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         this.resetStream_(); // Continue with the flush process now
 
         this.trigger('done', 'VideoSegmentStream');
+      };
+
+      this.reset = function () {
+        this.resetStream_();
+        nalUnits = [];
+        this.gopCache_.length = 0;
+        gopsToAlignWith.length = 0;
+        this.trigger('reset');
       };
 
       this.resetStream_ = function () {
@@ -33869,6 +33927,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
       if (typeof options.keepOriginalTimestamps === 'boolean') {
         this.keepOriginalTimestamps = options.keepOriginalTimestamps;
+      } else {
+        this.keepOriginalTimestamps = false;
       }
 
       this.pendingTracks = [];
@@ -33898,15 +33958,21 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
 
 
         this.pendingTracks.push(output.track);
-        this.pendingBoxes.push(output.boxes);
-        this.pendingBytes += output.boxes.byteLength;
+        this.pendingBytes += output.boxes.byteLength; // TODO: is there an issue for this against chrome?
+        // We unshift audio and push video because
+        // as of Chrome 75 when switching from
+        // one init segment to another if the video
+        // mdat does not appear after the audio mdat
+        // only audio will play for the duration of our transmux.
 
         if (output.track.type === 'video') {
           this.videoTrack = output.track;
+          this.pendingBoxes.push(output.boxes);
         }
 
         if (output.track.type === 'audio') {
           this.audioTrack = output.track;
+          this.pendingBoxes.unshift(output.boxes);
         }
       };
     };
@@ -33967,80 +34033,88 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         }, this);
       }
 
-      if (this.pendingTracks.length === 1) {
-        event.type = this.pendingTracks[0].type;
-      } else {
-        event.type = 'combined';
-      }
-
-      this.emittedTracks += this.pendingTracks.length;
-      initSegment = mp4Generator.initSegment(this.pendingTracks); // Create a new typed array to hold the init segment
-
-      event.initSegment = new Uint8Array(initSegment.byteLength); // Create an init segment containing a moov
-      // and track definitions
-
-      event.initSegment.set(initSegment); // Create a new typed array to hold the moof+mdats
-
-      event.data = new Uint8Array(this.pendingBytes); // Append each moof+mdat (one per track) together
-
-      for (i = 0; i < this.pendingBoxes.length; i++) {
-        event.data.set(this.pendingBoxes[i], offset);
-        offset += this.pendingBoxes[i].byteLength;
-      } // Translate caption PTS times into second offsets to match the
-      // video timeline for the segment, and add track info
-
-
-      for (i = 0; i < this.pendingCaptions.length; i++) {
-        caption = this.pendingCaptions[i];
-        caption.startTime = caption.startPts;
-
-        if (!this.keepOriginalTimestamps) {
-          caption.startTime -= timelineStartPts;
+      if (this.videoTrack || this.audioTrack) {
+        if (this.pendingTracks.length === 1) {
+          event.type = this.pendingTracks[0].type;
+        } else {
+          event.type = 'combined';
         }
 
-        caption.startTime /= 90e3;
-        caption.endTime = caption.endPts;
+        this.emittedTracks += this.pendingTracks.length;
+        initSegment = mp4Generator.initSegment(this.pendingTracks); // Create a new typed array to hold the init segment
 
-        if (!this.keepOriginalTimestamps) {
-          caption.endTime -= timelineStartPts;
+        event.initSegment = new Uint8Array(initSegment.byteLength); // Create an init segment containing a moov
+        // and track definitions
+
+        event.initSegment.set(initSegment); // Create a new typed array to hold the moof+mdats
+
+        event.data = new Uint8Array(this.pendingBytes); // Append each moof+mdat (one per track) together
+
+        for (i = 0; i < this.pendingBoxes.length; i++) {
+          event.data.set(this.pendingBoxes[i], offset);
+          offset += this.pendingBoxes[i].byteLength;
+        } // Translate caption PTS times into second offsets to match the
+        // video timeline for the segment, and add track info
+
+
+        for (i = 0; i < this.pendingCaptions.length; i++) {
+          caption = this.pendingCaptions[i];
+          caption.startTime = clock.metadataTsToSeconds(caption.startPts, timelineStartPts, this.keepOriginalTimestamps);
+          caption.endTime = clock.metadataTsToSeconds(caption.endPts, timelineStartPts, this.keepOriginalTimestamps);
+          event.captionStreams[caption.stream] = true;
+          event.captions.push(caption);
+        } // Translate ID3 frame PTS times into second offsets to match the
+        // video timeline for the segment
+
+
+        for (i = 0; i < this.pendingMetadata.length; i++) {
+          id3 = this.pendingMetadata[i];
+          id3.cueTime = clock.metadataTsToSeconds(id3.pts, timelineStartPts, this.keepOriginalTimestamps);
+          event.metadata.push(id3);
+        } // We add this to every single emitted segment even though we only need
+        // it for the first
+
+
+        event.metadata.dispatchType = this.metadataStream.dispatchType; // Reset stream state
+
+        this.pendingTracks.length = 0;
+        this.videoTrack = null;
+        this.pendingBoxes.length = 0;
+        this.pendingCaptions.length = 0;
+        this.pendingBytes = 0;
+        this.pendingMetadata.length = 0; // Emit the built segment
+        // We include captions and ID3 tags for backwards compatibility,
+        // ideally we should send only video and audio in the data event
+
+        this.trigger('data', event); // Emit each caption to the outside world
+        // Ideally, this would happen immediately on parsing captions,
+        // but we need to ensure that video data is sent back first
+        // so that caption timing can be adjusted to match video timing
+
+        for (i = 0; i < event.captions.length; i++) {
+          caption = event.captions[i];
+          this.trigger('caption', caption);
+        } // Emit each id3 tag to the outside world
+        // Ideally, this would happen immediately on parsing the tag,
+        // but we need to ensure that video data is sent back first
+        // so that ID3 frame timing can be adjusted to match video timing
+
+
+        for (i = 0; i < event.metadata.length; i++) {
+          id3 = event.metadata[i];
+          this.trigger('id3Frame', id3);
         }
+      } // Only emit `done` if all tracks have been flushed and emitted
 
-        caption.endTime /= 90e3;
-        event.captionStreams[caption.stream] = true;
-        event.captions.push(caption);
-      } // Translate ID3 frame PTS times into second offsets to match the
-      // video timeline for the segment
-
-
-      for (i = 0; i < this.pendingMetadata.length; i++) {
-        id3 = this.pendingMetadata[i];
-        id3.cueTime = id3.pts;
-
-        if (!this.keepOriginalTimestamps) {
-          id3.cueTime -= timelineStartPts;
-        }
-
-        id3.cueTime /= 90e3;
-        event.metadata.push(id3);
-      } // We add this to every single emitted segment even though we only need
-      // it for the first
-
-
-      event.metadata.dispatchType = this.metadataStream.dispatchType; // Reset stream state
-
-      this.pendingTracks.length = 0;
-      this.videoTrack = null;
-      this.pendingBoxes.length = 0;
-      this.pendingCaptions.length = 0;
-      this.pendingBytes = 0;
-      this.pendingMetadata.length = 0; // Emit the built segment
-
-      this.trigger('data', event); // Only emit `done` if all tracks have been flushed and emitted
 
       if (this.emittedTracks >= this.numberOfTracks) {
         this.trigger('done');
         this.emittedTracks = 0;
       }
+    };
+
+    _CoalesceStream.prototype.setRemux = function (val) {
+      this.remuxTracks = val;
     };
     /**
      * A Stream that expects MP2T binary data as input and produces
@@ -34090,10 +34164,17 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
             }; // hook up the audio segment stream to the first track with aac data
 
             pipeline.coalesceStream.numberOfTracks++;
-            pipeline.audioSegmentStream = new _AudioSegmentStream(audioTrack, options); // Set up the final part of the audio pipeline
+            pipeline.audioSegmentStream = new _AudioSegmentStream(audioTrack, options);
+            pipeline.audioSegmentStream.on('timingInfo', self.trigger.bind(self, 'audioTimingInfo')); // Set up the final part of the audio pipeline
 
             pipeline.adtsStream.pipe(pipeline.audioSegmentStream).pipe(pipeline.coalesceStream);
-          }
+          } // emit pmt info
+
+
+          self.trigger('trackinfo', {
+            hasAudio: !!audioTrack,
+            hasVideo: !!videoTrack
+          });
         }); // Re-emit any data coming from the coalesce stream to the outside world
 
         pipeline.coalesceStream.on('data', this.trigger.bind(this, 'data')); // Let the consumer know we have finished flushing the entire pipeline
@@ -34110,21 +34191,19 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         pipeline.packetStream = new m2ts_1.TransportPacketStream();
         pipeline.parseStream = new m2ts_1.TransportParseStream();
         pipeline.elementaryStream = new m2ts_1.ElementaryStream();
-        pipeline.videoTimestampRolloverStream = new m2ts_1.TimestampRolloverStream('video');
-        pipeline.audioTimestampRolloverStream = new m2ts_1.TimestampRolloverStream('audio');
-        pipeline.timedMetadataTimestampRolloverStream = new m2ts_1.TimestampRolloverStream('timed-metadata');
+        pipeline.timestampRolloverStream = new m2ts_1.TimestampRolloverStream();
         pipeline.adtsStream = new adts();
         pipeline.h264Stream = new H264Stream();
         pipeline.captionStream = new m2ts_1.CaptionStream();
         pipeline.coalesceStream = new _CoalesceStream(options, pipeline.metadataStream);
         pipeline.headOfPipeline = pipeline.packetStream; // disassemble MPEG2-TS packets into elementary streams
 
-        pipeline.packetStream.pipe(pipeline.parseStream).pipe(pipeline.elementaryStream); // !!THIS ORDER IS IMPORTANT!!
+        pipeline.packetStream.pipe(pipeline.parseStream).pipe(pipeline.elementaryStream).pipe(pipeline.timestampRolloverStream); // !!THIS ORDER IS IMPORTANT!!
         // demux the streams
 
-        pipeline.elementaryStream.pipe(pipeline.videoTimestampRolloverStream).pipe(pipeline.h264Stream);
-        pipeline.elementaryStream.pipe(pipeline.audioTimestampRolloverStream).pipe(pipeline.adtsStream);
-        pipeline.elementaryStream.pipe(pipeline.timedMetadataTimestampRolloverStream).pipe(pipeline.metadataStream).pipe(pipeline.coalesceStream); // Hook up CEA-608/708 caption stream
+        pipeline.timestampRolloverStream.pipe(pipeline.h264Stream);
+        pipeline.timestampRolloverStream.pipe(pipeline.adtsStream);
+        pipeline.timestampRolloverStream.pipe(pipeline.metadataStream).pipe(pipeline.coalesceStream); // Hook up CEA-608/708 caption stream
 
         pipeline.h264Stream.pipe(pipeline.captionStream).pipe(pipeline.coalesceStream);
         pipeline.elementaryStream.on('data', function (data) {
@@ -34166,7 +34245,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
                 if (audioTrack) {
                   pipeline.audioSegmentStream.setVideoBaseMediaDecodeTime(baseMediaDecodeTime);
                 }
-              }); // Set up the final part of the video pipeline
+              });
+              pipeline.videoSegmentStream.on('timingInfo', self.trigger.bind(self, 'videoTimingInfo')); // Set up the final part of the video pipeline
 
               pipeline.h264Stream.pipe(pipeline.videoSegmentStream).pipe(pipeline.coalesceStream);
             }
@@ -34174,14 +34254,26 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
             if (audioTrack && !pipeline.audioSegmentStream) {
               // hook up the audio segment stream to the first track with aac data
               pipeline.coalesceStream.numberOfTracks++;
-              pipeline.audioSegmentStream = new _AudioSegmentStream(audioTrack, options); // Set up the final part of the audio pipeline
+              pipeline.audioSegmentStream = new _AudioSegmentStream(audioTrack, options);
+              pipeline.audioSegmentStream.on('timingInfo', self.trigger.bind(self, 'audioTimingInfo')); // Set up the final part of the audio pipeline
 
               pipeline.adtsStream.pipe(pipeline.audioSegmentStream).pipe(pipeline.coalesceStream);
-            }
+            } // emit pmt info
+
+
+            self.trigger('trackinfo', {
+              hasAudio: !!audioTrack,
+              hasVideo: !!videoTrack
+            });
           }
         }); // Re-emit any data coming from the coalesce stream to the outside world
 
-        pipeline.coalesceStream.on('data', this.trigger.bind(this, 'data')); // Let the consumer know we have finished flushing the entire pipeline
+        pipeline.coalesceStream.on('data', this.trigger.bind(this, 'data'));
+        pipeline.coalesceStream.on('id3Frame', function (id3Frame) {
+          id3Frame.dispatchType = pipeline.metadataStream.dispatchType;
+          self.trigger('id3Frame', id3Frame);
+        });
+        pipeline.coalesceStream.on('caption', this.trigger.bind(this, 'caption')); // Let the consumer know we have finished flushing the entire pipeline
 
         pipeline.coalesceStream.on('done', this.trigger.bind(this, 'done'));
       }; // hook up the segment streams once track metadata is delivered
@@ -34211,7 +34303,6 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         if (videoTrack) {
           if (pipeline.videoSegmentStream) {
             pipeline.videoSegmentStream.gopCache_ = [];
-            pipeline.videoTimestampRolloverStream.discontinuity();
           }
 
           videoTrack.timelineStartInfo.dts = undefined;
@@ -34224,14 +34315,23 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
           }
         }
 
-        if (pipeline.timedMetadataTimestampRolloverStream) {
-          pipeline.timedMetadataTimestampRolloverStream.discontinuity();
+        if (pipeline.timestampRolloverStream) {
+          pipeline.timestampRolloverStream.discontinuity();
         }
       };
 
       this.setAudioAppendStart = function (timestamp) {
         if (audioTrack) {
           this.transmuxPipeline_.audioSegmentStream.setAudioAppendStart(timestamp);
+        }
+      };
+
+      this.setRemux = function (val) {
+        var pipeline = this.transmuxPipeline_;
+        options.remux = val;
+
+        if (pipeline && pipeline.coalesceStream) {
+          pipeline.coalesceStream.setRemux(val);
         }
       };
 
@@ -34263,6 +34363,16 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         hasFlushed = true; // Start at the top of the pipeline and flush all pending work
 
         this.transmuxPipeline_.headOfPipeline.flush();
+      };
+
+      this.endTimeline = function () {
+        this.transmuxPipeline_.headOfPipeline.endTimeline();
+      };
+
+      this.reset = function () {
+        if (this.transmuxPipeline_.headOfPipeline) {
+          this.transmuxPipeline_.headOfPipeline.reset();
+        }
       }; // Caption data has to be reset when seeking outside buffered range
 
 
@@ -34282,1296 +34392,6 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
       VIDEO_PROPERTIES: VIDEO_PROPERTIES,
       // exported for testing
       generateVideoSegmentTimingInfo: generateVideoSegmentTimingInfo
-    };
-
-    var inspectMp4,
-        _textifyMp,
-        parseType$2 = probe.parseType,
-        parseMp4Date = function parseMp4Date(seconds) {
-      return new Date(seconds * 1000 - 2082844800000);
-    },
-        parseSampleFlags = function parseSampleFlags(flags) {
-      return {
-        isLeading: (flags[0] & 0x0c) >>> 2,
-        dependsOn: flags[0] & 0x03,
-        isDependedOn: (flags[1] & 0xc0) >>> 6,
-        hasRedundancy: (flags[1] & 0x30) >>> 4,
-        paddingValue: (flags[1] & 0x0e) >>> 1,
-        isNonSyncSample: flags[1] & 0x01,
-        degradationPriority: flags[2] << 8 | flags[3]
-      };
-    },
-        nalParse = function nalParse(avcStream) {
-      var avcView = new DataView(avcStream.buffer, avcStream.byteOffset, avcStream.byteLength),
-          result = [],
-          i,
-          length;
-
-      for (i = 0; i + 4 < avcStream.length; i += length) {
-        length = avcView.getUint32(i);
-        i += 4; // bail if this doesn't appear to be an H264 stream
-
-        if (length <= 0) {
-          result.push('<span style=\'color:red;\'>MALFORMED DATA</span>');
-          continue;
-        }
-
-        switch (avcStream[i] & 0x1F) {
-          case 0x01:
-            result.push('slice_layer_without_partitioning_rbsp');
-            break;
-
-          case 0x05:
-            result.push('slice_layer_without_partitioning_rbsp_idr');
-            break;
-
-          case 0x06:
-            result.push('sei_rbsp');
-            break;
-
-          case 0x07:
-            result.push('seq_parameter_set_rbsp');
-            break;
-
-          case 0x08:
-            result.push('pic_parameter_set_rbsp');
-            break;
-
-          case 0x09:
-            result.push('access_unit_delimiter_rbsp');
-            break;
-
-          default:
-            result.push('UNKNOWN NAL - ' + avcStream[i] & 0x1F);
-            break;
-        }
-      }
-
-      return result;
-    },
-        // registry of handlers for individual mp4 box types
-    parse$$1 = {
-      // codingname, not a first-class box type. stsd entries share the
-      // same format as real boxes so the parsing infrastructure can be
-      // shared
-      avc1: function avc1(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-        return {
-          dataReferenceIndex: view.getUint16(6),
-          width: view.getUint16(24),
-          height: view.getUint16(26),
-          horizresolution: view.getUint16(28) + view.getUint16(30) / 16,
-          vertresolution: view.getUint16(32) + view.getUint16(34) / 16,
-          frameCount: view.getUint16(40),
-          depth: view.getUint16(74),
-          config: inspectMp4(data.subarray(78, data.byteLength))
-        };
-      },
-      avcC: function avcC(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          configurationVersion: data[0],
-          avcProfileIndication: data[1],
-          profileCompatibility: data[2],
-          avcLevelIndication: data[3],
-          lengthSizeMinusOne: data[4] & 0x03,
-          sps: [],
-          pps: []
-        },
-            numOfSequenceParameterSets = data[5] & 0x1f,
-            numOfPictureParameterSets,
-            nalSize,
-            offset,
-            i; // iterate past any SPSs
-
-        offset = 6;
-
-        for (i = 0; i < numOfSequenceParameterSets; i++) {
-          nalSize = view.getUint16(offset);
-          offset += 2;
-          result.sps.push(new Uint8Array(data.subarray(offset, offset + nalSize)));
-          offset += nalSize;
-        } // iterate past any PPSs
-
-
-        numOfPictureParameterSets = data[offset];
-        offset++;
-
-        for (i = 0; i < numOfPictureParameterSets; i++) {
-          nalSize = view.getUint16(offset);
-          offset += 2;
-          result.pps.push(new Uint8Array(data.subarray(offset, offset + nalSize)));
-          offset += nalSize;
-        }
-
-        return result;
-      },
-      btrt: function btrt(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-        return {
-          bufferSizeDB: view.getUint32(0),
-          maxBitrate: view.getUint32(4),
-          avgBitrate: view.getUint32(8)
-        };
-      },
-      esds: function esds(data) {
-        return {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          esId: data[6] << 8 | data[7],
-          streamPriority: data[8] & 0x1f,
-          decoderConfig: {
-            objectProfileIndication: data[11],
-            streamType: data[12] >>> 2 & 0x3f,
-            bufferSize: data[13] << 16 | data[14] << 8 | data[15],
-            maxBitrate: data[16] << 24 | data[17] << 16 | data[18] << 8 | data[19],
-            avgBitrate: data[20] << 24 | data[21] << 16 | data[22] << 8 | data[23],
-            decoderConfigDescriptor: {
-              tag: data[24],
-              length: data[25],
-              audioObjectType: data[26] >>> 3 & 0x1f,
-              samplingFrequencyIndex: (data[26] & 0x07) << 1 | data[27] >>> 7 & 0x01,
-              channelConfiguration: data[27] >>> 3 & 0x0f
-            }
-          }
-        };
-      },
-      ftyp: function ftyp(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          majorBrand: parseType$2(data.subarray(0, 4)),
-          minorVersion: view.getUint32(4),
-          compatibleBrands: []
-        },
-            i = 8;
-
-        while (i < data.byteLength) {
-          result.compatibleBrands.push(parseType$2(data.subarray(i, i + 4)));
-          i += 4;
-        }
-
-        return result;
-      },
-      dinf: function dinf(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      dref: function dref(data) {
-        return {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          dataReferences: inspectMp4(data.subarray(8))
-        };
-      },
-      hdlr: function hdlr(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          version: view.getUint8(0),
-          flags: new Uint8Array(data.subarray(1, 4)),
-          handlerType: parseType$2(data.subarray(8, 12)),
-          name: ''
-        },
-            i = 8; // parse out the name field
-
-        for (i = 24; i < data.byteLength; i++) {
-          if (data[i] === 0x00) {
-            // the name field is null-terminated
-            i++;
-            break;
-          }
-
-          result.name += String.fromCharCode(data[i]);
-        } // decode UTF-8 to javascript's internal representation
-        // see http://ecmanaut.blogspot.com/2006/07/encoding-decoding-utf8-in-javascript.html
-
-
-        result.name = decodeURIComponent(escape(result.name));
-        return result;
-      },
-      mdat: function mdat(data) {
-        return {
-          byteLength: data.byteLength,
-          nals: nalParse(data)
-        };
-      },
-      mdhd: function mdhd(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            i = 4,
-            language,
-            result = {
-          version: view.getUint8(0),
-          flags: new Uint8Array(data.subarray(1, 4)),
-          language: ''
-        };
-
-        if (result.version === 1) {
-          i += 4;
-          result.creationTime = parseMp4Date(view.getUint32(i)); // truncating top 4 bytes
-
-          i += 8;
-          result.modificationTime = parseMp4Date(view.getUint32(i)); // truncating top 4 bytes
-
-          i += 4;
-          result.timescale = view.getUint32(i);
-          i += 8;
-          result.duration = view.getUint32(i); // truncating top 4 bytes
-        } else {
-          result.creationTime = parseMp4Date(view.getUint32(i));
-          i += 4;
-          result.modificationTime = parseMp4Date(view.getUint32(i));
-          i += 4;
-          result.timescale = view.getUint32(i);
-          i += 4;
-          result.duration = view.getUint32(i);
-        }
-
-        i += 4; // language is stored as an ISO-639-2/T code in an array of three 5-bit fields
-        // each field is the packed difference between its ASCII value and 0x60
-
-        language = view.getUint16(i);
-        result.language += String.fromCharCode((language >> 10) + 0x60);
-        result.language += String.fromCharCode(((language & 0x03e0) >> 5) + 0x60);
-        result.language += String.fromCharCode((language & 0x1f) + 0x60);
-        return result;
-      },
-      mdia: function mdia(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      mfhd: function mfhd(data) {
-        return {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          sequenceNumber: data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7]
-        };
-      },
-      minf: function minf(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      // codingname, not a first-class box type. stsd entries share the
-      // same format as real boxes so the parsing infrastructure can be
-      // shared
-      mp4a: function mp4a(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          // 6 bytes reserved
-          dataReferenceIndex: view.getUint16(6),
-          // 4 + 4 bytes reserved
-          channelcount: view.getUint16(16),
-          samplesize: view.getUint16(18),
-          // 2 bytes pre_defined
-          // 2 bytes reserved
-          samplerate: view.getUint16(24) + view.getUint16(26) / 65536
-        }; // if there are more bytes to process, assume this is an ISO/IEC
-        // 14496-14 MP4AudioSampleEntry and parse the ESDBox
-
-        if (data.byteLength > 28) {
-          result.streamDescriptor = inspectMp4(data.subarray(28))[0];
-        }
-
-        return result;
-      },
-      moof: function moof(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      moov: function moov(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      mvex: function mvex(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      mvhd: function mvhd(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            i = 4,
-            result = {
-          version: view.getUint8(0),
-          flags: new Uint8Array(data.subarray(1, 4))
-        };
-
-        if (result.version === 1) {
-          i += 4;
-          result.creationTime = parseMp4Date(view.getUint32(i)); // truncating top 4 bytes
-
-          i += 8;
-          result.modificationTime = parseMp4Date(view.getUint32(i)); // truncating top 4 bytes
-
-          i += 4;
-          result.timescale = view.getUint32(i);
-          i += 8;
-          result.duration = view.getUint32(i); // truncating top 4 bytes
-        } else {
-          result.creationTime = parseMp4Date(view.getUint32(i));
-          i += 4;
-          result.modificationTime = parseMp4Date(view.getUint32(i));
-          i += 4;
-          result.timescale = view.getUint32(i);
-          i += 4;
-          result.duration = view.getUint32(i);
-        }
-
-        i += 4; // convert fixed-point, base 16 back to a number
-
-        result.rate = view.getUint16(i) + view.getUint16(i + 2) / 16;
-        i += 4;
-        result.volume = view.getUint8(i) + view.getUint8(i + 1) / 8;
-        i += 2;
-        i += 2;
-        i += 2 * 4;
-        result.matrix = new Uint32Array(data.subarray(i, i + 9 * 4));
-        i += 9 * 4;
-        i += 6 * 4;
-        result.nextTrackId = view.getUint32(i);
-        return result;
-      },
-      pdin: function pdin(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-        return {
-          version: view.getUint8(0),
-          flags: new Uint8Array(data.subarray(1, 4)),
-          rate: view.getUint32(4),
-          initialDelay: view.getUint32(8)
-        };
-      },
-      sdtp: function sdtp(data) {
-        var result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          samples: []
-        },
-            i;
-
-        for (i = 4; i < data.byteLength; i++) {
-          result.samples.push({
-            dependsOn: (data[i] & 0x30) >> 4,
-            isDependedOn: (data[i] & 0x0c) >> 2,
-            hasRedundancy: data[i] & 0x03
-          });
-        }
-
-        return result;
-      },
-      sidx: function sidx(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          references: [],
-          referenceId: view.getUint32(4),
-          timescale: view.getUint32(8),
-          earliestPresentationTime: view.getUint32(12),
-          firstOffset: view.getUint32(16)
-        },
-            referenceCount = view.getUint16(22),
-            i;
-
-        for (i = 24; referenceCount; i += 12, referenceCount--) {
-          result.references.push({
-            referenceType: (data[i] & 0x80) >>> 7,
-            referencedSize: view.getUint32(i) & 0x7FFFFFFF,
-            subsegmentDuration: view.getUint32(i + 4),
-            startsWithSap: !!(data[i + 8] & 0x80),
-            sapType: (data[i + 8] & 0x70) >>> 4,
-            sapDeltaTime: view.getUint32(i + 8) & 0x0FFFFFFF
-          });
-        }
-
-        return result;
-      },
-      smhd: function smhd(data) {
-        return {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          balance: data[4] + data[5] / 256
-        };
-      },
-      stbl: function stbl(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      stco: function stco(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          chunkOffsets: []
-        },
-            entryCount = view.getUint32(4),
-            i;
-
-        for (i = 8; entryCount; i += 4, entryCount--) {
-          result.chunkOffsets.push(view.getUint32(i));
-        }
-
-        return result;
-      },
-      stsc: function stsc(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            entryCount = view.getUint32(4),
-            result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          sampleToChunks: []
-        },
-            i;
-
-        for (i = 8; entryCount; i += 12, entryCount--) {
-          result.sampleToChunks.push({
-            firstChunk: view.getUint32(i),
-            samplesPerChunk: view.getUint32(i + 4),
-            sampleDescriptionIndex: view.getUint32(i + 8)
-          });
-        }
-
-        return result;
-      },
-      stsd: function stsd(data) {
-        return {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          sampleDescriptions: inspectMp4(data.subarray(8))
-        };
-      },
-      stsz: function stsz(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          sampleSize: view.getUint32(4),
-          entries: []
-        },
-            i;
-
-        for (i = 12; i < data.byteLength; i += 4) {
-          result.entries.push(view.getUint32(i));
-        }
-
-        return result;
-      },
-      stts: function stts(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          timeToSamples: []
-        },
-            entryCount = view.getUint32(4),
-            i;
-
-        for (i = 8; entryCount; i += 8, entryCount--) {
-          result.timeToSamples.push({
-            sampleCount: view.getUint32(i),
-            sampleDelta: view.getUint32(i + 4)
-          });
-        }
-
-        return result;
-      },
-      styp: function styp(data) {
-        return parse$$1.ftyp(data);
-      },
-      tfdt: function tfdt(data) {
-        var result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          baseMediaDecodeTime: data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7]
-        };
-
-        if (result.version === 1) {
-          result.baseMediaDecodeTime *= Math.pow(2, 32);
-          result.baseMediaDecodeTime += data[8] << 24 | data[9] << 16 | data[10] << 8 | data[11];
-        }
-
-        return result;
-      },
-      tfhd: function tfhd(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          trackId: view.getUint32(4)
-        },
-            baseDataOffsetPresent = result.flags[2] & 0x01,
-            sampleDescriptionIndexPresent = result.flags[2] & 0x02,
-            defaultSampleDurationPresent = result.flags[2] & 0x08,
-            defaultSampleSizePresent = result.flags[2] & 0x10,
-            defaultSampleFlagsPresent = result.flags[2] & 0x20,
-            durationIsEmpty = result.flags[0] & 0x010000,
-            defaultBaseIsMoof = result.flags[0] & 0x020000,
-            i;
-        i = 8;
-
-        if (baseDataOffsetPresent) {
-          i += 4; // truncate top 4 bytes
-          // FIXME: should we read the full 64 bits?
-
-          result.baseDataOffset = view.getUint32(12);
-          i += 4;
-        }
-
-        if (sampleDescriptionIndexPresent) {
-          result.sampleDescriptionIndex = view.getUint32(i);
-          i += 4;
-        }
-
-        if (defaultSampleDurationPresent) {
-          result.defaultSampleDuration = view.getUint32(i);
-          i += 4;
-        }
-
-        if (defaultSampleSizePresent) {
-          result.defaultSampleSize = view.getUint32(i);
-          i += 4;
-        }
-
-        if (defaultSampleFlagsPresent) {
-          result.defaultSampleFlags = view.getUint32(i);
-        }
-
-        if (durationIsEmpty) {
-          result.durationIsEmpty = true;
-        }
-
-        if (!baseDataOffsetPresent && defaultBaseIsMoof) {
-          result.baseDataOffsetIsMoof = true;
-        }
-
-        return result;
-      },
-      tkhd: function tkhd(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            i = 4,
-            result = {
-          version: view.getUint8(0),
-          flags: new Uint8Array(data.subarray(1, 4))
-        };
-
-        if (result.version === 1) {
-          i += 4;
-          result.creationTime = parseMp4Date(view.getUint32(i)); // truncating top 4 bytes
-
-          i += 8;
-          result.modificationTime = parseMp4Date(view.getUint32(i)); // truncating top 4 bytes
-
-          i += 4;
-          result.trackId = view.getUint32(i);
-          i += 4;
-          i += 8;
-          result.duration = view.getUint32(i); // truncating top 4 bytes
-        } else {
-          result.creationTime = parseMp4Date(view.getUint32(i));
-          i += 4;
-          result.modificationTime = parseMp4Date(view.getUint32(i));
-          i += 4;
-          result.trackId = view.getUint32(i);
-          i += 4;
-          i += 4;
-          result.duration = view.getUint32(i);
-        }
-
-        i += 4;
-        i += 2 * 4;
-        result.layer = view.getUint16(i);
-        i += 2;
-        result.alternateGroup = view.getUint16(i);
-        i += 2; // convert fixed-point, base 16 back to a number
-
-        result.volume = view.getUint8(i) + view.getUint8(i + 1) / 8;
-        i += 2;
-        i += 2;
-        result.matrix = new Uint32Array(data.subarray(i, i + 9 * 4));
-        i += 9 * 4;
-        result.width = view.getUint16(i) + view.getUint16(i + 2) / 16;
-        i += 4;
-        result.height = view.getUint16(i) + view.getUint16(i + 2) / 16;
-        return result;
-      },
-      traf: function traf(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      trak: function trak(data) {
-        return {
-          boxes: inspectMp4(data)
-        };
-      },
-      trex: function trex(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-        return {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          trackId: view.getUint32(4),
-          defaultSampleDescriptionIndex: view.getUint32(8),
-          defaultSampleDuration: view.getUint32(12),
-          defaultSampleSize: view.getUint32(16),
-          sampleDependsOn: data[20] & 0x03,
-          sampleIsDependedOn: (data[21] & 0xc0) >> 6,
-          sampleHasRedundancy: (data[21] & 0x30) >> 4,
-          samplePaddingValue: (data[21] & 0x0e) >> 1,
-          sampleIsDifferenceSample: !!(data[21] & 0x01),
-          sampleDegradationPriority: view.getUint16(22)
-        };
-      },
-      trun: function trun(data) {
-        var result = {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          samples: []
-        },
-            view = new DataView(data.buffer, data.byteOffset, data.byteLength),
-            // Flag interpretation
-        dataOffsetPresent = result.flags[2] & 0x01,
-            // compare with 2nd byte of 0x1
-        firstSampleFlagsPresent = result.flags[2] & 0x04,
-            // compare with 2nd byte of 0x4
-        sampleDurationPresent = result.flags[1] & 0x01,
-            // compare with 2nd byte of 0x100
-        sampleSizePresent = result.flags[1] & 0x02,
-            // compare with 2nd byte of 0x200
-        sampleFlagsPresent = result.flags[1] & 0x04,
-            // compare with 2nd byte of 0x400
-        sampleCompositionTimeOffsetPresent = result.flags[1] & 0x08,
-            // compare with 2nd byte of 0x800
-        sampleCount = view.getUint32(4),
-            offset = 8,
-            sample;
-
-        if (dataOffsetPresent) {
-          // 32 bit signed integer
-          result.dataOffset = view.getInt32(offset);
-          offset += 4;
-        } // Overrides the flags for the first sample only. The order of
-        // optional values will be: duration, size, compositionTimeOffset
-
-
-        if (firstSampleFlagsPresent && sampleCount) {
-          sample = {
-            flags: parseSampleFlags(data.subarray(offset, offset + 4))
-          };
-          offset += 4;
-
-          if (sampleDurationPresent) {
-            sample.duration = view.getUint32(offset);
-            offset += 4;
-          }
-
-          if (sampleSizePresent) {
-            sample.size = view.getUint32(offset);
-            offset += 4;
-          }
-
-          if (sampleCompositionTimeOffsetPresent) {
-            // Note: this should be a signed int if version is 1
-            sample.compositionTimeOffset = view.getUint32(offset);
-            offset += 4;
-          }
-
-          result.samples.push(sample);
-          sampleCount--;
-        }
-
-        while (sampleCount--) {
-          sample = {};
-
-          if (sampleDurationPresent) {
-            sample.duration = view.getUint32(offset);
-            offset += 4;
-          }
-
-          if (sampleSizePresent) {
-            sample.size = view.getUint32(offset);
-            offset += 4;
-          }
-
-          if (sampleFlagsPresent) {
-            sample.flags = parseSampleFlags(data.subarray(offset, offset + 4));
-            offset += 4;
-          }
-
-          if (sampleCompositionTimeOffsetPresent) {
-            // Note: this should be a signed int if version is 1
-            sample.compositionTimeOffset = view.getUint32(offset);
-            offset += 4;
-          }
-
-          result.samples.push(sample);
-        }
-
-        return result;
-      },
-      'url ': function url(data) {
-        return {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4))
-        };
-      },
-      vmhd: function vmhd(data) {
-        var view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-        return {
-          version: data[0],
-          flags: new Uint8Array(data.subarray(1, 4)),
-          graphicsmode: view.getUint16(4),
-          opcolor: new Uint16Array([view.getUint16(6), view.getUint16(8), view.getUint16(10)])
-        };
-      }
-    };
-    /**
-     * Return a javascript array of box objects parsed from an ISO base
-     * media file.
-     * @param data {Uint8Array} the binary data of the media to be inspected
-     * @return {array} a javascript array of potentially nested box objects
-     */
-
-
-    inspectMp4 = function inspectMp4(data) {
-      var i = 0,
-          result = [],
-          view,
-          size,
-          type,
-          end,
-          box; // Convert data from Uint8Array to ArrayBuffer, to follow Dataview API
-
-      var ab = new ArrayBuffer(data.length);
-      var v = new Uint8Array(ab);
-
-      for (var z = 0; z < data.length; ++z) {
-        v[z] = data[z];
-      }
-
-      view = new DataView(ab);
-
-      while (i < data.byteLength) {
-        // parse box data
-        size = view.getUint32(i);
-        type = parseType$2(data.subarray(i + 4, i + 8));
-        end = size > 1 ? i + size : data.byteLength; // parse type-specific data
-
-        box = (parse$$1[type] || function (data) {
-          return {
-            data: data
-          };
-        })(data.subarray(i + 8, end));
-
-        box.size = size;
-        box.type = type; // store this box and move to the next
-
-        result.push(box);
-        i = end;
-      }
-
-      return result;
-    };
-    /**
-     * Returns a textual representation of the javascript represtentation
-     * of an MP4 file. You can use it as an alternative to
-     * JSON.stringify() to compare inspected MP4s.
-     * @param inspectedMp4 {array} the parsed array of boxes in an MP4
-     * file
-     * @param depth {number} (optional) the number of ancestor boxes of
-     * the elements of inspectedMp4. Assumed to be zero if unspecified.
-     * @return {string} a text representation of the parsed MP4
-     */
-
-
-    _textifyMp = function textifyMp4(inspectedMp4, depth) {
-      var indent;
-      depth = depth || 0;
-      indent = new Array(depth * 2 + 1).join(' '); // iterate over all the boxes
-
-      return inspectedMp4.map(function (box, index) {
-        // list the box type first at the current indentation level
-        return indent + box.type + '\n' + // the type is already included and handle child boxes separately
-        Object.keys(box).filter(function (key) {
-          return key !== 'type' && key !== 'boxes'; // output all the box properties
-        }).map(function (key) {
-          var prefix = indent + '  ' + key + ': ',
-              value = box[key]; // print out raw bytes as hexademical
-
-          if (value instanceof Uint8Array || value instanceof Uint32Array) {
-            var bytes = Array.prototype.slice.call(new Uint8Array(value.buffer, value.byteOffset, value.byteLength)).map(function (_byte) {
-              return ' ' + ('00' + _byte.toString(16)).slice(-2);
-            }).join('').match(/.{1,24}/g);
-
-            if (!bytes) {
-              return prefix + '<>';
-            }
-
-            if (bytes.length === 1) {
-              return prefix + '<' + bytes.join('').slice(1) + '>';
-            }
-
-            return prefix + '<\n' + bytes.map(function (line) {
-              return indent + '  ' + line;
-            }).join('\n') + '\n' + indent + '  >';
-          } // stringify generic objects
-
-
-          return prefix + JSON.stringify(value, null, 2).split('\n').map(function (line, index) {
-            if (index === 0) {
-              return line;
-            }
-
-            return indent + '  ' + line;
-          }).join('\n');
-        }).join('\n') + ( // recursively textify the child boxes
-        box.boxes ? '\n' + _textifyMp(box.boxes, depth + 1) : '');
-      }).join('\n');
-    };
-
-    var mp4Inspector$$1 = {
-      inspect: inspectMp4,
-      textify: _textifyMp,
-      parseTfdt: parse$$1.tfdt,
-      parseHdlr: parse$$1.hdlr,
-      parseTfhd: parse$$1.tfhd,
-      parseTrun: parse$$1.trun,
-      parseSidx: parse$$1.sidx
-    };
-    var discardEmulationPreventionBytes$1 = captionPacketParser.discardEmulationPreventionBytes;
-    var CaptionStream$1 = captionStream.CaptionStream;
-    /**
-      * Maps an offset in the mdat to a sample based on the the size of the samples.
-      * Assumes that `parseSamples` has been called first.
-      *
-      * @param {Number} offset - The offset into the mdat
-      * @param {Object[]} samples - An array of samples, parsed using `parseSamples`
-      * @return {?Object} The matching sample, or null if no match was found.
-      *
-      * @see ISO-BMFF-12/2015, Section 8.8.8
-     **/
-
-    var mapToSample = function mapToSample(offset, samples) {
-      var approximateOffset = offset;
-
-      for (var i = 0; i < samples.length; i++) {
-        var sample = samples[i];
-
-        if (approximateOffset < sample.size) {
-          return sample;
-        }
-
-        approximateOffset -= sample.size;
-      }
-
-      return null;
-    };
-    /**
-      * Finds SEI nal units contained in a Media Data Box.
-      * Assumes that `parseSamples` has been called first.
-      *
-      * @param {Uint8Array} avcStream - The bytes of the mdat
-      * @param {Object[]} samples - The samples parsed out by `parseSamples`
-      * @param {Number} trackId - The trackId of this video track
-      * @return {Object[]} seiNals - the parsed SEI NALUs found.
-      *   The contents of the seiNal should match what is expected by
-      *   CaptionStream.push (nalUnitType, size, data, escapedRBSP, pts, dts)
-      *
-      * @see ISO-BMFF-12/2015, Section 8.1.1
-      * @see Rec. ITU-T H.264, 7.3.2.3.1
-     **/
-
-
-    var findSeiNals = function findSeiNals(avcStream, samples, trackId) {
-      var avcView = new DataView(avcStream.buffer, avcStream.byteOffset, avcStream.byteLength),
-          result = [],
-          seiNal,
-          i,
-          length,
-          lastMatchedSample;
-
-      for (i = 0; i + 4 < avcStream.length; i += length) {
-        length = avcView.getUint32(i);
-        i += 4; // Bail if this doesn't appear to be an H264 stream
-
-        if (length <= 0) {
-          continue;
-        }
-
-        switch (avcStream[i] & 0x1F) {
-          case 0x06:
-            var data = avcStream.subarray(i + 1, i + 1 + length);
-            var matchingSample = mapToSample(i, samples);
-            seiNal = {
-              nalUnitType: 'sei_rbsp',
-              size: length,
-              data: data,
-              escapedRBSP: discardEmulationPreventionBytes$1(data),
-              trackId: trackId
-            };
-
-            if (matchingSample) {
-              seiNal.pts = matchingSample.pts;
-              seiNal.dts = matchingSample.dts;
-              lastMatchedSample = matchingSample;
-            } else {
-              // If a matching sample cannot be found, use the last
-              // sample's values as they should be as close as possible
-              seiNal.pts = lastMatchedSample.pts;
-              seiNal.dts = lastMatchedSample.dts;
-            }
-
-            result.push(seiNal);
-            break;
-
-          default:
-            break;
-        }
-      }
-
-      return result;
-    };
-    /**
-      * Parses sample information out of Track Run Boxes and calculates
-      * the absolute presentation and decode timestamps of each sample.
-      *
-      * @param {Array<Uint8Array>} truns - The Trun Run boxes to be parsed
-      * @param {Number} baseMediaDecodeTime - base media decode time from tfdt
-          @see ISO-BMFF-12/2015, Section 8.8.12
-      * @param {Object} tfhd - The parsed Track Fragment Header
-      *   @see inspect.parseTfhd
-      * @return {Object[]} the parsed samples
-      *
-      * @see ISO-BMFF-12/2015, Section 8.8.8
-     **/
-
-
-    var parseSamples = function parseSamples(truns, baseMediaDecodeTime, tfhd) {
-      var currentDts = baseMediaDecodeTime;
-      var defaultSampleDuration = tfhd.defaultSampleDuration || 0;
-      var defaultSampleSize = tfhd.defaultSampleSize || 0;
-      var trackId = tfhd.trackId;
-      var allSamples = [];
-      truns.forEach(function (trun) {
-        // Note: We currently do not parse the sample table as well
-        // as the trun. It's possible some sources will require this.
-        // moov > trak > mdia > minf > stbl
-        var trackRun = mp4Inspector$$1.parseTrun(trun);
-        var samples = trackRun.samples;
-        samples.forEach(function (sample) {
-          if (sample.duration === undefined) {
-            sample.duration = defaultSampleDuration;
-          }
-
-          if (sample.size === undefined) {
-            sample.size = defaultSampleSize;
-          }
-
-          sample.trackId = trackId;
-          sample.dts = currentDts;
-
-          if (sample.compositionTimeOffset === undefined) {
-            sample.compositionTimeOffset = 0;
-          }
-
-          sample.pts = currentDts + sample.compositionTimeOffset;
-          currentDts += sample.duration;
-        });
-        allSamples = allSamples.concat(samples);
-      });
-      return allSamples;
-    };
-    /**
-      * Parses out caption nals from an FMP4 segment's video tracks.
-      *
-      * @param {Uint8Array} segment - The bytes of a single segment
-      * @param {Number} videoTrackId - The trackId of a video track in the segment
-      * @return {Object.<Number, Object[]>} A mapping of video trackId to
-      *   a list of seiNals found in that track
-     **/
-
-
-    var parseCaptionNals = function parseCaptionNals(segment, videoTrackId) {
-      // To get the samples
-      var trafs = probe.findBox(segment, ['moof', 'traf']); // To get SEI NAL units
-
-      var mdats = probe.findBox(segment, ['mdat']);
-      var captionNals = {};
-      var mdatTrafPairs = []; // Pair up each traf with a mdat as moofs and mdats are in pairs
-
-      mdats.forEach(function (mdat, index) {
-        var matchingTraf = trafs[index];
-        mdatTrafPairs.push({
-          mdat: mdat,
-          traf: matchingTraf
-        });
-      });
-      mdatTrafPairs.forEach(function (pair) {
-        var mdat = pair.mdat;
-        var traf = pair.traf;
-        var tfhd = probe.findBox(traf, ['tfhd']); // Exactly 1 tfhd per traf
-
-        var headerInfo = mp4Inspector$$1.parseTfhd(tfhd[0]);
-        var trackId = headerInfo.trackId;
-        var tfdt = probe.findBox(traf, ['tfdt']); // Either 0 or 1 tfdt per traf
-
-        var baseMediaDecodeTime = tfdt.length > 0 ? mp4Inspector$$1.parseTfdt(tfdt[0]).baseMediaDecodeTime : 0;
-        var truns = probe.findBox(traf, ['trun']);
-        var samples;
-        var seiNals; // Only parse video data for the chosen video track
-
-        if (videoTrackId === trackId && truns.length > 0) {
-          samples = parseSamples(truns, baseMediaDecodeTime, headerInfo);
-          seiNals = findSeiNals(mdat, samples, trackId);
-
-          if (!captionNals[trackId]) {
-            captionNals[trackId] = [];
-          }
-
-          captionNals[trackId] = captionNals[trackId].concat(seiNals);
-        }
-      });
-      return captionNals;
-    };
-    /**
-      * Parses out inband captions from an MP4 container and returns
-      * caption objects that can be used by WebVTT and the TextTrack API.
-      * @see https://developer.mozilla.org/en-US/docs/Web/API/VTTCue
-      * @see https://developer.mozilla.org/en-US/docs/Web/API/TextTrack
-      * Assumes that `probe.getVideoTrackIds` and `probe.timescale` have been called first
-      *
-      * @param {Uint8Array} segment - The fmp4 segment containing embedded captions
-      * @param {Number} trackId - The id of the video track to parse
-      * @param {Number} timescale - The timescale for the video track from the init segment
-      *
-      * @return {?Object[]} parsedCaptions - A list of captions or null if no video tracks
-      * @return {Number} parsedCaptions[].startTime - The time to show the caption in seconds
-      * @return {Number} parsedCaptions[].endTime - The time to stop showing the caption in seconds
-      * @return {String} parsedCaptions[].text - The visible content of the caption
-     **/
-
-
-    var parseEmbeddedCaptions = function parseEmbeddedCaptions(segment, trackId, timescale) {
-      var seiNals;
-
-      if (!trackId) {
-        return null;
-      }
-
-      seiNals = parseCaptionNals(segment, trackId);
-      return {
-        seiNals: seiNals[trackId],
-        timescale: timescale
-      };
-    };
-    /**
-      * Converts SEI NALUs into captions that can be used by video.js
-     **/
-
-
-    var CaptionParser$$1 = function CaptionParser$$1() {
-      var isInitialized = false;
-      var captionStream$$1; // Stores segments seen before trackId and timescale are set
-
-      var segmentCache; // Stores video track ID of the track being parsed
-
-      var trackId; // Stores the timescale of the track being parsed
-
-      var timescale; // Stores captions parsed so far
-
-      var parsedCaptions;
-      /**
-        * A method to indicate whether a CaptionParser has been initalized
-        * @returns {Boolean}
-       **/
-
-      this.isInitialized = function () {
-        return isInitialized;
-      };
-      /**
-        * Initializes the underlying CaptionStream, SEI NAL parsing
-        * and management, and caption collection
-       **/
-
-
-      this.init = function () {
-        captionStream$$1 = new CaptionStream$1();
-        isInitialized = true; // Collect dispatched captions
-
-        captionStream$$1.on('data', function (event) {
-          // Convert to seconds in the source's timescale
-          event.startTime = event.startPts / timescale;
-          event.endTime = event.endPts / timescale;
-          parsedCaptions.captions.push(event);
-          parsedCaptions.captionStreams[event.stream] = true;
-        });
-      };
-      /**
-        * Determines if a new video track will be selected
-        * or if the timescale changed
-        * @return {Boolean}
-       **/
-
-
-      this.isNewInit = function (videoTrackIds, timescales) {
-        if (videoTrackIds && videoTrackIds.length === 0 || timescales && typeof timescales === 'object' && Object.keys(timescales).length === 0) {
-          return false;
-        }
-
-        return trackId !== videoTrackIds[0] || timescale !== timescales[trackId];
-      };
-      /**
-        * Parses out SEI captions and interacts with underlying
-        * CaptionStream to return dispatched captions
-        *
-        * @param {Uint8Array} segment - The fmp4 segment containing embedded captions
-        * @param {Number[]} videoTrackIds - A list of video tracks found in the init segment
-        * @param {Object.<Number, Number>} timescales - The timescales found in the init segment
-        * @see parseEmbeddedCaptions
-        * @see m2ts/caption-stream.js
-       **/
-
-
-      this.parse = function (segment, videoTrackIds, timescales) {
-        var parsedData;
-
-        if (!this.isInitialized()) {
-          return null; // This is not likely to be a video segment
-        } else if (!videoTrackIds || !timescales) {
-          return null;
-        } else if (this.isNewInit(videoTrackIds, timescales)) {
-          // Use the first video track only as there is no
-          // mechanism to switch to other video tracks
-          trackId = videoTrackIds[0];
-          timescale = timescales[trackId]; // If an init segment has not been seen yet, hold onto segment
-          // data until we have one
-        } else if (!trackId || !timescale) {
-          segmentCache.push(segment);
-          return null;
-        } // Now that a timescale and trackId is set, parse cached segments
-
-
-        while (segmentCache.length > 0) {
-          var cachedSegment = segmentCache.shift();
-          this.parse(cachedSegment, videoTrackIds, timescales);
-        }
-
-        parsedData = parseEmbeddedCaptions(segment, trackId, timescale);
-
-        if (parsedData === null || !parsedData.seiNals) {
-          return null;
-        }
-
-        this.pushNals(parsedData.seiNals); // Force the parsed captions to be dispatched
-
-        this.flushStream();
-        return parsedCaptions;
-      };
-      /**
-        * Pushes SEI NALUs onto CaptionStream
-        * @param {Object[]} nals - A list of SEI nals parsed using `parseCaptionNals`
-        * Assumes that `parseCaptionNals` has been called first
-        * @see m2ts/caption-stream.js
-        **/
-
-
-      this.pushNals = function (nals) {
-        if (!this.isInitialized() || !nals || nals.length === 0) {
-          return null;
-        }
-
-        nals.forEach(function (nal) {
-          captionStream$$1.push(nal);
-        });
-      };
-      /**
-        * Flushes underlying CaptionStream to dispatch processed, displayable captions
-        * @see m2ts/caption-stream.js
-       **/
-
-
-      this.flushStream = function () {
-        if (!this.isInitialized()) {
-          return null;
-        }
-
-        captionStream$$1.flush();
-      };
-      /**
-        * Reset caption buckets for new data
-       **/
-
-
-      this.clearParsedCaptions = function () {
-        parsedCaptions.captions = [];
-        parsedCaptions.captionStreams = {};
-      };
-      /**
-        * Resets underlying CaptionStream
-        * @see m2ts/caption-stream.js
-       **/
-
-
-      this.resetCaptionStream = function () {
-        if (!this.isInitialized()) {
-          return null;
-        }
-
-        captionStream$$1.reset();
-      };
-      /**
-        * Convenience method to clear all captions flushed from the
-        * CaptionStream and still being parsed
-        * @see m2ts/caption-stream.js
-       **/
-
-
-      this.clearAllCaptions = function () {
-        this.clearParsedCaptions();
-        this.resetCaptionStream();
-      };
-      /**
-        * Reset caption parser
-       **/
-
-
-      this.reset = function () {
-        segmentCache = [];
-        trackId = null;
-        timescale = null;
-
-        if (!parsedCaptions) {
-          parsedCaptions = {
-            captions: [],
-            // CC1, CC2, CC3, CC4
-            captionStreams: {}
-          };
-        } else {
-          this.clearParsedCaptions();
-        }
-
-        this.resetCaptionStream();
-      };
-
-      this.reset();
-    };
-
-    var captionParser = CaptionParser$$1;
-    /**
-     * mux.js
-     *
-     * Copyright (c) Brightcove
-     * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
-     */
-
-    var mp4 = {
-      generator: mp4Generator,
-      probe: probe,
-      Transmuxer: transmuxer.Transmuxer,
-      AudioSegmentStream: transmuxer.AudioSegmentStream,
-      VideoSegmentStream: transmuxer.VideoSegmentStream,
-      CaptionParser: captionParser
     };
 
     var classCallCheck = function classCallCheck(instance, Constructor) {
@@ -35610,8 +34430,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
      */
 
 
-    var wireTransmuxerEvents = function wireTransmuxerEvents(self, transmuxer) {
-      transmuxer.on('data', function (segment) {
+    var wireTransmuxerEvents = function wireTransmuxerEvents(self, transmuxer$$1) {
+      transmuxer$$1.on('data', function (segment) {
         // transfer ownership of the underlying ArrayBuffer
         // instead of doing a copy to save memory
         // ArrayBuffers are transferable but generic TypedArrays are not
@@ -35632,8 +34452,8 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         }, [segment.data]);
       });
 
-      if (transmuxer.captionStream) {
-        transmuxer.captionStream.on('data', function (caption) {
+      if (transmuxer$$1.captionStream) {
+        transmuxer$$1.captionStream.on('data', function (caption) {
           self.postMessage({
             action: 'caption',
             data: caption
@@ -35641,18 +34461,18 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
         });
       }
 
-      transmuxer.on('done', function (data) {
+      transmuxer$$1.on('done', function (data) {
         self.postMessage({
           action: 'done'
         });
       });
-      transmuxer.on('gopInfo', function (gopInfo) {
+      transmuxer$$1.on('gopInfo', function (gopInfo) {
         self.postMessage({
           action: 'gopInfo',
           gopInfo: gopInfo
         });
       });
-      transmuxer.on('videoSegmentTimingInfo', function (videoSegmentTimingInfo) {
+      transmuxer$$1.on('videoSegmentTimingInfo', function (videoSegmentTimingInfo) {
         self.postMessage({
           action: 'videoSegmentTimingInfo',
           videoSegmentTimingInfo: videoSegmentTimingInfo
@@ -35687,7 +34507,7 @@ var TransmuxWorker = new shimWorker("./transmuxer-worker.worker.js", function (w
             this.transmuxer.dispose();
           }
 
-          this.transmuxer = new mp4.Transmuxer(this.options);
+          this.transmuxer = new transmuxer.Transmuxer(this.options);
           wireTransmuxerEvents(this.self, this.transmuxer);
         }
         /**
@@ -36748,8 +35568,16 @@ var VirtualSourceBuffer = function (_videojs$EventTarget) {
         },
         captions: [],
         metadata: []
-      }; // Sort segments into separate video/audio arrays and
+      };
+
+      if (!this.pendingBuffers_.length) {
+        // We are no longer in the internal "updating" state
+        this.trigger('updateend');
+        this.bufferUpdating_ = false;
+        return;
+      } // Sort segments into separate video/audio arrays and
       // keep track of their total byte lengths
+
 
       sortedSegments = this.pendingBuffers_.reduce(function (segmentObj, segment) {
         var type = segment.type;
@@ -38033,29 +36861,33 @@ var DashPlaylistLoader = function (_EventTarget) {
 
         var updatedMaster = updateMaster$1(_this8.master, master);
 
+        var currentSidxInfo = _this8.media().sidx;
+
         if (updatedMaster) {
-          var sidxKey = generateSidxKey(_this8.media().sidx); // the sidx was updated, so the previous mapping was removed
+          if (currentSidxInfo) {
+            var sidxKey = generateSidxKey(currentSidxInfo); // the sidx was updated, so the previous mapping was removed
 
-          if (!_this8.sidxMapping_[sidxKey]) {
-            var playlist = _this8.media();
+            if (!_this8.sidxMapping_[sidxKey]) {
+              var playlist = _this8.media();
 
-            _this8.request = requestSidx_(playlist.sidx, playlist, _this8.hls_.xhr, {
-              handleManifestRedirects: _this8.handleManifestRedirects
-            }, _this8.sidxRequestFinished_(playlist, master, _this8.state, function (newMaster, sidx) {
-              if (!newMaster || !sidx) {
-                throw new Error('failed to request sidx on minimumUpdatePeriod');
-              } // update loader's sidxMapping with parsed sidx box
+              _this8.request = requestSidx_(playlist.sidx, playlist, _this8.hls_.xhr, {
+                handleManifestRedirects: _this8.handleManifestRedirects
+              }, _this8.sidxRequestFinished_(playlist, master, _this8.state, function (newMaster, sidx) {
+                if (!newMaster || !sidx) {
+                  throw new Error('failed to request sidx on minimumUpdatePeriod');
+                } // update loader's sidxMapping with parsed sidx box
 
 
-              _this8.sidxMapping_[sidxKey].sidx = sidx;
-              _this8.minimumUpdatePeriodTimeout_ = window$1.setTimeout(function () {
-                _this8.trigger('minimumUpdatePeriod');
-              }, _this8.master.minimumUpdatePeriod); // TODO: do we need to reload the current playlist?
+                _this8.sidxMapping_[sidxKey].sidx = sidx;
+                _this8.minimumUpdatePeriodTimeout_ = window$1.setTimeout(function () {
+                  _this8.trigger('minimumUpdatePeriod');
+                }, _this8.master.minimumUpdatePeriod); // TODO: do we need to reload the current playlist?
 
-              _this8.refreshMedia_(_this8.media().uri);
+                _this8.refreshMedia_(_this8.media().uri);
 
-              return;
-            }));
+                return;
+              }));
+            }
           } else {
             _this8.master = updatedMaster;
           }
@@ -40099,13 +38931,7 @@ var SegmentLoader = function (_videojs$EventTarget) {
 
       if (mediaIndex !== null) {
         var segment = playlist.segments[mediaIndex];
-
-        if (segment && segment.end) {
-          startOfSegment = segment.end;
-        } else {
-          startOfSegment = lastBufferedEnd;
-        }
-
+        startOfSegment = lastBufferedEnd;
         return this.generateSegmentInfo_(playlist, mediaIndex + 1, startOfSegment, false);
       } // There is a sync-point but the lack of a mediaIndex indicates that
       // we need to make a good conservative guess about which segment to
@@ -40534,6 +39360,15 @@ var SegmentLoader = function (_videojs$EventTarget) {
       }
 
       if (segmentInfo.timestampOffset !== null && segmentInfo.timestampOffset !== this.sourceUpdater_.timestampOffset()) {
+        // Subtract any difference between the PTS and DTS times of the first frame
+        // from the timeStampOffset (which currently equals the buffered.end) to prevent
+        // creating any gaps in the buffer
+        if (timingInfo && timingInfo.segmentTimestampInfo) {
+          var ptsStartTime = timingInfo.segmentTimestampInfo[0].ptsTime;
+          var dtsStartTime = timingInfo.segmentTimestampInfo[0].dtsTime;
+          segmentInfo.timestampOffset -= ptsStartTime - dtsStartTime;
+        }
+
         this.sourceUpdater_.timestampOffset(segmentInfo.timestampOffset); // fired when a timestamp offset is set in HLS (can also identify discontinuities)
 
         this.trigger('timestampoffset');
@@ -41684,6 +40519,7 @@ var SyncController = function (_videojs$EventTarget) {
       var timeInfo = tsprobe(segmentInfo.bytes, this.inspectCache_);
       var segmentStartTime = void 0;
       var segmentEndTime = void 0;
+      var segmentTimestampInfo = void 0;
 
       if (!timeInfo) {
         return null;
@@ -41693,13 +40529,16 @@ var SyncController = function (_videojs$EventTarget) {
         this.inspectCache_ = timeInfo.video[1].dts;
         segmentStartTime = timeInfo.video[0].dtsTime;
         segmentEndTime = timeInfo.video[1].dtsTime;
+        segmentTimestampInfo = timeInfo.video;
       } else if (timeInfo.audio && timeInfo.audio.length === 2) {
         this.inspectCache_ = timeInfo.audio[1].dts;
         segmentStartTime = timeInfo.audio[0].dtsTime;
         segmentEndTime = timeInfo.audio[1].dtsTime;
+        segmentTimestampInfo = timeInfo.audio;
       }
 
       var probedInfo = {
+        segmentTimestampInfo: segmentTimestampInfo,
         start: segmentStartTime,
         end: segmentEndTime,
         containsVideo: timeInfo.video && timeInfo.video.length === 2,
@@ -45132,7 +43971,7 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$1 = "1.10.3"; // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
+var version$1 = "1.10.6"; // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
 
 videojs$1.use('*', function (player) {
   return {
