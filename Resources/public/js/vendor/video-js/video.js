@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.6.5 <http://videojs.com/>
+ * Video.js 7.6.6 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -18,7 +18,7 @@
   window$1 = window$1 && window$1.hasOwnProperty('default') ? window$1['default'] : window$1;
   document = document && document.hasOwnProperty('default') ? document['default'] : document;
 
-  var version = "7.6.5";
+  var version = "7.6.6";
 
   /**
    * @file create-logger.js
@@ -1489,23 +1489,6 @@
   };
 
   /**
-   * @file dom-data.js
-   * @module dom-data
-   */
-
-  /**
-   * Element Data Store.
-   *
-   * Allows for binding data to an element without putting it directly on the
-   * element. Ex. Event listeners are stored here.
-   * (also from jsninja.com, slightly modified and updated for closure compiler)
-   *
-   * @type {Object}
-   * @private
-   */
-  var DomData = new WeakMap();
-
-  /**
    * @file guid.js
    * @module guid
    */
@@ -1533,6 +1516,78 @@
   function newGUID() {
     return _guid++;
   }
+
+  /**
+   * @file dom-data.js
+   * @module dom-data
+   */
+  var FakeWeakMap;
+
+  if (!window$1.WeakMap) {
+    FakeWeakMap =
+    /*#__PURE__*/
+    function () {
+      function FakeWeakMap() {
+        this.vdata = 'vdata' + Math.floor(window$1.performance && window$1.performance.now() || Date.now());
+        this.data = {};
+      }
+
+      var _proto = FakeWeakMap.prototype;
+
+      _proto.set = function set(key, value) {
+        var access = key[this.vdata] || newGUID();
+
+        if (!key[this.vdata]) {
+          key[this.vdata] = access;
+        }
+
+        this.data[access] = value;
+        return this;
+      };
+
+      _proto.get = function get(key) {
+        var access = key[this.vdata]; // we have data, return it
+
+        if (access) {
+          return this.data[access];
+        } // we don't have data, return nothing.
+        // return undefined explicitly as that's the contract for this method
+
+
+        log('We have no data for this element', key);
+        return undefined;
+      };
+
+      _proto.has = function has(key) {
+        var access = key[this.vdata];
+        return access in this.data;
+      };
+
+      _proto["delete"] = function _delete(key) {
+        var access = key[this.vdata];
+
+        if (access) {
+          delete this.data[access];
+          delete key[this.vdata];
+        }
+      };
+
+      return FakeWeakMap;
+    }();
+  }
+  /**
+   * Element Data Store.
+   *
+   * Allows for binding data to an element without putting it directly on the
+   * element. Ex. Event listeners are stored here.
+   * (also from jsninja.com, slightly modified and updated for closure compiler)
+   *
+   * @type {Object}
+   * @private
+   */
+
+
+  var DomData = window$1.WeakMap ? new WeakMap() : new FakeWeakMap();
 
   /**
    * @file events.js. An Event System (John Resig - Secrets of a JS Ninja http://jsninja.com/)
@@ -3193,9 +3248,46 @@
       this.children_ = [];
       this.childIndex_ = {};
       this.childNameIndex_ = {};
-      this.setTimeoutIds_ = new Set();
-      this.setIntervalIds_ = new Set();
-      this.rafIds_ = new Set();
+      var SetSham;
+
+      if (!window$1.Set) {
+        SetSham =
+        /*#__PURE__*/
+        function () {
+          function SetSham() {
+            this.set_ = {};
+          }
+
+          var _proto2 = SetSham.prototype;
+
+          _proto2.has = function has(key) {
+            return key in this.set_;
+          };
+
+          _proto2["delete"] = function _delete(key) {
+            var has = this.has(key);
+            delete this.set_[key];
+            return has;
+          };
+
+          _proto2.add = function add(key) {
+            this.set_[key] = 1;
+            return this;
+          };
+
+          _proto2.forEach = function forEach(callback, thisArg) {
+            for (var key in this.set_) {
+              callback.call(thisArg, key, key, this);
+            }
+          };
+
+          return SetSham;
+        }();
+      }
+
+      this.setTimeoutIds_ = window$1.Set ? new Set() : new SetSham();
+      this.setIntervalIds_ = window$1.Set ? new Set() : new SetSham();
+      this.rafIds_ = window$1.Set ? new Set() : new SetSham();
       this.clearingTimersOnDispose_ = false; // Add any child components in options
 
       if (options.initChildren !== false) {
@@ -24401,7 +24493,10 @@
         // was initialized.
 
         Object.keys(el).forEach(function (k) {
-          tag[k] = el[k];
+          try {
+            tag[k] = el[k];
+          } catch (e) {// we got a a property like outerHTML which we can't actually copy, ignore it
+          }
         });
       } // set tabindex to -1 to remove the video element from the focus order
 
