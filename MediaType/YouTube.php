@@ -157,7 +157,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
                     $url = 'https://youtube.com/playlist/?list=' . urlencode($id);
                     break;
                 default:
-                    continue;
+                    break;
             }
             $author = $searchResult['snippet']['channelTitle'];
             $authorUrl = 'https://youtube.com/channel/' . urlencode($searchResult['snippet']['channelId']);
