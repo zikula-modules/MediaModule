@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.6.6 <http://videojs.com/>
+ * Video.js 7.7.0 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -14,10 +14,15 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var window$1 = _interopDefault(require('global/window'));
 var document = _interopDefault(require('global/document'));
+var _extends = _interopDefault(require('@babel/runtime/helpers/extends'));
+var _assertThisInitialized = _interopDefault(require('@babel/runtime/helpers/assertThisInitialized'));
+var _inheritsLoose = _interopDefault(require('@babel/runtime/helpers/inheritsLoose'));
 var safeParseTuple = _interopDefault(require('safe-json-parse/tuple'));
 var keycode = _interopDefault(require('keycode'));
-var XHR = _interopDefault(require('xhr'));
+var XHR = _interopDefault(require('@videojs/xhr'));
 var vtt = _interopDefault(require('videojs-vtt.js'));
+var _construct = _interopDefault(require('@babel/runtime/helpers/construct'));
+var _inherits = _interopDefault(require('@babel/runtime/helpers/inherits'));
 var URLToolkit = _interopDefault(require('url-toolkit'));
 var m3u8Parser = require('m3u8-parser');
 var mpdParser = require('mpd-parser');
@@ -27,7 +32,7 @@ var CaptionParser = _interopDefault(require('mux.js/lib/mp4/caption-parser'));
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.6.6";
+var version = "7.7.0";
 
 /**
  * @file create-logger.js
@@ -60,7 +65,10 @@ var LogByTypeFactory = function LogByTypeFactory(name, log) {
     args.unshift(name + ':'); // Add a clone of the args at this point to history.
 
     if (history) {
-      history.push([].concat(args));
+      history.push([].concat(args)); // only store 1000 history entries
+
+      var splice = history.length - 1000;
+      history.splice(0, splice > 0 ? splice : 0);
     } // If there's no console then don't try to output messages, but they will
     // still be stored in history.
 
@@ -422,7 +430,7 @@ function assign(target) {
   }
 
   if (Object.assign) {
-    return Object.assign.apply(Object, [target].concat(sources));
+    return _extends.apply(void 0, [target].concat(sources));
   }
 
   sources.forEach(function (source) {
@@ -513,7 +521,12 @@ function computedStyle(el, prop) {
  */
 
 function isNonBlankString(str) {
-  return typeof str === 'string' && /\S/.test(str);
+  // we use str.trim as it will trim any whitespace characters
+  // from the front or back of non-whitespace characters. aka
+  // Any string that contains non-whitespace characters will
+  // still contain them after `trim` but whitespace only strings
+  // will have a length of 0, failing this check.
+  return typeof str === 'string' && Boolean(str.trim());
 }
 /**
  * Throws an error if the passed string has whitespace. This is used by
@@ -529,7 +542,8 @@ function isNonBlankString(str) {
 
 
 function throwIfWhitespace(str) {
-  if (/\s/.test(str)) {
+  // str.indexOf instead of regex because str.indexOf is faster performance wise.
+  if (str.indexOf(' ') >= 0) {
     throw new Error('class has illegal whitespace characters');
   }
 }
@@ -661,7 +675,7 @@ function createEl(tagName, properties, attributes, content) {
       // method for it.
     } else if (propName === 'textContent') {
       textContent(el, val);
-    } else {
+    } else if (el[propName] !== val) {
       el[propName] = val;
     }
   });
@@ -1683,6 +1697,10 @@ function _handleMultipleEvents(fn, elem, types, callback) {
 
 
 function fixEvent(event) {
+  if (event.fixed_) {
+    return event;
+  }
+
   function returnTrue() {
     return true;
   }
@@ -1782,8 +1800,9 @@ function fixEvent(event) {
       event.button = event.button & 1 ? 0 : event.button & 4 ? 1 : event.button & 2 ? 2 : 0;
       /* eslint-enable */
     }
-  } // Returns fixed-up instance
+  }
 
+  event.fixed_ = true; // Returns fixed-up instance
 
   return event;
 }
@@ -1791,20 +1810,26 @@ function fixEvent(event) {
  * Whether passive event listeners are supported
  */
 
-var _supportsPassive = false;
+var _supportsPassive;
 
-(function () {
-  try {
-    var opts = Object.defineProperty({}, 'passive', {
-      get: function get() {
-        _supportsPassive = true;
-      }
-    });
-    window$1.addEventListener('test', null, opts);
-    window$1.removeEventListener('test', null, opts);
-  } catch (e) {// disregard
+var supportsPassive = function supportsPassive() {
+  if (typeof _supportsPassive !== 'boolean') {
+    _supportsPassive = false;
+
+    try {
+      var opts = Object.defineProperty({}, 'passive', {
+        get: function get() {
+          _supportsPassive = true;
+        }
+      });
+      window$1.addEventListener('test', null, opts);
+      window$1.removeEventListener('test', null, opts);
+    } catch (e) {// disregard
+    }
   }
-})();
+
+  return _supportsPassive;
+};
 /**
  * Touch events Chrome expects to be passive
  */
@@ -1886,7 +1911,7 @@ function on(elem, type, fn) {
     if (elem.addEventListener) {
       var options = false;
 
-      if (_supportsPassive && passiveEvents.indexOf(type) > -1) {
+      if (supportsPassive() && passiveEvents.indexOf(type) > -1) {
         options = {
           passive: true
         };
@@ -3220,8 +3245,9 @@ function () {
       this.player_ = player = this; // eslint-disable-line
     } else {
       this.player_ = player;
-    } // Hold the reference to the parent component via `addChild` method
+    }
 
+    this.isDisposed_ = false; // Hold the reference to the parent component via `addChild` method
 
     this.parentComponent_ = null; // Make a copy of prototype.options_ to protect against overriding defaults
 
@@ -3320,6 +3346,10 @@ function () {
   var _proto = Component.prototype;
 
   _proto.dispose = function dispose() {
+    // Bail out if the component has already been disposed.
+    if (this.isDisposed_) {
+      return;
+    }
     /**
      * Triggered when a `Component` is disposed.
      *
@@ -3327,13 +3357,16 @@ function () {
      * @type {EventTarget~Event}
      *
      * @property {boolean} [bubbles=false]
-     *           set to false so that the close event does not
+     *           set to false so that the dispose event does not
      *           bubble up
      */
+
+
     this.trigger({
       type: 'dispose',
       bubbles: false
-    }); // Dispose all children.
+    });
+    this.isDisposed_ = true; // Dispose all children.
 
     if (this.children_) {
       for (var i = this.children_.length - 1; i >= 0; i--) {
@@ -3364,6 +3397,17 @@ function () {
 
 
     this.player_ = null;
+  }
+  /**
+   * Determine whether or not this component has been disposed.
+   *
+   * @return {boolean}
+   *         If the component has been disposed, will be `true`. Otherwise, `false`.
+   */
+  ;
+
+  _proto.isDisposed = function isDisposed() {
+    return Boolean(this.isDisposed_);
   }
   /**
    * Return the {@link Player} that the `Component` has attached to.
@@ -3660,8 +3704,13 @@ function () {
 
 
     if (typeof component.el === 'function' && component.el()) {
-      var childNodes = this.contentEl().children;
-      var refNode = childNodes[index] || null;
+      // If inserting before a component, insert before that component's element
+      var refNode = null;
+
+      if (this.children_[index + 1] && this.children_[index + 1].el_) {
+        refNode = this.children_[index + 1].el_;
+      }
+
       this.contentEl().insertBefore(component.el(), refNode);
     } // Return so it can stored on parent object if desired.
 
@@ -4839,59 +4888,6 @@ function () {
 Component.prototype.supportsRaf_ = typeof window$1.requestAnimationFrame === 'function' && typeof window$1.cancelAnimationFrame === 'function';
 Component.registerComponent('Component', Component);
 
-function _inheritsLoose(subClass, superClass) {
-  subClass.prototype = Object.create(superClass.prototype);
-  subClass.prototype.constructor = subClass;
-  subClass.__proto__ = superClass;
-}
-
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
-    o.__proto__ = p;
-    return o;
-  };
-
-  return _setPrototypeOf(o, p);
-}
-
-function isNativeReflectConstruct() {
-  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
-  if (Reflect.construct.sham) return false;
-  if (typeof Proxy === "function") return true;
-
-  try {
-    Date.prototype.toString.call(Reflect.construct(Date, [], function () {}));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function _construct(Parent, args, Class) {
-  if (isNativeReflectConstruct()) {
-    _construct = Reflect.construct;
-  } else {
-    _construct = function _construct(Parent, args, Class) {
-      var a = [null];
-      a.push.apply(a, args);
-      var Constructor = Function.bind.apply(Parent, a);
-      var instance = new Constructor();
-      if (Class) _setPrototypeOf(instance, Class.prototype);
-      return instance;
-    };
-  }
-
-  return _construct.apply(null, arguments);
-}
-
-function _assertThisInitialized(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-
-  return self;
-}
-
 /**
  * @file browser.js
  * @module browser
@@ -4899,27 +4895,6 @@ function _assertThisInitialized(self) {
 var USER_AGENT = window$1.navigator && window$1.navigator.userAgent || '';
 var webkitVersionMap = /AppleWebKit\/([\d.]+)/i.exec(USER_AGENT);
 var appleWebkitVersion = webkitVersionMap ? parseFloat(webkitVersionMap.pop()) : null;
-/**
- * Whether or not this device is an iPad.
- *
- * @static
- * @const
- * @type {Boolean}
- */
-
-var IS_IPAD = /iPad/i.test(USER_AGENT);
-/**
- * Whether or not this device is an iPhone.
- *
- * @static
- * @const
- * @type {Boolean}
- */
-// The Facebook app's UIWebView identifies as both an iPhone and iPad, so
-// to identify iPhones, we need to exclude iPads.
-// http://artsy.github.io/blog/2012/10/18/the-perils-of-ios-user-agent-sniffing/
-
-var IS_IPHONE = /iPhone/i.test(USER_AGENT) && !IS_IPAD;
 /**
  * Whether or not this device is an iPod.
  *
@@ -4929,15 +4904,6 @@ var IS_IPHONE = /iPhone/i.test(USER_AGENT) && !IS_IPAD;
  */
 
 var IS_IPOD = /iPod/i.test(USER_AGENT);
-/**
- * Whether or not this is an iOS device.
- *
- * @static
- * @const
- * @type {Boolean}
- */
-
-var IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
 /**
  * The detected iOS version - or `null`.
  *
@@ -5077,15 +5043,6 @@ var IE_VERSION = function () {
 
 var IS_SAFARI = /Safari/i.test(USER_AGENT) && !IS_CHROME && !IS_ANDROID && !IS_EDGE;
 /**
- * Whether or not this is any flavor of Safari - including iOS.
- *
- * @static
- * @const
- * @type {Boolean}
- */
-
-var IS_ANY_SAFARI = (IS_SAFARI || IS_IOS) && !IS_CHROME;
-/**
  * Whether or not this is a Windows machine.
  *
  * @static
@@ -5103,12 +5060,48 @@ var IS_WINDOWS = /Windows/i.test(USER_AGENT);
  */
 
 var TOUCH_ENABLED = isReal() && ('ontouchstart' in window$1 || window$1.navigator.maxTouchPoints || window$1.DocumentTouch && window$1.document instanceof window$1.DocumentTouch);
+/**
+ * Whether or not this device is an iPad.
+ *
+ * @static
+ * @const
+ * @type {Boolean}
+ */
+
+var IS_IPAD = /iPad/i.test(USER_AGENT) || IS_SAFARI && TOUCH_ENABLED;
+/**
+ * Whether or not this device is an iPhone.
+ *
+ * @static
+ * @const
+ * @type {Boolean}
+ */
+// The Facebook app's UIWebView identifies as both an iPhone and iPad, so
+// to identify iPhones, we need to exclude iPads.
+// http://artsy.github.io/blog/2012/10/18/the-perils-of-ios-user-agent-sniffing/
+
+var IS_IPHONE = /iPhone/i.test(USER_AGENT) && !IS_IPAD;
+/**
+ * Whether or not this is an iOS device.
+ *
+ * @static
+ * @const
+ * @type {Boolean}
+ */
+
+var IS_IOS = IS_IPHONE || IS_IPAD || IS_IPOD;
+/**
+ * Whether or not this is any flavor of Safari - including iOS.
+ *
+ * @static
+ * @const
+ * @type {Boolean}
+ */
+
+var IS_ANY_SAFARI = (IS_SAFARI || IS_IOS) && !IS_CHROME;
 
 var browser = /*#__PURE__*/Object.freeze({
-  IS_IPAD: IS_IPAD,
-  IS_IPHONE: IS_IPHONE,
   IS_IPOD: IS_IPOD,
-  IS_IOS: IS_IOS,
   IOS_VERSION: IOS_VERSION,
   IS_ANDROID: IS_ANDROID,
   ANDROID_VERSION: ANDROID_VERSION,
@@ -5119,9 +5112,12 @@ var browser = /*#__PURE__*/Object.freeze({
   CHROME_VERSION: CHROME_VERSION,
   IE_VERSION: IE_VERSION,
   IS_SAFARI: IS_SAFARI,
-  IS_ANY_SAFARI: IS_ANY_SAFARI,
   IS_WINDOWS: IS_WINDOWS,
-  TOUCH_ENABLED: TOUCH_ENABLED
+  TOUCH_ENABLED: TOUCH_ENABLED,
+  IS_IPAD: IS_IPAD,
+  IS_IPHONE: IS_IPHONE,
+  IS_IOS: IS_IOS,
+  IS_ANY_SAFARI: IS_ANY_SAFARI
 });
 
 /**
@@ -7191,12 +7187,24 @@ var getFileExtension = function getFileExtension(path) {
  * @param    {string} url
  *           The url to check.
  *
+ * @param    {Object} [winLoc]
+ *           the domain to check the url against, defaults to window.location
+ *
+ * @param    {string} [winLoc.protocol]
+ *           The window location protocol defaults to window.location.protocol
+ *
+ * @param    {string} [winLoc.host]
+ *           The window location host defaults to window.location.host
+ *
  * @return   {boolean}
  *           Whether it is a cross domain request or not.
  */
 
-var isCrossOrigin = function isCrossOrigin(url) {
-  var winLoc = window$1.location;
+var isCrossOrigin = function isCrossOrigin(url, winLoc) {
+  if (winLoc === void 0) {
+    winLoc = window$1.location;
+  }
+
   var urlInfo = parseUrl(url); // IE8 protocol relative urls will return ':' for protocol
 
   var srcProtocol = urlInfo.protocol === ':' ? winLoc.protocol : urlInfo.protocol; // Check if url is for another domain/origin
@@ -7384,6 +7392,7 @@ function (_Track) {
     _this.tech_ = settings.tech;
     _this.cues_ = [];
     _this.activeCues_ = [];
+    _this.preload_ = _this.tech_.preloadTextTracks !== false;
     var cues = new TextTrackCueList(_this.cues_);
     var activeCues = new TextTrackCueList(_this.activeCues_);
     var changed = false;
@@ -7444,6 +7453,11 @@ function (_Track) {
           }
 
           mode = newMode;
+
+          if (!this.preload_ && mode !== 'disabled' && this.cues.length === 0) {
+            // On-demand load.
+            loadTrack(this.src, this);
+          }
 
           if (mode !== 'disabled') {
             this.tech_.ready(function () {
@@ -7537,7 +7551,16 @@ function (_Track) {
 
     if (settings.src) {
       _this.src = settings.src;
-      loadTrack(settings.src, _assertThisInitialized(_this));
+
+      if (!_this.preload_) {
+        // Tracks will load on-demand.
+        // Act like we're loaded for other purposes.
+        _this.loaded_ = true;
+      }
+
+      if (_this.preload_ || default_ || settings.kind !== 'subtitles' && settings.kind !== 'captions') {
+        loadTrack(_this.src, _assertThisInitialized(_this));
+      }
     } else {
       _this.loaded_ = true;
     }
@@ -7971,7 +7994,9 @@ var REMOTE = {
     privateName: 'remoteTextTrackEls_'
   }
 };
-var ALL = mergeOptions(NORMAL, REMOTE);
+
+var ALL = _extends({}, NORMAL, REMOTE);
+
 REMOTE.names = Object.keys(REMOTE);
 NORMAL.names = Object.keys(NORMAL);
 ALL.names = [].concat(REMOTE.names).concat(NORMAL.names);
@@ -8118,6 +8143,7 @@ function (_Component) {
       _this.emulateTextTracks();
     }
 
+    _this.preloadTextTracks = options.preloadTextTracks !== false;
     _this.autoRemoteTextTracks_ = new ALL.text.ListClass();
 
     _this.initTrackListeners(); // Turn on component tap events only if not using native controls
@@ -9551,9 +9577,10 @@ var allowedGetters = {
   buffered: 1,
   currentTime: 1,
   duration: 1,
-  seekable: 1,
+  muted: 1,
   played: 1,
   paused: 1,
+  seekable: 1,
   volume: 1
 };
 /**
@@ -9564,6 +9591,7 @@ var allowedGetters = {
 
 var allowedSetters = {
   setCurrentTime: 1,
+  setMuted: 1,
   setVolume: 1
 };
 /**
@@ -9953,6 +9981,9 @@ function (_Component) {
    *
    * @param  {Object} [options]
    *         The key/value store of player options.
+   *
+   * @param  {function} [options.clickHandler]
+   *         The function to call when the button is clicked / activated
    */
   function ClickableComponent(player, options) {
     var _this;
@@ -10145,7 +10176,11 @@ function (_Component) {
    */
   ;
 
-  _proto.handleClick = function handleClick(event) {}
+  _proto.handleClick = function handleClick(event) {
+    if (this.options_.clickHandler) {
+      this.options_.clickHandler.call(this, arguments);
+    }
+  }
   /**
    * Event handler that is called when a `ClickableComponent` receives a
    * `keydown` event.
@@ -10962,9 +10997,13 @@ function (_Button) {
     var playPromise = this.player_.play(); // exit early if clicked via the mouse
 
     if (this.mouseused_ && event.clientX && event.clientY) {
+      var sourceIsEncrypted = this.player_.usingPlugin('eme') && this.player_.eme.sessions && this.player_.eme.sessions.length > 0;
       silencePromise(playPromise);
 
-      if (this.player_.tech(true)) {
+      if (this.player_.tech(true) && // We've observed a bug in IE and Edge when playing back DRM content where
+      // calling .focus() on the video element causes the video to go black,
+      // so we avoid it in that specific case
+      !((IE_VERSION || IS_EDGE) && sourceIsEncrypted)) {
         this.player_.tech(true).focus();
       }
 
@@ -11393,9 +11432,10 @@ function (_Component) {
     var _this;
 
     _this = _Component.call(this, player, options) || this;
-    _this.throttledUpdateContent = throttle(bind(_assertThisInitialized(_this), _this.updateContent), UPDATE_REFRESH_INTERVAL);
 
-    _this.on(player, 'timeupdate', _this.throttledUpdateContent);
+    _this.on(player, ['timeupdate', 'ended'], _this.updateContent);
+
+    _this.updateTextNode_();
 
     return _this;
   }
@@ -11428,7 +11468,6 @@ function (_Component) {
       // role='presentation' causes VoiceOver to NOT treat this span as a break.
       'role': 'presentation'
     });
-    this.updateTextNode_();
     el.appendChild(this.contentEl_);
     return el;
   };
@@ -11440,61 +11479,46 @@ function (_Component) {
     _Component.prototype.dispose.call(this);
   }
   /**
-   * Updates the "remaining time" text node with new content using the
-   * contents of the `formattedTime_` property.
+   * Updates the time display text node with a new time
+   *
+   * @param {number} [time=0] the time to update to
    *
    * @private
    */
   ;
 
-  _proto.updateTextNode_ = function updateTextNode_() {
-    if (!this.contentEl_) {
+  _proto.updateTextNode_ = function updateTextNode_(time) {
+    var _this2 = this;
+
+    if (time === void 0) {
+      time = 0;
+    }
+
+    time = formatTime(time);
+
+    if (this.formattedTime_ === time) {
       return;
     }
 
-    while (this.contentEl_.firstChild) {
-      this.contentEl_.removeChild(this.contentEl_.firstChild);
-    }
+    this.formattedTime_ = time;
+    this.requestAnimationFrame(function () {
+      if (!_this2.contentEl_) {
+        return;
+      }
 
-    this.textNode_ = document.createTextNode(this.formattedTime_ || this.formatTime_(0));
-    this.contentEl_.appendChild(this.textNode_);
-  }
-  /**
-   * Generates a formatted time for this component to use in display.
-   *
-   * @param  {number} time
-   *         A numeric time, in seconds.
-   *
-   * @return {string}
-   *         A formatted time
-   *
-   * @private
-   */
-  ;
+      var oldNode = _this2.textNode_;
+      _this2.textNode_ = document.createTextNode(_this2.formattedTime_);
 
-  _proto.formatTime_ = function formatTime_(time) {
-    return formatTime(time);
-  }
-  /**
-   * Updates the time display text node if it has what was passed in changed
-   * the formatted time.
-   *
-   * @param {number} time
-   *        The time to update to
-   *
-   * @private
-   */
-  ;
+      if (!_this2.textNode_) {
+        return;
+      }
 
-  _proto.updateFormattedTime_ = function updateFormattedTime_(time) {
-    var formattedTime = this.formatTime_(time);
-
-    if (formattedTime === this.formattedTime_) {
-      return;
-    }
-
-    this.formattedTime_ = formattedTime;
-    this.requestAnimationFrame(this.updateTextNode_);
+      if (oldNode) {
+        _this2.contentEl_.replaceChild(_this2.textNode_, oldNode);
+      } else {
+        _this2.contentEl_.appendChild(_this2.textNode_);
+      }
+    });
   }
   /**
    * To be filled out in the child class, should update the displayed time
@@ -11543,34 +11567,18 @@ var CurrentTimeDisplay =
 function (_TimeDisplay) {
   _inheritsLoose(CurrentTimeDisplay, _TimeDisplay);
 
-  /**
-   * Creates an instance of this class.
-   *
-   * @param {Player} player
-   *        The `Player` that this class should be attached to.
-   *
-   * @param {Object} [options]
-   *        The key/value store of player options.
-   */
-  function CurrentTimeDisplay(player, options) {
-    var _this;
-
-    _this = _TimeDisplay.call(this, player, options) || this;
-
-    _this.on(player, 'ended', _this.handleEnded);
-
-    return _this;
+  function CurrentTimeDisplay() {
+    return _TimeDisplay.apply(this, arguments) || this;
   }
+
+  var _proto = CurrentTimeDisplay.prototype;
+
   /**
    * Builds the default DOM `className`.
    *
    * @return {string}
    *         The DOM `className` for this object.
    */
-
-
-  var _proto = CurrentTimeDisplay.prototype;
-
   _proto.buildCSSClass = function buildCSSClass() {
     return 'vjs-current-time';
   }
@@ -11586,27 +11594,15 @@ function (_TimeDisplay) {
 
   _proto.updateContent = function updateContent(event) {
     // Allows for smooth scrubbing, when player can't keep up.
-    var time = this.player_.scrubbing() ? this.player_.getCache().currentTime : this.player_.currentTime();
-    this.updateFormattedTime_(time);
-  }
-  /**
-   * When the player fires ended there should be no time left. Sadly
-   * this is not always the case, lets make it seem like that is the case
-   * for users.
-   *
-   * @param {EventTarget~Event} [event]
-   *        The `ended` event that caused this to run.
-   *
-   * @listens Player#ended
-   */
-  ;
+    var time;
 
-  _proto.handleEnded = function handleEnded(event) {
-    if (!this.player_.duration()) {
-      return;
+    if (this.player_.ended()) {
+      time = this.player_.duration();
+    } else {
+      time = this.player_.scrubbing() ? this.player_.getCache().currentTime : this.player_.currentTime();
     }
 
-    this.updateFormattedTime_(this.player_.duration());
+    this.updateTextNode_(time);
   };
 
   return CurrentTimeDisplay;
@@ -11669,7 +11665,7 @@ function (_TimeDisplay) {
     // can likely be removed for 7.0.
 
 
-    _this.on(player, 'loadedmetadata', _this.throttledUpdateContent);
+    _this.on(player, 'loadedmetadata', _this.updateContent);
 
     return _this;
   }
@@ -11701,11 +11697,7 @@ function (_TimeDisplay) {
 
   _proto.updateContent = function updateContent(event) {
     var duration = this.player_.duration();
-
-    if (this.duration_ !== duration) {
-      this.duration_ = duration;
-      this.updateFormattedTime_(duration);
-    }
+    this.updateTextNode_(duration);
   };
 
   return DurationDisplay;
@@ -11797,9 +11789,7 @@ function (_TimeDisplay) {
 
     _this = _TimeDisplay.call(this, player, options) || this;
 
-    _this.on(player, 'durationchange', _this.throttledUpdateContent);
-
-    _this.on(player, 'ended', _this.handleEnded);
+    _this.on(player, 'durationchange', _this.updateContent);
 
     return _this;
   }
@@ -11846,34 +11836,20 @@ function (_TimeDisplay) {
   _proto.updateContent = function updateContent(event) {
     if (typeof this.player_.duration() !== 'number') {
       return;
-    } // @deprecated We should only use remainingTimeDisplay
+    }
+
+    var time; // @deprecated We should only use remainingTimeDisplay
     // as of video.js 7
 
-
-    if (this.player_.remainingTimeDisplay) {
-      this.updateFormattedTime_(this.player_.remainingTimeDisplay());
+    if (this.player_.ended()) {
+      time = 0;
+    } else if (this.player_.remainingTimeDisplay) {
+      time = this.player_.remainingTimeDisplay();
     } else {
-      this.updateFormattedTime_(this.player_.remainingTime());
-    }
-  }
-  /**
-   * When the player fires ended there should be no time left. Sadly
-   * this is not always the case, lets make it seem like that is the case
-   * for users.
-   *
-   * @param {EventTarget~Event} [event]
-   *        The `ended` event that caused this to run.
-   *
-   * @listens Player#ended
-   */
-  ;
-
-  _proto.handleEnded = function handleEnded(event) {
-    if (!this.player_.duration()) {
-      return;
+      time = this.player_.remainingTime();
     }
 
-    this.updateFormattedTime_(0);
+    this.updateTextNode_(time);
   };
 
   return RemainingTimeDisplay;
@@ -12089,6 +12065,25 @@ function (_Button) {
 
 SeekToLive.prototype.controlText_ = 'Seek to live, currently playing live';
 Component.registerComponent('SeekToLive', SeekToLive);
+
+/**
+ * Keep a number between a min and a max value
+ *
+ * @param {number} number
+ *        The number to clamp
+ *
+ * @param {number} min
+ *        The minimum value
+ * @param {number} max
+ *        The maximum value
+ *
+ * @return {number}
+ *         the clamped number
+ */
+var clamp = function clamp(number, min, max) {
+  number = Number(number);
+  return Math.min(max, Math.max(min, isNaN(number) ? min : number));
+};
 
 /**
  * The base functionality for a slider. Can be vertical or horizontal.
@@ -12330,40 +12325,44 @@ function (_Component) {
   ;
 
   _proto.update = function update() {
+    var _this2 = this;
+
     // In VolumeBar init we have a setTimeout for update that pops and update
     // to the end of the execution stack. The player is destroyed before then
     // update will cause an error
-    if (!this.el_) {
+    // If there's no bar...
+    if (!this.el_ || !this.bar) {
       return;
-    } // If scrubbing, we could use a cached value to make the handle keep up
-    // with the user's mouse. On HTML5 browsers scrubbing is really smooth, but
-    // some flash players are slow, so we might want to utilize this later.
-    // var progress =  (this.player_.scrubbing()) ? this.player_.getCache().currentTime / this.player_.duration() : this.player_.currentTime() / this.player_.duration();
+    } // clamp progress between 0 and 1
+    // and only round to four decimal places, as we round to two below
 
 
-    var progress = this.getPercent();
-    var bar = this.bar; // If there's no bar...
+    var progress = this.getProgress();
 
-    if (!bar) {
+    if (progress === this.progress_) {
       return;
-    } // Protect against no duration and other division issues
-
-
-    if (typeof progress !== 'number' || progress !== progress || progress < 0 || progress === Infinity) {
-      progress = 0;
-    } // Convert to a percentage for setting
-
-
-    var percentage = (progress * 100).toFixed(2) + '%';
-    var style = bar.el().style; // Set the new bar width or height
-
-    var sizeKey = this.vertical() ? 'height' : 'width';
-
-    if (style[sizeKey] !== percentage) {
-      style[sizeKey] = percentage;
     }
 
+    this.progress_ = progress;
+    this.requestAnimationFrame(function () {
+      // Set the new bar width or height
+      var sizeKey = _this2.vertical() ? 'height' : 'width'; // Convert to a percentage for css value
+
+      _this2.bar.el().style[sizeKey] = (progress * 100).toFixed(2) + '%';
+    });
     return progress;
+  }
+  /**
+   * Get the percentage of the bar that should be filled
+   * but clamped and rounded.
+   *
+   * @return {number}
+   *         percentage filled that the slider is
+   */
+  ;
+
+  _proto.getProgress = function getProgress() {
+    return clamp(this.getPercent(), 0, 1).toFixed(4);
   }
   /**
    * Calculate distance for slider
@@ -12459,11 +12458,15 @@ function (_Component) {
 
 Component.registerComponent('Slider', Slider);
 
+var percentify = function percentify(time, end) {
+  return clamp(time / end * 100, 0, 100).toFixed(2) + '%';
+};
 /**
  * Shows loading progress
  *
  * @extends Component
  */
+
 
 var LoadProgressBar =
 /*#__PURE__*/
@@ -12499,15 +12502,32 @@ function (_Component) {
 
   var _proto = LoadProgressBar.prototype;
 
-  _proto.createEl = function createEl() {
-    return _Component.prototype.createEl.call(this, 'div', {
-      className: 'vjs-load-progress',
-      innerHTML: "<span class=\"vjs-control-text\"><span>" + this.localize('Loaded') + "</span>: <span class=\"vjs-control-text-loaded-percentage\">0%</span></span>"
+  _proto.createEl = function createEl$1() {
+    var el = _Component.prototype.createEl.call(this, 'div', {
+      className: 'vjs-load-progress'
     });
+
+    var wrapper = createEl('span', {
+      className: 'vjs-control-text'
+    });
+    var loadedText = createEl('span', {
+      textContent: this.localize('Loaded')
+    });
+    var separator = document.createTextNode(': ');
+    this.percentageEl_ = createEl('span', {
+      className: 'vjs-control-text-loaded-percentage',
+      textContent: '0%'
+    });
+    el.appendChild(wrapper);
+    wrapper.appendChild(loadedText);
+    wrapper.appendChild(separator);
+    wrapper.appendChild(this.percentageEl_);
+    return el;
   };
 
   _proto.dispose = function dispose() {
     this.partEls_ = null;
+    this.percentageEl_ = null;
 
     _Component.prototype.dispose.call(this);
   }
@@ -12522,51 +12542,58 @@ function (_Component) {
   ;
 
   _proto.update = function update(event) {
-    var liveTracker = this.player_.liveTracker;
-    var buffered = this.player_.buffered();
-    var duration = liveTracker && liveTracker.isLive() ? liveTracker.seekableEnd() : this.player_.duration();
-    var bufferedEnd = this.player_.bufferedEnd();
-    var children = this.partEls_;
-    var controlTextPercentage = this.$('.vjs-control-text-loaded-percentage'); // get the percent width of a time compared to the total end
+    var _this2 = this;
 
-    var percentify = function percentify(time, end, rounded) {
-      // no NaN
-      var percent = time / end || 0;
-      percent = (percent >= 1 ? 1 : percent) * 100;
+    this.requestAnimationFrame(function () {
+      var liveTracker = _this2.player_.liveTracker;
 
-      if (rounded) {
-        percent = percent.toFixed(2);
+      var buffered = _this2.player_.buffered();
+
+      var duration = liveTracker && liveTracker.isLive() ? liveTracker.seekableEnd() : _this2.player_.duration();
+
+      var bufferedEnd = _this2.player_.bufferedEnd();
+
+      var children = _this2.partEls_;
+      var percent = percentify(bufferedEnd, duration);
+
+      if (_this2.percent_ !== percent) {
+        // update the width of the progress bar
+        _this2.el_.style.width = percent; // update the control-text
+
+        textContent(_this2.percentageEl_, percent);
+        _this2.percent_ = percent;
+      } // add child elements to represent the individual buffered time ranges
+
+
+      for (var i = 0; i < buffered.length; i++) {
+        var start = buffered.start(i);
+        var end = buffered.end(i);
+        var part = children[i];
+
+        if (!part) {
+          part = _this2.el_.appendChild(createEl());
+          children[i] = part;
+        } //  only update if changed
+
+
+        if (part.dataset.start === start && part.dataset.end === end) {
+          continue;
+        }
+
+        part.dataset.start = start;
+        part.dataset.end = end; // set the percent based on the width of the progress bar (bufferedEnd)
+
+        part.style.left = percentify(start, bufferedEnd);
+        part.style.width = percentify(end - start, bufferedEnd);
+      } // remove unused buffered range elements
+
+
+      for (var _i = children.length; _i > buffered.length; _i--) {
+        _this2.el_.removeChild(children[_i - 1]);
       }
 
-      return percent + '%';
-    }; // update the width of the progress bar
-
-
-    this.el_.style.width = percentify(bufferedEnd, duration); // update the control-text
-
-    textContent(controlTextPercentage, percentify(bufferedEnd, duration, true)); // add child elements to represent the individual buffered time ranges
-
-    for (var i = 0; i < buffered.length; i++) {
-      var start = buffered.start(i);
-      var end = buffered.end(i);
-      var part = children[i];
-
-      if (!part) {
-        part = this.el_.appendChild(createEl());
-        children[i] = part;
-      } // set the percent based on the width of the progress bar (bufferedEnd)
-
-
-      part.style.left = percentify(start, bufferedEnd);
-      part.style.width = percentify(end - start, bufferedEnd);
-    } // remove unused buffered range elements
-
-
-    for (var _i = children.length; _i > buffered.length; _i--) {
-      this.el_.removeChild(children[_i - 1]);
-    }
-
-    children.length = buffered.length;
+      children.length = buffered.length;
+    });
   };
 
   return LoadProgressBar;
@@ -12955,9 +12982,7 @@ function (_Slider) {
 
   _proto.setEventHandlers_ = function setEventHandlers_() {
     this.update = throttle(bind(this, this.update), UPDATE_REFRESH_INTERVAL$1);
-    this.on(this.player_, 'timeupdate', this.update);
-    this.on(this.player_, 'ended', this.handleEnded);
-    this.on(this.player_, 'durationchange', this.update);
+    this.on(this.player_, ['ended', 'durationchange', 'timeupdate'], this.update);
 
     if (this.player_.liveTracker) {
       this.on(this.player_.liveTracker, 'liveedgechange', this.update);
@@ -12981,17 +13006,16 @@ function (_Slider) {
     } else {
       this.enableInterval_(); // we just switched back to the page and someone may be looking, so, update ASAP
 
-      this.requestAnimationFrame(this.update);
+      this.update();
     }
   };
 
   _proto.enableInterval_ = function enableInterval_() {
-    var _this2 = this;
+    if (this.updateInterval) {
+      return;
+    }
 
-    this.clearInterval(this.updateInterval);
-    this.updateInterval = this.setInterval(function () {
-      _this2.requestAnimationFrame(_this2.update);
-    }, UPDATE_REFRESH_INTERVAL$1);
+    this.updateInterval = this.setInterval(this.update, UPDATE_REFRESH_INTERVAL$1);
   };
 
   _proto.disableInterval_ = function disableInterval_(e) {
@@ -12999,7 +13023,12 @@ function (_Slider) {
       return;
     }
 
+    if (!this.updateInterval) {
+      return;
+    }
+
     this.clearInterval(this.updateInterval);
+    this.updateInterval = null;
   }
   /**
    * Create the `Component`'s DOM element
@@ -13020,36 +13049,6 @@ function (_Slider) {
    * This function updates the play progress bar and accessibility
    * attributes to whatever is passed in.
    *
-   * @param {number} currentTime
-   *        The currentTime value that should be used for accessibility
-   *
-   * @param {number} percent
-   *        The percentage as a decimal that the bar should be filled from 0-1.
-   *
-   * @private
-   */
-  ;
-
-  _proto.update_ = function update_(currentTime, percent) {
-    var liveTracker = this.player_.liveTracker;
-    var duration = this.player_.duration();
-
-    if (liveTracker && liveTracker.isLive()) {
-      duration = this.player_.liveTracker.liveCurrentTime();
-    } // machine readable value of progress bar (percentage complete)
-
-
-    this.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2)); // human readable value of progress bar (time complete)
-
-    this.el_.setAttribute('aria-valuetext', this.localize('progress bar timing: currentTime={1} duration={2}', [formatTime(currentTime, duration), formatTime(duration, duration)], '{1} of {2}')); // Update the `PlayProgressBar`.
-
-    if (this.bar) {
-      this.bar.update(getBoundingClientRect(this.el_), percent);
-    }
-  }
-  /**
-   * Update the seek bar's UI.
-   *
    * @param {EventTarget~Event} [event]
    *        The `timeupdate` or `ended` event that caused this to run.
    *
@@ -13061,15 +13060,35 @@ function (_Slider) {
   ;
 
   _proto.update = function update(event) {
-    // if the offsetParent is null, then this element is hidden, in which case
-    // we don't need to update it.
-    if (this.el().offsetParent === null) {
-      return;
-    }
+    var _this2 = this;
 
     var percent = _Slider.prototype.update.call(this);
 
-    this.update_(this.getCurrentTime_(), percent);
+    this.requestAnimationFrame(function () {
+      var currentTime = _this2.player_.ended() ? _this2.player_.duration() : _this2.getCurrentTime_();
+      var liveTracker = _this2.player_.liveTracker;
+
+      var duration = _this2.player_.duration();
+
+      if (liveTracker && liveTracker.isLive()) {
+        duration = _this2.player_.liveTracker.liveCurrentTime();
+      }
+
+      if (_this2.percent_ !== percent) {
+        // machine readable value of progress bar (percentage complete)
+        _this2.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
+
+        _this2.percent_ = percent;
+      }
+
+      if (_this2.currentTime_ !== currentTime || _this2.duration_ !== duration) {
+        // human readable value of progress bar (time complete)
+        _this2.el_.setAttribute('aria-valuetext', _this2.localize('progress bar timing: currentTime={1} duration={2}', [formatTime(currentTime, duration), formatTime(duration, duration)], '{1} of {2}'));
+
+        _this2.currentTime_ = currentTime;
+        _this2.duration_ = duration;
+      }
+    });
     return percent;
   }
   /**
@@ -13085,20 +13104,6 @@ function (_Slider) {
 
   _proto.getCurrentTime_ = function getCurrentTime_() {
     return this.player_.scrubbing() ? this.player_.getCache().currentTime : this.player_.currentTime();
-  }
-  /**
-   * We want the seek bar to be full on ended
-   * no matter what the actual internal values are. so we force it.
-   *
-   * @param {EventTarget~Event} [event]
-   *        The `timeupdate` or `ended` event that caused this to run.
-   *
-   * @listens Player#ended
-   */
-  ;
-
-  _proto.handleEnded = function handleEnded(event) {
-    this.update_(this.player_.duration(), 1);
   }
   /**
    * Get the percentage of media played so far.
@@ -13123,7 +13128,7 @@ function (_Slider) {
       percent = currentTime / this.player_.duration();
     }
 
-    return percent >= 1 ? 1 : percent || 0;
+    return percent;
   }
   /**
    * Handle mouse down on seek bar
@@ -13425,23 +13430,31 @@ function (_Component) {
   _proto.handleMouseMove = function handleMouseMove(event) {
     var seekBar = this.getChild('seekBar');
 
-    if (seekBar) {
-      var mouseTimeDisplay = seekBar.getChild('mouseTimeDisplay');
-      var seekBarEl = seekBar.el();
-      var seekBarRect = getBoundingClientRect(seekBarEl);
-      var seekBarPoint = getPointerPosition(seekBarEl, event).x; // The default skin has a gap on either side of the `SeekBar`. This means
-      // that it's possible to trigger this behavior outside the boundaries of
-      // the `SeekBar`. This ensures we stay within it at all times.
+    if (!seekBar) {
+      return;
+    }
 
-      if (seekBarPoint > 1) {
-        seekBarPoint = 1;
-      } else if (seekBarPoint < 0) {
-        seekBarPoint = 0;
-      }
+    var playProgressBar = seekBar.getChild('playProgressBar');
+    var mouseTimeDisplay = seekBar.getChild('mouseTimeDisplay');
 
-      if (mouseTimeDisplay) {
-        mouseTimeDisplay.update(seekBarRect, seekBarPoint);
-      }
+    if (!playProgressBar && !mouseTimeDisplay) {
+      return;
+    }
+
+    var seekBarEl = seekBar.el();
+    var seekBarRect = getBoundingClientRect(seekBarEl);
+    var seekBarPoint = getPointerPosition(seekBarEl, event).x; // The default skin has a gap on either side of the `SeekBar`. This means
+    // that it's possible to trigger this behavior outside the boundaries of
+    // the `SeekBar`. This ensures we stay within it at all times.
+
+    seekBarPoint = clamp(0, 1, seekBarPoint);
+
+    if (mouseTimeDisplay) {
+      mouseTimeDisplay.update(seekBarRect, seekBarPoint);
+    }
+
+    if (playProgressBar) {
+      playProgressBar.update(seekBarRect, seekBar.getProgress());
     }
   }
   /**
@@ -17370,7 +17383,7 @@ function (_ModalDialog) {
  */
 
 
-ErrorDisplay.prototype.options_ = mergeOptions(ModalDialog.prototype.options_, {
+ErrorDisplay.prototype.options_ = _extends({}, ModalDialog.prototype.options_, {
   pauseOnOpen: false,
   fillAlways: true,
   temporary: false,
@@ -18142,9 +18155,15 @@ function (_Component) {
       this.pastSeekEnd_ = 0;
       this.lastSeekEnd_ = newSeekEnd;
       this.trigger('seekableendchange');
-    }
+    } // we should reset pastSeekEnd when the value
+    // is much higher than seeking increment.
 
-    this.pastSeekEnd_ = this.pastSeekEnd() + 0.03;
+
+    if (this.pastSeekEnd() > this.seekableIncrement_ * 1.5) {
+      this.pastSeekEnd_ = 0;
+    } else {
+      this.pastSeekEnd_ = this.pastSeekEnd() + 0.03;
+    }
 
     if (this.isBehind_() !== this.behindLiveEdge()) {
       this.behindLiveEdge_ = this.isBehind_();
@@ -18664,6 +18683,45 @@ var setupSourceset = function setupSourceset(tech) {
 };
 
 /**
+ * Object.defineProperty but "lazy", which means that the value is only set after
+ * it retrieved the first time, rather than being set right away.
+ *
+ * @param {Object} obj the object to set the property on
+ * @param {string} key the key for the property to set
+ * @param {Function} getValue the function used to get the value when it is needed.
+ * @param {boolean} setter wether a setter shoould be allowed or not
+ */
+var defineLazyProperty = function defineLazyProperty(obj, key, getValue, setter) {
+  if (setter === void 0) {
+    setter = true;
+  }
+
+  var set = function set(value) {
+    return Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      writable: true
+    });
+  };
+
+  var options = {
+    configurable: true,
+    enumerable: true,
+    get: function get() {
+      var value = getValue();
+      set(value);
+      return value;
+    }
+  };
+
+  if (setter) {
+    options.set = set;
+  }
+
+  return Object.defineProperty(obj, key, options);
+};
+
+/**
  * HTML5 Media Controller - Wrapper for HTML5 Media API
  *
  * @mixes Tech~SourceHandlerAdditions
@@ -18761,6 +18819,10 @@ function (_Tech) {
 
 
     _this.proxyWebkitFullscreen_();
+
+    if (IS_IOS) {
+      _this.handleIOSHeadphonesDisconnection_();
+    }
 
     _this.triggerReady();
 
@@ -18860,6 +18922,51 @@ function (_Tech) {
     });
   }
   /**
+   * Handle IOS Headphone disconnection during playback
+   *
+   * @private
+  */
+  ;
+
+  _proto.handleIOSHeadphonesDisconnection_ = function handleIOSHeadphonesDisconnection_() {
+    var _this2 = this;
+
+    // Fudge factor to account for TimeRanges rounding
+    var TIME_FUDGE_FACTOR = 1 / 30; // Comparisons between time values such as current time and the end of the buffered range
+    // can be misleading because of precision differences or when the current media has poorly
+    // aligned audio and video, which can cause values to be slightly off from what you would
+    // expect. This value is what we consider to be safe to use in such comparisons to account
+    // for these scenarios.
+
+    var SAFE_TIME_DELTA = TIME_FUDGE_FACTOR * 3; // If iOS check if we have a real stalled or supend event or
+    // we got stalled/suspend due headphones where disconnected during playback
+
+    this.on(['stalled', 'suspend'], function (e) {
+      var buffered = _this2.buffered();
+
+      if (!buffered.length) {
+        return;
+      }
+
+      var extraBuffer = false;
+
+      var currentTime = _this2.currentTime(); // Establish if we have an extra buffer in the current time range playing.
+
+
+      for (var i = 0; i < buffered.length; i++) {
+        if (buffered.start(i) <= currentTime && currentTime < buffered.end(i) + SAFE_TIME_DELTA) {
+          extraBuffer = true;
+          break;
+        }
+      } // if tech is not paused, browser has internet connection & player has extraBuffer inside the timeRange
+
+
+      if (extraBuffer && !_this2.paused() && window$1.navigator.onLine) {
+        _this2.pause();
+      }
+    });
+  }
+  /**
    * Attempt to force override of tracks for the given type
    *
    * @param {string} type - Track type to override, possible values include 'Audio',
@@ -18871,7 +18978,7 @@ function (_Tech) {
   ;
 
   _proto.overrideNative_ = function overrideNative_(type, override) {
-    var _this2 = this;
+    var _this3 = this;
 
     // If there is no behavioral change don't add/remove listeners
     if (override !== this["featuresNative" + type + "Tracks"]) {
@@ -18882,9 +18989,9 @@ function (_Tech) {
 
     if (this[lowerCaseType + "TracksListeners_"]) {
       Object.keys(this[lowerCaseType + "TracksListeners_"]).forEach(function (eventName) {
-        var elTracks = _this2.el()[lowerCaseType + "Tracks"];
+        var elTracks = _this3.el()[lowerCaseType + "Tracks"];
 
-        elTracks.removeEventListener(eventName, _this2[lowerCaseType + "TracksListeners_"][eventName]);
+        elTracks.removeEventListener(eventName, _this3[lowerCaseType + "TracksListeners_"][eventName]);
       });
     }
 
@@ -18924,7 +19031,7 @@ function (_Tech) {
   ;
 
   _proto.proxyNativeTracksForType_ = function proxyNativeTracksForType_(name) {
-    var _this3 = this;
+    var _this4 = this;
 
     var props = NORMAL[name];
     var elTracks = this.el()[props.getterName];
@@ -18979,14 +19086,14 @@ function (_Tech) {
       var listener = listeners[eventName];
       elTracks.addEventListener(eventName, listener);
 
-      _this3.on('dispose', function (e) {
+      _this4.on('dispose', function (e) {
         return elTracks.removeEventListener(eventName, listener);
       });
     }); // Remove (native) tracks that are not used anymore
 
     this.on('loadstart', removeOldTracks);
     this.on('dispose', function (e) {
-      return _this3.off('loadstart', removeOldTracks);
+      return _this4.off('loadstart', removeOldTracks);
     });
   }
   /**
@@ -18998,10 +19105,10 @@ function (_Tech) {
   ;
 
   _proto.proxyNativeTracks_ = function proxyNativeTracks_() {
-    var _this4 = this;
+    var _this5 = this;
 
     NORMAL.names.forEach(function (name) {
-      _this4.proxyNativeTracksForType_(name);
+      _this5.proxyNativeTracksForType_(name);
     });
   }
   /**
@@ -19189,7 +19296,7 @@ function (_Tech) {
   ;
 
   _proto.duration = function duration() {
-    var _this5 = this;
+    var _this6 = this;
 
     // Android Chrome will report duration as Infinity for VOD HLS until after
     // playback has started, which triggers the live display erroneously.
@@ -19199,13 +19306,13 @@ function (_Tech) {
       // Wait for the first `timeupdate` with currentTime > 0 - there may be
       // several with 0
       var checkProgress = function checkProgress() {
-        if (_this5.el_.currentTime > 0) {
+        if (_this6.el_.currentTime > 0) {
           // Trigger durationchange for genuinely live video
-          if (_this5.el_.duration === Infinity) {
-            _this5.trigger('durationchange');
+          if (_this6.el_.duration === Infinity) {
+            _this6.trigger('durationchange');
           }
 
-          _this5.off('timeupdate', checkProgress);
+          _this6.off('timeupdate', checkProgress);
         }
       };
 
@@ -19250,7 +19357,7 @@ function (_Tech) {
   ;
 
   _proto.proxyWebkitFullscreen_ = function proxyWebkitFullscreen_() {
-    var _this6 = this;
+    var _this7 = this;
 
     if (!('webkitDisplayingFullscreen' in this.el_)) {
       return;
@@ -19273,9 +19380,9 @@ function (_Tech) {
 
     this.on('webkitbeginfullscreen', beginFn);
     this.on('dispose', function () {
-      _this6.off('webkitbeginfullscreen', beginFn);
+      _this7.off('webkitbeginfullscreen', beginFn);
 
-      _this6.off('webkitendfullscreen', endFn);
+      _this7.off('webkitendfullscreen', endFn);
     });
   }
   /**
@@ -19571,22 +19678,28 @@ function (_Tech) {
 }(Tech);
 /* HTML5 Support Testing ---------------------------------------------------- */
 
+/**
+ * Element for testing browser HTML5 media capabilities
+ *
+ * @type {Element}
+ * @constant
+ * @private
+ */
 
-if (isReal()) {
-  /**
-   * Element for testing browser HTML5 media capabilities
-   *
-   * @type {Element}
-   * @constant
-   * @private
-   */
-  Html5.TEST_VID = document.createElement('video');
+
+defineLazyProperty(Html5, 'TEST_VID', function () {
+  if (!isReal()) {
+    return;
+  }
+
+  var video = document.createElement('video');
   var track = document.createElement('track');
   track.kind = 'captions';
   track.srclang = 'en';
   track.label = 'English';
-  Html5.TEST_VID.appendChild(track);
-}
+  video.appendChild(track);
+  return video;
+});
 /**
  * Check if HTML5 media is supported by this browser/device.
  *
@@ -19594,7 +19707,6 @@ if (isReal()) {
  *         - True if HTML5 media is supported.
  *         - False if HTML5 media is not supported.
  */
-
 
 Html5.isSupported = function () {
   // IE with no Media Player is a LIAR! (#984)
@@ -19797,7 +19909,6 @@ Html5.Events = ['loadstart', 'suspend', 'abort', 'error', 'emptied', 'stalled', 
  * @default {@link Html5.canControlVolume}
  */
 
-Html5.prototype.featuresVolumeControl = Html5.canControlVolume();
 /**
  * Boolean indicating whether the `Tech` supports muting volume.
  *
@@ -19805,7 +19916,6 @@ Html5.prototype.featuresVolumeControl = Html5.canControlVolume();
  * @default {@link Html5.canMuteVolume}
  */
 
-Html5.prototype.featuresMuteControl = Html5.canMuteVolume();
 /**
  * Boolean indicating whether the `Tech` supports changing the speed at which the media
  * plays. Examples:
@@ -19816,7 +19926,6 @@ Html5.prototype.featuresMuteControl = Html5.canMuteVolume();
  * @default {@link Html5.canControlPlaybackRate}
  */
 
-Html5.prototype.featuresPlaybackRate = Html5.canControlPlaybackRate();
 /**
  * Boolean indicating whether the `Tech` supports the `sourceset` event.
  *
@@ -19824,7 +19933,34 @@ Html5.prototype.featuresPlaybackRate = Html5.canControlPlaybackRate();
  * @default
  */
 
-Html5.prototype.featuresSourceset = Html5.canOverrideAttributes();
+/**
+ * Boolean indicating whether the `HTML5` tech currently supports native `TextTrack`s.
+ *
+ * @type {boolean}
+ * @default {@link Html5.supportsNativeTextTracks}
+ */
+
+/**
+ * Boolean indicating whether the `HTML5` tech currently supports native `VideoTrack`s.
+ *
+ * @type {boolean}
+ * @default {@link Html5.supportsNativeVideoTracks}
+ */
+
+/**
+ * Boolean indicating whether the `HTML5` tech currently supports native `AudioTrack`s.
+ *
+ * @type {boolean}
+ * @default {@link Html5.supportsNativeAudioTracks}
+ */
+
+[['featuresVolumeControl', 'canControlVolume'], ['featuresMuteControl', 'canMuteVolume'], ['featuresPlaybackRate', 'canControlPlaybackRate'], ['featuresSourceset', 'canOverrideAttributes'], ['featuresNativeTextTracks', 'supportsNativeTextTracks'], ['featuresNativeVideoTracks', 'supportsNativeVideoTracks'], ['featuresNativeAudioTracks', 'supportsNativeAudioTracks']].forEach(function (_ref) {
+  var key = _ref[0],
+      fn = _ref[1];
+  defineLazyProperty(Html5.prototype, key, function () {
+    return Html5[fn]();
+  }, false);
+});
 /**
  * Boolean indicating whether the `HTML5` tech currently supports the media element
  * moving in the DOM. iOS breaks if you move the media element, so this is set this to
@@ -19862,40 +19998,19 @@ Html5.prototype.featuresProgressEvents = true;
  * @default
  */
 
-Html5.prototype.featuresTimeupdateEvents = true;
-/**
- * Boolean indicating whether the `HTML5` tech currently supports native `TextTrack`s.
- *
- * @type {boolean}
- * @default {@link Html5.supportsNativeTextTracks}
- */
+Html5.prototype.featuresTimeupdateEvents = true; // HTML5 Feature detection and Device Fixes --------------------------------- //
 
-Html5.prototype.featuresNativeTextTracks = Html5.supportsNativeTextTracks();
-/**
- * Boolean indicating whether the `HTML5` tech currently supports native `VideoTrack`s.
- *
- * @type {boolean}
- * @default {@link Html5.supportsNativeVideoTracks}
- */
-
-Html5.prototype.featuresNativeVideoTracks = Html5.supportsNativeVideoTracks();
-/**
- * Boolean indicating whether the `HTML5` tech currently supports native `AudioTrack`s.
- *
- * @type {boolean}
- * @default {@link Html5.supportsNativeAudioTracks}
- */
-
-Html5.prototype.featuresNativeAudioTracks = Html5.supportsNativeAudioTracks(); // HTML5 Feature detection and Device Fixes --------------------------------- //
-
-var canPlayType = Html5.TEST_VID && Html5.TEST_VID.constructor.prototype.canPlayType;
-var mpegurlRE = /^application\/(?:x-|vnd\.apple\.)mpegurl/i;
+var canPlayType;
 
 Html5.patchCanPlayType = function () {
   // Android 4.0 and above can play HLS to some extent but it reports being unable to do so
   // Firefox and Chrome report correctly
   if (ANDROID_VERSION >= 4.0 && !IS_FIREFOX && !IS_CHROME) {
+    canPlayType = Html5.TEST_VID && Html5.TEST_VID.constructor.prototype.canPlayType;
+
     Html5.TEST_VID.constructor.prototype.canPlayType = function (type) {
+      var mpegurlRE = /^application\/(?:x-|vnd\.apple\.)mpegurl/i;
+
       if (type && mpegurlRE.test(type)) {
         return 'maybe';
       }
@@ -19907,7 +20022,11 @@ Html5.patchCanPlayType = function () {
 
 Html5.unpatchCanPlayType = function () {
   var r = Html5.TEST_VID.constructor.prototype.canPlayType;
-  Html5.TEST_VID.constructor.prototype.canPlayType = canPlayType;
+
+  if (canPlayType) {
+    Html5.TEST_VID.constructor.prototype.canPlayType = canPlayType;
+  }
+
   return r;
 }; // by default, patch the media element
 
@@ -21324,7 +21443,7 @@ function (_Component) {
       return this[privDimension] || 0;
     }
 
-    if (value === '') {
+    if (value === '' || value === 'auto') {
       // If an empty string is given, reset the dimension to be automatic
       this[privDimension] = undefined;
       this.updateStyleEl_();
@@ -24308,7 +24427,7 @@ function (_Component) {
     // user interaction
 
 
-    if (this.options_.suppressNotSupportedError && err && err.message && err.message === this.localize(this.options_.notSupportedMessage)) {
+    if (this.options_.suppressNotSupportedError && err && err.code === 4) {
       var triggerSuppressedError = function triggerSuppressedError() {
         this.error(err);
       };
@@ -25995,39 +26114,6 @@ Player.prototype.hasPlugin = function (name) {
  * @file extend.js
  * @module extend
  */
-
-/**
- * A combination of node inherits and babel's inherits (after transpile).
- * Both work the same but node adds `super_` to the subClass
- * and Bable adds the superClass as __proto__. Both seem useful.
- *
- * @param {Object} subClass
- *        The class to inherit to
- *
- * @param {Object} superClass
- *        The class to inherit from
- *
- * @private
- */
-var _inherits = function _inherits(subClass, superClass) {
-  if (typeof superClass !== 'function' && superClass !== null) {
-    throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass);
-  }
-
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-
-  if (superClass) {
-    // node
-    subClass.super_ = superClass;
-  }
-};
 /**
  * Used to subclass an existing class by emulating ES subclassing using the
  * `extends` keyword.
@@ -26049,7 +26135,6 @@ var _inherits = function _inherits(subClass, superClass) {
  * @return   {Function}
  *           The new class with subClassMethods that inherited superClass.
  */
-
 
 var extend = function extend(superClass, subClassMethods) {
   if (subClassMethods === void 0) {
@@ -26608,10 +26693,11 @@ videojs$1.dom = Dom;
  */
 
 videojs$1.url = Url;
+videojs$1.defineLazyProperty = defineLazyProperty;
 
 /**
  * @videojs/http-streaming
- * @version 1.10.6
+ * @version 1.11.2
  * @copyright 2019 Brightcove, Inc
  * @license Apache-2.0
  */
@@ -40577,28 +40663,32 @@ var SyncController = function (_videojs$EventTarget) {
       return timingInfo;
     }
     /**
-     * Probe an fmp4 or an mpeg2-ts segment to determine the start of the segment
-     * in it's internal "media time".
+     * Probe an fmp4 segment to determine the start of the segment
+     * in it's internal "composition time", which is equal to the base
+     * media decode time plus the composition time offset value
      *
      * @private
      * @param {SegmentInfo} segmentInfo - The current active request information
-     * @return {object} The start and end time of the current segment in "media time"
+     * @return {object} The start and end time of the current segment in "composition time"
      */
 
   }, {
     key: 'probeMp4Segment_',
     value: function probeMp4Segment_(segmentInfo) {
-      var segment = segmentInfo.segment;
-      var timescales = mp4probe.timescale(segment.map.bytes);
-      var startTime = mp4probe.startTime(timescales, segmentInfo.bytes);
+      var segment = segmentInfo.segment; // get timescales from init segment
+
+      var timescales = mp4probe.timescale(segment.map.bytes); // calculate composition start time using the timescales and information
+      // contained within the media segment
+
+      var compositionStartTime = mp4probe.compositionStartTime(timescales, segmentInfo.bytes);
 
       if (segmentInfo.timestampOffset !== null) {
-        segmentInfo.timestampOffset -= startTime;
+        segmentInfo.timestampOffset -= compositionStartTime;
       }
 
       return {
-        start: startTime,
-        end: startTime + segment.duration
+        start: compositionStartTime,
+        end: compositionStartTime + segment.duration
       };
     }
     /**
@@ -44068,7 +44158,7 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$1 = "1.10.6"; // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
+var version$1 = "1.11.2"; // since VHS handles HLS and DASH (and in the future, more types), use * to capture all
 
 videojs$1.use('*', function (player) {
   return {
@@ -44202,18 +44292,48 @@ Hls$1.canPlaySource = function () {
   return videojs$1.log.warn('HLS is no longer a tech. Please remove it from ' + 'your player\'s techOrder.');
 };
 
-var emeKeySystems = function emeKeySystems(keySystemOptions, videoPlaylist, audioPlaylist) {
+var emeKeySystems = function emeKeySystems(keySystemOptions, mainSegmentLoader, audioSegmentLoader) {
   if (!keySystemOptions) {
     return keySystemOptions;
+  }
+
+  var videoMimeType = void 0;
+  var audioMimeType = void 0; // if there is a mimeType associated with the audioSegmentLoader, then the audio
+  // and video mimeType and codec strings are already in the format we need to
+  // pass with the other key systems
+
+  if (audioSegmentLoader.mimeType_) {
+    videoMimeType = mainSegmentLoader.mimeType_;
+    audioMimeType = audioSegmentLoader.mimeType_; // if there is no audioSegmentLoader mimeType, then we have to create the
+    // the audio and video mimeType/codec strings from information extrapolated
+    // from the mainSegmentLoader mimeType (ex. 'video/mp4; codecs="mp4, avc1"' -->
+    // 'video/mp4; codecs="avc1"' and 'audio/mp4; codecs="mp4"')
+  } else {
+    var parsedMimeType = parseContentType(mainSegmentLoader.mimeType_);
+    var codecs = parsedMimeType.parameters.codecs.split(',');
+    var audioCodec = void 0;
+    var videoCodec = void 0;
+    codecs.forEach(function (codec) {
+      codec = codec.trim();
+
+      if (isAudioCodec(codec)) {
+        audioCodec = codec;
+      } else if (isVideoCodec(codec)) {
+        videoCodec = codec;
+      }
+    });
+    videoMimeType = parsedMimeType.type + '; codecs="' + videoCodec + '"';
+    audioMimeType = parsedMimeType.type.replace('video', 'audio') + '; codecs="' + audioCodec + '"';
   } // upsert the content types based on the selected playlist
 
 
   var keySystemContentTypes = {};
+  var videoPlaylist = mainSegmentLoader.playlist_;
 
   for (var keySystem in keySystemOptions) {
     keySystemContentTypes[keySystem] = {
-      audioContentType: 'audio/mp4; codecs="' + audioPlaylist.attributes.CODECS + '"',
-      videoContentType: 'video/mp4; codecs="' + videoPlaylist.attributes.CODECS + '"'
+      audioContentType: audioMimeType,
+      videoContentType: videoMimeType
     };
 
     if (videoPlaylist.contentProtection && videoPlaylist.contentProtection[keySystem] && videoPlaylist.contentProtection[keySystem].pssh) {
@@ -44231,19 +44351,18 @@ var emeKeySystems = function emeKeySystems(keySystemOptions, videoPlaylist, audi
 };
 
 var setupEmeOptions = function setupEmeOptions(hlsHandler) {
-  if (hlsHandler.options_.sourceType !== 'dash') {
-    return;
-  }
-
+  var mainSegmentLoader = hlsHandler.masterPlaylistController_.mainSegmentLoader_;
+  var audioSegmentLoader = hlsHandler.masterPlaylistController_.audioSegmentLoader_;
   var player = videojs$1.players[hlsHandler.tech_.options_.playerId];
 
   if (player.eme) {
-    var sourceOptions = emeKeySystems(hlsHandler.source_.keySystems, hlsHandler.playlists.media(), hlsHandler.masterPlaylistController_.mediaTypes_.AUDIO.activePlaylistLoader.media());
+    var sourceOptions = emeKeySystems(hlsHandler.source_.keySystems, mainSegmentLoader, audioSegmentLoader);
 
     if (sourceOptions) {
-      player.currentSource().keySystems = sourceOptions; // works around https://bugs.chromium.org/p/chromium/issues/detail?id=895449
+      player.currentSource().keySystems = sourceOptions; // Works around https://bugs.chromium.org/p/chromium/issues/detail?id=895449
+      // in non-IE11 browsers. In IE11 this is too early to initialize media keys
 
-      if (player.eme.initializeMediaKeys) {
+      if (!(videojs$1.browser.IE_VERSION === 11) && player.eme.initializeMediaKeys) {
         player.eme.initializeMediaKeys();
       }
     }
