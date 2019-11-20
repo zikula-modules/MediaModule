@@ -178,11 +178,7 @@ class ModuleUpgrader
                 $release = $this->getReleaseToUpgradeTo($versionChecker);
                 $asset = $versionChecker->getZipAssetFromRelease($release);
                 if (!$asset) {
-                    throw new UpgradeFailedException(
-                        $this->translator->trans(
-                            'Something went wrong. The release doesn\'t contain a ZIP asset.',
-                            [],
-                            'cmfcmfmediamodule'));
+                    throw new UpgradeFailedException($this->translator->trans('Something went wrong. The release doesn\'t contain a ZIP asset.', [], 'cmfcmfmediamodule'));
                 }
                 $this->downloadNewVersion($asset['browser_download_url']);
 
@@ -192,25 +188,13 @@ class ModuleUpgrader
                 $zip->open($this->cacheFile);
                 $content = $zip->getFromName('composer.json');
                 if (false === $content) {
-                    throw new UpgradeFailedException(
-                        $this->translator->trans(
-                            'Could not read composer.json file from downloaded zip archive.',
-                            [],
-                            'cmfcmfmediamodule'
-                        )
-                    );
+                    throw new UpgradeFailedException($this->translator->trans('Could not read composer.json file from downloaded zip archive.', [], 'cmfcmfmediamodule'));
                 }
                 $json = json_decode($content, true);
                 $coreCompat = $json['extra']['zikula']['core-compatibility'];
                 $coreCompatExpr = new expression($coreCompat);
                 if (!$coreCompatExpr->satisfiedBy(new version(ZikulaKernel::VERSION))) {
-                    throw new UpgradeFailedException(
-                        $this->translator->trans(
-                            'Your installed Core version is not capable of running the upgrade. Please upgrade your core to match %version% first.',
-                            ['%version%' => $coreCompat],
-                            'cmfcmfmediamodule'
-                        )
-                    );
+                    throw new UpgradeFailedException($this->translator->trans('Your installed Core version is not capable of running the upgrade. Please upgrade your core to match %version% first.', ['%version%' => $coreCompat], 'cmfcmfmediamodule'));
                 }
 
                 return false;
@@ -233,8 +217,7 @@ class ModuleUpgrader
     private function checkRequirements()
     {
         if (!class_exists('ZipArchive') || !extension_loaded('curl')) {
-            throw new UpgradeFailedException(
-                $this->translator->trans('Please enable the ZIP and CURL PHP extensions', [], 'cmfcmfmediamodule'));
+            throw new UpgradeFailedException($this->translator->trans('Please enable the ZIP and CURL PHP extensions', [], 'cmfcmfmediamodule'));
         }
     }
 
@@ -244,8 +227,7 @@ class ModuleUpgrader
     private function checkPermissions()
     {
         if (!$this->is_writable_r($this->moduleDir)) {
-            throw new UpgradeFailedException(
-                $this->translator->trans('Please make %s recursively writable.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule'));
+            throw new UpgradeFailedException($this->translator->trans('Please make %s recursively writable.', ['%s' => $this->moduleDir], 'cmfcmfmediamodule'));
         }
     }
 
@@ -319,34 +301,27 @@ class ModuleUpgrader
         $vetoEvent = new GenericEvent();
         $this->get('event_dispatcher')->dispatch(ExtensionEvents::REGENERATE_VETO, $vetoEvent);
         if ($vetoEvent->isPropagationStopped()) {
-            throw new UpgradeFailedException(
-                $this->translator->trans('Upgrade was stopped by a veto!', [], 'cmfcmfmediamodule'));
+            throw new UpgradeFailedException($this->translator->trans('Upgrade was stopped by a veto!', [], 'cmfcmfmediamodule'));
         }
 
         $extensionsInFileSystem = $this->bundleSyncHelper->scanForBundles();
         $upgradedExtensions = $this->bundleSyncHelper->syncExtensions($extensionsInFileSystem);
 
         if (!isset($upgradedExtensions['CmfcmfMediaModule'])) {
-            throw new UpgradeFailedException(
-                $this->translator->trans('No new version detected!', [], 'cmfcmfmediamodule'));
+            throw new UpgradeFailedException($this->translator->trans('No new version detected!', [], 'cmfcmfmediamodule'));
         }
         // $upgradedExtensions['CmfcmfMediaModule'] contains new version
 
         $extension = $this->extensionRepository->findOneByName('CmfcmfMediaModule');
         if (null === $extension) {
-            throw new UpgradeFailedException(
-                $this->translator->trans('Could not determine version information from database!', [], 'cmfcmfmediamodule'));
+            throw new UpgradeFailedException($this->translator->trans('Could not determine version information from database!', [], 'cmfcmfmediamodule'));
         }
 
         $worked = $this->extensionHelper->upgrade($extension);
         $this->cacheClearer->clear('');
 
         if (true !== $worked) {
-            throw new UpgradeFailedException(
-                $this->translator->trans(
-                    'Something went wrong with the upgrade code. This should not have happened!',
-                    [],
-                    'cmfcmfmediamodule'));
+            throw new UpgradeFailedException($this->translator->trans('Something went wrong with the upgrade code. This should not have happened!', [], 'cmfcmfmediamodule'));
         }
     }
 
@@ -359,32 +334,23 @@ class ModuleUpgrader
     {
         try {
             if (!$versionChecker->checkRateLimit()) {
-                throw new UpgradeFailedException(
-                    $this->translator->trans(
-                        'Your GitHub API Rate limit is exceeded. Please try again later.',
-                        [],
-                        'cmfcmfmediamodule'));
+                throw new UpgradeFailedException($this->translator->trans('Your GitHub API Rate limit is exceeded. Please try again later.', [], 'cmfcmfmediamodule'));
             }
 
             $extension = $this->extensionRepository->findOneByName('CmfcmfMediaModule');
             if (null === $extension) {
-                throw new UpgradeFailedException(
-                    $this->translator->trans('Could not determine version information from database!', [], 'cmfcmfmediamodule'));
+                throw new UpgradeFailedException($this->translator->trans('Could not determine version information from database!', [], 'cmfcmfmediamodule'));
             }
 
             $release = $versionChecker->getReleaseToUpgradeTo($extension['version']);
             if (false === $release) {
-                throw new UpgradeFailedException(
-                    $this->translator->trans('No release to upgrade to available!', [], 'cmfcmfmediamodule'));
+                throw new UpgradeFailedException($this->translator->trans('No release to upgrade to available!', [], 'cmfcmfmediamodule'));
             }
 
             return $release;
         } catch (RuntimeException $e) {
             // Something went wrong with the GitHub API.
-            throw new UpgradeFailedException($this->translator->trans(
-                'Could not connect to GitHub. Is the server connected to the internet?',
-                [],
-                'cmfcmfmediamodule'));
+            throw new UpgradeFailedException($this->translator->trans('Could not connect to GitHub. Is the server connected to the internet?', [], 'cmfcmfmediamodule'));
         }
     }
 }
