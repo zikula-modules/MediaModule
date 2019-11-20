@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the MediaModule for Zikula.
  *
@@ -128,7 +126,7 @@ abstract class AbstractMediaType implements MediaTypeInterface
     {
         $attribution = '';
         if (null !== $entity->getAttribution()) {
-            $attribution = '<p>' . $this->__f('By %s', ['%s' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
+            $attribution = '<p>' . $this->translator->__f('By %s', ['%s' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
         }
 
         return $this->renderFullpage($entity) . $attribution;
@@ -178,7 +176,7 @@ abstract class AbstractMediaType implements MediaTypeInterface
         $settings = json_decode($this->requestStack->getCurrentRequest()->request->get('settings'), true);
         foreach ($settings as $name => $value) {
             $setter = 'set' . ucfirst($name);
-            $entity->{$setter}($value);
+            $entity->$setter($value);
         }
 
         return $entity;
