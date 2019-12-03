@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.7.0 <http://videojs.com/>
+ * Video.js 7.7.3 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -9,6 +9,8 @@
  * Available under Apache License Version 2.0
  * <https://github.com/mozilla/vtt.js/blob/master/LICENSE>
  */
+
+'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
@@ -32,7 +34,7 @@ var CaptionParser = _interopDefault(require('mux.js/lib/mp4/caption-parser'));
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.7.0";
+var version = "7.7.3";
 
 /**
  * @file create-logger.js
@@ -19959,7 +19961,7 @@ Html5.Events = ['loadstart', 'suspend', 'abort', 'error', 'emptied', 'stalled', 
       fn = _ref[1];
   defineLazyProperty(Html5.prototype, key, function () {
     return Html5[fn]();
-  }, false);
+  }, true);
 });
 /**
  * Boolean indicating whether the `HTML5` tech currently supports the media element
@@ -26157,7 +26159,12 @@ var extend = function extend(superClass, subClassMethods) {
     subClass = subClassMethods;
   }
 
-  _inherits(subClass, superClass); // Extend subObj's prototype with functions and other properties from props
+  _inherits(subClass, superClass); // this is needed for backward-compatibility and node compatibility.
+
+
+  if (superClass) {
+    subClass.super_ = superClass;
+  } // Extend subObj's prototype with functions and other properties from props
 
 
   for (var name in methods) {

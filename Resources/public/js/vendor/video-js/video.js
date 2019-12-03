@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.7.0 <http://videojs.com/>
+ * Video.js 7.7.3 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -14,11 +14,12 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('global/window'), require('global/document')) :
   typeof define === 'function' && define.amd ? define(['global/window', 'global/document'], factory) :
   (global = global || self, global.videojs = factory(global.window, global.document));
-}(this, function (window$1, document) {
+}(this, function (window$1, document) { 'use strict';
+
   window$1 = window$1 && window$1.hasOwnProperty('default') ? window$1['default'] : window$1;
   document = document && document.hasOwnProperty('default') ? document['default'] : document;
 
-  var version = "7.7.0";
+  var version = "7.7.3";
 
   /**
    * @file create-logger.js
@@ -8560,6 +8561,7 @@
   /* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 
   /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
+
   var _objCreate = Object.create || function () {
     function F() {}
 
@@ -8602,7 +8604,7 @@
       return (h | 0) * 3600 + (m | 0) * 60 + (s | 0) + (f | 0) / 1000;
     }
 
-    var m = input.match(/^(\d+):(\d{2})(:\d{2})?\.(\d{3})/);
+    var m = input.match(/^(\d+):(\d{1,2})(:\d{1,2})?\.(\d{3})/);
 
     if (!m) {
       return null;
@@ -8748,7 +8750,7 @@
             settings.alt(k, vals0, ["auto"]);
 
             if (vals.length === 2) {
-              settings.alt("lineAlign", vals[1], ["start", "middle", "end"]);
+              settings.alt("lineAlign", vals[1], ["start", "center", "end"]);
             }
 
             break;
@@ -8758,7 +8760,7 @@
             settings.percent(k, vals[0]);
 
             if (vals.length === 2) {
-              settings.alt("positionAlign", vals[1], ["start", "middle", "end"]);
+              settings.alt("positionAlign", vals[1], ["start", "center", "end"]);
             }
 
             break;
@@ -8768,29 +8770,46 @@
             break;
 
           case "align":
-            settings.alt(k, v, ["start", "middle", "end", "left", "right"]);
+            settings.alt(k, v, ["start", "center", "end", "left", "right"]);
             break;
         }
       }, /:/, /\s/); // Apply default values for any missing fields.
 
       cue.region = settings.get("region", null);
       cue.vertical = settings.get("vertical", "");
-      cue.line = settings.get("line", "auto");
+
+      try {
+        cue.line = settings.get("line", "auto");
+      } catch (e) {}
+
       cue.lineAlign = settings.get("lineAlign", "start");
       cue.snapToLines = settings.get("snapToLines", true);
-      cue.size = settings.get("size", 100);
-      cue.align = settings.get("align", "middle");
-      cue.position = settings.get("position", {
-        start: 0,
-        left: 0,
-        middle: 50,
-        end: 100,
-        right: 100
-      }, cue.align);
+      cue.size = settings.get("size", 100); // Safari still uses the old middle value and won't accept center
+
+      try {
+        cue.align = settings.get("align", "center");
+      } catch (e) {
+        cue.align = settings.get("align", "middle");
+      }
+
+      try {
+        cue.position = settings.get("position", "auto");
+      } catch (e) {
+        cue.position = settings.get("position", {
+          start: 0,
+          left: 0,
+          center: 50,
+          middle: 50,
+          end: 100,
+          right: 100
+        }, cue.align);
+      }
+
       cue.positionAlign = settings.get("positionAlign", {
         start: "start",
         left: "start",
-        middle: "middle",
+        center: "center",
+        middle: "center",
         end: "end",
         right: "end"
       }, cue.align);
@@ -8820,14 +8839,7 @@
     consumeCueSettings(input, cue);
   }
 
-  var ESCAPE = {
-    "&amp;": "&",
-    "&lt;": "<",
-    "&gt;": ">",
-    "&lrm;": "\u200E",
-    "&rlm;": "\u200F",
-    "&nbsp;": "\xA0"
-  };
+  var TEXTAREA_ELEMENT = document.createElement("textarea");
   var TAG_NAME = {
     c: "span",
     i: "i",
@@ -8837,6 +8849,18 @@
     rt: "rt",
     v: "span",
     lang: "span"
+  }; // 5.1 default text color
+  // 5.2 default text background color is equivalent to text color with bg_ prefix
+
+  var DEFAULT_COLOR_CLASS = {
+    white: 'rgba(255,255,255,1)',
+    lime: 'rgba(0,255,0,1)',
+    cyan: 'rgba(0,255,255,1)',
+    red: 'rgba(255,0,0,1)',
+    yellow: 'rgba(255,255,0,1)',
+    magenta: 'rgba(255,0,255,1)',
+    blue: 'rgba(0,0,255,1)',
+    black: 'rgba(0,0,0,1)'
   };
   var TAG_ANNOTATION = {
     v: "title",
@@ -8863,18 +8887,12 @@
       // the tag.
 
       return consume(m[1] ? m[1] : m[2]);
-    } // Unescape a string 's'.
-
-
-    function unescape1(e) {
-      return ESCAPE[e];
     }
 
     function unescape(s) {
-      while (m = s.match(/&(amp|lt|gt|lrm|rlm|nbsp);/)) {
-        s = s.replace(m[0], unescape1);
-      }
-
+      TEXTAREA_ELEMENT.innerHTML = s;
+      s = TEXTAREA_ELEMENT.textContent;
+      TEXTAREA_ELEMENT.textContent = "";
       return s;
     }
 
@@ -8891,7 +8909,6 @@
       }
 
       var element = window.document.createElement(tagName);
-      element.localName = tagName;
       var name = TAG_ANNOTATION[type];
 
       if (name && annotation) {
@@ -8950,7 +8967,19 @@
 
 
         if (m[2]) {
-          node.className = m[2].substr(1).replace('.', ' ');
+          var classes = m[2].split('.');
+          classes.forEach(function (cl) {
+            var bgColor = /^bg_/.test(cl); // slice out `bg_` if it's a background color
+
+            var colorName = bgColor ? cl.slice(3) : cl;
+
+            if (DEFAULT_COLOR_CLASS.hasOwnProperty(colorName)) {
+              var propName = bgColor ? 'background-color' : 'color';
+              var propValue = DEFAULT_COLOR_CLASS[colorName];
+              node.style[propName] = propValue;
+            }
+          });
+          node.className = classes.join(' ');
         } // Append the node to the current node, and enter the scope of the new
         // node.
 
@@ -9110,7 +9139,7 @@
     };
     this.applyStyles(styles, this.cueDiv); // Create an absolutely positioned div that will be used to position the cue
     // div. Note, all WebVTT cue-setting alignments are equivalent to the CSS
-    // mirrors of them except "middle" which is "center" in CSS.
+    // mirrors of them except middle instead of center on Safari.
 
     this.div = window.document.createElement("div");
     styles = {
@@ -9134,7 +9163,7 @@
         textPos = cue.position;
         break;
 
-      case "middle":
+      case "center":
         textPos = cue.position - cue.size / 2;
         break;
 
@@ -9412,7 +9441,7 @@
       var calculatedPercentage = boxPosition.lineHeight / containerBox.height * 100;
 
       switch (cue.lineAlign) {
-        case "middle":
+        case "center":
           linePos -= calculatedPercentage / 2;
           break;
 
@@ -9790,7 +9819,14 @@
                 continue;
               }
 
-              self.cue = new (self.vttjs.VTTCue || self.window.VTTCue)(0, 0, "");
+              self.cue = new (self.vttjs.VTTCue || self.window.VTTCue)(0, 0, ""); // Safari still uses the old middle value and won't accept center
+
+              try {
+                self.cue.align = "center";
+              } catch (e) {
+                self.cue.align = "middle";
+              }
+
               self.state = "CUE"; // 30-39 - Check if self line contains an optional identifier or timing data.
 
               if (line.indexOf("-->") === -1) {
@@ -9835,7 +9871,7 @@
                 self.cue.text += "\n";
               }
 
-              self.cue.text += line;
+              self.cue.text += line.replace(/\u2028/g, '\n').replace(/u2029/g, '\n');
               continue;
 
             case "BADCUE":
@@ -9914,10 +9950,13 @@
   };
   var alignSetting = {
     "start": 1,
-    "middle": 1,
+    "center": 1,
     "end": 1,
     "left": 1,
-    "right": 1
+    "right": 1,
+    "auto": 1,
+    "line-left": 1,
+    "line-right": 1
   };
 
   function findDirectionSetting(value) {
@@ -9962,10 +10001,10 @@
     var _snapToLines = true;
     var _line = "auto";
     var _lineAlign = "start";
-    var _position = 50;
-    var _positionAlign = "middle";
-    var _size = 50;
-    var _align = "middle";
+    var _position = "auto";
+    var _positionAlign = "auto";
+    var _size = 100;
+    var _align = "center";
     Object.defineProperties(this, {
       "id": {
         enumerable: true,
@@ -10042,7 +10081,7 @@
           var setting = findDirectionSetting(value); // Have to check for false because the setting an be an empty string.
 
           if (setting === false) {
-            throw new SyntaxError("An invalid or illegal string was specified.");
+            throw new SyntaxError("Vertical: an invalid or illegal direction string was specified.");
           }
 
           _vertical = setting;
@@ -10066,7 +10105,7 @@
         },
         set: function set(value) {
           if (typeof value !== "number" && value !== autoKeyword) {
-            throw new SyntaxError("An invalid number or illegal string was specified.");
+            throw new SyntaxError("Line: an invalid number or illegal string was specified.");
           }
 
           _line = value;
@@ -10082,11 +10121,11 @@
           var setting = findAlignSetting(value);
 
           if (!setting) {
-            throw new SyntaxError("An invalid or illegal string was specified.");
+            console.warn("lineAlign: an invalid or illegal string was specified.");
+          } else {
+            _lineAlign = setting;
+            this.hasBeenReset = true;
           }
-
-          _lineAlign = setting;
-          this.hasBeenReset = true;
         }
       },
       "position": {
@@ -10112,11 +10151,11 @@
           var setting = findAlignSetting(value);
 
           if (!setting) {
-            throw new SyntaxError("An invalid or illegal string was specified.");
+            console.warn("positionAlign: an invalid or illegal string was specified.");
+          } else {
+            _positionAlign = setting;
+            this.hasBeenReset = true;
           }
-
-          _positionAlign = setting;
-          this.hasBeenReset = true;
         }
       },
       "size": {
@@ -10142,7 +10181,7 @@
           var setting = findAlignSetting(value);
 
           if (!setting) {
-            throw new SyntaxError("An invalid or illegal string was specified.");
+            throw new SyntaxError("align: an invalid or illegal alignment string was specified.");
           }
 
           _align = setting;
@@ -10299,10 +10338,10 @@
           var setting = findScrollSetting(value); // Have to check for false as an empty string is a legal value.
 
           if (setting === false) {
-            throw new SyntaxError("An invalid or illegal string was specified.");
+            console.warn("Scroll: an invalid or illegal string was specified.");
+          } else {
+            _scroll = setting;
           }
-
-          _scroll = setting;
         }
       }
     });
@@ -22318,7 +22357,7 @@
         fn = _ref[1];
     defineLazyProperty(Html5.prototype, key, function () {
       return Html5[fn]();
-    }, false);
+    }, true);
   });
   /**
    * Boolean indicating whether the `HTML5` tech currently supports the media element
@@ -28580,7 +28619,12 @@
       subClass = subClassMethods;
     }
 
-    inherits(subClass, superClass); // Extend subObj's prototype with functions and other properties from props
+    inherits(subClass, superClass); // this is needed for backward-compatibility and node compatibility.
+
+
+    if (superClass) {
+      subClass.super_ = superClass;
+    } // Extend subObj's prototype with functions and other properties from props
 
 
     for (var name in methods) {
