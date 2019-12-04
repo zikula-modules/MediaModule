@@ -24,15 +24,22 @@ class MediaRepository extends EntityRepository
      *
      * @param int $page
      * @param int $perPage
+     * @param string $q
      *
      * @return Paginator
      */
-    public function getPaginated($page, $perPage)
+    public function getPaginated($page, $perPage, $q)
     {
         $qb = $this->createQueryBuilder('m');
         $query = $qb->select('m')
             ->orderBy('m.title')
-            ->setFirstResult($page * $perPage)
+        ;
+        if (!empty($q)) {
+            $qb->where($qb->expr()->like('m.title', ':q'))
+                ->setParameter('q', "%${q}%")
+            ;
+        }
+        $query = $qb->setFirstResult($page * $perPage)
             ->setMaxResults($perPage)
         ;
 

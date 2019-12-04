@@ -56,7 +56,7 @@ class MediaController extends AbstractController
      *
      * @todo Rename this + template to admin*L*istAction once the Routing PR is in the Core.
      */
-    public function adminlistAction($page = 1)
+    public function adminlistAction(Request $request, $page = 1)
     {
         if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'moderate')) {
             throw new AccessDeniedException();
@@ -68,16 +68,18 @@ class MediaController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         $perPage = 30;
+        $q = trim($request->query->get('q'));
 
         /** @var Paginator|AbstractMediaEntity[] $entities */
-        $paginator = $em->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')->getPaginated($page - 1, $perPage);
+        $paginator = $em->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')->getPaginated($page - 1, $perPage, $q);
         $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
 
         return [
             'paginator' => $paginator,
             'mediaTypeCollection' => $mediaTypeCollection,
             'page' => $page,
-            'maxPage' => ceil($paginator->count() / $perPage)
+            'maxPage' => ceil($paginator->count() / $perPage),
+            'currentSearchTerm' => $q
         ];
     }
 
