@@ -30,7 +30,7 @@ class LicenseController extends AbstractController
 {
     /**
      * @Route("/", methods={"GET"})
-     * @Template("CmfcmfMediaModule:License:index.html.twig")
+     * @Template("@CmfcmfMediaModule/License/index.html.twig")
      *
      * @return array
      */
@@ -51,7 +51,7 @@ class LicenseController extends AbstractController
 
     /**
      * @Route("/new")
-     * @Template("CmfcmfMediaModule:License:edit.html.twig")
+     * @Template("@CmfcmfMediaModule/License/edit.html.twig")
      *
      * @param Request $request
      *
@@ -82,7 +82,7 @@ class LicenseController extends AbstractController
 
     /**
      * @Route("/edit/{id}")
-     * @Template("CmfcmfMediaModule:License:edit.html.twig")
+     * @Template("@CmfcmfMediaModule/License/edit.html.twig")
      *
      * @param Request       $request
      * @param LicenseEntity $entity
@@ -117,7 +117,7 @@ class LicenseController extends AbstractController
 
     /**
      * @Route("/delete/{id}")
-     * @Template("CmfcmfMediaModule:License:delete.html.twig")
+     * @Template("@CmfcmfMediaModule/License/delete.html.twig")
      *
      * @param Request       $request
      * @param LicenseEntity $entity

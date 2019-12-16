@@ -26,7 +26,7 @@ class UpgradeController extends AbstractController
 {
     /**
      * @Route("/settings/upgrade")
-     * @Template("CmfcmfMediaModule:Upgrade:doUpgrade.html.twig")
+     * @Template("@CmfcmfMediaModule/Upgrade/doUpgrade.html.twig")
      * @Theme("admin")
      *
      * @return array|RedirectResponse

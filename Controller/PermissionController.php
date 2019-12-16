@@ -39,7 +39,7 @@ class PermissionController extends AbstractController
 {
     /**
      * @Route("/show/{slug}", requirements={"slug" = ".+?"})
-     * @Template("CmfcmfMediaModule:Permission:view.html.twig")
+     * @Template("@CmfcmfMediaModule/Permission/view.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $collectionEntity
@@ -72,10 +72,10 @@ class PermissionController extends AbstractController
 
     /**
      * @Route("/new/{type}/{collection}/{afterPermission}", options={"expose"="true"})
-     * @Template("CmfcmfMediaModule:Permission:edit.html.twig")
+     * @Template("@CmfcmfMediaModule/Permission/edit.html.twig")
      *
      * @param Request                  $request
-     * @param                          $type
+     * @param string                   $type
      * @param CollectionEntity         $collection
      * @param AbstractPermissionEntity $afterPermission
      *
@@ -134,7 +134,7 @@ class PermissionController extends AbstractController
 
     /**
      * @Route("/edit/{id}")
-     * @Template("CmfcmfMediaModule:Permission:edit.html.twig")
+     * @Template("@CmfcmfMediaModule/Permission/edit.html.twig")
      *
      * @param Request                  $request
      * @param AbstractPermissionEntity $permissionEntity
@@ -184,7 +184,7 @@ class PermissionController extends AbstractController
 
     /**
      * @Route("/delete/{id}")
-     * @Template("CmfcmfMediaModule:Permission:delete.html.twig")
+     * @Template("@CmfcmfMediaModule/Permission/delete.html.twig")
      *
      * @param Request                  $request
      * @param AbstractPermissionEntity $permissionEntity

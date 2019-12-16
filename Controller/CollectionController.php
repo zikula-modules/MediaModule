@@ -38,7 +38,7 @@ class CollectionController extends AbstractController
 {
     /**
      * @Route("/new/{slug}", requirements={"slug" = ".+"})
-     * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
+     * @Template("@CmfcmfMediaModule/Collection/edit.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $parent
@@ -90,7 +90,7 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/edit/{slug}", requirements={"slug" = ".+"})
-     * @Template(template="CmfcmfMediaModule:Collection:edit.html.twig")
+     * @Template("@CmfcmfMediaModule/Collection/edit.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $entity
@@ -283,7 +283,7 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/{slug}", methods={"GET"}, requirements={"slug"=".*[^/]"}, options={"expose" = true})
-     * @Template(template="CmfcmfMediaModule:Collection:display.html.twig")
+     * @Template("@CmfcmfMediaModule/Collection/display.html.twig")
      *
      * @param Request          $request
      * @param CollectionEntity $entity
@@ -338,6 +338,6 @@ class CollectionController extends AbstractController
             $selectedTemplate->getOptions()
         );
 
-        return $this->render('CmfcmfMediaModule:Collection:display.html.twig', $templateVars);
+        return $this->render('@CmfcmfMediaModule/Collection/display.html.twig', $templateVars);
     }
 }

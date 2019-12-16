@@ -28,7 +28,7 @@ class FinderController extends AbstractController
 {
     /**
      * @Route("/choose", options={"expose" = true})
-     * @Template("CmfcmfMediaModule:Finder:chooseMethod.html.twig")
+     * @Template("@CmfcmfMediaModule/Finder/chooseMethod.html.twig")
      */
     public function chooseMethodAction()
     {
@@ -37,7 +37,7 @@ class FinderController extends AbstractController
 
     /**
      * @Route("/popup/choose/collection", options={"expose" = true})
-     * @Template("CmfcmfMediaModule:Finder:popupChooseCollections.html.twig")
+     * @Template("@CmfcmfMediaModule/Finder/popupChooseCollections.html.twig")
      */
     public function popupChooseCollectionsAction()
     {
@@ -46,7 +46,7 @@ class FinderController extends AbstractController
 
     /**
      * @Route("/popup/choose/media", options={"expose" = true})
-     * @Template("CmfcmfMediaModule:Finder:popupChooseMedia.html.twig")
+     * @Template("@CmfcmfMediaModule/Finder/popupChooseMedia.html.twig")
      */
     public function popupChooseMediaAction()
     {

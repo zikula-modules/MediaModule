@@ -3,8 +3,8 @@
     {{ __('Choose collections to embed') }}
 {% endblock %}
 {% block content %}
-    {% include 'CmfcmfMediaModule::util.html.twig' %}
-    {% include 'CmfcmfMediaModule:Collection:treeSelect.html.twig' %}
+    {% include '@CmfcmfMediaModule/util.html.twig' %}
+    {% include '@CmfcmfMediaModule/Collection/treeSelect.html.twig' %}
 
     <button type="button" class="btn btn-primary" id="cmfcmfmedia-popup-choose-collections-embed-btn">
         <i class="fa fa-fw fa-check"></i> {{ __('Embed') }}

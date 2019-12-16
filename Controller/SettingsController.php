@@ -41,7 +41,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/requirements")
-     * @Template("CmfcmfMediaModule:Settings:requirements.html.twig")
+     * @Template("@CmfcmfMediaModule/Settings/requirements.html.twig")
      * @Theme("admin")
      */
     public function requirementsAction()
@@ -181,7 +181,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/general", options={"expose" = true})
-     * @Template("CmfcmfMediaModule:Settings:general.html.twig")
+     * @Template("@CmfcmfMediaModule/Settings/general.html.twig")
      * @Theme("admin")
      *
      * @param Request $request
@@ -210,7 +210,7 @@ class SettingsController extends AbstractController
 
     /**
      * @Route("/scribite", options={"expose" = true})
-     * @Template("CmfcmfMediaModule:Settings:scribite.html.twig")
+     * @Template("@CmfcmfMediaModule/Settings/scribite.html.twig")
      * @Theme("admin")
      *
      * @return array

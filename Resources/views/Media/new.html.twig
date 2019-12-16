@@ -1,7 +1,7 @@
 {% extends 'CmfcmfMediaModule::base.html.twig' %}
 {% block title __('Create new media') %}
 {% block content %}
-    {% include 'CmfcmfMediaModule::util.html.twig' %}
+    {% include '@CmfcmfMediaModule/util.html.twig' %}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/dropzone.js'), 98) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/New/paste.js'), 99) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/New/web.js'), 99) }}

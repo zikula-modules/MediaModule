@@ -25,7 +25,7 @@ class ImportController extends AbstractController
 {
     /**
      * @Route("/import")
-     * @Template("CmfcmfMediaModule:Import:select.html.twig")
+     * @Template("@CmfcmfMediaModule/Import/select.html.twig")
      * @Theme("admin")
      *
      * @return array
@@ -45,7 +45,7 @@ class ImportController extends AbstractController
 
     /**
      * @Route("/import/{importer}")
-     * @Template("CmfcmfMediaModule:Import:execute.html.twig")
+     * @Template("@CmfcmfMediaModule/Import/execute.html.twig")
      * @Theme("admin")
      *
      * @param Request $request

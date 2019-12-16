@@ -3,7 +3,7 @@
     {{ __('Create new or edit watermark') }}
 {% endblock %}
 {% block content %}
-    {% include 'CmfcmfMediaModule::util.html.twig' %}
+    {% include '@CmfcmfMediaModule/util.html.twig' %}
     {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
         <fieldset>

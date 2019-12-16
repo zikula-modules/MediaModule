@@ -47,7 +47,7 @@ class MediaController extends AbstractController
 {
     /**
      * @Route("/admin/media-list/{page}", methods={"GET"}, requirements={"page" = "\d+"})
-     * @Template("CmfcmfMediaModule:Media:adminlist.html.twig")
+     * @Template("@CmfcmfMediaModule/Media/adminlist.html.twig")
      * @Theme("admin")
      *
      * @param int $page
@@ -86,7 +86,7 @@ class MediaController extends AbstractController
     /**
      * @Route("/edit/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
-     * @Template("CmfcmfMediaModule:Media:edit.html.twig")
+     * @Template("@CmfcmfMediaModule/Media/edit.html.twig")
      *
      * @param Request             $request
      * @param AbstractMediaEntity $entity
@@ -192,7 +192,7 @@ class MediaController extends AbstractController
     /**
      * @Route("/delete/{collectionSlug}/f/{slug}", requirements={"collectionSlug" = ".+?"})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
-     * @Template("CmfcmfMediaModule:Media:delete.html.twig")
+     * @Template("@CmfcmfMediaModule/Media/delete.html.twig")
      *
      * @param Request             $request
      * @param AbstractMediaEntity $entity
@@ -244,7 +244,7 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/media/new", methods={"GET"})
-     * @Template("CmfcmfMediaModule:Media:new.html.twig")
+     * @Template("@CmfcmfMediaModule/Media/new.html.twig")
      *
      * @param Request $request
      *
@@ -277,7 +277,7 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/media/create/{type}/{mediaType}/{collection}", options={"expose"=true})
-     * @Template("CmfcmfMediaModule:Media:create.html.twig")
+     * @Template("@CmfcmfMediaModule/Media/create.html.twig")
      *
      * @param Request $request
      * @param $type
@@ -579,7 +579,7 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/media/popup-embed/{id}", methods={"GET"})
-     * @Template("CmfcmfMediaModule:Media:popupEmbed.html.twig")
+     * @Template("@CmfcmfMediaModule/Media/popupEmbed.html.twig")
      *
      * @param Request $request
      * @param AbstractMediaEntity $entity
@@ -690,7 +690,7 @@ class MediaController extends AbstractController
     /**
      * @Route("/{collectionSlug}/f/{slug}", methods={"GET"}, requirements={"collectionSlug" = ".+?"}, options={"expose" = true})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
-     * @Template("CmfcmfMediaModule:Media:display.html.twig")
+     * @Template("@CmfcmfMediaModule/Media/display.html.twig")
      *
      * @param AbstractMediaEntity $entity
      *
