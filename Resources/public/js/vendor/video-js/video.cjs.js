@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.7.3 <http://videojs.com/>
+ * Video.js 7.7.4 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -34,7 +34,7 @@ var CaptionParser = _interopDefault(require('mux.js/lib/mp4/caption-parser'));
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.7.3";
+var version = "7.7.4";
 
 /**
  * @file create-logger.js
@@ -5070,7 +5070,7 @@ var TOUCH_ENABLED = isReal() && ('ontouchstart' in window$1 || window$1.navigato
  * @type {Boolean}
  */
 
-var IS_IPAD = /iPad/i.test(USER_AGENT) || IS_SAFARI && TOUCH_ENABLED;
+var IS_IPAD = /iPad/i.test(USER_AGENT) || IS_SAFARI && TOUCH_ENABLED && !/iPhone/i.test(USER_AGENT);
 /**
  * Whether or not this device is an iPhone.
  *
@@ -12983,7 +12983,8 @@ function (_Slider) {
   var _proto = SeekBar.prototype;
 
   _proto.setEventHandlers_ = function setEventHandlers_() {
-    this.update = throttle(bind(this, this.update), UPDATE_REFRESH_INTERVAL$1);
+    this.update_ = bind(this, this.update);
+    this.update = throttle(this.update_, UPDATE_REFRESH_INTERVAL$1);
     this.on(this.player_, ['ended', 'durationchange', 'timeupdate'], this.update);
 
     if (this.player_.liveTracker) {
@@ -13265,6 +13266,10 @@ function (_Slider) {
 
     if (this.videoWasPlaying) {
       silencePromise(this.player_.play());
+    } else {
+      // We're done seeking and the time has changed.
+      // If the player is paused, make sure we display the correct time on the seek bar.
+      this.update_();
     }
   }
   /**
@@ -18822,10 +18827,6 @@ function (_Tech) {
 
     _this.proxyWebkitFullscreen_();
 
-    if (IS_IOS) {
-      _this.handleIOSHeadphonesDisconnection_();
-    }
-
     _this.triggerReady();
 
     return _this;
@@ -18924,51 +18925,6 @@ function (_Tech) {
     });
   }
   /**
-   * Handle IOS Headphone disconnection during playback
-   *
-   * @private
-  */
-  ;
-
-  _proto.handleIOSHeadphonesDisconnection_ = function handleIOSHeadphonesDisconnection_() {
-    var _this2 = this;
-
-    // Fudge factor to account for TimeRanges rounding
-    var TIME_FUDGE_FACTOR = 1 / 30; // Comparisons between time values such as current time and the end of the buffered range
-    // can be misleading because of precision differences or when the current media has poorly
-    // aligned audio and video, which can cause values to be slightly off from what you would
-    // expect. This value is what we consider to be safe to use in such comparisons to account
-    // for these scenarios.
-
-    var SAFE_TIME_DELTA = TIME_FUDGE_FACTOR * 3; // If iOS check if we have a real stalled or supend event or
-    // we got stalled/suspend due headphones where disconnected during playback
-
-    this.on(['stalled', 'suspend'], function (e) {
-      var buffered = _this2.buffered();
-
-      if (!buffered.length) {
-        return;
-      }
-
-      var extraBuffer = false;
-
-      var currentTime = _this2.currentTime(); // Establish if we have an extra buffer in the current time range playing.
-
-
-      for (var i = 0; i < buffered.length; i++) {
-        if (buffered.start(i) <= currentTime && currentTime < buffered.end(i) + SAFE_TIME_DELTA) {
-          extraBuffer = true;
-          break;
-        }
-      } // if tech is not paused, browser has internet connection & player has extraBuffer inside the timeRange
-
-
-      if (extraBuffer && !_this2.paused() && window$1.navigator.onLine) {
-        _this2.pause();
-      }
-    });
-  }
-  /**
    * Attempt to force override of tracks for the given type
    *
    * @param {string} type - Track type to override, possible values include 'Audio',
@@ -18980,7 +18936,7 @@ function (_Tech) {
   ;
 
   _proto.overrideNative_ = function overrideNative_(type, override) {
-    var _this3 = this;
+    var _this2 = this;
 
     // If there is no behavioral change don't add/remove listeners
     if (override !== this["featuresNative" + type + "Tracks"]) {
@@ -18991,9 +18947,9 @@ function (_Tech) {
 
     if (this[lowerCaseType + "TracksListeners_"]) {
       Object.keys(this[lowerCaseType + "TracksListeners_"]).forEach(function (eventName) {
-        var elTracks = _this3.el()[lowerCaseType + "Tracks"];
+        var elTracks = _this2.el()[lowerCaseType + "Tracks"];
 
-        elTracks.removeEventListener(eventName, _this3[lowerCaseType + "TracksListeners_"][eventName]);
+        elTracks.removeEventListener(eventName, _this2[lowerCaseType + "TracksListeners_"][eventName]);
       });
     }
 
@@ -19033,7 +18989,7 @@ function (_Tech) {
   ;
 
   _proto.proxyNativeTracksForType_ = function proxyNativeTracksForType_(name) {
-    var _this4 = this;
+    var _this3 = this;
 
     var props = NORMAL[name];
     var elTracks = this.el()[props.getterName];
@@ -19088,14 +19044,14 @@ function (_Tech) {
       var listener = listeners[eventName];
       elTracks.addEventListener(eventName, listener);
 
-      _this4.on('dispose', function (e) {
+      _this3.on('dispose', function (e) {
         return elTracks.removeEventListener(eventName, listener);
       });
     }); // Remove (native) tracks that are not used anymore
 
     this.on('loadstart', removeOldTracks);
     this.on('dispose', function (e) {
-      return _this4.off('loadstart', removeOldTracks);
+      return _this3.off('loadstart', removeOldTracks);
     });
   }
   /**
@@ -19107,10 +19063,10 @@ function (_Tech) {
   ;
 
   _proto.proxyNativeTracks_ = function proxyNativeTracks_() {
-    var _this5 = this;
+    var _this4 = this;
 
     NORMAL.names.forEach(function (name) {
-      _this5.proxyNativeTracksForType_(name);
+      _this4.proxyNativeTracksForType_(name);
     });
   }
   /**
@@ -19298,7 +19254,7 @@ function (_Tech) {
   ;
 
   _proto.duration = function duration() {
-    var _this6 = this;
+    var _this5 = this;
 
     // Android Chrome will report duration as Infinity for VOD HLS until after
     // playback has started, which triggers the live display erroneously.
@@ -19308,13 +19264,13 @@ function (_Tech) {
       // Wait for the first `timeupdate` with currentTime > 0 - there may be
       // several with 0
       var checkProgress = function checkProgress() {
-        if (_this6.el_.currentTime > 0) {
+        if (_this5.el_.currentTime > 0) {
           // Trigger durationchange for genuinely live video
-          if (_this6.el_.duration === Infinity) {
-            _this6.trigger('durationchange');
+          if (_this5.el_.duration === Infinity) {
+            _this5.trigger('durationchange');
           }
 
-          _this6.off('timeupdate', checkProgress);
+          _this5.off('timeupdate', checkProgress);
         }
       };
 
@@ -19359,7 +19315,7 @@ function (_Tech) {
   ;
 
   _proto.proxyWebkitFullscreen_ = function proxyWebkitFullscreen_() {
-    var _this7 = this;
+    var _this6 = this;
 
     if (!('webkitDisplayingFullscreen' in this.el_)) {
       return;
@@ -19382,9 +19338,9 @@ function (_Tech) {
 
     this.on('webkitbeginfullscreen', beginFn);
     this.on('dispose', function () {
-      _this7.off('webkitbeginfullscreen', beginFn);
+      _this6.off('webkitbeginfullscreen', beginFn);
 
-      _this7.off('webkitendfullscreen', endFn);
+      _this6.off('webkitendfullscreen', endFn);
     });
   }
   /**
