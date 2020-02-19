@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.7.4 <http://videojs.com/>
+ * Video.js 7.7.5 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -34,7 +34,7 @@ var CaptionParser = _interopDefault(require('mux.js/lib/mp4/caption-parser'));
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.7.4";
+var version = "7.7.5";
 
 /**
  * @file create-logger.js
@@ -12342,7 +12342,7 @@ function (_Component) {
     var progress = this.getProgress();
 
     if (progress === this.progress_) {
-      return;
+      return progress;
     }
 
     this.progress_ = progress;
@@ -12364,7 +12364,7 @@ function (_Component) {
   ;
 
   _proto.getProgress = function getProgress() {
-    return clamp(this.getPercent(), 0, 1).toFixed(4);
+    return Number(clamp(this.getPercent(), 0, 1).toFixed(4));
   }
   /**
    * Calculate distance for slider
@@ -12940,9 +12940,7 @@ Component.registerComponent('MouseTimeDisplay', MouseTimeDisplay);
 
 var STEP_SECONDS = 5; // The multiplier of STEP_SECONDS that PgUp/PgDown move the timeline.
 
-var PAGE_KEY_MULTIPLIER = 12; // The interval at which the bar should update as it progresses.
-
-var UPDATE_REFRESH_INTERVAL$1 = 30;
+var PAGE_KEY_MULTIPLIER = 12;
 /**
  * Seek bar and container for the progress bars. Uses {@link PlayProgressBar}
  * as its `bar`.
@@ -12984,7 +12982,7 @@ function (_Slider) {
 
   _proto.setEventHandlers_ = function setEventHandlers_() {
     this.update_ = bind(this, this.update);
-    this.update = throttle(this.update_, UPDATE_REFRESH_INTERVAL$1);
+    this.update = throttle(this.update_, UPDATE_REFRESH_INTERVAL);
     this.on(this.player_, ['ended', 'durationchange', 'timeupdate'], this.update);
 
     if (this.player_.liveTracker) {
@@ -13018,7 +13016,7 @@ function (_Slider) {
       return;
     }
 
-    this.updateInterval = this.setInterval(this.update, UPDATE_REFRESH_INTERVAL$1);
+    this.updateInterval = this.setInterval(this.update, UPDATE_REFRESH_INTERVAL);
   };
 
   _proto.disableInterval_ = function disableInterval_(e) {
@@ -13090,6 +13088,11 @@ function (_Slider) {
 
         _this2.currentTime_ = currentTime;
         _this2.duration_ = duration;
+      } // update the progress bar time tooltip with the current time
+
+
+      if (_this2.bar) {
+        _this2.bar.update(getBoundingClientRect(_this2.el()), _this2.getProgress());
       }
     });
     return percent;
@@ -18209,7 +18212,7 @@ function (_Component) {
       this.timeupdateSeen_ = this.player_.hasStarted();
     }
 
-    this.trackingInterval_ = this.setInterval(this.trackLive_, 30);
+    this.trackingInterval_ = this.setInterval(this.trackLive_, UPDATE_REFRESH_INTERVAL);
     this.trackLive_();
     this.on(this.player_, 'play', this.trackLive_);
     this.on(this.player_, 'pause', this.trackLive_); // this is to prevent showing that we are not live
@@ -20952,7 +20955,9 @@ function (_Component) {
     _this = _Component.call(this, null, options, ready) || this; // Create bound methods for document listeners.
 
     _this.boundDocumentFullscreenChange_ = bind(_assertThisInitialized(_this), _this.documentFullscreenChange_);
-    _this.boundFullWindowOnEscKey_ = bind(_assertThisInitialized(_this), _this.fullWindowOnEscKey); // create logger
+    _this.boundFullWindowOnEscKey_ = bind(_assertThisInitialized(_this), _this.fullWindowOnEscKey); // default isFullscreen_ to false
+
+    _this.isFullscreen_ = false; // create logger
 
     _this.log = createLogger$1(_this.id_); // Hold our own reference to fullscreen api so it can be mocked in tests
 
@@ -21037,7 +21042,16 @@ function (_Component) {
 
     evented(_assertThisInitialized(_this), {
       eventBusKey: 'el_'
-    });
+    }); // listen to document and player fullscreenchange handlers so we receive those events
+    // before a user can receive them so we can update isFullscreen appropriately.
+    // make sure that we listen to fullscreenchange events before everything else to make sure that
+    // our isFullscreen method is updated properly for internal components as well as external.
+
+    if (_this.fsApi_.requestFullscreen) {
+      on(document, _this.fsApi_.fullscreenchange, _this.boundDocumentFullscreenChange_);
+
+      _this.on(_this.fsApi_.fullscreenchange, _this.boundDocumentFullscreenChange_);
+    }
 
     if (_this.fluid_) {
       _this.on('playerreset', _this.updateStyleEl_);
@@ -22606,6 +22620,13 @@ function (_Component) {
   ;
 
   _proto.documentFullscreenChange_ = function documentFullscreenChange_(e) {
+    var targetPlayer = e.target.player; // if another player was fullscreen
+    // do a null check for targetPlayer because older firefox's would put document as e.target
+
+    if (targetPlayer && targetPlayer !== this) {
+      return;
+    }
+
     var el = this.el();
     var isFs = document[this.fsApi_.fullscreenElement] === el;
 
@@ -22615,19 +22636,7 @@ function (_Component) {
       isFs = el.msMatchesSelector(':' + this.fsApi_.fullscreen);
     }
 
-    this.isFullscreen(isFs); // If cancelling fullscreen, remove event listener.
-
-    if (this.isFullscreen() === false) {
-      off(document, this.fsApi_.fullscreenchange, this.boundDocumentFullscreenChange_);
-    }
-
-    if (this.fsApi_.prefixed) {
-      /**
-       * @event Player#fullscreenchange
-       * @type {EventTarget~Event}
-       */
-      this.trigger('fullscreenchange');
-    }
+    this.isFullscreen(isFs);
   }
   /**
    * Handle Tech Fullscreen Change
@@ -22648,15 +22657,6 @@ function (_Component) {
     if (data) {
       this.isFullscreen(data.isFullscreen);
     }
-    /**
-     * Fired when going in and out of fullscreen.
-     *
-     * @event Player#fullscreenchange
-     * @type {EventTarget~Event}
-     */
-
-
-    this.trigger('fullscreenchange');
   }
   /**
    * @private
@@ -23340,12 +23340,24 @@ function (_Component) {
 
   _proto.isFullscreen = function isFullscreen(isFS) {
     if (isFS !== undefined) {
-      this.isFullscreen_ = !!isFS;
+      var oldValue = this.isFullscreen_;
+      this.isFullscreen_ = Boolean(isFS); // if we changed fullscreen state and we're in prefixed mode, trigger fullscreenchange
+      // this is the only place where we trigger fullscreenchange events for older browsers
+      // fullWindow mode is treated as a prefixed event and will get a fullscreenchange event as well
+
+      if (this.isFullscreen_ !== oldValue && this.fsApi_.prefixed) {
+        /**
+           * @event Player#fullscreenchange
+           * @type {EventTarget~Event}
+           */
+        this.trigger('fullscreenchange');
+      }
+
       this.toggleFullscreenClass_();
       return;
     }
 
-    return !!this.isFullscreen_;
+    return this.isFullscreen_;
   }
   /**
    * Increase the size of the video to full screen
@@ -23364,28 +23376,38 @@ function (_Component) {
   ;
 
   _proto.requestFullscreen = function requestFullscreen(fullscreenOptions) {
-    var fsOptions;
-    this.isFullscreen(true);
+    var _this10 = this;
+
+    var fsOptions; // Only pass fullscreen options to requestFullscreen in spec-compliant browsers.
+    // Use defaults or player configured option unless passed directly to this method.
+
+    if (!this.fsApi_.prefixed) {
+      fsOptions = this.options_.fullscreen && this.options_.fullscreen.options || {};
+
+      if (fullscreenOptions !== undefined) {
+        fsOptions = fullscreenOptions;
+      }
+    } // This method works as follows:
+    // 1. if a fullscreen api is available, use it
+    //   1. call requestFullscreen with potential options
+    //   2. if we got a promise from above, use it to update isFullscreen()
+    // 2. otherwise, if the tech supports fullscreen, call `enterFullScreen` on it.
+    //   This is particularly used for iPhone, older iPads, and non-safari browser on iOS.
+    // 3. otherwise, use "fullWindow" mode
+
 
     if (this.fsApi_.requestFullscreen) {
-      // the browser supports going fullscreen at the element level so we can
-      // take the controls fullscreen as well as the video
-      // Trigger fullscreenchange event after change
-      // We have to specifically add this each time, and remove
-      // when canceling fullscreen. Otherwise if there's multiple
-      // players on a page, they would all be reacting to the same fullscreen
-      // events
-      on(document, this.fsApi_.fullscreenchange, this.boundDocumentFullscreenChange_); // only pass FullscreenOptions to requestFullscreen if it isn't prefixed
+      var promise = this.el_[this.fsApi_.requestFullscreen](fsOptions);
 
-      if (!this.fsApi_.prefixed) {
-        fsOptions = this.options_.fullscreen && this.options_.fullscreen.options || {};
-
-        if (fullscreenOptions !== undefined) {
-          fsOptions = fullscreenOptions;
-        }
+      if (promise) {
+        promise.then(function () {
+          return _this10.isFullscreen(true);
+        }, function () {
+          return _this10.isFullscreen(false);
+        });
       }
 
-      silencePromise(this.el_[this.fsApi_.requestFullscreen](fsOptions));
+      return promise;
     } else if (this.tech_.supportsFullScreen()) {
       // we can't take the video.js controls fullscreen but we can go fullscreen
       // with native controls
@@ -23394,12 +23416,6 @@ function (_Component) {
       // fullscreen isn't supported so we'll just stretch the video element to
       // fill the viewport
       this.enterFullWindow();
-      /**
-       * @event Player#fullscreenchange
-       * @type {EventTarget~Event}
-       */
-
-      this.trigger('fullscreenchange');
     }
   }
   /**
@@ -23410,20 +23426,22 @@ function (_Component) {
   ;
 
   _proto.exitFullscreen = function exitFullscreen() {
-    this.isFullscreen(false); // Check for browser element fullscreen support
+    var _this11 = this;
 
     if (this.fsApi_.requestFullscreen) {
-      silencePromise(document[this.fsApi_.exitFullscreen]());
+      var promise = document[this.fsApi_.exitFullscreen]();
+
+      if (promise) {
+        promise.then(function () {
+          return _this11.isFullscreen(false);
+        });
+      }
+
+      return promise;
     } else if (this.tech_.supportsFullScreen()) {
       this.techCall_('exitFullScreen');
     } else {
       this.exitFullWindow();
-      /**
-       * @event Player#fullscreenchange
-       * @type {EventTarget~Event}
-       */
-
-      this.trigger('fullscreenchange');
     }
   }
   /**
@@ -23435,6 +23453,7 @@ function (_Component) {
   ;
 
   _proto.enterFullWindow = function enterFullWindow() {
+    this.isFullscreen(true);
     this.isFullWindow = true; // Storing original doc overflow value to return to when fullscreen is off
 
     this.docOrigOverflow = document.documentElement.style.overflow; // Add listener for esc key to exit fullscreen
@@ -23477,6 +23496,7 @@ function (_Component) {
   ;
 
   _proto.exitFullWindow = function exitFullWindow() {
+    this.isFullscreen(false);
     this.isFullWindow = false;
     off(document, 'keydown', this.boundFullWindowOnEscKey_); // Unhide scroll bars.
 
@@ -23721,7 +23741,7 @@ function (_Component) {
   ;
 
   _proto.selectSource = function selectSource(sources) {
-    var _this10 = this;
+    var _this12 = this;
 
     // Get only the techs specified in `techOrder` that exist and are supported by the
     // current platform
@@ -23769,7 +23789,7 @@ function (_Component) {
       var techName = _ref2[0],
           tech = _ref2[1];
 
-      if (tech.canPlaySource(source, _this10.options_[techName.toLowerCase()])) {
+      if (tech.canPlaySource(source, _this12.options_[techName.toLowerCase()])) {
         return {
           source: source,
           tech: techName
@@ -23807,7 +23827,7 @@ function (_Component) {
   ;
 
   _proto.src = function src(source) {
-    var _this11 = this;
+    var _this13 = this;
 
     // getter usage
     if (typeof source === 'undefined') {
@@ -23836,23 +23856,23 @@ function (_Component) {
     this.updateSourceCaches_(sources[0]); // middlewareSource is the source after it has been changed by middleware
 
     setSource(this, sources[0], function (middlewareSource, mws) {
-      _this11.middleware_ = mws; // since sourceSet is async we have to update the cache again after we select a source since
+      _this13.middleware_ = mws; // since sourceSet is async we have to update the cache again after we select a source since
       // the source that is selected could be out of order from the cache update above this callback.
 
-      _this11.cache_.sources = sources;
+      _this13.cache_.sources = sources;
 
-      _this11.updateSourceCaches_(middlewareSource);
+      _this13.updateSourceCaches_(middlewareSource);
 
-      var err = _this11.src_(middlewareSource);
+      var err = _this13.src_(middlewareSource);
 
       if (err) {
         if (sources.length > 1) {
-          return _this11.src(sources.slice(1));
+          return _this13.src(sources.slice(1));
         }
 
-        _this11.changingSrc_ = false; // We need to wrap this in a timeout to give folks a chance to add error event handlers
+        _this13.changingSrc_ = false; // We need to wrap this in a timeout to give folks a chance to add error event handlers
 
-        _this11.setTimeout(function () {
+        _this13.setTimeout(function () {
           this.error({
             code: 4,
             message: this.localize(this.options_.notSupportedMessage)
@@ -23861,12 +23881,12 @@ function (_Component) {
         // this needs a better comment about why this is needed
 
 
-        _this11.triggerReady();
+        _this13.triggerReady();
 
         return;
       }
 
-      setTech(mws, _this11.tech_);
+      setTech(mws, _this13.tech_);
     });
   }
   /**
@@ -23885,7 +23905,7 @@ function (_Component) {
   ;
 
   _proto.src_ = function src_(source) {
-    var _this12 = this;
+    var _this14 = this;
 
     var sourceTech = this.selectSource([source]);
 
@@ -23898,7 +23918,7 @@ function (_Component) {
 
       this.loadTech_(sourceTech.tech, sourceTech.source);
       this.tech_.ready(function () {
-        _this12.changingSrc_ = false;
+        _this14.changingSrc_ = false;
       });
       return false;
     } // wait until the tech is ready to set the source
@@ -23936,7 +23956,7 @@ function (_Component) {
   ;
 
   _proto.reset = function reset() {
-    var _this13 = this;
+    var _this15 = this;
 
     var PromiseClass = this.options_.Promise || window$1.Promise;
 
@@ -23945,7 +23965,7 @@ function (_Component) {
     } else {
       var playPromise = this.play();
       silencePromise(playPromise.then(function () {
-        return _this13.doReset_();
+        return _this15.doReset_();
       }));
     }
   };
@@ -24536,7 +24556,7 @@ function (_Component) {
       mouseInProgress = this.setInterval(handleActivity, 250);
     };
 
-    var handleMouseUp = function handleMouseUp(event) {
+    var handleMouseUpAndMouseLeave = function handleMouseUpAndMouseLeave(event) {
       handleActivity(); // Stop the interval that maintains activity if the mouse/touch is down
 
       this.clearInterval(mouseInProgress);
@@ -24545,7 +24565,8 @@ function (_Component) {
 
     this.on('mousedown', handleMouseDown);
     this.on('mousemove', handleMouseMove);
-    this.on('mouseup', handleMouseUp);
+    this.on('mouseup', handleMouseUpAndMouseLeave);
+    this.on('mouseleave', handleMouseUpAndMouseLeave);
     var controlBar = this.getChild('controlBar'); // Fixes bug on Android & iOS where when tapping progressBar (when control bar is displayed)
     // controlBar would no longer be hidden by default timeout.
 
@@ -24874,14 +24895,14 @@ function (_Component) {
   ;
 
   _proto.createModal = function createModal(content, options) {
-    var _this14 = this;
+    var _this16 = this;
 
     options = options || {};
     options.content = content || '';
     var modal = new ModalDialog(this, options);
     this.addChild(modal);
     modal.on('dispose', function () {
-      _this14.removeChild(modal);
+      _this16.removeChild(modal);
     });
     modal.open();
     return modal;
@@ -25112,7 +25133,7 @@ function (_Component) {
   ;
 
   _proto.loadMedia = function loadMedia(media, ready) {
-    var _this15 = this;
+    var _this17 = this;
 
     if (!media || typeof media !== 'object') {
       return;
@@ -25144,7 +25165,7 @@ function (_Component) {
 
     if (Array.isArray(textTracks)) {
       textTracks.forEach(function (tt) {
-        return _this15.addRemoteTextTrack(tt, false);
+        return _this17.addRemoteTextTrack(tt, false);
       });
     }
 
