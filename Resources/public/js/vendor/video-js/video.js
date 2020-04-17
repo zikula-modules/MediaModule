@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.8.0 <http://videojs.com/>
+ * Video.js 7.8.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -19,7 +19,7 @@
   window$3 = window$3 && Object.prototype.hasOwnProperty.call(window$3, 'default') ? window$3['default'] : window$3;
   document = document && Object.prototype.hasOwnProperty.call(document, 'default') ? document['default'] : document;
 
-  var version = "7.8.0";
+  var version = "7.8.1";
 
   /**
    * @file create-logger.js
@@ -15416,7 +15416,7 @@
     };
 
     _proto.disableInterval_ = function disableInterval_(e) {
-      if (this.player_.liveTracker && this.player_.liveTracker.isLive() && e.type !== 'ended') {
+      if (this.player_.liveTracker && this.player_.liveTracker.isLive() && e && e.type !== 'ended') {
         return;
       }
 
@@ -15757,6 +15757,25 @@
         // Pass keydown handling up for unsupported keys
         _Slider.prototype.handleKeyDown.call(this, event);
       }
+    };
+
+    _proto.dispose = function dispose() {
+      this.disableInterval_();
+      this.off(this.player_, ['ended', 'durationchange', 'timeupdate'], this.update);
+
+      if (this.player_.liveTracker) {
+        this.on(this.player_.liveTracker, 'liveedgechange', this.update);
+      }
+
+      this.off(this.player_, ['playing'], this.enableInterval_);
+      this.off(this.player_, ['ended', 'pause', 'waiting'], this.disableInterval_); // we don't need to update the play progress if the document is hidden,
+      // also, this causes the CPU to spike and eventually crash the page on IE11.
+
+      if ('hidden' in document && 'visibilityState' in document) {
+        this.off(document, 'visibilitychange', this.toggleVisibility_);
+      }
+
+      _Slider.prototype.dispose.call(this);
     };
 
     return SeekBar;
