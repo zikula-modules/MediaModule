@@ -1,18 +1,23 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+        bind:
+            $projectDir: '%kernel.project_dir%'
+
+    Cmfcmf\Module\MediaModule\:
+        resource: '../../*'
+        exclude: '../../{bootstrap.php,Tests,vendor}'
+
     cmfcmf_media_module.media_type.abstract_media:
         abstract: true
-        arguments:
-            - '@templating'
-            - '@translator'
-            - '@zikula_extensions_module.api.variable'
-            - '@request_stack'
-            - '%datadir%'
 
     cmfcmf_media_module.media_type.abstract_file:
         parent: cmfcmf_media_module.media_type.abstract_media
         abstract: true
         calls:
-            - [injectThings, ['@service_container', '@file_locator', '%kernel.root_dir%']]
+            - [injectThings, ['@file_locator', '@liip_imagine.cache.manager', '%kernel.project_dir%']]
 
     cmfcmf_media_module.media_type.url:
         class: Cmfcmf\Module\MediaModule\MediaType\Url
@@ -73,7 +78,7 @@ services:
         class: Cmfcmf\Module\MediaModule\MediaType\Markdown
         parent: cmfcmf_media_module.media_type.abstract_file
         calls:
-            - [setMarkdownParser, ['@zikula_core.common.markdown_extra_parser']]
+            - [setMarkdownParser, ['@Michelf\MarkdownExtra']]
         tags: ['cmfcmf_media_module.media_type']
 
     cmfcmf_media_module.media_type.archive:

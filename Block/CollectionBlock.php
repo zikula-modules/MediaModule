@@ -49,11 +49,6 @@ class CollectionBlock extends AbstractBlockHandler
     private $securityManager;
 
     /**
-     * @var Environment
-     */
-    private $twig;
-
-    /**
      * @var SelectedTemplateFactory
      */
     private $selectedTemplateFactory;

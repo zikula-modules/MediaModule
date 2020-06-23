@@ -1,4 +1,13 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Cmfcmf\Module\MediaModule\:
+        resource: '../../*'
+        exclude: '../../{bootstrap.php,Tests,vendor}'
+
     # Content types
     Cmfcmf\Module\MediaModule\ContentType\CollectionType:
         parent: zikula.content_type.base
@@ -12,8 +21,7 @@ services:
     Cmfcmf\Module\MediaModule\ContentType\Form\Type\CollectionType:
         parent: zikula.content_type.form.base
         arguments:
-            - '@cmfcmf_media_module.security_manager'
-            - '@doctrine.orm.entity_manager'
+            $securityManager: '@cmfcmf_media_module.security_manager'
         tags: ['form.type']
     Cmfcmf\Module\MediaModule\ContentType\MediaType:
         parent: zikula.content_type.base
@@ -22,11 +30,10 @@ services:
             - [setEntityManager, ['@doctrine.orm.entity_manager']]
             - [setSecurityManager, ['@cmfcmf_media_module.security_manager']]
             - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
-            - [setEnableMediaViewCounter, ["@=service('zikula_extensions_module.api.variable').get('CmfcmfMediaModule', 'enableMediaViewCounter', false)"]]
+            - [setEnableMediaViewCounter, ['@Zikula\ExtensionsModule\Api\VariableApi']]
         tags: ['zikula.content_type']
     Cmfcmf\Module\MediaModule\ContentType\Form\Type\MediaType:
         parent: zikula.content_type.form.base
         arguments:
-            - '@cmfcmf_media_module.security_manager'
-            - '@doctrine.orm.entity_manager'
+            $securityManager: '@cmfcmf_media_module.security_manager'
         tags: ['form.type']

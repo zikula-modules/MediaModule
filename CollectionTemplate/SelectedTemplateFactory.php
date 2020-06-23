@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
+
 class SelectedTemplateFactory
 {
     /**
@@ -25,16 +27,12 @@ class SelectedTemplateFactory
      */
     private $defaultTemplate;
 
-    /**
-     * @param TemplateCollection $templateCollection
-     * @param string             $defaultTemplate
-     */
     public function __construct(
         TemplateCollection $templateCollection,
-        $defaultTemplate
+        VariableApiInterface $variableApi
     ) {
         $this->templateCollection = $templateCollection;
-        $this->defaultTemplate = $defaultTemplate;
+        $this->defaultTemplate = $variableApi->get('CmfcmfMediaModule', 'defaultCollectionTemplate');
     }
 
     public function fromDB($jsonOrString)

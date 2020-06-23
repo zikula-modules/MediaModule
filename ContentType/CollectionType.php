@@ -21,8 +21,8 @@ use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermission
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Zikula\Common\Content\AbstractContentType;
-use Zikula\Common\Content\ContentTypeInterface;
+use Zikula\ExtensionsModule\ModuleInterface\Content\ContentTypeInterface;
+use Zikula\ExtensionsModule\ModuleInterface\Content\AbstractContentType;
 
 /**
  * Collection content type.
@@ -52,7 +52,7 @@ class CollectionType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getCategory()
+    public function getCategory(): string
     {
         return ContentTypeInterface::CATEGORY_BASIC;
     }
@@ -60,7 +60,7 @@ class CollectionType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getIcon()
+    public function getIcon() :string
     {
         return 'folder-o';
     }
@@ -68,23 +68,23 @@ class CollectionType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getTitle()
+    public function getTitle() :string
     {
-        return $this->translator->__('Media collection', 'cmfcmfmediamodule');
+        return $this->translator->trans('Media collection', 'cmfcmfmediamodule');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->translator->__('Display a media collection.', 'cmfcmfmediamodule');
+        return $this->translator->trans('Display a media collection.', 'cmfcmfmediamodule');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDefaultData()
+    public function getDefaultData(): array
     {
         return [
             'id' => null,
@@ -95,7 +95,7 @@ class CollectionType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function displayView()
+    public function displayView(): string
     {
         $this->customInit();
 
@@ -140,10 +140,10 @@ class CollectionType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function displayEditing()
+    public function displayEditing(): string
     {
         if (null === $this->data['id'] || empty($this->data['id'])) {
-            return $this->translator->__('No collection selected.', 'cmfcmfmediamodule');
+            return $this->translator->trans('No collection selected.', 'cmfcmfmediamodule');
         }
 
         return parent::displayEditing();
@@ -152,7 +152,7 @@ class CollectionType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getEditFormClass()
+    public function getEditFormClass(): string
     {
         $this->customInit();
 

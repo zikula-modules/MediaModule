@@ -15,8 +15,8 @@ namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
-use Symfony\Component\Templating\EngineInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 /**
  * Provides convenience methods for all collections templates.
@@ -24,22 +24,18 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 abstract class AbstractTemplate implements TemplateInterface
 {
     /**
-     * @var EngineInterface
+     * @var Environment
      */
-    protected $renderEngine;
+    protected $twig;
 
     /**
      * @var TranslatorInterface
      */
     protected $translator;
 
-    /**
-     * @param EngineInterface     $renderEngine
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(EngineInterface $renderEngine, TranslatorInterface $translator)
+    public function __construct(Environment $twig, TranslatorInterface $translator)
     {
-        $this->renderEngine = $renderEngine;
+        $this->twig = $twig;
         $this->translator = $translator;
     }
 
@@ -71,7 +67,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     protected function getTemplate()
     {
-        return "CmfcmfMediaModule:CollectionTemplate:" . lcfirst($this->getType()) . ".html.twig";
+        return "@CmfcmfMediaModule/CollectionTemplate/" . lcfirst($this->getType()) . ".html.twig";
     }
 
     /**
@@ -79,7 +75,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     public function render(CollectionEntity $collectionEntity, MediaTypeCollection $mediaTypeCollection, $showChildCollections, array $options)
     {
-        return $this->renderEngine->render($this->getTemplate(), [
+        return $this->twig->render($this->getTemplate(), [
             'collection' => $collectionEntity,
             'mediaTypeCollection' => $mediaTypeCollection,
             'showChildCollections' => $showChildCollections,

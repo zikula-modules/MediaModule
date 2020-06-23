@@ -1,17 +1,21 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Cmfcmf\Module\MediaModule\:
+        resource: '../../*'
+        exclude: '../../{bootstrap.php,Tests,vendor}'
+
     cmfcmf_media_module.importer_collection:
         class: Cmfcmf\Module\MediaModule\Importer\ImporterCollection
 
     cmfcmf_media_module.importer.abstract_service:
+        class: Cmfcmf\Module\MediaModule\Importer\AbstractImporter
         abstract: true
         arguments:
-            - '@translator'
-            - '@filesystem'
-            - '@form.factory'
-            - '@cmfcmf_media_module.media_type_collection'
-            - '@doctrine.orm.entity_manager'
-            - '@request_stack'
-            - '%datadir%'
+            $mediaTypeCollection: '@cmfcmf_media_module.media_type_collection'
 
     cmfcmf_media_module.importer.server_directory:
         parent: cmfcmf_media_module.importer.abstract_service

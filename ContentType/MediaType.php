@@ -19,8 +19,9 @@ use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Zikula\Common\Content\AbstractContentType;
-use Zikula\Common\Content\ContentTypeInterface;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
+use Zikula\ExtensionsModule\ModuleInterface\Content\AbstractContentType;
+use Zikula\ExtensionsModule\ModuleInterface\Content\ContentTypeInterface;
 
 /**
  * Media content type.
@@ -50,7 +51,7 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getCategory()
+    public function getCategory(): string
     {
         return ContentTypeInterface::CATEGORY_BASIC;
     }
@@ -58,7 +59,7 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         return 'picture-o';
     }
@@ -66,23 +67,23 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->translator->__('Media detail', 'cmfcmfmediamodule');
+        return $this->translator->trans('Media detail', 'cmfcmfmediamodule');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDescription()
+    public function getDescription(): string
     {
-        return $this->translator->__('Display a single medium.', 'cmfcmfmediamodule');
+        return $this->translator->trans('Display a single medium.', 'cmfcmfmediamodule');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getDefaultData()
+    public function getDefaultData(): array
     {
         return [
             'id' => null
@@ -92,7 +93,7 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getTranslatableDataFields()
+    public function getTranslatableDataFields(): array
     {
         return ['id'];
     }
@@ -100,7 +101,7 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function displayView()
+    public function displayView(): string
     {
         $this->customInit();
 
@@ -126,10 +127,10 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function displayEditing()
+    public function displayEditing(): string
     {
         if (null === $this->data['id'] || empty($this->data['id'])) {
-            return $this->translator->__('No medium selected.', 'cmfcmfmediamodule');
+            return $this->translator->trans('No medium selected.', 'cmfcmfmediamodule');
         }
 
         return parent::displayEditing();
@@ -138,7 +139,7 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getEditFormClass()
+    public function getEditFormClass(): string
     {
         $this->customInit();
 
@@ -169,12 +170,9 @@ class MediaType extends AbstractContentType
         $this->mediaTypeCollection = $mediaTypeCollection;
     }
 
-    /**
-     * @param boolean $enableMediaViewCounter
-     */
-    public function setEnableMediaViewCounter($enableMediaViewCounter)
+    public function setEnableMediaViewCounter(VariableApiInterface $variableApi)
     {
-        $this->enableMediaViewCounter = $enableMediaViewCounter;
+        $this->enableMediaViewCounter = $variableApi->get('CmfcmfMediaModule', 'enableMediaViewCounter', false);
     }
 
     private function customInit()
@@ -188,7 +186,7 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getAssets($context)
+    public function getAssets($context): array
     {
         $assets = parent::getAssets($context);
         if (in_array($context, [ContentTypeInterface::CONTEXT_EDIT, ContentTypeInterface::CONTEXT_TRANSLATION])) {
@@ -201,7 +199,7 @@ class MediaType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getJsEntrypoint($context)
+    public function getJsEntrypoint($context): ?string
     {
         if (ContentTypeInterface::CONTEXT_EDIT === $context) {
             return 'contentInitMediaEdit';

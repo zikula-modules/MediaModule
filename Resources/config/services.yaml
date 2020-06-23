@@ -69,11 +69,11 @@ services:
         tags: ['kernel.event_subscriber']
 
     # Link container
-    cmfcmf_media_module.container.links:
-        class: Cmfcmf\Module\MediaModule\Container\LinkContainer
-        arguments:
-            $securityManager: '@cmfcmf_media_module.security_manager'
-        tags: ['zikula.link_container']
+#    cmfcmf_media_module.container.links:
+#        class: Cmfcmf\Module\MediaModule\Container\LinkContainer
+#        arguments:
+#            $securityManager: '@cmfcmf_media_module.security_manager'
+#        tags: ['zikula.link_container']
 
 
     # Collection of media types
@@ -89,20 +89,18 @@ services:
 
 
     # Selected collection template factory
-    cmfcmf_media_module.collection_template.selected_factory:
-        class: Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory
+    Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory:
         arguments:
             $templateCollection: '@cmfcmf_media_module.collection_template_collection'
-            $defaultTemplate: "@=service('zikula_extensions_module.api.variable').get('CmfcmfMediaModule', 'defaultCollectionTemplate')"
+
+    cmfcmf_media_module.collection_template.selected_factory: '@Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory'
+
 
     # Twig extension
-    cmfcmf_media_module.twig_extension:
-        class: Cmfcmf\Module\MediaModule\Twig\TwigExtension
+    Cmfcmf\Module\MediaModule\Twig\TwigExtension:
         arguments:
             $securityManager: '@cmfcmf_media_module.security_manager'
             $versionChecker: '@cmfcmf_media_module.upgrade.version_checker'
-        public: false
-        tags: ['twig.extension']
 
     # Fonts
     cmfcmf_media_module.font.font_loader:

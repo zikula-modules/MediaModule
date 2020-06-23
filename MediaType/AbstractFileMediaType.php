@@ -22,11 +22,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class AbstractFileMediaType extends AbstractMediaType
 {
     /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
      * @var FileLocatorInterface
      */
     private $fileLocator;
@@ -42,16 +37,13 @@ abstract class AbstractFileMediaType extends AbstractMediaType
     protected $imagineCacheManager;
 
     public function injectThings(
-        ContainerInterface $container,
         FileLocatorInterface $fileLocator,
-        $kernelRootDir
+        CacheManager $cacheManager,
+        string $projectDir
     ) {
-        $this->container = $container;
-
         $this->fileLocator = $fileLocator;
-        $this->zikulaRoot = realpath($kernelRootDir . '/..');
-
-        $this->imagineCacheManager = $this->container->get('liip_imagine.cache.manager');
+        $this->imagineCacheManager = $cacheManager;
+        $this->zikulaRoot = realpath($projectDir . '/..');
     }
 
     public function getPathToFile($identifier)

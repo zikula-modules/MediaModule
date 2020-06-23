@@ -1,4 +1,13 @@
 services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Cmfcmf\Module\MediaModule\:
+        resource: '../../*'
+        exclude: '../../{bootstrap.php,Tests,vendor}'
+
     cmfcmf_media_module.form.type.color:
         class: Cmfcmf\Module\MediaModule\Form\Type\ColorType
         tags: ['form.type']
@@ -18,47 +27,36 @@ services:
     cmfcmf_media_module.form.type.collection:
         class: Cmfcmf\Module\MediaModule\Form\Collection\CollectionType
         arguments:
-            - '@translator'
-            - '@cmfcmf_media_module.collection_template_collection'
-            - '@cmfcmf_media_module.security_manager'
-            - '@zikula_extensions_module.api.variable'
+            $templateCollection: '@cmfcmf_media_module.collection_template_collection'
+            $securityManager: '@cmfcmf_media_module.security_manager'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection_block:
         class: Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType
         arguments:
-            - '@translator'
-            - '@cmfcmf_media_module.security_manager'
-            - '@doctrine.orm.entity_manager'
+            $securityManager: '@cmfcmf_media_module.security_manager'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection_template:
         class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType
         arguments:
-            - '@translator'
-            - '@cmfcmf_media_module.collection_template_collection'
-            - '@cmfcmf_media_module.collection_template.selected_factory'
+            $templateCollection: '@cmfcmf_media_module.collection_template_collection'
+            $selectedTemplateFactory: '@cmfcmf_media_module.collection_template.selected_factory'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection_template.galleria:
         class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\GalleriaType
-        arguments:
-            - '@translator'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection_template.light_gallery:
         class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\LightGalleryType
-        arguments:
-            - '@translator'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.media.base:
-        abstract: true
+        class: Cmfcmf\Module\MediaModule\Form\Media\AbstractFileType
+#        abstract: true
         arguments:
-            - '@translator'
-            - '@cmfcmf_media_module.security_manager'
-            - '@zikula_extensions_module.api.variable'
-            - '@doctrine.orm.entity_manager'
+            $securityManager: '@cmfcmf_media_module.security_manager'
     cmfcmf_media_module.form.type.media.archive:
         class: Cmfcmf\Module\MediaModule\Form\Media\ArchiveType
         parent: cmfcmf_media_module.form.type.media.base
@@ -121,12 +119,10 @@ services:
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection.permission.base:
-        abstract: true
+        class: Cmfcmf\Module\MediaModule\Form\Collection\Permission\AbstractPermissionType
+#        abstract: true
         arguments:
-            - '@translator'
-            - '@cmfcmf_media_module.security_manager'
-            - '@zikula_groups_module.group_repository'
-            - '@zikula_users_module.user_repository'
+            $securityManager: '@cmfcmf_media_module.security_manager'
     cmfcmf_media_module.form.type.collection.permission.group:
         class: Cmfcmf\Module\MediaModule\Form\Collection\Permission\GroupPermissionType
         parent: cmfcmf_media_module.form.type.collection.permission.base
@@ -147,14 +143,11 @@ services:
     cmfcmf_media_module.form.type.import:
         class: Cmfcmf\Module\MediaModule\Form\ImportType
         arguments:
-            - '@translator'
-            - '@cmfcmf_media_module.security_manager'
+            $securityManager: '@cmfcmf_media_module.security_manager'
         tags: ['form.type']
     cmfcmf_media_module.form.type.importer.base:
         class: Cmfcmf\Module\MediaModule\Form\Importer\AbstractImporterType
-        abstract: true
-        arguments:
-            - '@translator'
+#        abstract: true
     cmfcmf_media_module.form.type.importer.downloads:
         class: Cmfcmf\Module\MediaModule\Form\Importer\DownloadsModuleType
         parent: cmfcmf_media_module.form.type.importer.base
@@ -170,27 +163,18 @@ services:
 
     cmfcmf_media_module.form.type.license:
         class: Cmfcmf\Module\MediaModule\Form\License\LicenseType
-        arguments:
-            - '@translator'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.settings:
         class: Cmfcmf\Module\MediaModule\Form\SettingsType
         arguments:
-            - '@translator'
-            - '@zikula_extensions_module.api.variable'
-            - '@doctrine.orm.entity_manager'
-            - '@cmfcmf_media_module.collection_template_collection'
+            $templateCollection: '@cmfcmf_media_module.collection_template_collection'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.watermark.image:
         class: Cmfcmf\Module\MediaModule\Form\Watermark\ImageWatermarkType
-        arguments:
-            - '@translator'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.watermark.text:
         class: Cmfcmf\Module\MediaModule\Form\Watermark\TextWatermarkType
-        arguments:
-            - '@translator'
         tags: ['form.type']
