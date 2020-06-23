@@ -24,7 +24,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Zikula\Common\Content\AbstractContentFormType;
 
 /**
@@ -64,7 +64,7 @@ class CollectionType extends AbstractContentFormType
 
         $collectionOptions = [
             'required' => true,
-            'label' => $this->__('Collection', 'cmfcmfmediamodule'),
+            'label' => $this->trans('Collection', 'cmfcmfmediamodule'),
             'class' => CollectionEntity::class,
             'query_builder' => function (EntityRepository $er) use ($securityManager) {
                 /** @var CollectionRepository $er */
@@ -76,21 +76,21 @@ class CollectionType extends AbstractContentFormType
 
                 return $qb;
             },
-            'placeholder' => $this->__('Select collection', 'cmfcmfmediamodule'),
+            'placeholder' => $this->trans('Select collection', 'cmfcmfmediamodule'),
             'choice_label' => 'indentedTitle',
             'multiple' => false
         ];
         $builder
             ->add('id', EntityType::class, $collectionOptions)
             ->add('template', TemplateType::class, [
-                'label' => $this->__('Display', 'cmfcmfmediamodule'),
+                'label' => $this->trans('Display', 'cmfcmfmediamodule'),
             ])
             ->add('showChildCollections', CheckboxType::class, [
-                'label' => $this->__('Show child collections', 'cmfcmfmediamodule'),
+                'label' => $this->trans('Show child collections', 'cmfcmfmediamodule'),
                 'required' => false
             ])
             ->add('showEditAndDownloadLinks', CheckboxType::class, [
-                'label' => $this->__('Show edit and download links', 'cmfcmfmediamodule'),
+                'label' => $this->trans('Show edit and download links', 'cmfcmfmediamodule'),
                 'required' => false
             ])
             ->addModelTransformer(new CallbackTransformer(

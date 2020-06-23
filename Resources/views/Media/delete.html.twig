@@ -1,4 +1,4 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
 {% block title %}
     {{ entity.title }}
 {% endblock %}
@@ -6,15 +6,15 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="alert alert-danger">
-                {{ __('Do you really want to delete this media object?') }}
+                {% trans %}Do you really want to delete this media object?{% endtrans %}
             </div>
             <div class="col-sm-offset-2 col-sm-10 col-xs-12">
                 <form action="{{ path('cmfcmfmediamodule_media_delete', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" method="post">
                     <button type="submit" class="btn btn-danger">
-                        {{ __('Delete') }}
+                        {% trans %}Delete{% endtrans %}
                     </button>
                     <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="btn btn-default">
-                        {{ __('Cancel') }}
+                        {% trans %}Cancel{% endtrans %}
                     </a>
                 </form>
             </div>

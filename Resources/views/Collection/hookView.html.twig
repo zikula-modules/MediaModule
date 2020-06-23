@@ -1,5 +1,5 @@
 {% if hookedObjectCollections is not empty %}
-    <h3>{{ __('Media collections', 'cmfcmfmediamodule') }}</h3>
+    <h3>{% trans %}Media collections{% endtrans %}</h3>
     {% for hookedObjectCollection in hookedObjectCollections %}
         <h4>{{ hookedObjectCollection.collection.title }}</h4>
         {{ render(controller('CmfcmfMediaModule:Collection:display', {slug: hookedObjectCollection.collection.slug}, {isHook: true})) }}

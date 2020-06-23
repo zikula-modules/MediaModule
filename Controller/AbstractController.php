@@ -13,8 +13,13 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\Controller;
 
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Zikula\Bundle\CoreBundle\UrlInterface;
+use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcherInterface;
 use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareHook;
 use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareResponse;
 use Zikula\Bundle\HookBundle\Hook\DisplayHook;
@@ -23,14 +28,46 @@ use Zikula\Bundle\HookBundle\Hook\Hook;
 use Zikula\Bundle\HookBundle\Hook\ProcessHook;
 use Zikula\Bundle\HookBundle\Hook\ValidationHook;
 use Zikula\Bundle\HookBundle\Hook\ValidationProviders;
-use Zikula\Core\Controller\AbstractController as BaseAbstractController;
-use Zikula\Core\UrlInterface;
+use Zikula\Bundle\CoreBundle\Controller\AbstractController as BaseAbstractController;
+use Zikula\ExtensionsModule\AbstractExtension;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
+use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;
 
 /**
  * Provides some convenience functions for the MediaModule controllers regarding hooks.
  */
 abstract class AbstractController extends BaseAbstractController
 {
+    /**
+     * @var HookDispatcherInterface
+     */
+    protected $hookDispatcher;
+
+    /**
+     * @var SecurityManager
+     */
+    protected $securityManager;
+
+    /**
+     * @var MediaTypeCollection
+     */
+    protected $mediaTypeCollection;
+
+    public function __construct(
+        AbstractExtension $extension,
+        PermissionApiInterface $permissionApi,
+        VariableApiInterface $variableApi,
+        TranslatorInterface $translator,
+        HookDispatcherInterface $hookDispatcher,
+        SecurityManager $securityManager,
+        MediaTypeCollection $mediaTypeCollection
+    ) {
+        parent::__construct($extension, $permissionApi, $variableApi, $translator);
+        $this->hookDispatcher = $hookDispatcher;
+        $this->securityManager = $securityManager;
+        $this->mediaTypeCollection = $mediaTypeCollection;
+    }
+
     /**
      * Notifies subscribers of the given hook.
      *
@@ -41,7 +78,7 @@ abstract class AbstractController extends BaseAbstractController
      */
     protected function dispatchHooks($name, Hook $hook)
     {
-        return $this->get('hook_dispatcher')->dispatch($name, $hook);
+        return $this->hookDispatcher->dispatch($name, $hook);
     }
 
     /**
@@ -58,7 +95,7 @@ abstract class AbstractController extends BaseAbstractController
     {
         $eventName = 'cmfcmfmediamodule.ui_hooks.' . $name . '.' . $hookType;
         $hook = new DisplayHook($id, $url);
-        $this->get('hook_dispatcher')->dispatch($eventName, $hook);
+        $this->hookDispatcher->dispatch($eventName, $hook);
         /** @var DisplayHookResponse[] $responses */
         $responses = $hook->getResponses();
 
@@ -147,6 +184,6 @@ abstract class AbstractController extends BaseAbstractController
      */
     protected function hookValidationError(Form $form)
     {
-        $form->addError(new FormError($this->__('Hook validation failed!')));
+        $form->addError(new FormError($this->trans('Hook validation failed!')));
     }
 }

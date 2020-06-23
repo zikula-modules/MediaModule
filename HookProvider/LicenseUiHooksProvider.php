@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\HookProvider;
 
+use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\Bundle\HookBundle\Hook\DisplayHook;
@@ -31,12 +32,12 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
      */
     private $entities;
 
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->translator->__('License ui hooks provider');
+        return $this->translator->trans('License ui hooks provider');
     }
 
-    public function getProviderTypes()
+    public function getProviderTypes(): array
     {
         return [
             UiHooksCategory::TYPE_DISPLAY_VIEW => 'uiView',
@@ -55,11 +56,11 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
         $hookedObject = $repository->getByHookOrCreate($hook);
 
-        $content = $this->renderEngine->render('@CmfcmfMediaModule/License/hookView.html.twig', [
+        $content = $this->twig->render('@CmfcmfMediaModule/License/hookView.html.twig', [
             'licenses' => $hookedObject->getLicenses()
         ]);
 
-        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
+        $hook->setResponse(new DisplayHookResponse($this->getAreaName(), $content));
     }
 
     /**
@@ -77,13 +78,13 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
             return $licenseEntity->getId();
         }, $hookedObject->getLicenses()->getValues());
 
-        $content = $this->renderEngine->render('@CmfcmfMediaModule/License/hookEdit.html.twig', [
+        $content = $this->twig->render('@CmfcmfMediaModule/License/hookEdit.html.twig', [
             'selectedLicenses' => $selectedIds,
             'preferredLicenses' => $preferredLicenses,
             'outdatedLicenses' => $outdatedLicenses
         ]);
 
-        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
+        $hook->setResponse(new DisplayHookResponse($this->getAreaName(), $content));
     }
 
     /**
@@ -111,7 +112,7 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
             }
         }
 
-        $hook->setValidator($this->getProviderArea(), $validationResponse);
+        $hook->setValidator($this->getAreaName(), $validationResponse);
     }
 
     /**
@@ -119,7 +120,7 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
      */
     public function processEdit(ProcessHook $hook)
     {
-        $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
+        $repository = $this->entityManager->getRepository(HookedObjectEntity::class);
         $hookedObject = $repository->getByHookOrCreate($hook);
 
         $hookedObject->clearLicenses();
@@ -130,10 +131,7 @@ class LicenseUiHooksProvider extends AbstractUiHooksProvider
         $repository->saveOrDelete($hookedObject);
     }
 
-    /**
-     * @return string
-     */
-    private function getProviderArea()
+    public function getAreaName(): string
     {
         return 'provider.cmfcmfmediamodule.ui_hooks.licenses';
     }

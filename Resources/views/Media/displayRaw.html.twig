@@ -6,7 +6,7 @@
     {% endif %}
     {% if entity.license %}
         <p>
-            <strong>{{ __('License') }}</strong>:
+            <strong>{% trans %}License{% endtrans %}</strong>:
             {% if entity.license.url|default %}
                 <a href="{{ entity.license.url|e('html_attr') }}">
             {% endif %}
@@ -17,25 +17,25 @@
         </p>
     {% endif %}
     {% if entity.attribution|default %}
-        <p>{{ __f('By %s', {'%s': entity.attribution})|raw }}</p>
+        <p>{{ 'By %s%'|trans({'%s%': entity.attribution})|raw }}</p>
     {% endif %}
     <div class="list-group">
         {#% if entity.downloadAllowed|default and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
             <a href="{{ path('cmfcmfmediamodule_media_download', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item">
                 <i class="fa fa-fw fa-download"></i>
-                {{ __('Download') }}
+                {% trans %}Download{% endtrans %}
             </a>
         {% endif %#}
         {% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
             <a href="{{ path('cmfcmfmediamodule_media_edit', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-warning">
                 <i class="fa fa-fw fa-edit"></i>
-                {{ __('Edit') }}
+                {% trans %}Edit{% endtrans %}
             </a>
         {% endif %}
         {#% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA')) %}
             <a href="{{ path('cmfcmfmediamodule_media_delete', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-danger">
                 <i class="fa fa-fw fa-trash-o"></i>
-                {{ __('Delete') }}
+                {% trans %}Delete{% endtrans %}
             </a>
         {% endif %#}
     </div>

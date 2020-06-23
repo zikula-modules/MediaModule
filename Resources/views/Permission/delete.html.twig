@@ -1,12 +1,12 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
 {% block title %}
-    {{ __('Delete permission') }}
+    {% trans %}Delete permission{% endtrans %}
 {% endblock %}
 {% block content %}
     <div class="row">
         <div class="col-xs-12">
             <div class="alert alert-danger">
-                {{ __('Do you really want to delete this permission?') }}
+                {% trans %}Do you really want to delete this permission?{% endtrans %}
             </div>
             <div class="table-responsive">
                 <table class="table">
@@ -22,14 +22,14 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th id="hDescription" scope="col">{{ __('Description') }}</th>
-                            <th id="hTarget" scope="col">{{ __('Target') }}</th>
-                            <th id="hCollection" scope="col">{{ __('Collection') }}</th>
-                            <th id="hPermissionLevels" scope="col">{{ __('Permission levels') }}</th>
-                            <th id="hAppliedToSelf" scope="col">{{ __('Applied to self') }}</th>
-                            <th id="hAppliedToSubCollections" scope="col">{{ __('Applied to sub-collections') }}</th>
-                            <th id="hGoOn" scope="col">{{ __('Go on') }}</th>
-                            <th id="hValidity" scope="col">{{ __('Validity') }}</th>
+                            <th id="hDescription" scope="col">{% trans %}Description{% endtrans %}</th>
+                            <th id="hTarget" scope="col">{% trans %}Target{% endtrans %}</th>
+                            <th id="hCollection" scope="col">{% trans %}Collection{% endtrans %}</th>
+                            <th id="hPermissionLevels" scope="col">{% trans %}Permission levels{% endtrans %}</th>
+                            <th id="hAppliedToSelf" scope="col">{% trans %}Applied to self{% endtrans %}</th>
+                            <th id="hAppliedToSubCollections" scope="col">{% trans %}Applied to sub-collections{% endtrans %}</th>
+                            <th id="hGoOn" scope="col">{% trans %}Go on{% endtrans %}</th>
+                            <th id="hValidity" scope="col">{% trans %}Validity{% endtrans %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -44,20 +44,20 @@
                             <strong>{{ permission.collection.title }}</strong>
                         </td>
                         <td headers="hPermissionLevels">{{ permission.permissionLevels|join(', ') }}</td>
-                        <td headers="hAppliedToSelf">{{ permission.appliedToSelf ? __('yes') : __('no') }}</td>
-                        <td headers="hAppliedToSubCollections">{{ permission.appliedToSubCollections ? __('yes') : __('no') }}</td>
-                        <td headers="hGoOn">{{ permission.goOn ? __('yes') : __('no') }}</td>
+                        <td headers="hAppliedToSelf">{{ permission.appliedToSelf ? 'yes'|trans : 'no'|trans }}</td>
+                        <td headers="hAppliedToSubCollections">{{ permission.appliedToSubCollections ? 'yes'|trans : 'no'|trans }}</td>
+                        <td headers="hGoOn">{{ permission.goOn ? 'yes'|trans : 'no'|trans }}</td>
                         <td headers="hValidity">
                             {% if permission.validAfter is not null %}
                                 {{ permission.validAfter|date }}
                             {% else %}
-                                {{ __('now') }}
+                                {% trans %}now{% endtrans %}
                             {% endif %}
                             -
                             {% if permission.validUntil is not null %}
                                 {{ permission.validUntil|date }}
                             {% else %}
-                                {{ __('forever') }}
+                                {% trans %}forever{% endtrans %}
                             {% endif %}
                         </td>
                     </tr>
@@ -67,10 +67,10 @@
             <div class="col-sm-offset-2 col-sm-10 col-xs-12">
                 <form action="{{ path('cmfcmfmediamodule_permission_delete', {id: permission.id}) }}" method="post">
                     <button type="submit" class="btn btn-danger">
-                        {{ __('Delete') }}
+                        {% trans %}Delete{% endtrans %}
                     </button>
                     <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: permission.collection.slug}) }}" class="btn btn-default">
-                        {{ __('Cancel') }}
+                        {% trans %}Cancel{% endtrans %}
                     </a>
                 </form>
             </div>

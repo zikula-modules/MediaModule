@@ -17,14 +17,13 @@ use Cmfcmf\Module\MediaModule\Exception\UpgradeFailedException;
 use Github\Exception\RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use vierbergenlars\SemVer\expression;
 use vierbergenlars\SemVer\version;
 use Zikula\Bundle\CoreBundle\CacheClearer;
 use Zikula\Bundle\CoreBundle\HttpKernel\ZikulaKernel;
-use Zikula\Core\Event\GenericEvent;
 use Zikula\ExtensionsModule\Entity\RepositoryInterface\ExtensionRepositoryInterface;
-use Zikula\ExtensionsModule\ExtensionEvents;
+use Zikula\ExtensionsModule\Event\ExtensionListPreReSyncEvent;
 use Zikula\ExtensionsModule\Helper\BundleSyncHelper;
 use Zikula\ExtensionsModule\Helper\ExtensionHelper;
 
@@ -99,8 +98,8 @@ class ModuleUpgrader
         BundleSyncHelper $bundleSyncHelper,
         ExtensionHelper $extensionHelper,
         CacheClearer $cacheClearer,
-        $kernelCacheDir,
-        $kernelRootDir
+        string $cacheDir,
+        string $projectDir
     ) {
         $this->translator = $translator;
         $this->filesystem = $filesystem;
@@ -110,10 +109,9 @@ class ModuleUpgrader
         $this->extensionHelper = $extensionHelper;
         $this->cacheClearer = $cacheClearer;
 
-        $this->cacheFile = $kernelCacheDir . '/CmfcmfMediaModule.zip';
+        $this->cacheFile = $cacheDir . '/CmfcmfMediaModule.zip';
 
-        $zikulaDir = realpath($kernelRootDir . '/..');
-        $this->moduleDir = $this->filesystem->makePathRelative(realpath(__DIR__ . '/..'), $zikulaDir);
+        $this->moduleDir = $this->filesystem->makePathRelative(realpath(__DIR__ . '/..'), $projectDir);
         $this->moduleDir = rtrim($this->moduleDir, '/\\');
     }
 
@@ -298,8 +296,7 @@ class ModuleUpgrader
     private function doUpgrade()
     {
         $upgradedExtensions = [];
-        $vetoEvent = new GenericEvent();
-        $this->get('event_dispatcher')->dispatch(ExtensionEvents::REGENERATE_VETO, $vetoEvent);
+        $this->eventDispatcher->dispatch($vetoEvent = new ExtensionListPreReSyncEvent());
         if ($vetoEvent->isPropagationStopped()) {
             throw new UpgradeFailedException($this->translator->trans('Upgrade was stopped by a veto!', [], 'cmfcmfmediamodule'));
         }

@@ -5,7 +5,7 @@
 {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/Fullscreen.js')) }}
 {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/Display/Fullscreen.css')) }}
 <button type="button" class="cmfcmfmedia-fullscreen-btn btn btn-default" data-fullscreen-element="#cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}">
-    <i class="fa fa-fw fa-arrows-alt"></i> {{ __('Fullscreen') }}
+    <i class="fa fa-fw fa-arrows-alt"></i> {% trans %}Fullscreen{% endtrans %}
 </button>
 <br />
 <br />

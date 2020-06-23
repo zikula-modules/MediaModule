@@ -15,13 +15,18 @@ namespace Cmfcmf\Module\MediaModule\HookSubscriber;
 
 use Zikula\Bundle\HookBundle\Category\FilterHooksCategory;
 use Zikula\Bundle\HookBundle\HookSubscriberInterface;
-use Zikula\Common\Translator\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Media filter hooks subscriber.
  */
 class MediaFilterHooksSubscriber implements HookSubscriberInterface
 {
+    public function getAreaName(): string
+    {
+        return 'subscriber.cmfcmfmediamodule.filter_hooks.media';
+    }
+
     /**
      * @var TranslatorInterface
      */
@@ -38,7 +43,7 @@ class MediaFilterHooksSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getOwner()
+    public function getOwner(): string
     {
         return 'CmfcmfMediaModule';
     }
@@ -46,7 +51,7 @@ class MediaFilterHooksSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getCategory()
+    public function getCategory(): string
     {
         return FilterHooksCategory::NAME;
     }
@@ -54,15 +59,15 @@ class MediaFilterHooksSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->translator->__('Media filter hooks subscriber');
+        return $this->translator->trans('Media filter hooks subscriber');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEvents()
+    public function getEvents(): array
     {
         return [
             FilterHooksCategory::TYPE_FILTER => 'cmfcmfmediamodule.filter_hooks.media.filter'

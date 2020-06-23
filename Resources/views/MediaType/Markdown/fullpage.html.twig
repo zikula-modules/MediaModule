@@ -9,12 +9,12 @@
 <ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active">
         <a href="#rendered" aria-controls="home" role="tab" data-toggle="tab">
-            {{ __('Rendered') }}
+            {% trans %}Rendered{% endtrans %}
         </a>
     </li>
     <li role="presentation">
         <a href="#raw" aria-controls="profile" role="tab" data-toggle="tab">
-            {{ __('Raw') }}
+            {% trans %}Raw{% endtrans %}
         </a>
     </li>
 </ul>
@@ -27,7 +27,7 @@
     <div role="tabpanel" class="tab-pane" id="raw">
         <br />
         <button type="button" class="cmfcmfmedia-fullscreen-btn btn btn-default" data-fullscreen-element="#cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}-raw">
-            <i class="fa fa-fw fa-arrows-alt"></i> {{ __('Fullscreen') }}
+            <i class="fa fa-fw fa-arrows-alt"></i> {% trans %}Fullscreen{% endtrans %}
         </button>
         <br />
         <br />

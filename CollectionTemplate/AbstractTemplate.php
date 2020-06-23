@@ -16,7 +16,7 @@ namespace Cmfcmf\Module\MediaModule\CollectionTemplate;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Symfony\Component\Templating\EngineInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Provides convenience methods for all collections templates.

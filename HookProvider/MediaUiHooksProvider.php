@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\HookProvider;
 
+use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
@@ -49,12 +50,12 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
         $this->mediaTypeCollection = $mediaTypeCollection;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->translator->__('Media ui hooks provider');
+        return $this->translator->trans('Media ui hooks provider');
     }
 
-    public function getProviderTypes()
+    public function getProviderTypes(): array
     {
         return [
             UiHooksCategory::TYPE_DISPLAY_VIEW => 'uiView',
@@ -73,12 +74,12 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
         $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
         $hookedObject = $repository->getByHookOrCreate($hook);
 
-        $content = $this->renderEngine->render('@CmfcmfMediaModule/Media/hookView.html.twig', [
+        $content = $this->twig->render('@CmfcmfMediaModule/Media/hookView.html.twig', [
             'hookedObjectMedia' => $hookedObject->getHookedObjectMedia(),
             'mediaTypeCollection' => $this->mediaTypeCollection
         ]);
 
-        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
+        $hook->setResponse(new DisplayHookResponse($this->getAreaName(), $content));
     }
 
     /**
@@ -94,11 +95,11 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
             return $hookedObjectMediaEntity->getMedia()->toArrayForFinder($mediaTypeCollection);
         }, $hookedObject->getHookedObjectMedia()->getValues());
 
-        $content = $this->renderEngine->render('@CmfcmfMediaModule/Media/hookEdit.html.twig', [
+        $content = $this->twig->render('@CmfcmfMediaModule/Media/hookEdit.html.twig', [
             'selectedMedia' => $selectedMedia,
         ]);
 
-        $hook->setResponse(new DisplayHookResponse($this->getProviderArea(), $content));
+        $hook->setResponse(new DisplayHookResponse($this->getAreaName(), $content));
     }
 
     /**
@@ -128,7 +129,7 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
             }
         }
 
-        $hook->setValidator($this->getProviderArea(), $validationResponse);
+        $hook->setValidator($this->getAreaName(), $validationResponse);
     }
 
     /**
@@ -136,7 +137,7 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
      */
     public function processEdit(ProcessHook $hook)
     {
-        $repository = $this->entityManager->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
+        $repository = $this->entityManager->getRepository(HookedObjectEntity::class);
         $hookedObject = $repository->getByHookOrCreate($hook);
 
         $hookedObject->clearMedia();
@@ -147,10 +148,7 @@ class MediaUiHooksProvider extends AbstractUiHooksProvider
         $repository->saveOrDelete($hookedObject);
     }
 
-    /**
-     * @return string
-     */
-    private function getProviderArea()
+    public function getAreaName(): string
     {
         return 'provider.cmfcmfmediamodule.ui_hooks.media';
     }

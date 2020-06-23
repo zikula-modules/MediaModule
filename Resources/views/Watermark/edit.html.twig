@@ -1,13 +1,13 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
 {% block title %}
-    {{ __('Create new or edit watermark') }}
+    {% trans %}Create new or edit watermark{% endtrans %}
 {% endblock %}
 {% block content %}
     {% include '@CmfcmfMediaModule/util.html.twig' %}
     {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
         <fieldset>
-            <legend>{{ __('Content') }}</legend>
+            <legend>{% trans %}Content{% endtrans %}</legend>
             {{ form_widget(form) }}
         </fieldset>
     {{ form_end(form) }}

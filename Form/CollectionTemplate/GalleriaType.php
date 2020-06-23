@@ -16,7 +16,7 @@ namespace Cmfcmf\Module\MediaModule\Form\CollectionTemplate;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class GalleriaType extends AbstractType
 {

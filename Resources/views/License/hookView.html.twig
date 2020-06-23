@@ -1,6 +1,6 @@
 {% if licenses is not empty %}
-    <h3>{{ _n('License', 'Licenses', licenses|length, 'cmfcmfmediamodule') }}</h3>
-    {{ _n('This content is licensed under the following license', 'This content is licensed under the following licenses', licenses|length, 'cmfcmfmediamodule') }}:
+    <h3>{% trans %}Licenses{% endtrans %}</h3>
+    {% trans %}This content is licensed under the following licenses{% endtrans %}:
     <ul>
         {% for license in licenses %}
             <li>

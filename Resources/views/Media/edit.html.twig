@@ -1,11 +1,11 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
-{% block title __('Edit') ~ ' "' ~ entity.title ~ '"' %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
+{% block title 'Edit'|trans ~ ' "' ~ entity.title ~ '"' %}
 {% block content %}
     {% include '@CmfcmfMediaModule/util.html.twig' %}
     {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
         <fieldset>
-            <legend>{{ __('Content') }}</legend>
+            <legend>{% trans %}Content{% endtrans %}</legend>
             {{ form_widget(form) }}
             <div class="col-sm-offset-2 col-sm-10">
                 {{ hook|raw }}
@@ -19,10 +19,10 @@
             </div>
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-success">
-                    <i class="fa fa-fw fa-save"></i> {{ __('Save') }}
+                    <i class="fa fa-fw fa-save"></i> {% trans %}Save{% endtrans %}
                 </button>
                 <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="btn btn-default">
-                    <i class="fa fa-fw fa-ban"></i> {{ __('Cancel') }}
+                    <i class="fa fa-fw fa-ban"></i> {% trans %}Cancel{% endtrans %}
                 </a>
             </div>
         </fieldset>

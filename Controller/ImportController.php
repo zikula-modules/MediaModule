@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Form\ImportType;
+use Cmfcmf\Module\MediaModule\Importer\ImporterCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -30,13 +31,11 @@ class ImportController extends AbstractController
      *
      * @return array
      */
-    public function selectAction()
+    public function selectAction(ImporterCollection $importerCollection)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('import', 'admin')) {
+        if (!$this->securityManager->hasPermission('import', 'admin')) {
             throw new AccessDeniedException();
         }
-
-        $importerCollection = $this->get('cmfcmf_media_module.importer_collection');
 
         return [
             'importers' => $importerCollection->getImporters()
@@ -53,13 +52,12 @@ class ImportController extends AbstractController
      *
      * @return array
      */
-    public function executeAction(Request $request, $importer)
+    public function executeAction(Request $request, ImporterCollection $importerCollection, $importer)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('import', 'admin')) {
+        if (!$this->securityManager->hasPermission('import', 'admin')) {
             throw new AccessDeniedException();
         }
 
-        $importerCollection = $this->get('cmfcmf_media_module.importer_collection');
         if (!$importerCollection->hasImporter($importer)) {
             throw new NotFoundHttpException();
         }
@@ -75,13 +73,13 @@ class ImportController extends AbstractController
             $success = $importer->import($form->getData(), $this->get('session')->getFlashBag());
 
             if (true === $success) {
-                $this->addFlash('status', $this->__('Media imported successfully.'));
+                $this->addFlash('status', $this->trans('Media imported successfully.'));
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $form->getData()['collection']->getSlug()]);
             } elseif (is_string($success)) {
                 $this->addFlash('error', $success);
             } else {
-                $this->addFlash('error', $this->__('An unexpected error occurred while importing.'));
+                $this->addFlash('error', $this->trans('An unexpected error occurred while importing.'));
             }
         }
 

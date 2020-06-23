@@ -3,17 +3,14 @@ language: php
 sudo: false
 
 php:
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
   - 7.2
+  - 7.3
+  - 7.4
   - nightly
 
 matrix:
   fast_finish: true
   allow_failures:
-    - php: 7.2
     - php: nightly
 
 services:
@@ -83,7 +80,7 @@ deploy:
 #    api_key:
 #      secure: "VZI7VzLegExOf/xfYI9fw1gEnZNo6Sahh+kjmT0P+1jhbiiHS9DsmspCevy0KW7rXiZba/ih3jiMU9BzwtpEXfcxBfETjvVT8ekMeTgKokkOi2/HynM8Z4UaBKd9WJlLJVCUFZHIZkSsfvvfRS7e2P34IPseVpi7CBsGZ+oj5D6Et2rGY0HjAsSS3A4QI0xwTdoa6apjciHTjPuyaZkDieMoyeoRr0zteoU9jlfLnyooXdy1GTH+rBRRU0NH6eyjQ5G0DvqbYh8IF2A6GcdWs37n4DakrboMw+FbWtrDPoL23wrEpwr42bPaN+tRZkENCgxZXpCtTxS1usmjbBFoj/fxfr8uNEoU6AE9MYOfczwF4mShaI/Ub41HVcSNVBh7UP6Du8rJnYq2hAiFm4QhIVzi1M3BlU7qK+1ZhyDnXS70BLWkUeob0yOuv1G/Mvhy35PxvcXYuE4mL7jGDmOQGPDGSwZ1ZmBpI/0ERKzwOolY8eqwNol8CddJN3Tp31+z4UncTwrGpDhVe9Bz1mD4p/S4Qn4jRlgcEJxReSClpO1ZW/KL2D/hVZHbrh9VeAqp/ooRNuUnxAdcEL5Oda7Kqyt5wKTlfEqJGGyFNBnXom07MZCCZu9BA5hECJ8y7gzqtrbcUf9hIRHWhwyLrapXvmdrH0f+AsLXrX/AHmf7fKo="
 #    app: mediamodule
-#    on: 
+#    on:
 #      branch: master
 #      php: 5.6
 #    run:
@@ -95,6 +92,6 @@ deploy:
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
     - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-  
-  
-  
+
+
+

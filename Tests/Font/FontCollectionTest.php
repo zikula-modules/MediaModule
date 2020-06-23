@@ -29,7 +29,7 @@ class FontCollectionTest extends \PHPUnit\Framework\TestCase
 
     public function testIfExceptionWhenAddingLoaderAfterFontsAreLoaded()
     {
-        $this->setExpectedException('RuntimeException');
+        $this->expectException('RuntimeException');
 
         $fontCollection = new FontCollection();
         $fontCollection->getFonts();
@@ -155,7 +155,7 @@ class FontCollectionTest extends \PHPUnit\Framework\TestCase
 
     public function testExceptionIfFontDoesntExist()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
 
         $fontCollection = $this->getFontCollectionWithLoaderAndOneFont();
 

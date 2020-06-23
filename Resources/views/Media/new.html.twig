@@ -1,5 +1,5 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
-{% block title __('Create new media') %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
+{% block title 'Create new media'|trans %}
 {% block content %}
     {% include '@CmfcmfMediaModule/util.html.twig' %}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/dropzone.js'), 98) }}
@@ -14,13 +14,13 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="{{ __('Close')|e('html_attr') }}"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="cmfcmfmedia-upload-form-modal-label">{{ __('Select collection') }}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="{% trans %}Close')|e('html_attr{% endtrans %}"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="cmfcmfmedia-upload-form-modal-label">{% trans %}Select collection{% endtrans %}</h4>
                     </div>
                     <div class="modal-body">
                         <select id="cmfcmfmedia-upload-form-modal-collection-select" class="form-control" data-parent="{{ parentCollectionSlug|e('html_attr') }}">
                             {% if not parentCollectionSlug %}
-                                <option value="-1">{{ __('Select collection') }}</option>
+                                <option value="-1">{% trans %}Select collection{% endtrans %}</option>
                             {% endif %}
                             {% for collection in collections %}
                                 <option value="{{ collection.id|e('html_attr') }}"{% if parentCollectionSlug and collection.slug == parentCollectionSlug %} selected{% endif %}>
@@ -30,8 +30,8 @@
                         </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ __('Cancel') }}</button>
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="cmfcmfmedia-upload-form-modal-save-btn">{{ __('Start upload') }}</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="cmfcmfmedia-upload-form-modal-save-btn">{% trans %}Start upload{% endtrans %}</button>
                     </div>
                 </div>
             </div>
@@ -44,22 +44,22 @@
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active">
                 <a href="#cmfcmfmedia-upload" aria-controls="cmfcmfmedia-upload" role="tab" data-toggle="tab">
-                    <i class="fa fa-fw fa-upload"></i> {{ __('File upload') }}
+                    <i class="fa fa-fw fa-upload"></i> {% trans %}File upload{% endtrans %}
                 </a>
             </li>
             <li role="presentation">
                 <a href="#cmfcmfmedia-web" aria-controls="cmfcmfmedia-web" role="tab" data-toggle="tab">
-                    <i class="fa fa-fw fa-globe"></i> {{ __('Search the web') }}
+                    <i class="fa fa-fw fa-globe"></i> {% trans %}Search the web{% endtrans %}
                 </a>
             </li>
             <li role="presentation">
                 <a href="#cmfcmfmedia-paste" aria-controls="cmfcmfmedia-paste" role="tab" data-toggle="tab">
-                    <i class="fa fa-fw fa-paste"></i> {{ __('Paste URL / Embed code') }}
+                    <i class="fa fa-fw fa-paste"></i> {% trans %}Paste URL / Embed code{% endtrans %}
                 </a>
             </li>
             <li role="presentation">
                 <a href="{{ path('cmfcmfmediamodule_media_adminlist') }}" role="tab">
-                    <i class="fa fa-fw fa-table"></i> {{ __('Back to overview') }}
+                    <i class="fa fa-fw fa-table"></i> {% trans %}Back to overview{% endtrans %}
                 </a>
             </li>
         </ul>
@@ -72,17 +72,17 @@
                     <div class="col-lg-9">
                         <span class="btn btn-success" id="cmfcmfmedia-upload-fileinput-btn">
                             <i class="fa fa-fw fa-plus"></i>
-                            <span>{{ __('Add files (try drag and drop as well!)') }}</span>
+                            <span>{% trans %}Add files (try drag and drop as well!){% endtrans %}</span>
                         </span>
                         {% if not isPopup %}
-                            <button type="submit" class="btn btn-primary start" id="cmfcmfmedia-upload-start-fast-btn" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{{ __('If you use the fast upload, all media will be uploaded instantly and you will only be able to select the collection to upload the media too. If you would like to edit further settings, i.e. titles, descriptions or licenses, you can do so by either not using the fast upload and uploading the media one by one or by editing the media after you uploaded everything') }}">
+                            <button type="submit" class="btn btn-primary start" id="cmfcmfmedia-upload-start-fast-btn" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{% trans %}If you use the fast upload, all media will be uploaded instantly and you will only be able to select the collection to upload the media too. If you would like to edit further settings, i.e. titles, descriptions or licenses, you can do so by either not using the fast upload and uploading the media one by one or by editing the media after you uploaded everything{% endtrans %}">
                                 <i class="fa fa-fw fa-upload"></i>
-                                <span>{{ __('Fast upload') }}</span>
+                                <span>{% trans %}Fast upload{% endtrans %}</span>
                             </button>
                         {% endif %}
                         {#<button type="reset" class="btn btn-warning cancel">
                             <i class="fa fa-fw fa-ban"></i>
-                            <span>{{ __('Cancel upload') }}</span>
+                            <span>{% trans %}Cancel upload{% endtrans %}</span>
                         </button>#}
                     </div>
                     <div class="col-lg-3">
@@ -110,15 +110,15 @@
                         <div>
                             <button class="btn btn-primary start">
                                 <i class="fa fa-fw fa-upload"></i>
-                                <span>{{ __('Start') }}</span>
+                                <span>{% trans %}Start{% endtrans %}</span>
                             </button>
                             <button data-dz-remove class="btn btn-warning cancel">
                                 <i class="fa fa-fw fa-ban"></i>
-                                <span>{{ __('Cancel') }}</span>
+                                <span>{% trans %}Cancel{% endtrans %}</span>
                             </button>
                             {#<button data-dz-remove class="btn btn-danger delete">
                                 <i class="fa fa-fw fa-trash"></i>
-                                <span>{{ __('Delete') }}</span>
+                                <span>{% trans %}Delete{% endtrans %}</span>
                             </button>#}
                         </div>
                     </div>
@@ -133,7 +133,7 @@
                         <ul class="nav nav-pills nav-stacked">
                             <li class="active">
                                 <a href="#cmfcmfmedia-web-provider-default" data-toggle="pill">
-                                    {{ __('Select a service below') }}
+                                    {% trans %}Select a service below{% endtrans %}
                                 </a>
                             </li>
                             {% for mediaType in webMediaTypes %}
@@ -174,16 +174,16 @@
             </div>
             <!-- Pasting -->
             <div role="tabpanel" class="tab-pane fade" id="cmfcmfmedia-paste">
-                <div class="alert alert-info">{{ __('Simply paste your URL or embed code here and we\'ll try to figure everything out.') }}</div>
+                <div class="alert alert-info">{% trans %}Simply paste your URL or embed code here and we\'ll try to figure everything out.{% endtrans %}</div>
                 <form method="post" action="">
                     <input type="hidden" value="1" name="init" />
                     <div class="cmfcmfmedia-css-relative">
-                        <textarea name="pastedText" class="form-control" rows="5" title="{{ __('Paste url or embed code') }}" id="cmfcmfmedia-paste-text"></textarea>
+                        <textarea name="pastedText" class="form-control" rows="5" title="{% trans %}Paste url or embed code{% endtrans %}" id="cmfcmfmedia-paste-text"></textarea>
                     </div>
                     <br />
                     <br />
                     <button type="button" class="btn btn-primary" id="cmfcmfmedia-paste-btn-parse" autocomplete="off">
-                        <i class="fa fa-fw fa-cog"></i> {{ __('Parse') }}
+                        <i class="fa fa-fw fa-cog"></i> {% trans %}Parse{% endtrans %}
                     </button>
                 </form>
             </div>

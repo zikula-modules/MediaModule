@@ -1,12 +1,12 @@
 {% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
-{% block title __('Media list') %}
+{% block title 'Media list'|trans %}
 {% block content %}
     <form action="{{ path('cmfcmfmediamodule_media_adminlist') }}" method="GET" class="form-inline">
         <div class="form-group">
-            <label for="searchTerm">{{ __('Search', 'zikula') }}:</label>
+            <label for="searchTerm">{% trans %}Search', 'zikula{% endtrans %}:</label>
             <input type="search" id="searchTerm" name="q" value="{{ currentSearchTerm|e('html_attr') }}" class="form-control">
         </div>
-        <button type="submit" class="btn btn-default btn-sm">{{ __('OK') }}</button>
+        <button type="submit" class="btn btn-default btn-sm">{% trans %}OK{% endtrans %}</button>
     </form>
     <div class="table-responsive">
         <table class="table table-condensed table-striped">
@@ -21,13 +21,13 @@
             </colgroup>
             <thead>
                 <tr>
-                    {#<th id="hPosition" scope="col">{{ __('Position') }}</th>#}
-                    <th id="hId" scope="col">{{ __('Id') }}</th>
-                    <th id="hThumbnail" scope="col">{{ __('Thumbnail') }}</th>
-                    <th id="hTitle" scope="col">{{ __('Title') }}</th>
-                    <th id="hCollection" scope="col">{{ __('Collection') }}</th>
-                    <th id="hLicense" scope="col">{{ __('License') }}</th>
-                    <th id="hActions" scope="col">{{ __('Actions') }}</th>
+                    {#<th id="hPosition" scope="col">{% trans %}Position{% endtrans %}</th>#}
+                    <th id="hId" scope="col">{% trans %}Id{% endtrans %}</th>
+                    <th id="hThumbnail" scope="col">{% trans %}Thumbnail{% endtrans %}</th>
+                    <th id="hTitle" scope="col">{% trans %}Title{% endtrans %}</th>
+                    <th id="hCollection" scope="col">{% trans %}Collection{% endtrans %}</th>
+                    <th id="hLicense" scope="col">{% trans %}License{% endtrans %}</th>
+                    <th id="hActions" scope="col">{% trans %}Actions{% endtrans %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,7 +52,7 @@
                     <td headers="hEntity{{ entity.id }} hCollection">{{ entity.collection.title }}</td>
                     <td headers="hEntity{{ entity.id }} hLicense">{% if entity.license %}{{ entity.license.title }}{% else %}--{% endif %}</td>
                     <td headers="hEntity{{ entity.id }} hActions" class="text-right">
-                        <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" title="{{ __('Show')|e('html_attr') }}">
+                        <a href="{{ path('cmfcmfmediamodule_media_display', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" title="{% trans %}Show{% endtrans %}">
                             <i class="fa fa-fw fa-eye"></i>
                         </a>
                         <a href="{{ path('cmfcmfmediamodule_media_edit', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}">
@@ -66,7 +66,7 @@
             {% else %}
                 <tr>
                     <td colspan="8" class="text-center warning">
-                        {{ __('No media available yet!') }}
+                        {% trans %}No media available yet!{% endtrans %}
                     </td>
                 </tr>
             {% endfor %}
@@ -77,19 +77,19 @@
         <ul class="pager">
             <li class="previous{% if page == 1 %} disabled{% endif %}">
                 <a href="{% if page == 1 %}#{% else %}{{ path('cmfcmfmediamodule_media_adminlist', {page: (page - 1), q: currentSearchTerm}) }}{% endif %}">
-                    <span aria-hidden="true">&larr;</span> {{ __('Previous') }}
+                    <span aria-hidden="true">&larr;</span> {% trans %}Previous') }}
                 </a>
             </li>
             <li class="next{% if page == maxPage %} disabled{% endif %}"{% if page == maxPage %} disabled{% endif %}>
                 <a href="{{ path('cmfcmfmediamodule_media_adminlist', {page: (page + 1), q: currentSearchTerm}) }}">
-                    {{ __('Next') }} <span aria-hidden="true">&rarr;</span>
+                    {% trans %}Next') }} <span aria-hidden="true">&rarr;</span>
                 </a>
             </li>
         </ul>
     </nav>
     {% if cmfcmfmediamodule_hasPermission('media', 'new') %}
         <a href="{{ path('cmfcmfmediamodule_media_new') }}" class="btn btn-default">
-            <i class="fa fa-fw fa-plus"></i> {{ __('Create new media') }}
+            <i class="fa fa-fw fa-plus"></i> {% trans %}Create new media') }}
         </a>
     {% endif %}
 {% endblock %}

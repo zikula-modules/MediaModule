@@ -35,7 +35,7 @@
                     <h4>{{ media.title }}</h4>
                 {% endif %}
                 {% if media.attribution|default %}
-                    <h5>{{ __f('By %s', {'%s': media.attribution})|raw }}</h5>
+                    <h5>{{ 'By %s%'|trans({'%s%': media.attribution})|raw }}</h5>
                 {% endif %}
             </div>
         {% endfor %}

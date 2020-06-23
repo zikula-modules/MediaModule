@@ -17,7 +17,7 @@ use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermission
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Zikula\Core\LinkContainer\LinkContainerInterface;
 
 /**

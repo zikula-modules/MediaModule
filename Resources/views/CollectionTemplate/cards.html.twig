@@ -46,7 +46,7 @@
 
 {% if editMediaPermission or editCollectionPermission %}
     <button class="btn btn-default btn-sm" type="button" autocomplete="off" id="cmfcmfmedia-sortable-btn">
-        <i class="fa fa-sort"></i> {{ __('Sort items') }}
+        <i class="fa fa-sort"></i> {% trans %}Sort items{% endtrans %}
     </button>
 {% endif %}
 
@@ -57,13 +57,13 @@
             {% for child in collection.children %}
                 {% if cmfcmfmediamodule_hasPermission(child, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
                     {% set hasParentOrChildCollection = true %}
-                    {% set buttons = [{url: path('cmfcmfmediamodule_collection_display', {slug: child.slug}), text: __('View collection')}] %}
+                    {% set buttons = [{url: path('cmfcmfmediamodule_collection_display', {slug: child.slug}), text: 'View collection'|trans}] %}
                     {% set thumbnail = false %}
                     {% set supportText = '' %}
                     {% if child.mediaForThumbnail|default %}
                         {% set thumbnail = mediaTypeCollection.mediaTypeFromEntity(child.mediaForThumbnail).thumbnail(child.mediaForThumbnail, 200, 150, 'url') %}
                         {% if child.mediaForThumbnail.attribution|default %}
-                            {% set supportText = __('Cover') ~ ' ' ~ __f('By %s', {'%s': child.mediaForThumbnail.attribution})|lower ~ '<br>' %}
+                            {% set supportText = 'Cover'|trans ~ ' ' ~ 'By %s'|trans({'%s': child.mediaForThumbnail.attribution})|lower ~ '<br>' %}
                         {% endif %}
                     {% endif %}
                     {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
@@ -75,7 +75,7 @@
 {% endblock %}
 
 {% if hasParentOrChildCollection %}
-    <h1>{{ __('Media') }}</h1>
+    <h1>{% trans %}Media{% endtrans %}</h1>
 {% endif %}
 
 {% block media %}
@@ -83,11 +83,11 @@
         {% for media in collection.media %}
             {% set supportText = '' %}
             {% if media.attribution|default %}
-                {% set supportText = __f('By %s', {'%s': media.attribution}) %}
+                {% set supportText = 'By %s%'|trans({'%s%': media.attribution}) %}
             {% endif %}
-            {% set buttons = [{url: path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('View')}] %}
+            {% set buttons = [{url: path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug}), text: 'View'|trans}] %}
             {% if media.downloadAllowed|default %}
-                {% set buttons = buttons|merge([{url: path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug}), text: __('Download')}]) %}
+                {% set buttons = buttons|merge([{url: path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug}), text: 'Download'|trans}]) %}
             {% endif %}
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
             {{ macro.box(media.title, supportText, buttons, mediaType.thumbnail(media, 200, 150, 'url'), editMediaPermission ? media.id : false, mediaType.icon, mediaType.displayName) }}
@@ -95,7 +95,7 @@
             {% if collection.children is empty %}
                 <div class="col-xs-12">
                     <div class="alert alert-info">
-                        {{ __('This collection is currently empty!') }}
+                        {% trans %}This collection is currently empty!{% endtrans %}
                     </div>
                 </div>
             {% endif %}

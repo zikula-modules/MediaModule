@@ -1,10 +1,10 @@
 {% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
-{% block title __f('Import from %s', {'%s': importer.title}) %}
+{% block title 'Import from %s%'|trans({'%s%': importer.title}) %}
 {% block content %}
     {% form_theme form '@CmfcmfMediaModule/Form/bootstrap_3.html.twig' %}
     {{ form_start(form) }}
         <fieldset>
-            <legend>{{ __('Options') }}</legend>
+            <legend>{% trans %}Options{% endtrans %}</legend>
             {{ form_row(form.collection) }}
             {{ form_widget(form.importSettings) }}
             {{ form_row(form.import) }}

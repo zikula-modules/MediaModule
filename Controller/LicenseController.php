@@ -36,7 +36,7 @@ class LicenseController extends AbstractController
      */
     public function indexAction()
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('license', 'moderate')) {
+        if (!$this->securityManager->hasPermission('license', 'moderate')) {
             throw new AccessDeniedException();
         }
 
@@ -59,7 +59,7 @@ class LicenseController extends AbstractController
      */
     public function newAction(Request $request)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('license', 'add')) {
+        if (!$this->securityManager->hasPermission('license', 'add')) {
             throw new AccessDeniedException();
         }
 
@@ -72,7 +72,7 @@ class LicenseController extends AbstractController
             $em->persist($entity);
             $em->flush();
 
-            $this->addFlash('status', $this->__('License created!'));
+            $this->addFlash('status', $this->trans('License created!'));
 
             return $this->redirectToRoute('cmfcmfmediamodule_license_index');
         }
@@ -91,7 +91,7 @@ class LicenseController extends AbstractController
      */
     public function editAction(Request $request, LicenseEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, 'edit')) {
+        if (!$this->securityManager->hasPermission($entity, 'edit')) {
             throw new AccessDeniedException();
         }
 
@@ -104,11 +104,11 @@ class LicenseController extends AbstractController
                 $em->merge($entity);
                 $em->flush();
 
-                $this->addFlash('status', $this->__('License edited!'));
+                $this->addFlash('status', $this->trans('License edited!'));
 
                 return $this->redirectToRoute('cmfcmfmediamodule_license_index');
             } catch (OptimisticLockException $e) {
-                $form->addError(new FormError($this->__('Someone else edited the collection. Please either cancel editing or force reload the page.')));
+                $form->addError(new FormError($this->trans('Someone else edited the collection. Please either cancel editing or force reload the page.')));
             }
         }
 
@@ -126,7 +126,7 @@ class LicenseController extends AbstractController
      */
     public function deleteAction(Request $request, LicenseEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, 'delete')) {
+        if (!$this->securityManager->hasPermission($entity, 'delete')) {
             throw new AccessDeniedException();
         }
 
@@ -138,7 +138,7 @@ class LicenseController extends AbstractController
         $em->remove($entity);
         $em->flush();
 
-        $this->addFlash('status', $this->__('License deleted!'));
+        $this->addFlash('status', $this->trans('License deleted!'));
 
         return $this->redirectToRoute('cmfcmfmediamodule_license_index');
     }

@@ -49,7 +49,7 @@ class MediaTypeController extends AbstractController
      */
     public function youtubeUploadAction(VideoEntity $entity, Request $request)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity,
+        if (!$this->securityManager->hasPermission($entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA)) {
             throw new AccessDeniedException();
         }
@@ -57,9 +57,9 @@ class MediaTypeController extends AbstractController
         $clientID = $this->getVar('googleApiOAuthClientID');
         $clientSecret = $this->getVar('googleApiOAuthClientSecret');
         if (empty($clientID) || empty($clientSecret)) {
-            if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('settings', 'admin')) {
+            if (!$this->securityManager->hasPermission('settings', 'admin')) {
                 $this->addFlash('warning',
-                    $this->get('translator')->trans('You need to add Google client ID and secret to use this feature!', [], 'cmfcmfmediamodule'));
+                    $this->trans('You need to add Google client ID and secret to use this feature!', [], 'cmfcmfmediamodule'));
             }
 
             return $this->redirectToRoute('cmfcmfmediamodule_media_display', [
@@ -169,14 +169,14 @@ END;
             // If you want to make other calls after the file upload, set setDefer back to false
             $client->setDefer(false);
         } catch (Google_Service_Exception $e) {
-            $this->addFlash('error', $this->get('translator')->trans('A Google service error occurred: %error%', ['%error%' => $e->getMessage()], 'cmfcmfmediamodule'));
+            $this->addFlash('error', 'A Google service error occurred: %error%', ['%error%' => $e->getMessage()], 'cmfcmfmediamodule');
 
             return $this->redirectToRoute('cmfcmfmediamodule_media_display', [
                 'slug' => $entity->getSlug(),
                 'collectionSlug' => $entity->getCollection()->getSlug()
             ]);
         } catch (Google_Exception $e) {
-            $this->addFlash('error', $this->get('translator')->trans('A client error occurred: %error%', ['%error%' => $e->getMessage()], 'cmfcmfmediamodule'));
+            $this->addFlash('error', 'A client error occurred: %error%', ['%error%' => $e->getMessage()], 'cmfcmfmediamodule');
 
             return $this->redirectToRoute('cmfcmfmediamodule_media_display', [
                 'slug' => $entity->getSlug(),
@@ -186,7 +186,7 @@ END;
 
         $request->getSession()->set('cmfcmfmediamodule_youtube_oauth_token', $client->getAccessToken());
 
-        $this->addFlash('status', $this->get('translator')->trans('Your video was successfully uploaded.', [], 'cmfcmfmediamodule'));
+        $this->addFlash('status', 'Your video was successfully uploaded.', [], 'cmfcmfmediamodule');
 
         return $this->redirectToRoute('cmfcmfmediamodule_media_display', [
             'slug' => $entity->getSlug(),
@@ -205,9 +205,9 @@ END;
         $builder
             ->add('privacyStatus', ChoiceType::class, [
                 'choices' => [
-                    $this->get('translator')->trans('Public', [], 'cmfcmfmediamodule') => 'public',
-                    $this->get('translator')->trans('Unlisted', [], 'cmfcmfmediamodule') => 'unlisted',
-                    $this->get('translator')->trans('Private', [], 'cmfcmfmediamodule') => 'private'
+                    $this->trans('Public', [], 'cmfcmfmediamodule') => 'public',
+                    $this->trans('Unlisted', [], 'cmfcmfmediamodule') => 'unlisted',
+                    $this->trans('Private', [], 'cmfcmfmediamodule') => 'private'
                 ]
             ])
             ->add('submit', SubmitType::class, [])

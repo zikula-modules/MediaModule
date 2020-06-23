@@ -15,8 +15,8 @@ namespace Cmfcmf\Module\MediaModule\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Zikula\Core\CoreEvents;
-use Zikula\Core\Event\ModuleStateEvent;
+use Zikula\ExtensionsModule\Event\ExtensionPostRemoveEvent;
+use Zikula\ExtensionsModule\Event\ExtensionStateEvent;
 
 /**
  * Listen to module removals.
@@ -42,21 +42,21 @@ class ModuleListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CoreEvents::MODULE_REMOVE => 'moduleRemoved'
+            ExtensionPostRemoveEvent::class => 'moduleRemoved'
         ];
     }
 
     /**
      * Called if a module is removed.
      *
-     * @param ModuleStateEvent $event
+     * @param ExtensionStateEvent $event
      */
-    public function moduleRemoved(ModuleStateEvent $event)
+    public function moduleRemoved(ExtensionStateEvent $event)
     {
-        if ($event->getModule()) {
-            $name = $event->getModule()->getName();
+        if ($event->getExtensionBundle()) {
+            $name = $event->getExtensionBundle()->getName();
         } else {
-            $name = $event->modinfo['name'];
+            $name = $event->getExtensionEntity()->getName();
             if (empty($name)) {
                 // Just to make sure..
                 return;

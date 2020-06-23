@@ -15,6 +15,7 @@ namespace Cmfcmf\Module\MediaModule\Tests\Listener;
 
 use Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ThirdPartyListenerTest extends \PHPUnit\Framework\TestCase
 {
@@ -23,14 +24,14 @@ class ThirdPartyListenerTest extends \PHPUnit\Framework\TestCase
      */
     private $listener;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         if (!interface_exists('\\Zikula\\ScribiteModule\\Editor\\EditorHelperInterface')) {
             $this->markTestSkipped(
                 'The Scribite module is not installed.'
             );
         }
-        $this->listener = new ThirdPartyListener(new Filesystem(), __DIR__ . '/../../../..');
+        $this->listener = new ThirdPartyListener(new Filesystem(), new RequestStack());
     }
 
     public function testIfEventMethodsExist()
@@ -70,7 +71,7 @@ class ThirdPartyListenerTest extends \PHPUnit\Framework\TestCase
             ->willReturn(null)
         ;
 
-        $this->listener->getScribiteEditorHelpers($eventStub);
+        $this->listener->getEditorHelpers($eventStub);
     }
 
     // TODO update obsolete test implementation

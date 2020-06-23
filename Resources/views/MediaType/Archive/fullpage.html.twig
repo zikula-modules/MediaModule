@@ -1,6 +1,6 @@
-{% if entity.numberOfFiles is sameas(false) %}
+{% if entity.numberOfFiles is false %}
     <div class="alert alert-warning">
-        {{ __('The contained files can not be displayed.') }}
+        {% trans %}The contained files can not be displayed.{% endtrans %}
     </div>
 {% endif %}
 {% if entity.extraData.files %}

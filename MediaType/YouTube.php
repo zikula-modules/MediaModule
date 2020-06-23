@@ -54,7 +54,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     {
         $entity = new YouTubeEntity($this->requestStack, $this->dataDirectory);
 
-        list($type, $id) = $this->extractYouTubeIdAndTypeFromPaste($pastedText);
+        [$type, $id] = $this->extractYouTubeIdAndTypeFromPaste($pastedText);
         if (false === $id || !in_array($type, ['playlist', 'video', 'channel', true])) {
             throw new \RuntimeException();
         }
@@ -92,7 +92,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     public function renderFullpage(AbstractMediaEntity $entity)
     {
         /** @var YouTubeEntity $entity */
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/YouTube:fullpage.html.twig', [
+        return $this->twig->render('@CmfcmfMediaModule/MediaType/YouTube/fullpage.html.twig', [
             'entity' => $entity
         ]);
     }
@@ -114,7 +114,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     {
         /** @var YouTubeEntity $entity */
 
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/YouTube:fullpage.html.twig', [
+        return $this->twig->render('@CmfcmfMediaModule/MediaType/YouTube/fullpage.html.twig', [
             'entity' => $entity
         ]);
     }

@@ -16,8 +16,9 @@ namespace Cmfcmf\Module\MediaModule\Tests\Listener;
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository\HookedObjectRepository;
 use Cmfcmf\Module\MediaModule\Listener\ModuleListener;
 use Doctrine\ORM\EntityManagerInterface;
-use Zikula\Core\AbstractModule;
-use Zikula\Core\Event\ModuleStateEvent;
+use Zikula\ExtensionsModule\AbstractModule;
+use Zikula\ExtensionsModule\Entity\ExtensionEntity;
+use Zikula\ExtensionsModule\Event\ExtensionStateEvent;
 
 class ModuleListenerTest extends \PHPUnit\Framework\TestCase
 {
@@ -39,7 +40,7 @@ class ModuleListenerTest extends \PHPUnit\Framework\TestCase
         $emStub = $this->getMockBuilder(EntityManagerInterface::class)
             ->getMockForAbstractClass()
         ;
-        $eventStub = $this->getMockBuilder(ModuleStateEvent::class)
+        $eventStub = $this->getMockBuilder(ExtensionStateEvent::class)
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -80,7 +81,9 @@ class ModuleListenerTest extends \PHPUnit\Framework\TestCase
         ;
 
         $listener = new ModuleListener($emStub);
-        $listener->moduleRemoved(new ModuleStateEvent(null, ['name' => 'FooBarModule']));
+        $extensionEntity = new ExtensionEntity();
+        $extensionEntity->setName('FooBarModule');
+        $listener->moduleRemoved(new ExtensionStateEvent(null, $extensionEntity));
     }
 
     public function testIfItWorksWhenModuleIsSet()
@@ -112,6 +115,6 @@ class ModuleListenerTest extends \PHPUnit\Framework\TestCase
         $p->setValue($moduleStub, 'FooBarModule');
 
         $listener = new ModuleListener($emStub);
-        $listener->moduleRemoved(new ModuleStateEvent($moduleStub));
+        $listener->moduleRemoved(new ExtensionStateEvent($moduleStub));
     }
 }

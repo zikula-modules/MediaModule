@@ -54,7 +54,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
         $raw = file_get_contents($entity->getPath());
         $rendered = $this->markdownExtraParser->transform($raw);
 
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Markdown:fullpage.html.twig', [
+        return $this->twig->render('@CmfcmfMediaModule/MediaType/Markdown/fullpage.html.twig', [
             'entity' => $entity,
             'rendered' => $rendered,
             'raw' => $raw

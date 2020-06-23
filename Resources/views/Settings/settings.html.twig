@@ -1,32 +1,32 @@
 {% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
-{% block title __('Settings') %}
+{% block title 'Settings'|trans %}
 {% block content %}
     <div class="row">
         <div class="col-xs-12 col-sm-3">
             <ul class="nav nav-pills nav-stacked">
                 <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_requirements'%}class="active"{% endif %}>
                     <a href="{{ path('cmfcmfmediamodule_settings_requirements') }}">
-                        <i class="fa fa-check fa-fw"></i> {{ __('Requirements') }}
+                        <i class="fa fa-check fa-fw"></i> {% trans %}Requirements{% endtrans %}
                     </a>
                 </li>
                 <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_general'%}class="active"{% endif %}>
                     <a href="{{ path('cmfcmfmediamodule_settings_general') }}">
-                        <i class="fa fa-cog fa-fw"></i> {{ __('General') }}
+                        <i class="fa fa-cog fa-fw"></i> {% trans %}General{% endtrans %}
                     </a>
                 </li>
                 <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_scribite'%}class="active"{% endif %}>
                     <a href="{{ path('cmfcmfmediamodule_settings_scribite') }}">
-                        <i class="fa fa-pencil fa-fw"></i> {{ __('Scribite') }}
+                        <i class="fa fa-pencil fa-fw"></i> {% trans %}Scribite{% endtrans %}
                     </a>
                 </li>
                 <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_upgrade_doupgrade'%}class="active"{% endif %}>
                     <a href="{{ path('cmfcmfmediamodule_upgrade_doupgrade') }}">
-                        <i class="fa fa-download fa-fw"></i> {{ __('Upgrade') }}
+                        <i class="fa fa-download fa-fw"></i> {% trans %}Upgrade{% endtrans %}
                     </a>
                 </li>
                 <li>
                     <a href="https://cmfcmf.github.io/MediaModule/docs/">
-                        <i class="fa fa-external-link fa-fw"></i> {{ __('Help and Docs') }}
+                        <i class="fa fa-external-link fa-fw"></i> {% trans %}Help and Docs{% endtrans %}
                     </a>
                 </li>
             </ul>

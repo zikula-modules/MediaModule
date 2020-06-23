@@ -13,14 +13,20 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\Block;
 
+use Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType;
+use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 use Zikula\BlocksModule\AbstractBlockHandler;
+use Zikula\ExtensionsModule\AbstractExtension;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
+use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;
 
 /**
  * Collection block handler.
@@ -43,19 +49,37 @@ class CollectionBlock extends AbstractBlockHandler
     private $securityManager;
 
     /**
-     * @var \Twig_Environment
+     * @var Environment
      */
     private $twig;
 
-    public function setContainer(ContainerInterface $container = null)
-    {
-        parent::setContainer($container);
+    /**
+     * @var SelectedTemplateFactory
+     */
+    private $selectedTemplateFactory;
 
-        $this->translator = $container->get('translator');
-        $this->collectionRepository = $container->get('doctrine.orm.entity_manager')
-            ->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
-        $this->securityManager = $container->get('cmfcmf_media_module.security_manager');
-        $this->twig = $container->get('twig');
+    /**
+     * @var MediaTypeCollection
+     */
+    private $mediaTypeCollection;
+
+    public function __construct(
+        AbstractExtension $extension,
+        RequestStack $requestStack,
+        TranslatorInterface $translator,
+        VariableApiInterface $variableApi,
+        PermissionApiInterface $permissionApi,
+        Environment $twig,
+        CollectionRepository $collectionRepository,
+        SecurityManager $securityManager,
+        SelectedTemplateFactory $selectedTemplateFactory,
+        MediaTypeCollection $mediaTypeCollection
+    ) {
+        parent::__construct($extension, $requestStack, $translator, $variableApi, $permissionApi, $twig);
+        $this->collectionRepository = $collectionRepository;
+        $this->securityManager = $securityManager;
+        $this->selectedTemplateFactory = $selectedTemplateFactory;
+        $this->mediaTypeCollection = $mediaTypeCollection;
     }
 
     /**
@@ -65,33 +89,32 @@ class CollectionBlock extends AbstractBlockHandler
      *
      * @return string|void The rendered block
      */
-    public function display(array $properties)
+    public function display(array $properties): string
     {
         if (!$this->securityManager->hasPermissionRaw('CmfcmfMediaModule:collectionblock:', "{$properties['title']}::", ACCESS_READ)) {
-            return false;
+            return '';
         }
         if (empty($properties['id'])) {
-            return false;
+            return '';
         }
 
         $collection = $this->collectionRepository->findOneBy(['id' => $properties['id']]);
         if (!$collection) {
-            return false;
+            return '';
         }
         if (!$this->securityManager->hasPermission($collection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
-            return false;
+            return '';
         }
 
-        $selectedTemplateFactory = $this->get('cmfcmf_media_module.collection_template.selected_factory');
         try {
-            $selectedTemplate = $selectedTemplateFactory->fromDB($properties['template']);
+            $selectedTemplate = $this->selectedTemplateFactory->fromDB($properties['template']);
         } catch (\DomainException $e) {
             throw new NotFoundHttpException();
         }
 
         $content = $selectedTemplate->getTemplate()->render(
             $collection,
-            $this->get('cmfcmf_media_module.media_type_collection'),
+            $this->mediaTypeCollection,
             $properties['showChildCollections'] ?? false,
             $selectedTemplate->getOptions()
         );
@@ -118,7 +141,7 @@ class CollectionBlock extends AbstractBlockHandler
     /**
      * {@inheritdoc}
      */
-    public function getFormClassName()
+    public function getFormClassName(): string
     {
         return CollectionBlockType::class;
     }
@@ -126,7 +149,7 @@ class CollectionBlock extends AbstractBlockHandler
     /**
      * {@inheritdoc}
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->translator->trans('Collection', [], 'cmfcmfmediamodule');
     }

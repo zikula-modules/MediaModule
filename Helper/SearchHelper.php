@@ -21,12 +21,17 @@ use Doctrine\ORM\Query\Expr\Composite;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Zikula\Core\RouteUrl;
+use Zikula\Bundle\CoreBundle\RouteUrl;
 use Zikula\SearchModule\Entity\SearchResultEntity;
 use Zikula\SearchModule\SearchableInterface;
 
 class SearchHelper implements SearchableInterface
 {
+    public function getBundleName(): string
+    {
+        return 'CmfcmfMediaModule';
+    }
+
     /**
      * @var RequestStack
      */
@@ -51,12 +56,12 @@ class SearchHelper implements SearchableInterface
         include_once __DIR__ . '/../bootstrap.php';
     }
 
-    public function amendForm(FormBuilderInterface $builder)
+    public function amendForm(FormBuilderInterface $builder): void
     {
         // nothing
     }
 
-    public function getResults(array $words, $searchType = 'AND', $modVars = null)
+    public function getResults(array $words, $searchType = 'AND', ?array $modVars = []): array
     {
         $results = [];
         $sessionId = $this->requestStack->getCurrentRequest()->getSession()->getId();
@@ -72,7 +77,7 @@ class SearchHelper implements SearchableInterface
             $result->setTitle($collection->getTitle())
                 ->setText($collection->getDescription())
                 ->setModule('CmfcmfMediaModule')
-                ->setCreated($collection->getCreatedDate())
+//                ->setCreated($collection->getCreatedDate())
                 ->setSesid($sessionId)
                 ->setUrl(new RouteUrl('cmfcmfmediamodule_collection_display', ['slug' => $collection->getSlug()]))
             ;
@@ -90,7 +95,7 @@ class SearchHelper implements SearchableInterface
             $result->setTitle($medium->getTitle())
                 ->setText($medium->getDescription())
                 ->setModule('CmfcmfMediaModule')
-                ->setCreated($medium->getCreatedDate())
+//                ->setCreated($medium->getCreatedDate())
                 ->setSesid($sessionId)
                 ->setUrl(new RouteUrl('cmfcmfmediamodule_media_display', [
                     'slug' => $medium->getSlug(),
@@ -103,7 +108,7 @@ class SearchHelper implements SearchableInterface
         return $results;
     }
 
-    public function getErrors()
+    public function getErrors(): array
     {
         return [];
     }

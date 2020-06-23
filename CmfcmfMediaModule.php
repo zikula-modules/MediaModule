@@ -19,7 +19,7 @@ use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\FontCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\ImporterCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\MediaTypeCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Zikula\Core\AbstractModule;
+use Zikula\ExtensionsModule\AbstractModule;
 
 class CmfcmfMediaModule extends AbstractModule
 {

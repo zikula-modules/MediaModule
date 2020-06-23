@@ -16,7 +16,7 @@ namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\GroupPermissionEntity;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Zikula\GroupsModule\Entity\RepositoryInterface\GroupRepositoryInterface;
 use Zikula\UsersModule\Api\ApiInterface\CurrentUserApiInterface;
 

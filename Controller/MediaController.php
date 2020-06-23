@@ -27,6 +27,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -39,9 +40,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
 use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
-use Zikula\Core\Response\PlainResponse;
-use Zikula\Core\RouteUrl;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
+use Zikula\Bundle\CoreBundle\Response\PlainResponse;
+use Zikula\Bundle\CoreBundle\RouteUrl;
 
 class MediaController extends AbstractController
 {
@@ -58,7 +59,7 @@ class MediaController extends AbstractController
      */
     public function adminlistAction(Request $request, $page = 1)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('media', 'moderate')) {
+        if (!$this->securityManager->hasPermission('media', 'moderate')) {
             throw new AccessDeniedException();
         }
         if ($page < 1) {
@@ -72,7 +73,7 @@ class MediaController extends AbstractController
 
         /** @var Paginator|AbstractMediaEntity[] $entities */
         $paginator = $em->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')->getPaginated($page - 1, $perPage, $q);
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $mediaTypeCollection = $this->mediaTypeCollection;
 
         return [
             'paginator' => $paginator,
@@ -95,8 +96,7 @@ class MediaController extends AbstractController
      */
     public function editAction(Request $request, AbstractMediaEntity $entity)
     {
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        $editPermission = $securityManager->hasPermission(
+        $editPermission = $this->securityManager->hasPermission(
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA
         );
@@ -113,12 +113,12 @@ class MediaController extends AbstractController
             $parent = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->findOneBy(['slug' => $parent]);
         }
 
-        $mediaType = $this->get('cmfcmf_media_module.media_type_collection')->getMediaTypeFromEntity($entity);
-        $form = $mediaType->getFormTypeClass();
+        $mediaType = $this->mediaTypeCollection->getMediaTypeFromEntity($entity);
+        $formClass = $mediaType->getFormTypeClass();
         $formOptions = $mediaType->getFormOptions($entity);
         $formOptions['parent'] = $parent;
         /** @var \Symfony\Component\Form\Form $form */
-        $form = $this->createForm($form, $entity, $formOptions);
+        $form = $this->createForm($formClass, $entity, $formOptions);
         $form->handleRequest($request);
 
         if (!$form->isValid()) {
@@ -138,7 +138,7 @@ class MediaController extends AbstractController
                 throw new NotFoundHttpException();
             }
             if (!$mediaType->canUpload($file)) {
-                $form->addError(new FormError($this->__('You must upload a file of the same type.')));
+                $form->addError(new FormError($this->trans('You must upload a file of the same type.')));
                 goto edit_error;
             }
 
@@ -154,7 +154,7 @@ class MediaController extends AbstractController
             $em->merge($entity);
             $em->flush();
         } catch (OptimisticLockException $e) {
-            $form->addError(new FormError($this->__('Someone else edited the collection. Please either cancel editing or force reload the page.')));
+            $form->addError(new FormError($this->trans('Someone else edited the collection. Please either cancel editing or force reload the page.')));
             goto edit_error;
         }
 
@@ -201,7 +201,7 @@ class MediaController extends AbstractController
      */
     public function deleteAction(Request $request, AbstractMediaEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+        if (!$this->securityManager->hasPermission(
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA)
         ) {
@@ -227,7 +227,7 @@ class MediaController extends AbstractController
 
                 return $this->redirectToRoute('cmfcmfmediamodule_collection_display', ['slug' => $entity->getCollection()->getSlug()]);
             }
-            $request->getSession()->getFlashbag()->add('error', $this->__('Hook validation failed!'));
+            $request->getSession()->getFlashbag()->add('error', $this->trans('Hook validation failed!'));
         }
 
         $hookUrl = new RouteUrl('cmfcmfmediamodule_media_edit', [
@@ -254,12 +254,12 @@ class MediaController extends AbstractController
     {
         $this->checkMediaCreationAllowed();
 
-        $isPopup = $request->query->filter('popup', false, false, FILTER_VALIDATE_BOOLEAN);
+        $isPopup = $request->query->filter('popup', false, FILTER_DEFAULT, FILTER_VALIDATE_BOOLEAN);
         $parentCollectionSlug = $request->query->get('parent', null);
 
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $mediaTypeCollection = $this->mediaTypeCollection;
 
-        $collections = $this->get('cmfcmf_media_module.security_manager')
+        $collections = $this->securityManager
             ->getCollectionsWithAccessQueryBuilder(
                 CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA
             )
@@ -286,26 +286,29 @@ class MediaController extends AbstractController
      *
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function createAction(Request $request, $type, $mediaType, $collection = null)
-    {
+    public function createAction(
+        Request $request,
+        string $projectDir,
+        string $type,
+        $mediaType,
+        $collection = null
+    ) {
         if (!in_array($type, ['paste', 'web', 'upload'])) {
             throw new NotFoundHttpException();
         }
         $this->checkMediaCreationAllowed();
 
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        $variableApi = $this->get('zikula_extensions_module.api.variable');
         $em = $this->getDoctrine()->getManager();
 
         $init = $request->request->get('init', false);
-        $mediaType = $this->get('cmfcmf_media_module.media_type_collection')->getMediaType($mediaType);
-        $entity = $this->getDefaultEntity($request, $type, $mediaType, $init, $collection);
+        $mediaType = $this->mediaTypeCollection->getMediaType($mediaType);
+        $entity = $this->getDefaultEntity($request, $type, $mediaType, $init, $collection, $projectDir . '/public/uploads');
 
-        $form = $mediaType->getFormTypeClass();
+        $formClass = $mediaType->getFormTypeClass();
         $formOptions = $mediaType->getFormOptions($entity);
         $formOptions['isCreation'] = true;
         /** @var \Symfony\Component\Form\Form $form */
-        $form = $this->createForm($form, $entity, $mediaType->getFormOptions($entity));
+        $form = $this->createForm($formClass, $entity, $mediaType->getFormOptions($entity));
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -354,7 +357,7 @@ class MediaController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $pasteMediaTypes = $this->get('cmfcmf_media_module.media_type_collection')->getPasteMediaTypes();
+        $pasteMediaTypes = $this->mediaTypeCollection->getPasteMediaTypes();
         $matches = [];
         foreach ($pasteMediaTypes as $pasteMediaType) {
             $score = $pasteMediaType->matchesPaste($pastedText);
@@ -388,7 +391,7 @@ class MediaController extends AbstractController
             ->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')
             ->find($id);
 
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+        if (!$this->securityManager->hasPermission(
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA)
         ) {
@@ -415,7 +418,7 @@ class MediaController extends AbstractController
     {
         $this->checkMediaCreationAllowed();
 
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $mediaTypeCollection = $this->mediaTypeCollection;
 
         try {
             $mediaType = $mediaTypeCollection->getMediaType($mediaType);
@@ -450,7 +453,7 @@ class MediaController extends AbstractController
     {
         $this->checkMediaCreationAllowed();
 
-        $mediaTypes = $this->get('cmfcmf_media_module.media_type_collection')->getUploadableMediaTypes();
+        $mediaTypes = $this->mediaTypeCollection->getUploadableMediaTypes();
         $files = $request->request->get('files', false);
         if (false === $files) {
             throw new NotFoundHttpException();
@@ -498,14 +501,12 @@ class MediaController extends AbstractController
      *
      * @return JsonResponse|Response
      */
-    public function uploadAction(Request $request)
+    public function uploadAction(Request $request, UploadableManager $uploadableManager)
     {
         $this->checkMediaCreationAllowed();
 
         try {
-            $securityManager = $this->get('cmfcmf_media_module.security_manager');
-            $mediaTypes = $this->get('cmfcmf_media_module.media_type_collection')->getUploadableMediaTypes();
-            $uploadManager = $this->get('stof_doctrine_extensions.uploadable.manager');
+            $mediaTypes = $this->mediaTypeCollection->getUploadableMediaTypes();
             $em = $this->getDoctrine()->getManager();
 
             $collection = $request->request->get('collection', null);
@@ -520,7 +521,7 @@ class MediaController extends AbstractController
             /** @var UploadedFile $file */
             $file = current($request->files->all());
             if (!$file->isValid()) {
-                return new Response($this->__('The upload was corrupted. Please try again!'), Response::HTTP_BAD_REQUEST);
+                return new Response($this->trans('The upload was corrupted. Please try again!'), Response::HTTP_BAD_REQUEST);
             }
             $max = 0;
             $selectedMediaType = null;
@@ -532,7 +533,7 @@ class MediaController extends AbstractController
                 }
             }
             if (null === $selectedMediaType) {
-                return new Response($this->__('File type not supported!'), Response::HTTP_FORBIDDEN);
+                return new Response($this->trans('File type not supported!'), Response::HTTP_FORBIDDEN);
             }
 
             $dataDirectory = $this->get('service_container')->getParameter('datadir');
@@ -541,13 +542,13 @@ class MediaController extends AbstractController
             $entity = $selectedMediaType->getEntityClass();
             $entity = new $entity($this->get('request_stack'), $dataDirectory);
 
-            $form = $selectedMediaType->getFormTypeClass();
+            $formClass = $selectedMediaType->getFormTypeClass();
             $formOptions = $mediaType->getFormOptions($entity);
             $formOptions['isCreation'] = true;
             $formOptions['allowTemporaryUploadCollection'] = true;
             $formOptions['csrf_protection'] = false;
             /** @var \Symfony\Component\Form\Form $form */
-            $form = $this->createForm($form, $entity, $formOptions);
+            $form = $this->createForm($formClass, $entity, $formOptions);
             $form->remove('file');
 
             $form->submit([
@@ -556,10 +557,10 @@ class MediaController extends AbstractController
             ], false);
 
             if (!$form->isValid()) {
-                return new Response($this->__('Invalid data, errors: ') . $form->getErrors(true)->__toString(), Response::HTTP_BAD_REQUEST);
+                return new Response($this->trans('Invalid data, errors: ') . $form->getErrors(true)->__toString(), Response::HTTP_BAD_REQUEST);
             }
 
-            $uploadManager->markEntityToUpload($entity, $file);
+            $uploadableManager->markEntityToUpload($entity, $file);
             $em->persist($entity);
             $em->flush();
 
@@ -568,7 +569,7 @@ class MediaController extends AbstractController
             $request->getSession()->set('cmfcmfmediamodule_just_uploaded', $justUploadedIds);
 
             return $this->json([
-                'msg' => $this->__('File uploaded!'),
+                'msg' => $this->trans('File uploaded!'),
                 'editUrl' => $this->generateUrl('cmfcmfmediamodule_media_edit', ['slug' => $entity->getSlug(), 'collectionSlug' => $entity->getCollection()->getSlug()]),
                 'openNewTabAndEdit' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID === $collection
             ], Response::HTTP_OK);
@@ -588,7 +589,7 @@ class MediaController extends AbstractController
      */
     public function popupEmbedAction(Request $request, AbstractMediaEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+        if (!$this->securityManager->hasPermission(
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
         ) {
@@ -608,14 +609,14 @@ class MediaController extends AbstractController
      */
     public function getEmbedDataAction(Request $request, AbstractMediaEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+        if (!$this->securityManager->hasPermission(
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
         ) {
             throw new AccessDeniedException();
         }
 
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $mediaTypeCollection = $this->mediaTypeCollection;
 
         $class = get_class($entity);
         $type = mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('Entity'));
@@ -655,7 +656,7 @@ class MediaController extends AbstractController
      */
     public function downloadAction(Request $request, AbstractFileEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+        if (!$this->securityManager->hasPermission(
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM)
         ) {
@@ -671,7 +672,7 @@ class MediaController extends AbstractController
         $em->merge($entity);
         $em->flush();
 
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $mediaTypeCollection = $this->mediaTypeCollection;
 
         /** @var UploadableMediaTypeInterface $mediaType */
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($entity);
@@ -698,7 +699,7 @@ class MediaController extends AbstractController
      */
     public function displayAction(AbstractMediaEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+        if (!$this->securityManager->hasPermission(
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
         ) {
@@ -717,7 +718,7 @@ class MediaController extends AbstractController
                 ->getQuery()->execute();
         }
 
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $mediaTypeCollection = $this->mediaTypeCollection;
         $hookUrl = new RouteUrl('cmfcmfmediamodule_media_display', [
             'slug' => $entity->getSlug(),
             'collectionSlug' => $entity->getCollection()->getSlug()
@@ -734,9 +735,7 @@ class MediaController extends AbstractController
 
     private function checkMediaCreationAllowed()
     {
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-
-        $qb = $securityManager->getCollectionsWithAccessQueryBuilder(
+        $qb = $this->securityManager->getCollectionsWithAccessQueryBuilder(
             CollectionPermissionSecurityTree::PERM_LEVEL_ADD_MEDIA
         );
         $qb->setMaxResults(1);
@@ -748,12 +747,17 @@ class MediaController extends AbstractController
         }
     }
 
-    private function getDefaultEntity(Request $request, $type, MediaTypeInterface $mediaType, $init, $collection)
-    {
-        if (!$init) {
-            $dataDirectory = $this->get('service_container')->getParameter('datadir');
+    private function getDefaultEntity(
+        Request $request,
+        string $type,
+        MediaTypeInterface $mediaType,
+        int $init,
+        $collection,
+        $uploadDir
+    ) {
+        if (!(bool) $init) {
             $entity = $mediaType->getEntityClass();
-            $entity = new $entity($this->get('request_stack'), $dataDirectory);
+            $entity = new $entity($this->get('request_stack'), $uploadDir);
 
             return $entity;
         }
@@ -778,7 +782,7 @@ class MediaController extends AbstractController
                 throw new \LogicException();
         }
         if (null !== $collection) {
-            $entity->setCollection($this->getDoctrine()->getManager()->find('CmfcmfMediaModule:Collection\CollectionEntity', $collection));
+            $entity->setCollection($this->getDoctrine()->getManager()->find(CollectionEntity::class, $collection));
         }
 
         return $entity;

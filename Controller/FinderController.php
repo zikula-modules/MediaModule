@@ -63,9 +63,8 @@ class FinderController extends AbstractController
     public function ajaxFindAction(Request $request)
     {
         $q = trim($request->query->get('q'));
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
 
-        $qb = $securityManager
+        $qb = $this->securityManager
             ->getMediaWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS);
         $mediaResults = $qb
             ->andWhere($qb->expr()->like('m.title', ':q'))
@@ -73,7 +72,7 @@ class FinderController extends AbstractController
             ->getQuery()
             ->execute();
 
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $mediaTypeCollection = $this->mediaTypeCollection;
         $mediaResults = array_filter($mediaResults, function (AbstractMediaEntity $entity) use ($mediaTypeCollection) {
             return $mediaTypeCollection->getMediaTypeFromEntity($entity)->isEmbeddable();
         });
@@ -81,7 +80,7 @@ class FinderController extends AbstractController
             return $entity->toArrayForFinder($mediaTypeCollection);
         }, $mediaResults);
 
-        $qb = $securityManager
+        $qb = $this->securityManager
             ->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS);
         $collectionResults = $qb
             ->andWhere($qb->expr()->like('c.title', ':q'))
@@ -109,8 +108,7 @@ class FinderController extends AbstractController
      */
     public function getCollectionsAction($parentId, $hookedObjectId = null)
     {
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        $mediaTypeCollection = $this->get('cmfcmf_media_module.media_type_collection');
+        $mediaTypeCollection = $this->mediaTypeCollection;
 
         if (null !== $hookedObjectId) {
             $em = $this->getDoctrine()->getManager();
@@ -120,7 +118,7 @@ class FinderController extends AbstractController
             $hookedObjectEntity = null;
         }
 
-        $qb = $securityManager
+        $qb = $this->securityManager
             ->getCollectionsWithAccessQueryBuilder(CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW);
         if ('#' === $parentId) {
             $qb->andWhere($qb->expr()->isNull('c.parent'));

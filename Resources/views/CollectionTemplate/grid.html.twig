@@ -24,10 +24,10 @@
         {% endfor %}
     </div>
     {% if attributions|default %}
-        <h4>{{ __('Attributions') }}</h4>
+        <h4>{% trans %}Attributions{% endtrans %}</h4>
         <ul>
             {% for index, attribution in attributions %}
-                <li>{{ index|slice(1) }}: {{ __f('By %s', {'%s': attribution})|raw }}</li>
+                <li>{{ index|slice(1) }}: {{ 'By %s%'|trans({'%s%': attribution})|raw }}</li>
             {% endfor %}
         </ul>
     {% endif %}

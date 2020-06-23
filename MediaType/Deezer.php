@@ -123,7 +123,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         }
         $url = "http://www.deezer.com/plugins/player?format=classic&autoplay=false&playlist=${playlist}&width=700&height=${height}&color=${color}&layout=dark&size=medium&type=${type}&id=${id}&title=${title}&app_id=1";
 
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Deezer:fullpage.html.twig', [
+        return $this->twig->render('@CmfcmfMediaModule/MediaType/Deezer/fullpage.html.twig', [
             'url' => $url,
             'height' => $height
         ]);

@@ -1,4 +1,4 @@
-{% spaceless %}
+{% apply spaceless %}
     {# Spinner! #}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/spin.min.js'), 97) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/jquery.spin.js'), 98) }}
@@ -10,4 +10,4 @@
     {# Utility scripts #}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/util.js'), 99) }}
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/util.css'), 99) }}
-{% endspaceless %}
+{% endapply %}

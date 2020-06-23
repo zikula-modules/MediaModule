@@ -38,7 +38,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Audio:fullpage.html.twig', ['entity' => $entity]);
+        return $this->twig->render('@CmfcmfMediaModule/MediaType/Audio/fullpage.html.twig', ['entity' => $entity]);
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)
@@ -181,6 +181,6 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
         $time = "${minutes}:${seconds}";
 
-        return $this->translator->trans("%s min", ['%s' => $time], 'cmfcmfmediamodule');
+        return $this->translator->trans("%s% min", ['%s%' => $time], 'cmfcmfmediamodule');
     }
 }

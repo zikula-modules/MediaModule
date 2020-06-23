@@ -1,16 +1,16 @@
 {% extends 'CmfcmfMediaModule:Settings:settings.html.twig' %}
 {% block settings_content %}
     {% if scribiteInstalled %}
-        <div class="alert alert-success">{{ __('It seems like the Scribite integration is working.') }}</div>
+        <div class="alert alert-success">{% trans %}It seems like the Scribite integration is working.{% endtrans %}</div>
         {% if not descriptionEscapingStrategyForCollectionOk %}
-            <div class="alert alert-danger">{{ __('You should set "Collection description escaping strategy" to "As is" for Scribite to work properly!') }}</div>
+            <div class="alert alert-danger">{% trans %}You should set "Collection description escaping strategy" to "As is" for Scribite to work properly!{% endtrans %}</div>
         {% endif %}
         {% if not descriptionEscapingStrategyForMediaOk %}
-            <div class="alert alert-danger">{{ __('You should set "Media description escaping strategy" to "As is" for Scribite to work properly!') }}</div>
+            <div class="alert alert-danger">{% trans %}You should set "Media description escaping strategy" to "As is" for Scribite to work properly!{% endtrans %}</div>
         {% endif %}
     {% else %}
         <div class="alert alert-info">
-            {{ __('Scribite is not installed. You may download it from ') }}
+            {% trans %}Scribite is not installed. You may download it from {% endtrans %}
             <a href="https://github.com/zikula-modules/Scribite">GitHub</a>.
         </div>
     {% endif %}

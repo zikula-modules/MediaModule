@@ -15,6 +15,8 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Exception\UpgradeFailedException;
 use Cmfcmf\Module\MediaModule\Exception\UpgradeNotRequiredException;
+use Cmfcmf\Module\MediaModule\Upgrade\ModuleUpgrader;
+use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -31,17 +33,16 @@ class UpgradeController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function doUpgradeAction()
+    public function doUpgradeAction(ModuleUpgrader $moduleUpgrader)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('settings', 'admin')) {
+        if (!$this->securityManager->hasPermission('settings', 'admin')) {
             throw new AccessDeniedException();
         }
 
         $hasPermission = $this->hasPermission('ZikulaExtensionsModule::', '::', ACCESS_ADMIN);
-        $upgrader = $this->get('cmfcmf_media_module.upgrade.module_upgrader');
 
         return [
-            'steps' => $upgrader->getUpgradeSteps(),
+            'steps' => $moduleUpgrader->getUpgradeSteps(),
             'hasPermission' => $hasPermission
         ];
     }
@@ -53,20 +54,19 @@ class UpgradeController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function ajaxAction($step)
-    {
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-        if (!$securityManager->hasPermission('settings', 'admin') || !$securityManager->hasPermissionRaw('ZikulaExtensionsModule::', '::', ACCESS_ADMIN)) {
+    public function ajaxAction(
+        ModuleUpgrader $moduleUpgrader,
+        VersionChecker $versionChecker,
+        $step
+    ) {
+        if (!$this->securityManager->hasPermission('settings', 'admin') || !$this->securityManager->hasPermissionRaw('ZikulaExtensionsModule::', '::', ACCESS_ADMIN)) {
             throw new AccessDeniedException();
         }
 
         set_time_limit(60);
 
-        $upgrader = $this->get('cmfcmf_media_module.upgrade.module_upgrader');
-        $versionChecker = $this->get('cmfcmf_media_module.upgrade.version_checker');
-
         try {
-            $upgradeDone = $upgrader->upgrade($step, $versionChecker);
+            $upgradeDone = $moduleUpgrader->upgrade($step, $versionChecker);
             if ($upgradeDone) {
                 $this->resetUpgradeMessage();
             }
@@ -93,7 +93,7 @@ class UpgradeController extends AbstractController
         } catch (\Exception $e) {
             return $this->json([
                 'proceed' => false,
-                'message' => $this->get('translator')->trans(
+                'message' => $this->trans(
                     'Something unexpected happened. Please report this problem and give the following information: %s',
                     ['%s' => (string)$e],
                     'cmfcmfmediamodule'),

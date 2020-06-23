@@ -1,5 +1,5 @@
 <audio controls>
     {# @todo Mime Type might be incorrect, improve this! #}
     <source src="{{ entity.url|e('html_attr') }}" type="{{ entity.mimeType|e('html_attr') }}">
-    {{ __('Your browser does not support the audio element.') }}
+    {% trans %}Your browser does not support the audio element.{% endtrans %}
 </audio>

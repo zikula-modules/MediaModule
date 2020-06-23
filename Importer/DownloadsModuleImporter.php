@@ -116,8 +116,8 @@ SQL;
                 ;
                 //$entity->setCreatedBy();
                 //$entity->setUpdatedBy();
-                $entity->setCreatedDate(new \DateTime($download['ddate']));
-                $entity->setUpdatedDate(new \DateTime($download['uupdate']));
+//                $entity->setCreatedDate(new \DateTime($download['ddate']));
+//                $entity->setUpdatedDate(new \DateTime($download['uupdate']));
                 $this->em->persist($entity);
             }
         }

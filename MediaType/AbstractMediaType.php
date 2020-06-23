@@ -14,17 +14,17 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\MediaType;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
 abstract class AbstractMediaType implements MediaTypeInterface
 {
     /**
-     * @var EngineInterface
+     * @var Environment
      */
-    protected $renderEngine;
+    protected $twig;
 
     /**
      * @var TranslatorInterface
@@ -47,20 +47,20 @@ abstract class AbstractMediaType implements MediaTypeInterface
     protected $dataDirectory;
 
     /**
-     * @param EngineInterface      $renderEngine
+     * @param Environment      $twig
      * @param TranslatorInterface  $translator
      * @param VariableApiInterface $variableApi
      * @param RequestStack         $requestStack
      * @param string               $dataDirectory
      */
     public function __construct(
-        EngineInterface $renderEngine,
+        Environment $twig,
         TranslatorInterface $translator,
         VariableApiInterface $variableApi,
         RequestStack $requestStack,
         $dataDirectory
     ) {
-        $this->renderEngine = $renderEngine;
+        $this->twig = $twig;
         $this->translator = $translator;
         $this->variableApi = $variableApi;
         $this->requestStack = $requestStack;
@@ -99,8 +99,8 @@ abstract class AbstractMediaType implements MediaTypeInterface
 
     public function renderWebCreationTemplate()
     {
-        return $this->renderEngine->render(
-            'CmfcmfMediaModule:MediaType:' . ucfirst($this->getAlias()) . '/webCreation.html.twig',
+        return $this->twig->render(
+            '@CmfcmfMediaModule/MediaType/' . ucfirst($this->getAlias()) . '/webCreation.html.twig',
             $this->getWebCreationTemplateArguments()
         );
     }
@@ -128,7 +128,7 @@ abstract class AbstractMediaType implements MediaTypeInterface
     {
         $attribution = '';
         if (null !== $entity->getAttribution()) {
-            $attribution = '<p>' . $this->translator->__f('By %s', ['%s' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
+            $attribution = '<p>' . $this->translator->trans('By %s%', ['%s%' => $entity->getAttribution()], 'cmfcmfmediamodule') . '</p>';
         }
 
         return $this->renderFullpage($entity) . $attribution;

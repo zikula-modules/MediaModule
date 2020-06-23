@@ -21,7 +21,9 @@ use Cmfcmf\Module\MediaModule\Form\Watermark\ImageWatermarkType;
 use Cmfcmf\Module\MediaModule\Form\Watermark\TextWatermarkType;
 use Doctrine\ORM\OptimisticLockException;
 use Gedmo\Uploadable\Uploadable;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -41,13 +43,13 @@ class WatermarkController extends AbstractController
      */
     public function indexAction()
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('watermark', 'moderate')) {
+        if (!$this->securityManager->hasPermission('watermark', 'moderate')) {
             throw new AccessDeniedException();
         }
 
         $em = $this->getDoctrine()->getManager();
         /** @var AbstractWatermarkEntity[] $entities */
-        $entities = $em->getRepository('CmfcmfMediaModule:Watermark\\AbstractWatermarkEntity')->findAll();
+        $entities = $em->getRepository(AbstractWatermarkEntity::class)->findAll();
 
         return ['entities' => $entities];
     }
@@ -61,17 +63,16 @@ class WatermarkController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(Request $request, $type)
+    public function newAction(Request $request, UploadableManager $uploadableManager, string $projectDir, $type)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission('watermark', 'new')) {
+        if (!$this->securityManager->hasPermission('watermark', 'new')) {
             throw new AccessDeniedException();
         }
-        $dataDirectory = $this->get('service_container')->getParameter('datadir');
         if ('image' === $type) {
-            $entity = new ImageWatermarkEntity($this->get('request_stack'), $dataDirectory);
+            $entity = new ImageWatermarkEntity($this->get('request_stack'), $projectDir . '/public/upload');
             $form = ImageWatermarkType::class;
         } elseif ('text' === $type) {
-            $entity = new TextWatermarkEntity($this->get('request_stack'), $dataDirectory);
+            $entity = new TextWatermarkEntity($this->get('request_stack'), $projectDir . '/public/upload');
             $form = TextWatermarkType::class;
         } else {
             throw new NotFoundHttpException();
@@ -86,14 +87,13 @@ class WatermarkController extends AbstractController
             if ($entity instanceof Uploadable) {
                 /** @var UploadedFile $file */
                 $file = $form->get('file')->getData();
-                $manager = $this->get('stof_doctrine_extensions.uploadable.manager');
-                $manager->markEntityToUpload($entity, $file);
+                $uploadableManager->markEntityToUpload($entity, $file);
             }
 
             $em->persist($entity);
             $em->flush();
 
-            $this->addFlash('status', $this->__('Watermark created!'));
+            $this->addFlash('status', $this->trans('Watermark created!'));
 
             return $this->redirectToRoute('cmfcmfmediamodule_watermark_index');
         }
@@ -110,9 +110,9 @@ class WatermarkController extends AbstractController
      *
      * @return array
      */
-    public function editAction(Request $request, AbstractWatermarkEntity $entity)
+    public function editAction(Request $request, UploadableManager $uploadableManager, CacheManager $imagineCacheManager, AbstractWatermarkEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, 'edit')) {
+        if (!$this->securityManager->hasPermission($entity, 'edit')) {
             throw new AccessDeniedException();
         }
 
@@ -138,8 +138,7 @@ class WatermarkController extends AbstractController
             if (null !== $file && $file->isValid()) {
                 // If the file is invalid, it means that no new file has been selected
                 // to replace the already uploaded file.
-                $manager = $this->get('stof_doctrine_extensions.uploadable.manager');
-                $manager->markEntityToUpload($entity, $file);
+                $uploadableManager->markEntityToUpload($entity, $file);
             }
         }
 
@@ -147,19 +146,17 @@ class WatermarkController extends AbstractController
             $em->merge($entity);
             $em->flush();
         } catch (OptimisticLockException $e) {
-            $form->addError(new FormError($this->__('Someone else edited the watermark. Please either cancel editing or force reload the page.')));
+            $form->addError(new FormError($this->trans('Someone else edited the watermark. Please either cancel editing or force reload the page.')));
             goto edit_error;
         }
 
         // Cleanup existing thumbnails
-        /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
-        $imagineCacheManager = $this->get('liip_imagine.cache.manager');
 
         /** @var WatermarkRepository $repository */
-        $repository = $em->getRepository('CmfcmfMediaModule:Watermark\AbstractWatermarkEntity');
+        $repository = $em->getRepository(AbstractWatermarkEntity::class);
         $repository->cleanupThumbs($entity, $imagineCacheManager);
 
-        $this->addFlash('status', $this->__('Watermark updated!'));
+        $this->addFlash('status', $this->trans('Watermark updated!'));
 
         return $this->redirectToRoute('cmfcmfmediamodule_watermark_index');
 
@@ -177,9 +174,9 @@ class WatermarkController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function deleteAction(Request $request, AbstractWatermarkEntity $entity)
+    public function deleteAction(Request $request, CacheManager $imagineCacheManager, AbstractWatermarkEntity $entity)
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission($entity, 'delete')) {
+        if (!$this->securityManager->hasPermission($entity, 'delete')) {
             throw new AccessDeniedException();
         }
 
@@ -190,8 +187,6 @@ class WatermarkController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         // Cleanup existing thumbnails
-        /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
-        $imagineCacheManager = $this->get('liip_imagine.cache.manager');
 
         /** @var WatermarkRepository $repository */
         $repository = $em->getRepository('CmfcmfMediaModule:Watermark\AbstractWatermarkEntity');
@@ -200,7 +195,7 @@ class WatermarkController extends AbstractController
         $em->remove($entity);
         $em->flush();
 
-        $this->addFlash('status', $this->__('Watermark deleted!'));
+        $this->addFlash('status', $this->trans('Watermark deleted!'));
 
         return $this->redirectToRoute('cmfcmfmediamodule_watermark_index');
     }

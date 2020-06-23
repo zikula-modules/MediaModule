@@ -27,15 +27,39 @@ use Cmfcmf\Module\MediaModule\Entity\Media\MediaCategoryAssignmentEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Zikula\Bundle\CoreBundle\Doctrine\Helper\SchemaHelper;
 use Zikula\CategoriesModule\Entity\CategoryRegistryEntity;
-use Zikula\Core\AbstractExtensionInstaller;
+use Zikula\ExtensionsModule\AbstractExtension;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
+use Zikula\ExtensionsModule\Installer\AbstractExtensionInstaller;
 
 class MediaModuleInstaller extends AbstractExtensionInstaller
 {
     /**
+     * @var string
+     */
+    private $projectDir;
+
+    public function __construct(
+        AbstractExtension $extension,
+        ManagerRegistry $managerRegistry,
+        SchemaHelper $schemaTool,
+        RequestStack $requestStack,
+        TranslatorInterface $translator,
+        VariableApiInterface $variableApi,
+        string $projectDir
+    ) {
+        parent::__construct($extension, $managerRegistry, $schemaTool, $requestStack, $translator, $variableApi);
+        $this->projectDir = $projectDir;
+    }
+
+    /**
      * {@inheritdoc}
      */
-    public function install()
+    public function install(): bool
     {
         $this->schemaTool->create(static::getEntities());
 
@@ -43,22 +67,22 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         $temporaryUploadCollection = new CollectionEntity();
         $temporaryUploadCollection
-            ->setTitle($this->__('Temporary upload collection'))
+            ->setTitle($this->trans('Temporary upload collection'))
             ->setSlug('tmp')
-            ->setDescription($this->__('This collection is needed as temporary storage for uploaded files. Do not edit or delete!'))
+            ->setDescription($this->trans('This collection is needed as temporary storage for uploaded files. Do not edit or delete!'))
         ;
         $this->entityManager->persist($temporaryUploadCollection);
 
         // We need to create and flush the upload collection first, because it has to has the ID 1.
         $this->entityManager->flush();
         if (CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID !== $temporaryUploadCollection->getId()) {
-            throw new \Exception($this->__f('The id of the generated "temporary upload collection" must be %s, but has a different value. This should not have happened. Please report this error.', ['%s' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID]));
+            throw new \Exception($this->trans('The id of the generated "temporary upload collection" must be %s%, but has a different value. This should not have happened. Please report this error.', ['%s%' => CollectionEntity::TEMPORARY_UPLOAD_COLLECTION_ID]));
         }
 
         $rootCollection = new CollectionEntity();
         $rootCollection
-            ->setTitle($this->__('Root collection'))
-            ->setSlug($this->__('root'))
+            ->setTitle($this->trans('Root collection'))
+            ->setSlug($this->trans('root'))
             ->setDescription('The very top of the collection tree.');
         $this->entityManager->persist($rootCollection);
 
@@ -67,8 +91,8 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
 
         $exampleCollection = new CollectionEntity();
         $exampleCollection
-            ->setTitle($this->__('Example collection'))
-            ->setDescription($this->__('Edit or delete this example collection'))
+            ->setTitle($this->trans('Example collection'))
+            ->setDescription($this->trans('Edit or delete this example collection'))
             ->setParent($rootCollection);
         $this->entityManager->persist($exampleCollection);
 
@@ -94,7 +118,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
     /**
      * {@inheritdoc}
      */
-    public function upgrade($oldversion)
+    public function upgrade($oldversion): bool
     {
         switch ($oldversion) {
             /** @noinspection PhpMissingBreakStatementInspection */
@@ -128,8 +152,8 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 // Create root collection.
                 $rootCollection = new CollectionEntity();
                 $rootCollection
-                    ->setTitle($this->__('Root collection'))
-                    ->setSlug($this->__('root'))
+                    ->setTitle($this->trans('Root collection'))
+                    ->setSlug($this->trans('root'))
                     ->setDescription('The very top of the collection tree.')
                 ;
                 $this->entityManager->persist($rootCollection);
@@ -193,6 +217,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 }
             case '1.3.0':
             case '2.0.0':
+                // @todo change datadir to public/uploads in media entities
                 return true;
             default:
                 return false;
@@ -202,7 +227,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
     /**
      * {@inheritdoc}
      */
-    public function uninstall()
+    public function uninstall(): bool
     {
         // @todo Also delete media files?
         $this->schemaTool->drop(static::getEntities());
@@ -210,7 +235,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
         $this->delVars();
 
         // remove category registry entries
-        $registries = $this->container->get('zikula_categories_module.category_registry_repository')->findBy(['modname' => 'CmfcmfMediaModule']);
+        $registries = $this->managerRegistry->getRepository('ZikulaCategoriesModule:CategoryRegistryEntity')->findBy(['modname' => 'CmfcmfMediaModule']);
         foreach ($registries as $registry) {
             $this->entityManager->remove($registry);
         }
@@ -328,8 +353,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
      */
     private function createUploadDir()
     {
-        $dataDirectory = $this->container->getParameter('datadir');
-        $uploadDirectory = $dataDirectory . '/cmfcmf-media-module/media';
+        $uploadDirectory = $this->projectDir . '/public/cmfcmf-media-module/media';
 
         if (!is_dir($uploadDirectory)) {
             mkdir($uploadDirectory, 0777, true);
@@ -355,7 +379,7 @@ TXT;
     {
         $temporaryUploadCollectionPermission = new GroupPermissionEntity();
         $temporaryUploadCollectionPermission->setCollection($temporaryUploadCollection)
-            ->setDescription($this->__('Disallow access to the temporary upload collection.'))
+            ->setDescription($this->trans('Disallow access to the temporary upload collection.'))
             ->setAppliedToSelf(true)
             ->setAppliedToSubCollections(true)
             ->setGoOn(false)
@@ -367,7 +391,7 @@ TXT;
 
         $adminPermission = new GroupPermissionEntity();
         $adminPermission->setCollection($rootCollection)
-            ->setDescription($this->__('Global admin permission'))
+            ->setDescription($this->trans('Global admin permission'))
             ->setAppliedToSelf(true)
             ->setAppliedToSubCollections(true)
             ->setGoOn(false)
@@ -379,7 +403,7 @@ TXT;
 
         $ownerPermission = new OwnerPermissionEntity();
         $ownerPermission->setCollection($rootCollection)
-            ->setDescription($this->__('Allows owners to administrate their own collections.'))
+            ->setDescription($this->trans('Allows owners to administrate their own collections.'))
             ->setAppliedToSelf(true)
             ->setAppliedToSubCollections(false)
             ->setGoOn(true)
@@ -391,7 +415,7 @@ TXT;
 
         $userPermission = new GroupPermissionEntity();
         $userPermission->setCollection($rootCollection)
-            ->setDescription($this->__('Allow view and download for everyone.'))
+            ->setDescription($this->trans('Allow view and download for everyone.'))
             ->setAppliedToSelf(true)
             ->setAppliedToSubCollections(true)
             ->setGoOn(false)
@@ -407,12 +431,11 @@ TXT;
 
     private function createCategoryRegistries()
     {
-        $categoryGlobal = $this->container->get('zikula_categories_module.category_repository')->findOneBy(['name' => 'Global']);
+        $categoryGlobal = $this->managerRegistry->getRepository('ZikulaCategoriesModule:CategoryEntity')->findOneBy(['name' => 'Global']);
         if (!$categoryGlobal) {
             return;
         }
 
-        $entityManager = $this->container->get('doctrine.orm.default_entity_manager');
         foreach (['AbstractMediaEntity', 'CollectionEntity'] as $entityName) {
             $registry = new CategoryRegistryEntity();
             $registry->setModname('CmfcmfMediaModule');
@@ -420,8 +443,8 @@ TXT;
             $registry->setProperty('Main');
             $registry->setCategory($categoryGlobal);
 
-            $entityManager->persist($registry);
+            $this->entityManager->persist($registry);
         }
-        $entityManager->flush();
+        $this->entityManager->flush();
     }
 }

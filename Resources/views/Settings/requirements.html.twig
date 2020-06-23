@@ -2,30 +2,30 @@
 {% block settings_content %}
     <div class="alert alert-{{ uploadSize.state }}">
         <strong>{{ uploadSize.message }}</strong>
-        {{ __f('Used for %s', {'%s': uploadSize.for}) }}.
+        {{ 'Used for %s%'|trans({'%s%': uploadSize.for}) }}.
     </div>
     <div class="alert alert-{{ fileInfo.state }}">
         <strong>{{ fileInfo.message }}</strong>
-        {{ __f('Used for %s', {'%s': fileInfo.for}) }}.
+        {{ 'Used for %s%'|trans({'%s%': fileInfo.for}) }}.
     </div>
     <div class="alert alert-{{ imagine.state }}">
         <strong>{{ imagine.message }}</strong>
-        {{ __f('Used for %s', {'%s': imagine.for}) }}.
+        {{ 'Used for %s%'|trans({'%s%': imagine.for}) }}.
     </div>
     <div class="alert alert-{{ memoryLimit.state }}">
         <strong>{{ memoryLimit.message }}</strong>
-        {{ __f('Used for %s', {'%s': memoryLimit.for}) }}.
+        {{ 'Used for %s%'|trans({'%s%': memoryLimit.for}) }}.
     </div>
     <div class="alert alert-{{ zip.state }}">
         <strong>{{ zip.message }}</strong>
-        {{ __f('Used for %s', {'%s': zip.for}) }}.
+        {{ 'Used for %s%'|trans({'%s%': zip.for}) }}.
     </div>
     <div class="alert alert-{{ curl.state }}">
         <strong>{{ curl.message }}</strong>
-        {{ __f('Used for %s', {'%s': curl.for}) }}.
+        {{ 'Used for %s%'|trans({'%s%': curl.for}) }}.
     </div>
     <div class="alert alert-{{ phar.state }}">
         <strong>{{ phar.message }}</strong>
-        {{ __f('Used for %s', {'%s': phar.for}) }}.
+        {{ 'Used for %s%'|trans({'%s%': phar.for}) }}.
     </div>
 {% endblock %}

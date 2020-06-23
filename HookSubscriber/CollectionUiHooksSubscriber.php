@@ -15,13 +15,18 @@ namespace Cmfcmf\Module\MediaModule\HookSubscriber;
 
 use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\Bundle\HookBundle\HookSubscriberInterface;
-use Zikula\Common\Translator\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Collection ui hooks subscriber.
  */
 class CollectionUiHooksSubscriber implements HookSubscriberInterface
 {
+    public function getAreaName(): string
+    {
+        return 'subscriber.cmfcmfmediamodule.ui_hooks.collections';
+    }
+
     /**
      * @var TranslatorInterface
      */
@@ -38,7 +43,7 @@ class CollectionUiHooksSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getOwner()
+    public function getOwner(): string
     {
         return 'CmfcmfMediaModule';
     }
@@ -46,7 +51,7 @@ class CollectionUiHooksSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getCategory()
+    public function getCategory(): string
     {
         return UiHooksCategory::NAME;
     }
@@ -54,15 +59,15 @@ class CollectionUiHooksSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->translator->__('Collection ui hooks subscriber');
+        return $this->translator->trans('Collection ui hooks subscriber');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEvents()
+    public function getEvents(): array
     {
         return [
             // Display hook for view/display templates.

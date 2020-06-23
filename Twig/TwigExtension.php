@@ -20,7 +20,9 @@ use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Cmfcmf\Module\MediaModule\Upgrade\VersionChecker;
 use Github\Exception\RuntimeException;
 use Michelf\MarkdownExtra;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcherInterface;
 use Zikula\Bundle\HookBundle\Hook\FilterHook;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
@@ -29,7 +31,7 @@ use Zikula\ExtensionsModule\Entity\RepositoryInterface\ExtensionRepositoryInterf
 /**
  * Provides some custom Twig extensions.
  */
-class TwigExtension extends \Twig_Extension
+class TwigExtension extends AbstractExtension
 {
     /**
      * @var TranslatorInterface
@@ -99,7 +101,7 @@ class TwigExtension extends \Twig_Extension
     public function getFilters()
     {
         return [
-            new \Twig_SimpleFilter('cmfcmfmediamodule_getdescription', [$this, 'escapeDescription'], ['is_safe' => ['html']])
+            new TwigFunction('cmfcmfmediamodule_getdescription', [$this, 'escapeDescription'], ['is_safe' => ['html']])
         ];
     }
 
@@ -109,9 +111,9 @@ class TwigExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('cmfcmfmediamodule_hasPermission', [$this, 'hasPermission']),
-            new \Twig_SimpleFunction('cmfcmfmediamodule_newversionavailable', [$this, 'newVersionAvailable']),
-            new \Twig_SimpleFunction('cmfcmfmediamodule_maxfilesize', [$this, 'maxFileSize'])
+            new TwigFunction('cmfcmfmediamodule_hasPermission', [$this, 'hasPermission']),
+            new TwigFunction('cmfcmfmediamodule_newversionavailable', [$this, 'newVersionAvailable']),
+            new TwigFunction('cmfcmfmediamodule_maxfilesize', [$this, 'maxFileSize'])
         ];
     }
 

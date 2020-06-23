@@ -16,12 +16,13 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Form\SettingsType;
 use Cmfcmf\Module\MediaModule\Helper\PHPIniHelper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser;
-use Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mime\FileBinaryMimeTypeGuesser;
+use Symfony\Component\Mime\FileinfoMimeTypeGuesser;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Zikula\Bundle\CoreBundle\HttpKernel\ZikulaHttpKernelInterface;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
 
 /**
@@ -47,14 +48,16 @@ class SettingsController extends AbstractController
     public function requirementsAction()
     {
         $this->ensurePermission();
+        $fileInfoGuesser = new FileinfoMimeTypeGuesser();
+        $fileBinaryGuesser = new FileBinaryMimeTypeGuesser();
 
-        if (FileinfoMimeTypeGuesser::isSupported()) {
+        if ($fileInfoGuesser->isGuesserSupported()) {
             $fileInfo = [
                 'for' => $this->getTranslator()->trans('File Upload Mime Type guessing', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
                 'message' => $this->getTranslator()->trans('The FileInfo PHP extension is installed.', [], 'cmfcmfmediamodule'),
             ];
-        } elseif (FileBinaryMimeTypeGuesser::isSupported()) {
+        } elseif ($fileBinaryGuesser->isGuesserSupported()) {
             $fileInfo = [
                 'for' => $this->getTranslator()->trans('File Upload Mime Type guessing', [], 'cmfcmfmediamodule'),
                 'state' => 'success',
@@ -200,7 +203,7 @@ class SettingsController extends AbstractController
             foreach ($data as $name => $value) {
                 $this->setVar($name, $value);
             }
-            $this->addFlash('status', $this->__('Settings saved!'));
+            $this->addFlash('status', $this->trans('Settings saved!'));
         }
 
         return [
@@ -215,20 +218,20 @@ class SettingsController extends AbstractController
      *
      * @return array
      */
-    public function scribiteAction()
-    {
+    public function scribiteAction(
+        ZikulaHttpKernelInterface $kernel
+    ) {
         $this->ensurePermission();
 
-        $scribiteInstalled = $this->get('kernel')->isBundle('ZikulaScribiteModule');
+        $scribiteInstalled = $kernel->isBundle('ZikulaScribiteModule');
         $descriptionEscapingStrategyForCollectionOk = true;
         $descriptionEscapingStrategyForMediaOk = true;
 
         if ($scribiteInstalled) {
-            $hookDispatcher = $this->get('hook_dispatcher');
-            $mediaBinding = $hookDispatcher->getBindingBetweenAreas(
+            $mediaBinding = $this->hookDispatcher->getBindingBetweenAreas(
                 'subscriber.cmfcmfmediamodule.ui_hooks.media',
                 'provider.zikulascribitemodule.ui_hooks.editor');
-            $collectionBinding = $hookDispatcher->getBindingBetweenAreas(
+            $collectionBinding = $this->hookDispatcher->getBindingBetweenAreas(
                 'subscriber.cmfcmfmediamodule.ui_hooks.collections',
                 'provider.zikulascribitemodule.ui_hooks.editor');
 
@@ -250,7 +253,7 @@ class SettingsController extends AbstractController
      */
     private function ensurePermission()
     {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+        if (!$this->securityManager->hasPermission(
             'settings',
             'admin')
         ) {

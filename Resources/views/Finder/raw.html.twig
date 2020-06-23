@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="input-group">
-            <input class="form-control" placeholder="{{ __('Insert search text')|e('html_attr') }}" id="cmfcmfmedia-finder-search-input" />
+            <input class="form-control" placeholder="{% trans %}Insert search text{% endtrans %}" id="cmfcmfmedia-finder-search-input" />
             <span class="input-group-addon"><i class="fa fa-cog fa-spin hidden"></i></span>
         </div>
     </div>
@@ -20,11 +20,11 @@
                 </colgroup>
                 <thead>
                     <tr>
-                        <th id="hType" scope="col">{{ __('Type', 'cmfcmfmediamodule') }}</th>
-                        <th id="hTitle" scope="col">{{ __('Title', 'cmfcmfmediamodule') }}</th>
-                        <th id="hPreview" scope="col">{{ __('Preview', 'cmfcmfmediamodule') }}</th>
-                        <th id="hLicense" scope="col">{{ __('License', 'cmfcmfmediamodule') }}</th>
-                        <th id="hUrl" scope="col">{{ __('Url', 'cmfcmfmediamodule') }}</th>
+                        <th id="hType" scope="col">{% trans %}Type{% endtrans %}</th>
+                        <th id="hTitle" scope="col">{% trans %}Title{% endtrans %}</th>
+                        <th id="hPreview" scope="col">{% trans %}Preview{% endtrans %}</th>
+                        <th id="hLicense" scope="col">{% trans %}License{% endtrans %}</th>
+                        <th id="hUrl" scope="col">{% trans %}Url{% endtrans %}</th>
                         <th id="hActions" scope="col"></th>
                     </tr>
                 </thead>

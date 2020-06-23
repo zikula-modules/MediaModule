@@ -16,7 +16,10 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Exception\InvalidPositionException;
+use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
@@ -30,13 +33,38 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Zikula\Core\Response\PlainResponse;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Zikula\Bundle\CoreBundle\Response\PlainResponse;
+use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcherInterface;
+use Zikula\ExtensionsModule\AbstractExtension;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
+use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;
+use Zikula\UsersModule\Api\ApiInterface\CurrentUserApiInterface;
 
 /**
  * @Route("/permissions")
  */
 class PermissionController extends AbstractController
 {
+    /**
+     * @var CollectionPermissionContainer
+     */
+    private $collectionPermissionTypeContainer;
+
+    public function __construct(
+        AbstractExtension $extension,
+        PermissionApiInterface $permissionApi,
+        VariableApiInterface $variableApi,
+        TranslatorInterface $translator,
+        HookDispatcherInterface $hookDispatcher,
+        SecurityManager $securityManager,
+        MediaTypeCollection $mediaTypeCollection,
+        CollectionPermissionContainer $collectionPermissionTypeContainer
+    ) {
+        parent::__construct($extension, $permissionApi, $variableApi, $translator, $hookDispatcher, $securityManager, $mediaTypeCollection);
+        $this->collectionPermissionTypeContainer = $collectionPermissionTypeContainer;
+    }
+
     /**
      * @Route("/show/{slug}", requirements={"slug" = ".+?"})
      * @Template("@CmfcmfMediaModule/Permission/view.html.twig")
@@ -46,16 +74,17 @@ class PermissionController extends AbstractController
      *
      * @return array
      */
-    public function viewAction(Request $request, CollectionEntity $collectionEntity)
-    {
-        if (!$this->get('cmfcmf_media_module.security_manager')->hasPermission(
+    public function viewAction(
+        Request $request,
+        CollectionEntity $collectionEntity,
+        CurrentUserApiInterface $currentUserApi
+    ) {
+        if (!$this->securityManager->hasPermission(
             $collectionEntity,
             CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION
         )) {
             throw new AccessDeniedException();
         }
-
-        $collectionPermissionTypeContainer = $this->get('cmfcmf_media_module.collection_permission.container');
 
         $qb = $this->getPermissionsOfCollectionAndParentCollectionsQueryBuilder($collectionEntity);
         /** @var AbstractPermissionEntity[] $entities */
@@ -64,8 +93,8 @@ class PermissionController extends AbstractController
         return [
             'entities' => $entities,
             'collection' => $collectionEntity,
-            'collectionPermissionTypeContainer' => $collectionPermissionTypeContainer,
-            'userId' => $this->get('zikula_users_module.current_user')->get('uid'),
+            'collectionPermissionTypeContainer' => $this->collectionPermissionTypeContainer,
+            'userId' => $currentUserApi->get('uid'),
             'highlight' => $request->query->get('highlight', null)
         ];
     }
@@ -81,25 +110,27 @@ class PermissionController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(Request $request, $type, CollectionEntity $collection, AbstractPermissionEntity $afterPermission)
-    {
+    public function newAction(
+        Request $request,
+        $type,
+        CollectionEntity $collection,
+        AbstractPermissionEntity $afterPermission,
+        string $projectDir
+    ) {
         $permissionLevel = $this->getPermissionLevelOrException($collection);
 
-        $permissionTypeContainer = $this->get('cmfcmf_media_module.collection_permission.container');
         try {
-            $permissionType = $permissionTypeContainer->getCollectionPermission($type);
+            $permissionType = $this->collectionPermissionTypeContainer->getCollectionPermission($type);
         } catch (\DomainException $e) {
             throw new NotFoundHttpException();
         }
 
-        $dataDirectory = $this->get('service_container')->getParameter('datadir');
-
         $entity = $permissionType->getEntityClass();
-        $entity = new $entity($this->get('request_stack'), $dataDirectory);
+        $entity = new $entity($this->get('request_stack'), $projectDir . '/public/uploads');
 
-        $form = $permissionType->getFormClass();
+        $formClass = $permissionType->getFormClass();
         /** @var \Symfony\Component\Form\Form $form */
-        $form = $this->createForm($form, $entity, [
+        $form = $this->createForm($formClass, $entity, [
             'collection' => $collection,
             'permissionLevel' => $permissionLevel
         ]);
@@ -115,10 +146,10 @@ class PermissionController extends AbstractController
         if ($form->isValid()) {
             $permissionRepository = $this
                 ->getDoctrine()
-                ->getRepository('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity');
+                ->getRepository(AbstractPermissionEntity::class);
             $permissionRepository->save($entity, true);
 
-            $this->addFlash('status', $this->__('Permission created!'));
+            $this->addFlash('status', $this->trans('Permission created!'));
 
             return $this->redirectToRoute('cmfcmfmediamodule_permission_view', [
                 'slug' => $collection->getSlug(),
@@ -145,13 +176,12 @@ class PermissionController extends AbstractController
     {
         $permissionLevel = $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
 
-        $collectionPermissionTypeContainer = $this->get('cmfcmf_media_module.collection_permission.container');
-        $form = $collectionPermissionTypeContainer
+        $formClass = $this->collectionPermissionTypeContainer
             ->getCollectionPermissionFromEntity($permissionEntity)
             ->getFormClass();
 
         /** @var \Symfony\Component\Form\Form $form */
-        $form = $this->createForm($form, $permissionEntity, [
+        $form = $this->createForm($formClass, $permissionEntity, [
             'collection' => $permissionEntity->getCollection(),
             'permissionLevel' => $permissionLevel
         ]);
@@ -164,14 +194,14 @@ class PermissionController extends AbstractController
         try {
             $permissionRepository = $this
                 ->getDoctrine()
-                ->getRepository('CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity');
+                ->getRepository(AbstractPermissionEntity::class);
             $permissionRepository->save($permissionEntity, true);
         } catch (OptimisticLockException $e) {
-            $form->addError(new FormError($this->__('Someone else edited the permission. Please either cancel editing or force reload the page.')));
+            $form->addError(new FormError($this->trans('Someone else edited the permission. Please either cancel editing or force reload the page.')));
             goto edit_error;
         }
 
-        $this->addFlash('status', $this->__('Permission updated!'));
+        $this->addFlash('status', $this->trans('Permission updated!'));
 
         return $this->redirectToRoute('cmfcmfmediamodule_permission_view', [
             'slug' => $permissionEntity->getCollection()->getSlug()
@@ -196,13 +226,10 @@ class PermissionController extends AbstractController
         $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
 
         if ($request->isMethod('GET')) {
-            $collectionPermissionContainer = $this->get(
-                'cmfcmf_media_module.collection_permission.container'
-            );
 
             return [
                 'permission' => $permissionEntity,
-                'collectionPermission' => $collectionPermissionContainer
+                'collectionPermission' => $this->collectionPermissionTypeContainer
                     ->getCollectionPermissionFromEntity($permissionEntity)
             ];
         }
@@ -211,7 +238,7 @@ class PermissionController extends AbstractController
         $em->remove($permissionEntity);
         $em->flush();
 
-        $this->addFlash('status', $this->__('Permission deleted!'));
+        $this->addFlash('status', $this->trans('Permission deleted!'));
 
         return $this->redirectToRoute('cmfcmfmediamodule_permission_view', [
             'slug' => $permissionEntity->getCollection()->getSlug()
@@ -257,11 +284,11 @@ class PermissionController extends AbstractController
         try {
             $repository->save($permissionEntity, false);
         } catch (OptimisticLockException $e) {
-            return $this->json(['error' => $this->__(
+            return $this->json(['error' => $this->trans(
                 'Someone modified a permission rule. Please reload the page and try again!'
             )], Response::HTTP_FORBIDDEN);
         } catch (InvalidPositionException $e) {
-            return $this->json(['error' => $this->__(
+            return $this->json(['error' => $this->trans(
                 'You cannot move the permission rule to this position!'
             )], Response::HTTP_FORBIDDEN);
         }
@@ -278,7 +305,7 @@ class PermissionController extends AbstractController
         CollectionEntity $collectionEntity
     ) {
         $em = $this->getDoctrine()->getManager();
-        $collectionRepository = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
+        $collectionRepository = $em->getRepository(CollectionEntity::class);
 
         $qb = $collectionRepository->getPathQueryBuilder($collectionEntity);
         $qb->select('p')
@@ -305,18 +332,17 @@ class PermissionController extends AbstractController
      */
     private function getPermissionLevelOrException(
         CollectionEntity $collectionEntity,
+        CurrentUserApiInterface $currentUserApi,
         AbstractPermissionEntity $permissionEntity = null
     ) {
-        $securityManager = $this->get('cmfcmf_media_module.security_manager');
-
-        if ($securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)) {
+        if ($this->securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)) {
             return CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS;
         }
         if (null === $permissionEntity) {
             throw new AccessDeniedException();
         }
-        if ($permissionEntity->getCreatedBy()->getUid() === $this->get('zikula_users_module.current_user')->get('uid')) {
-            if ($securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS)) {
+        if ($permissionEntity->getCreatedBy()->getUid() === $currentUserApi->get('uid')) {
+            if ($this->securityManager->hasPermission($collectionEntity, CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS)) {
                 return CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS;
             }
         }

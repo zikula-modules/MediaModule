@@ -23,7 +23,7 @@
                         <h4{% if not options.showTitleBelowThumbs %} class="hidden"{% endif %}>{{ media.title }}</h4>
                     {% endif %}
                     {% if media.attribution|default %}
-                        <p{% if not options.showAttributionBelowThumbs %} class="hidden"{% endif %}>{{ __f('By %s', {'%s': media.attribution})|raw }}</p>
+                        <p{% if not options.showAttributionBelowThumbs %} class="hidden"{% endif %}>{{ 'By %s%'|trans({'%s%': media.attribution})|raw }}</p>
                     {% endif %}
                 </div>
             </a>

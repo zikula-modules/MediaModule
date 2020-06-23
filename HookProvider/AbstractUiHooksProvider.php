@@ -13,23 +13,18 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\HookProvider;
 
+use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\Bundle\HookBundle\Hook\ProcessHook;
 use Zikula\Bundle\HookBundle\HookProviderInterface;
-use Zikula\Bundle\HookBundle\ServiceIdTrait;
 
-/**
- * Provides convenience methods for hook handling.
- */
 abstract class AbstractUiHooksProvider implements HookProviderInterface
 {
-    use ServiceIdTrait;
-
     /**
      * @var TranslatorInterface
      */
@@ -46,55 +41,46 @@ abstract class AbstractUiHooksProvider implements HookProviderInterface
     protected $requestStack;
 
     /**
-     * @var EngineInterface
+     * @var Environment
      */
-    protected $renderEngine;
+    protected $twig;
 
     /**
      * @var SecurityManager
      */
     protected $securityManager;
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param RequestStack           $requestStack
-     * @param EngineInterface        $renderEngine
-     * @param SecurityManager        $securityManager
-     * @param TranslatorInterface    $translator
-     */
     public function __construct(
         TranslatorInterface $translator,
         EntityManagerInterface $entityManager,
         RequestStack $requestStack,
-        EngineInterface $renderEngine,
+        Environment $twig,
         SecurityManager $securityManager
     ) {
         $this->translator = $translator;
         $this->entityManager = $entityManager;
         $this->requestStack = $requestStack;
-        $this->renderEngine = $renderEngine;
+        $this->twig = $twig;
         $this->securityManager = $securityManager;
     }
 
-    public function getOwner()
+    public function getOwner(): string
     {
         return 'CmfcmfMediaModule';
     }
 
-    public function getCategory()
+    public function getCategory(): string
     {
         return UiHooksCategory::NAME;
     }
 
     /**
      * Processes the hook deletion by removing the HookedObject.
-     *
-     * @param ProcessHook $hook
      */
     public function processDelete(ProcessHook $hook)
     {
         $repository = $this->entityManager
-            ->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity');
+            ->getRepository(HookedObjectEntity::class);
         $hookedObject = $repository->getByHookOrCreate($hook);
 
         $this->entityManager->remove($hookedObject);

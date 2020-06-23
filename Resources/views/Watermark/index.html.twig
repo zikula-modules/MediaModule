@@ -1,16 +1,16 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
 {% block title %}
-    {{ __('Watermarks') }}
+    {% trans %}Watermarks{% endtrans %}
 {% endblock %}
 {% block content %}
     {% if cmfcmfmediamodule_hasPermission('watermark', 'new') %}
         <a href="{{ path('cmfcmfmediamodule_watermark_new', {type: 'image'}) }}" class="btn btn-default">
             <i class="fa fa-fw fa-picture-o"></i>
-            {{ __('Create a new image-based watermark') }}
+            {% trans %}Create a new image-based watermark{% endtrans %}
         </a>
         <a href="{{ path('cmfcmfmediamodule_watermark_new', {type: 'text'}) }}" class="btn btn-default">
             <i class="fa fa-fw fa-font"></i>
-            {{ __('Create a new text-based watermark') }}
+            {% trans %}Create a new text-based watermark{% endtrans %}
         </a>
         <br />
         <br />
@@ -29,13 +29,13 @@
             </colgroup>
             <thead>
                 <tr>
-                    <th id="hId" scope="col">{{ __('ID') }}</th>
-                    <th id="hTitle" scope="col">{{ __('Title') }}</th>
-                    <th id="hContent" scope="col">{{ __('Content') }}</th>
-                    <th id="hPosition" scope="col">{{ __('Position') }}</th>
-                    <th id="hImageSize" scope="col">{{ __('Image size') }}</th>
-                    <th id="hRelativeSize" scope="col">{{ __('Relative size') }}</th>
-                    <th id="hActions" scope="col">{{ __('Actions') }}</th>
+                    <th id="hId" scope="col">{% trans %}ID{% endtrans %}</th>
+                    <th id="hTitle" scope="col">{% trans %}Title{% endtrans %}</th>
+                    <th id="hContent" scope="col">{% trans %}Content{% endtrans %}</th>
+                    <th id="hPosition" scope="col">{% trans %}Position{% endtrans %}</th>
+                    <th id="hImageSize" scope="col">{% trans %}Image size{% endtrans %}</th>
+                    <th id="hRelativeSize" scope="col">{% trans %}Relative size{% endtrans %}</th>
+                    <th id="hActions" scope="col">{% trans %}Actions{% endtrans %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,7 +67,7 @@
             {% else %}
                 <tr>
                     <td colspan="7" class="text-center">
-                        {{ __('No watermarks created yet.') }}
+                        {% trans %}No watermarks created yet.{% endtrans %}
                     </td>
                 </tr>
             {% endfor %}

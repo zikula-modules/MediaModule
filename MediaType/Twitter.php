@@ -96,7 +96,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     {
         /** @var TwitterEntity $entity */
 
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Twitter:fullpage.html.twig', [
+        return $this->twig->render('@CmfcmfMediaModule/MediaType/Twitter/fullpage.html.twig', [
             'entity' => $entity,
             'usePageAddAsset' => true
         ]);
@@ -111,7 +111,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     {
         /** @var TwitterEntity $entity */
 
-        return '<div>' . $this->renderEngine->render('CmfcmfMediaModule:MediaType/Twitter:fullpage.html.twig', [
+        return '<div>' . $this->twig->render('@CmfcmfMediaModule/MediaType/Twitter/fullpage.html.twig', [
             'entity' => $entity,
             'usePageAddAsset' => false,
             'placeholder' => $this->translator->trans('This is where the Tweet will appear.', [], 'cmfcmfmediamodule')

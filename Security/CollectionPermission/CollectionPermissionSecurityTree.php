@@ -15,7 +15,7 @@ namespace Cmfcmf\Module\MediaModule\Security\CollectionPermission;
 
 use Cmfcmf\Module\MediaModule\Security\SecurityGraph;
 use Fhaculty\Graph\Vertex;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Generates the permission graph.

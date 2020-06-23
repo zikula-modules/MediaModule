@@ -1,4 +1,4 @@
-{% extends 'bootstrap_3_horizontal_layout.html.twig' %}
+{% extends '@ZikulaFormExtension/Form/bootstrap_4_zikula_admin_layout.html.twig' %}
 
 {% block form_help -%}
     {% for attrname, attrvalue in attr %}
@@ -49,7 +49,7 @@
                 return $field.closest('form').find('input[id$=\'_token\']').attr('id');
             }
             function createNoOptionsMessage() {
-                var noOptionsMessage = "{{ __('There are no options for this collection template.') }}";
+                var noOptionsMessage = "{% trans %}There are no options for this collection template.{% endtrans %}";
                 $options.html('<div class="alert alert-info">' + noOptionsMessage + '</div>');
             }
 

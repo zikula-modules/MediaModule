@@ -15,13 +15,18 @@ namespace Cmfcmf\Module\MediaModule\HookSubscriber;
 
 use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
 use Zikula\Bundle\HookBundle\HookSubscriberInterface;
-use Zikula\Common\Translator\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Media form aware hook subscriber.
  */
 class MediaFormAwareHookSubscriber implements HookSubscriberInterface
 {
+    public function getAreaName(): string
+    {
+        return 'subscriber.cmfcmfmediamodule.form_aware_hook.media';
+    }
+
     /**
      * @var TranslatorInterface
      */
@@ -38,7 +43,7 @@ class MediaFormAwareHookSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getOwner()
+    public function getOwner(): string
     {
         return 'CmfcmfMediaModule';
     }
@@ -46,7 +51,7 @@ class MediaFormAwareHookSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getCategory()
+    public function getCategory(): string
     {
         return FormAwareCategory::NAME;
     }
@@ -54,15 +59,15 @@ class MediaFormAwareHookSubscriber implements HookSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public function getTitle()
+    public function getTitle(): string
     {
-        return $this->translator->__('Media form aware subscriber');
+        return $this->translator->trans('Media form aware subscriber');
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getEvents()
+    public function getEvents(): array
     {
         return [
             // Display hook for create/edit forms.

@@ -32,7 +32,7 @@ class WatermarkRepository extends EntityRepository
     ) {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('m')
-            ->from('CmfcmfMediaModule:Media\AbstractMediaEntity', 'm')
+            ->from(AbstractMediaEntity::class, 'm')
             ->leftJoin('m.collection', 'c')
             ->where($qb->expr()->eq('c.watermark', ':watermark'))
             ->setParameter('watermark', $entity);

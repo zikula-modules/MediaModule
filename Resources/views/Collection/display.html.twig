@@ -1,4 +1,4 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
 {% block above_title %}
     {% include '@CmfcmfMediaModule/Search/search.html.twig' %}
 {% endblock %}
@@ -23,34 +23,34 @@
             {% if createCollectionPermission and addMediaPermission %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-plus"></i> {{ __('Create') }} <span class="caret"></span>
+                        <i class="fa fa-plus"></i> {% trans %}Create{% endtrans %} <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
                         <li>
                             <a href="{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}">
-                                <i class="fa fa-fw fa-folder-o"></i> {{ __('collection') }}
+                                <i class="fa fa-fw fa-folder-o"></i> {% trans %}collection{% endtrans %}
                             </a>
                         </li>
                         <li>
                             <a href="{{ path('cmfcmfmediamodule_media_new', {parent: collection.slug}) }}">
-                                <i class="fa fa-fw fa-picture-o"></i> {{ __('media') }}
+                                <i class="fa fa-fw fa-picture-o"></i> {% trans %}media{% endtrans %}
                             </a>
                         </li>
                     </ul>
                 </div>
             {% elseif createCollectionPermission %}
                 <a href="{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
-                    <i class="fa fa-plus"></i> {{ __('Create new collection') }}
+                    <i class="fa fa-plus"></i> {% trans %}Create new collection{% endtrans %}
                 </a>
             {% elseif addMediaPermission %}
                 <a href="{{ path('cmfcmfmediamodule_media_new', {parent: collection.slug}) }}" class="btn btn-default btn-sm">
-                    <i class="fa fa-plus"></i> {{ __('Create new media') }}
+                    <i class="fa fa-plus"></i> {% trans %}Create new media{% endtrans %}
                 </a>
             {% endif %}
             {% set editCollectionPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION')) %}
             {% if editCollectionPermission %}
                 <a href="{{ path('cmfcmfmediamodule_collection_edit', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
-                    <i class="fa fa-edit"></i> {{ __('Edit collection') }}
+                    <i class="fa fa-edit"></i> {% trans %}Edit collection{% endtrans %}
                 </a>
                 {# disabled for performance reasons
                     {% set enhancePermissionsPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_ENHANCE_PERMISSIONS')) %}
@@ -58,21 +58,21 @@
                     <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
                         <i class="fa fa-user-secret"></i>
                         {% if changePermissionsPermission %}
-                            {{ __('View and change permissions') }}
+                            {% trans %}View and change permissions{% endtrans %}
                         {% elseif enhancePermissionsPermission %}
-                            {{ __('Invite people and view permissions') }}
+                            {% trans %}Invite people and view permissions{% endtrans %}
                         {% else %}
-                            {{ __('View permissions') }}
+                            {% trans %}View permissions{% endtrans %}
                         {% endif %}
                     </a>
                 #}
                 <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
-                    <i class="fa fa-user-secret"></i> {{ __('View permissions') }}
+                    <i class="fa fa-user-secret"></i> {% trans %}View permissions{% endtrans %}
                 </a>
             {% endif %}
             {% if cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION')) %}
                 <a href="{{ path('cmfcmfmediamodule_collection_download', {slug: collection.slug}) }}" class="btn btn-default btn-sm">
-                    <i class="fa fa-download"></i> {{ __('Download collection') }}
+                    <i class="fa fa-download"></i> {% trans %}Download collection{% endtrans %}
                 </a>
             {% endif %}
         </div>

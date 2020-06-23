@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\Tests\DependencyInjection;
 
-use Cmfcmf\Module\MediaModule\DependencyInjection\ImporterCompilerPass;
+use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\ImporterCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;

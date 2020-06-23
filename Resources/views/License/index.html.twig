@@ -1,10 +1,10 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
-{% block title __('Licenses') %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
+{% block title 'Licenses'|trans %}
 {% block content %}
     {{ parent() }}
     {% if cmfcmfmediamodule_hasPermission('license', 'add') %}
         <a href="{{ path('cmfcmfmediamodule_license_new') }}" class="btn btn-default">
-            <i class="fa fa-fw fa-plus"></i> {{ __('Create new license') }}
+            <i class="fa fa-fw fa-plus"></i> {% trans %}Create new license{% endtrans %}
         </a>
         <br />
         <br />
@@ -24,13 +24,13 @@
             </colgroup>
             <thead>
                 <tr>
-                    <th id="hId" scope="col">{{ __('ID') }}</th>
-                    <th id="hTitle" scope="col">{{ __('Title') }}</th>
-                    <th id="hUrl" scope="col">{{ __('Url') }}</th>
-                    <th id="hIcon" scope="col">{{ __('Icon') }}</th>
-                    <th id="hOutdated" scope="col">{{ __('Outdated') }}</th>
-                    <th id="hEnabledForUpload" scope="col">{{ __('Enabled for upload') }}</th>
-                    <th id="hEnabledForWebEmbed" scope="col">{{ __('Enabled for web embed') }}</th>
+                    <th id="hId" scope="col">{% trans %}ID{% endtrans %}</th>
+                    <th id="hTitle" scope="col">{% trans %}Title{% endtrans %}</th>
+                    <th id="hUrl" scope="col">{% trans %}Url{% endtrans %}</th>
+                    <th id="hIcon" scope="col">{% trans %}Icon{% endtrans %}</th>
+                    <th id="hOutdated" scope="col">{% trans %}Outdated{% endtrans %}</th>
+                    <th id="hEnabledForUpload" scope="col">{% trans %}Enabled for upload{% endtrans %}</th>
+                    <th id="hEnabledForWebEmbed" scope="col">{% trans %}Enabled for web embed{% endtrans %}</th>
                     <th id="hActions" scope="col">Actions</th>
                 </tr>
             </thead>
@@ -53,23 +53,23 @@
                     </td>
                     <td headers="hEntity{{ entity.id }} hOutdated">
                         {% if entity.outdated %}
-                            {{ __('yes') }}
+                            {% trans %}yes{% endtrans %}
                         {% else %}
-                            {{ __('no') }}
+                            {% trans %}no{% endtrans %}
                         {% endif %}
                     </td>
                     <td headers="hEntity{{ entity.id }} hEnabledForUpload">
                         {% if entity.enabledForUpload %}
-                            {{ __('yes') }}
+                            {% trans %}yes{% endtrans %}
                         {% else %}
-                            {{ __('no') }}
+                            {% trans %}no{% endtrans %}
                         {% endif %}
                     </td>
                     <td headers="hEntity{{ entity.id }} hEnabledForWebEmbed">
                         {% if entity.enabledForWeb %}
-                            {{ __('yes') }}
+                            {% trans %}yes{% endtrans %}
                         {% else %}
-                            {{ __('no') }}
+                            {% trans %}no{% endtrans %}
                         {% endif %}
                     </td>
                     <td headers="hEntity{{ entity.id }} hActions" class="text-right">

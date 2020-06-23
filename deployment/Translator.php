@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-class Translator implements \Symfony\Component\Translation\TranslatorInterface
+class Translator implements \Symfony\Contracts\Translation\TranslatorInterface
 {
     private $locale;
 

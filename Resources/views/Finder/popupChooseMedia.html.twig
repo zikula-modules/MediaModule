@@ -1,6 +1,6 @@
-{% extends 'CmfcmfMediaModule::base.html.twig' %}
+{% extends '@CmfcmfMediaModule/base.html.twig' %}
 {% block title %}
-    {{ __('Find media and collections') }}
+    {% trans %}Find media and collections{% endtrans %}
 {% endblock %}
 {% block content %}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Finder/popup.js')) }}

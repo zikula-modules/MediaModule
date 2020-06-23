@@ -1,10 +1,10 @@
-<h1>{{ __('Please select the size to embed.') }}</h1>
-<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.full|e('html_attr') }}">{{ __('Full') }}</button>
-<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.medium|e('html_attr') }}">{{ __('Medium') }}</button>
-<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.small|e('html_attr') }}">{{ __('Small') }}</button>
-<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ ('<a href="' ~ path('cmfcmfmediamodule_media_download', {slug: slug, collectionSlug: collection.slug}) ~ '">' ~ title ~ '</a>')|e('html_attr') }}">{{ __('Link') }}</button>
+<h1>{% trans %}Please select the size to embed.{% endtrans %}</h1>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.full|e('html_attr') }}">{% trans %}Full{% endtrans %}</button>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.medium|e('html_attr') }}">{% trans %}Medium{% endtrans %}</button>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.small|e('html_attr') }}">{% trans %}Small{% endtrans %}</button>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ ('<a href="' ~ path('cmfcmfmediamodule_media_download', {slug: slug, collectionSlug: collection.slug}) ~ '">' ~ title ~ '</a>')|e('html_attr') }}">{% trans %}Link{% endtrans %}</button>
 
-<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.link|e('html_attr') }}">{{ __('Link') }}</button>
+<button class="btn btn-default cmfcmfmedia-btn-popup-embed" type="button" data-embed-code="{{ embedCodes.link|e('html_attr') }}">{% trans %}Link{% endtrans %}</button>
 <script type="text/javascript">
     (function ($) {
         $('.cmfcmfmedia-btn-popup-embed').click(function () {

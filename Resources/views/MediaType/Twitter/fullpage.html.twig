@@ -1,6 +1,6 @@
 <blockquote class="twitter-tweet">
     <a href="{{ entity.url|e('html_attr') }}">
-        {{ placeholder|default(__('The tweet is loading.')) }}
+        {{ placeholder|default('The tweet is loading.'|trans) }}
     </a>
 </blockquote>
 {% if usePageAddAsset %}

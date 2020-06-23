@@ -21,6 +21,7 @@ use Doctrine\DBAL\Exception\TableNotFoundException;
 use Stof\DoctrineExtensionsBundle\Uploadable\UploadableManager;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Zikula\CategoriesModule\Entity\CategoryEntity;
 use Zikula\CategoriesModule\Entity\RepositoryInterface\CategoryRegistryRepositoryInterface;
 
 class VerySimpleDownloadsModuleImporter extends AbstractImporter
@@ -115,15 +116,15 @@ SQL
                     ->setDescription($download['downloadDescription'])
                     ->setCollection($collection)
                 ;
-                $entity->setCreatedBy($download['createdBy']);
-                $entity->setUpdatedBy($download['updatedBy']);
-                $entity->setCreatedDate(new \DateTime($download['createdDate']));
-                $entity->setUpdatedDate(new \DateTime($download['updatedDate']));
+//                $entity->setCreatedBy($download['createdBy']);
+//                $entity->setUpdatedBy($download['updatedBy']);
+//                $entity->setCreatedDate(new \DateTime($download['createdDate']));
+//                $entity->setUpdatedDate(new \DateTime($download['updatedDate']));
 
                 $this->uploadManager->markEntityToUpload($entity, ImportedFile::fromFile($file));
             }
             if ($download['categoryId']) {
-                $categoryEntity = $this->em->getReference('Zikula\CategoriesModule\Entity\CategoryEntity', $download['categoryId']);
+                $categoryEntity = $this->em->getReference(CategoryEntity::class, $download['categoryId']);
                 $entity->setCategoryAssignments(
                     new ArrayCollection([
                         new MediaCategoryAssignmentEntity($categoryRegistry, $categoryEntity, $entity)

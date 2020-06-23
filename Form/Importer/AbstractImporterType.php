@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\Form\Importer;
 
 use Symfony\Component\Form\AbstractType as SymfonyAbstractType;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractImporterType extends SymfonyAbstractType
 {

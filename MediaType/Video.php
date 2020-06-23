@@ -40,7 +40,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         $clientID = $this->variableApi->get('CmfcmfMediaModule', 'googleApiOAuthClientID');
         $clientSecret = $this->variableApi->get('CmfcmfMediaModule', 'googleApiOAuthClientSecret');
 
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:fullpage.html.twig', [
+        return $this->twig->render('@CmfcmfMediaModule/MediaType/Video/fullpage.html.twig', [
             'entity' => $entity,
             'width' => '100%',
             'height' => '400',
@@ -186,7 +186,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
                 $height = 400;
         }
 
-        return $this->renderEngine->render('CmfcmfMediaModule:MediaType/Video:fullpage.html.twig', ['entity' => $entity, 'width' => $width, 'height' => $height]);
+        return $this->twig->render('@CmfcmfMediaModule/MediaType/Video/fullpage.html.twig', ['entity' => $entity, 'width' => $width, 'height' => $height]);
     }
 
     private function formatDuration($seconds)
@@ -200,6 +200,6 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
         $time = "${minutes}:${seconds}";
 
-        return $this->translator->trans("%s min", ['%s' => $time], 'cmfcmfmediamodule');
+        return $this->translator->trans("%s% min", ['%s%' => $time], 'cmfcmfmediamodule');
     }
 }

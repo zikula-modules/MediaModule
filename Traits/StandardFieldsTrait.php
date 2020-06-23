@@ -13,13 +13,14 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\Traits;
 
+use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 use Zikula\UsersModule\Entity\UserEntity;
 
 /**
- * Standard fields trait implementation class.
+ * Standard fields trait.
  */
 trait StandardFieldsTrait
 {
@@ -34,8 +35,8 @@ trait StandardFieldsTrait
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="create")
-     * @Assert\DateTime()
-     * @var \DateTimeInterface
+     * @Assert\Type("\DateTimeInterface")
+     * @var DateTimeInterface $createdDate
      */
     protected $createdDate;
 
@@ -50,101 +51,53 @@ trait StandardFieldsTrait
     /**
      * @ORM\Column(type="datetime")
      * @Gedmo\Timestampable(on="update")
-     * @Assert\DateTime()
-     * @var \DateTimeInterface
+     * @Assert\Type("\DateTimeInterface")
+     * @var DateTimeInterface $updatedDate
      */
     protected $updatedDate;
 
-    /**
-     * Returns the created by.
-     *
-     * @return UserEntity
-     */
-    public function getCreatedBy()
+    public function getCreatedBy(): ?UserEntity
     {
         return $this->createdBy;
     }
 
-    /**
-     * Sets the created by.
-     *
-     * @param UserEntity $createdBy
-     *
-     * @return void
-     */
-    public function setCreatedBy($createdBy)
+    public function setCreatedBy(UserEntity $createdBy = null): void
     {
         if ($this->createdBy !== $createdBy) {
             $this->createdBy = $createdBy;
         }
     }
 
-    /**
-     * Returns the created date.
-     *
-     * @return \DateTimeInterface
-     */
-    public function getCreatedDate()
+    public function getCreatedDate(): ?DateTimeInterface
     {
         return $this->createdDate;
     }
 
-    /**
-     * Sets the created date.
-     *
-     * @param \DateTimeInterface $createdDate
-     *
-     * @return void
-     */
-    public function setCreatedDate($createdDate)
+    public function setCreatedDate(DateTimeInterface $createdDate = null): void
     {
         if ($this->createdDate !== $createdDate) {
             $this->createdDate = $createdDate;
         }
     }
 
-    /**
-     * Returns the updated by.
-     *
-     * @return UserEntity
-     */
-    public function getUpdatedBy()
+    public function getUpdatedBy(): ?UserEntity
     {
         return $this->updatedBy;
     }
 
-    /**
-     * Sets the updated by.
-     *
-     * @param UserEntity $updatedBy
-     *
-     * @return void
-     */
-    public function setUpdatedBy($updatedBy)
+    public function setUpdatedBy(UserEntity $updatedBy = null): void
     {
         if ($this->updatedBy !== $updatedBy) {
             $this->updatedBy = $updatedBy;
         }
     }
 
-    /**
-     * Returns the updated date.
-     *
-     * @return \DateTimeInterface
-     */
-    public function getUpdatedDate()
+    public function getUpdatedDate(): ?DateTimeInterface
     {
         return $this->updatedDate;
     }
 
-    /**
-     * Sets the updated date.
-     *
-     * @param \DateTimeInterface $updatedDate
-     *
-     * @return void
-     */
-    public function setUpdatedDate($updatedDate)
+    public function setUpdatedDate(DateTimeInterface $updatedDate = null): void
     {
         if ($this->updatedDate !== $updatedDate) {
             $this->updatedDate = $updatedDate;

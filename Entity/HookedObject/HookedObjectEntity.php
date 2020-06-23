@@ -19,10 +19,10 @@ use Cmfcmf\Module\MediaModule\Entity\License\LicenseEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Zikula\Bundle\CoreBundle\UrlInterface;
 use Zikula\Bundle\HookBundle\Hook\DisplayHook;
 use Zikula\Bundle\HookBundle\Hook\Hook;
 use Zikula\Bundle\HookBundle\Hook\ProcessHook;
-use Zikula\Core\UrlInterface;
 
 /**
  * @ORM\Entity(repositoryClass="Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository\HookedObjectRepository")
@@ -277,7 +277,7 @@ class HookedObjectEntity
      *
      * @return HookedObjectEntity
      */
-    public function setUrlObject($urlObject)
+    public function setUrlObject(UrlInterface $urlObject)
     {
         $this->urlObject = $urlObject;
 
