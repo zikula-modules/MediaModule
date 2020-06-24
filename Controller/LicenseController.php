@@ -67,7 +67,7 @@ class LicenseController extends AbstractController
         $form = $this->createForm(LicenseType::class, $entity);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
@@ -98,7 +98,7 @@ class LicenseController extends AbstractController
         $form = $this->createForm(LicenseType::class, $entity);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $em = $this->getDoctrine()->getManager();
                 $em->merge($entity);

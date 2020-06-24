@@ -96,8 +96,7 @@ class UpgradeController extends AbstractController
                 'message' => $this->trans(
                     'Something unexpected happened. Please report this problem and give the following information: %s',
                     ['%s' => (string)$e],
-                    'cmfcmfmediamodule'
-                ),
+                    'cmfcmfmediamodule'),
                 'done' => false
             ]);
         }

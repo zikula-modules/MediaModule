@@ -39,11 +39,11 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
-use Zikula\Bundle\CoreBundle\Response\PlainResponse;
-use Zikula\Bundle\CoreBundle\RouteUrl;
 use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
 use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
+use Zikula\Bundle\CoreBundle\Response\PlainResponse;
+use Zikula\Bundle\CoreBundle\RouteUrl;
 
 class MediaController extends AbstractController
 {
@@ -125,7 +125,7 @@ class MediaController extends AbstractController
         $form = $this->createForm($formClass, $entity, $formOptions);
         $form->handleRequest($request);
 
-        if (!$form->isValid()) {
+        if ($form->isSubmitted() && !$form->isValid()) {
             goto edit_error;
         }
 
@@ -207,8 +207,7 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA
-        )
+            CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA)
         ) {
             throw new AccessDeniedException();
         }
@@ -316,7 +315,7 @@ class MediaController extends AbstractController
         $form = $this->createForm($formClass, $entity, $mediaType->getFormOptions($entity));
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             if ($this->hookValidates('media', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
                 $em->persist($entity);
                 $em->flush();
@@ -398,8 +397,7 @@ class MediaController extends AbstractController
 
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA
-        )
+            CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA)
         ) {
             throw new AccessDeniedException();
         }
@@ -562,7 +560,7 @@ class MediaController extends AbstractController
                 'collection' => $collection
             ], false);
 
-            if (!$form->isValid()) {
+            if ($form->isSubmitted() && !$form->isValid()) {
                 return new Response($this->trans('Invalid data, errors: ') . $form->getErrors(true)->__toString(), Response::HTTP_BAD_REQUEST);
             }
 
@@ -597,8 +595,7 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS
-        )
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
         ) {
             throw new AccessDeniedException();
         }
@@ -618,8 +615,7 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS
-        )
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
         ) {
             throw new AccessDeniedException();
         }
@@ -666,8 +662,7 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM
-        )
+            CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM)
         ) {
             throw new AccessDeniedException();
         }
@@ -710,8 +705,7 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS
-        )
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
         ) {
             throw new AccessDeniedException();
         }

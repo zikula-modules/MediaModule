@@ -144,7 +144,7 @@ class PermissionController extends AbstractController
             $entity->setGoOn(true);
         }
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $permissionRepository = $this
                 ->getDoctrine()
                 ->getRepository(AbstractPermissionEntity::class);
@@ -188,7 +188,7 @@ class PermissionController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        if (!$form->isValid()) {
+        if ($form->isSubmitted() && !$form->isValid()) {
             goto edit_error;
         }
 
@@ -227,6 +227,7 @@ class PermissionController extends AbstractController
         $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
 
         if ($request->isMethod('GET')) {
+
             return [
                 'permission' => $permissionEntity,
                 'collectionPermission' => $this->collectionPermissionTypeContainer

@@ -103,7 +103,7 @@ class WatermarkController extends AbstractController
         $form = $this->createForm($form, $entity, ['entity' => $entity]);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
 
             if ($entity instanceof Uploadable) {
@@ -149,7 +149,7 @@ class WatermarkController extends AbstractController
         $form = $this->createForm($form, $entity, ['entity' => $entity]);
         $form->handleRequest($request);
 
-        if (!$form->isValid()) {
+        if ($form->isSubmitted() && !$form->isValid()) {
             goto edit_error;
         }
         $em = $this->getDoctrine()->getManager();

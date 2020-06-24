@@ -1,38 +1,32 @@
-{% extends '@CmfcmfMediaModule/Settings/settings.html.twig' %}
+{% extends '@CmfcmfMediaModule/adminBase.html.twig' %}
 {% block title 'Settings'|trans %}
 {% block content %}
-    <div class="row">
-        <div class="col-xs-12 col-sm-3">
-            <ul class="nav nav-pills nav-stacked">
-                <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_requirements'%}class="active"{% endif %}>
-                    <a href="{{ path('cmfcmfmediamodule_settings_requirements') }}">
-                        <i class="fa fa-check fa-fw"></i> {% trans %}Requirements{% endtrans %}
-                    </a>
-                </li>
-                <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_general'%}class="active"{% endif %}>
-                    <a href="{{ path('cmfcmfmediamodule_settings_general') }}">
-                        <i class="fa fa-cog fa-fw"></i> {% trans %}General{% endtrans %}
-                    </a>
-                </li>
-                <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_scribite'%}class="active"{% endif %}>
-                    <a href="{{ path('cmfcmfmediamodule_settings_scribite') }}">
-                        <i class="fa fa-pencil fa-fw"></i> {% trans %}Scribite{% endtrans %}
-                    </a>
-                </li>
-                <li {% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_upgrade_doupgrade'%}class="active"{% endif %}>
-                    <a href="{{ path('cmfcmfmediamodule_upgrade_doupgrade') }}">
-                        <i class="fa fa-download fa-fw"></i> {% trans %}Upgrade{% endtrans %}
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cmfcmf.github.io/MediaModule/docs/">
-                        <i class="fa fa-external-link fa-fw"></i> {% trans %}Help and Docs{% endtrans %}
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-xs-12 col-sm-9">
-            {% block settings_content  %}{% endblock %}
-        </div>
-    </div>
+    <ul class="nav nav-pills">
+        <li class="nav-item">
+            <a class="nav-link{% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_requirements'%} active{% endif %}" href="{{ path('cmfcmfmediamodule_settings_requirements') }}">
+                <i class="fas fa-check fa-fw"></i> {% trans %}Requirements{% endtrans %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link{% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_general'%} active{% endif %}" href="{{ path('cmfcmfmediamodule_settings_general') }}">
+                <i class="fas fa-wrench fa-fw"></i> {% trans %}General{% endtrans %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link{% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_settings_scribite'%} active{% endif %}" href="{{ path('cmfcmfmediamodule_settings_scribite') }}">
+                <i class="fas fa-feather fa-fw"></i> {% trans %}Scribite{% endtrans %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link{% if app.request.attributes.get('_route') == 'cmfcmfmediamodule_upgrade_doupgrade'%} active{% endif %}" href="{{ path('cmfcmfmediamodule_upgrade_doupgrade') }}">
+                <i class="fas fa-download fa-fw"></i> {% trans %}Upgrade{% endtrans %}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="https://cmfcmf.github.io/MediaModule/docs/">
+                <i class="fas fa-external-link-alt fa-fw"></i> {% trans %}Help and Docs{% endtrans %}
+            </a>
+        </li>
+    </ul>
+    {% block settings_content  %}{% endblock %}
 {% endblock %}

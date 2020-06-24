@@ -69,7 +69,7 @@ class ImportController extends AbstractController
         $form = $this->createForm(ImportType::class, null, ['importerForm' => $importer->getSettingsForm()]);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $success = $importer->import($form->getData(), $this->get('session')->getFlashBag());
 
             if (true === $success) {

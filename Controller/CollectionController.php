@@ -89,7 +89,7 @@ class CollectionController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             if ($this->hookValidates('collection', UiHooksCategory::TYPE_VALIDATE_EDIT)) {
                 if (!$this->securityManager->hasPermission($entity->getParent(), CollectionPermissionSecurityTree::PERM_LEVEL_ADD_SUB_COLLECTIONS)) {
                     throw new AccessDeniedException($this->trans('You don\'t have permission to add a sub-collection to the selected parent collection.'));
@@ -136,7 +136,7 @@ class CollectionController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        if (!$form->isValid()) {
+        if ($form->isSubmitted() && !$form->isValid()) {
             goto edit_error;
         }
 
