@@ -36,7 +36,8 @@ class ColorType extends AbstractType
                 }
 
                 return "#" . mb_substr($rgba, 7, 2) . mb_substr($rgba, 1, 6);
-            }, function ($argb) {
+            },
+            function ($argb) {
                 return "#" . mb_substr($argb, 3, 6) . mb_substr($argb, 1, 2);
             }
         ));

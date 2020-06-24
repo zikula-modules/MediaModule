@@ -134,8 +134,10 @@ class CollectionPermissionSecurityTree
 
         $vertex = $graph->createVertex(self::PERM_LEVEL_DOWNLOAD_COLLECTION);
         $vertex->setAttribute('title', $translator->trans('Download whole collection', [], 'cmfcmfmediamodule'));
-        $vertex->setAttribute('description',
-            $translator->trans('Grants access to download the whole collection.', [], 'cmfcmfmediamodule'));
+        $vertex->setAttribute(
+            'description',
+            $translator->trans('Grants access to download the whole collection.', [], 'cmfcmfmediamodule')
+        );
         $vertex->setAttribute('category', $categories['view']);
         $vertex->setGroup($categories['view']->getId());
         $vertex->createEdgeTo($vertices[self::PERM_LEVEL_OVERVIEW])
@@ -144,8 +146,10 @@ class CollectionPermissionSecurityTree
 
         $vertex = $graph->createVertex(self::PERM_LEVEL_MEDIA_DETAILS);
         $vertex->setAttribute('title', $translator->trans('Display media details', [], 'cmfcmfmediamodule'));
-        $vertex->setAttribute('description',
-            $translator->trans('Grants access to the media details page.', [], 'cmfcmfmediamodule'));
+        $vertex->setAttribute(
+            'description',
+            $translator->trans('Grants access to the media details page.', [], 'cmfcmfmediamodule')
+        );
         $vertex->setAttribute('category', $categories['view']);
         $vertex->setGroup($categories['view']->getId());
         $vertex->createEdgeTo($vertices[self::PERM_LEVEL_OVERVIEW])
@@ -154,8 +158,10 @@ class CollectionPermissionSecurityTree
 
         $vertex = $graph->createVertex(self::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM);
         $vertex->setAttribute('title', $translator->trans('Download single media', [], 'cmfcmfmediamodule'));
-        $vertex->setAttribute('description',
-            $translator->trans('Grants access to download a single medium.', [], 'cmfcmfmediamodule'));
+        $vertex->setAttribute(
+            'description',
+            $translator->trans('Grants access to download a single medium.', [], 'cmfcmfmediamodule')
+        );
         $vertex->setAttribute('category', $categories['view']);
         $vertex->setGroup($categories['view']->getId());
         $vertex->createEdgeTo($vertices[self::PERM_LEVEL_MEDIA_DETAILS])
@@ -174,8 +180,10 @@ class CollectionPermissionSecurityTree
 
         $vertex = $graph->createVertex(self::PERM_LEVEL_ADD_SUB_COLLECTIONS);
         $vertex->setAttribute('title', $translator->trans('Add new sub-collections', [], 'cmfcmfmediamodule'));
-        $vertex->setAttribute('description',
-            $translator->trans('Grants access to create new collections.', [], 'cmfcmfmediamodule'));
+        $vertex->setAttribute(
+            'description',
+            $translator->trans('Grants access to create new collections.', [], 'cmfcmfmediamodule')
+        );
         $vertex->setAttribute('category', $categories['add']);
         $vertex->setGroup($categories['add']->getId());
         $vertices[self::PERM_LEVEL_ADD_SUB_COLLECTIONS] = $vertex;
@@ -213,8 +221,10 @@ class CollectionPermissionSecurityTree
 
         $vertex = $graph->createVertex(self::PERM_LEVEL_DELETE_COLLECTION);
         $vertex->setAttribute('title', $translator->trans('Delete collection', [], 'cmfcmfmediamodule'));
-        $vertex->setAttribute('description',
-            $translator->trans('Grants access to delete the collection.', [], 'cmfcmfmediamodule'));
+        $vertex->setAttribute(
+            'description',
+            $translator->trans('Grants access to delete the collection.', [], 'cmfcmfmediamodule')
+        );
         $vertex->setAttribute('category', $categories['delete']);
         $vertex->setGroup($categories['delete']->getId());
         $vertex->createEdgeTo($vertices[self::PERM_LEVEL_DELETE_MEDIA])

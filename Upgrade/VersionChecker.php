@@ -89,7 +89,8 @@ class VersionChecker
         // If we reach this point, we already have the highest patch version installed.
         // Search for the highest C1.(C2+1).X version then.
         $highestPatchReleaseOfNextMinorVersion = $this->getHighestPatchReleaseOfNextMinorVersion(
-            $currentVersion, $releases
+            $currentVersion,
+            $releases
         );
         if (false === $highestPatchReleaseOfNextMinorVersion) {
             // No new version available apparently.

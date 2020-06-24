@@ -13,11 +13,12 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\Controller;
 
-use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Zikula\Bundle\CoreBundle\Controller\AbstractController as BaseAbstractController;
 use Zikula\Bundle\CoreBundle\UrlInterface;
 use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcherInterface;
 use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareHook;
@@ -28,7 +29,6 @@ use Zikula\Bundle\HookBundle\Hook\Hook;
 use Zikula\Bundle\HookBundle\Hook\ProcessHook;
 use Zikula\Bundle\HookBundle\Hook\ValidationHook;
 use Zikula\Bundle\HookBundle\Hook\ValidationProviders;
-use Zikula\Bundle\CoreBundle\Controller\AbstractController as BaseAbstractController;
 use Zikula\ExtensionsModule\AbstractExtension;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;

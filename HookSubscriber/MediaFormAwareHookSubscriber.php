@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\HookSubscriber;
 
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
 use Zikula\Bundle\HookBundle\HookSubscriberInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Media form aware hook subscriber.

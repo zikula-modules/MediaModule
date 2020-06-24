@@ -49,8 +49,10 @@ class MediaTypeController extends AbstractController
      */
     public function youtubeUploadAction(VideoEntity $entity, Request $request)
     {
-        if (!$this->securityManager->hasPermission($entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA)) {
+        if (!$this->securityManager->hasPermission(
+            $entity,
+            CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA
+        )) {
             throw new AccessDeniedException();
         }
 
@@ -58,8 +60,10 @@ class MediaTypeController extends AbstractController
         $clientSecret = $this->getVar('googleApiOAuthClientSecret');
         if (empty($clientID) || empty($clientSecret)) {
             if (!$this->securityManager->hasPermission('settings', 'admin')) {
-                $this->addFlash('warning',
-                    $this->trans('You need to add Google client ID and secret to use this feature!', [], 'cmfcmfmediamodule'));
+                $this->addFlash(
+                    'warning',
+                    $this->trans('You need to add Google client ID and secret to use this feature!', [], 'cmfcmfmediamodule')
+                );
             }
 
             return $this->redirectToRoute('cmfcmfmediamodule_media_display', [
@@ -73,7 +77,8 @@ class MediaTypeController extends AbstractController
         $client->setClientSecret($clientSecret);
         $client->setScopes('https://www.googleapis.com/auth/youtube');
         $client->setRedirectUri(
-            filter_var($this->generateUrl('cmfcmfmediamodule_mediatype_youtubeupload', ['id' => $entity->getId()], RouterInterface::ABSOLUTE_URL), FILTER_SANITIZE_URL));
+            filter_var($this->generateUrl('cmfcmfmediamodule_mediatype_youtubeupload', ['id' => $entity->getId()], RouterInterface::ABSOLUTE_URL), FILTER_SANITIZE_URL)
+        );
 
         // Define an object that will be used to make all API requests.
         $youtube = new Google_Service_YouTube($client);

@@ -76,7 +76,9 @@ class SettingsController extends AbstractController
             'state' => $maxUploadSize >= 20 * 1000 * 1000 ? 'success' : 'warning',
             'message' => $this->getTranslator()->trans(
                 'You can upload files of at most %size%. Consider raising "upload_max_filesize" and "post_max_size" in your php.ini file to upload larger files.',
-                ['%size%' => PHPIniHelper::formatFileSize($maxUploadSize)], 'cmfcmfmediamodule'),
+                ['%size%' => PHPIniHelper::formatFileSize($maxUploadSize)],
+                'cmfcmfmediamodule'
+            ),
         ];
 
         $highMemoryRequired = false;
@@ -230,10 +232,12 @@ class SettingsController extends AbstractController
         if ($scribiteInstalled) {
             $mediaBinding = $this->hookDispatcher->getBindingBetweenAreas(
                 'subscriber.cmfcmfmediamodule.ui_hooks.media',
-                'provider.zikulascribitemodule.ui_hooks.editor');
+                'provider.zikulascribitemodule.ui_hooks.editor'
+            );
             $collectionBinding = $this->hookDispatcher->getBindingBetweenAreas(
                 'subscriber.cmfcmfmediamodule.ui_hooks.collections',
-                'provider.zikulascribitemodule.ui_hooks.editor');
+                'provider.zikulascribitemodule.ui_hooks.editor'
+            );
 
             $descriptionEscapingStrategyForCollectionOk = !is_object($collectionBinding)
                 || 'raw' === $this->getVar('descriptionEscapingStrategyForCollection');
@@ -255,7 +259,8 @@ class SettingsController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             'settings',
-            'admin')
+            'admin'
+        )
         ) {
             throw new AccessDeniedException();
         }

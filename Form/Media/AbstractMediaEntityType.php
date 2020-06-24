@@ -81,25 +81,29 @@ abstract class AbstractMediaEntityType extends AbstractType
 
         $escapingStrategy = $this->variableApi->get(
             'CmfcmfMediaModule',
-            'descriptionEscapingStrategyForMedia');
+            'descriptionEscapingStrategyForMedia'
+        );
         switch ($escapingStrategy) {
             case 'raw':
                 $descriptionHelp = $this->translator->trans(
                     'You may use HTML.',
                     [],
-                    'cmfcmfmediamodule');
+                    'cmfcmfmediamodule'
+                );
                 break;
             case 'text':
                 $descriptionHelp = $this->translator->trans(
                     'Only plaintext allowed.',
                     [],
-                    'cmfcmfmediamodule');
+                    'cmfcmfmediamodule'
+                );
                 break;
             case 'markdown':
                 $descriptionHelp = $this->translator->trans(
                     'You may use MarkDown.',
                     [],
-                    'cmfcmfmediamodule');
+                    'cmfcmfmediamodule'
+                );
                 break;
             default:
                 throw new \LogicException();
@@ -156,10 +160,12 @@ abstract class AbstractMediaEntityType extends AbstractType
                 'entity' => 'AbstractMediaEntity',
                 'entityCategoryClass' => MediaCategoryAssignmentEntity::class,
             ])
-            ->add('title',
+            ->add(
+                'title',
                 isset($options['hiddenFields']) && in_array(
                     'title',
-                    $options['hiddenFields']) ? HiddenType::class : TextType::class,
+                    $options['hiddenFields']
+                ) ? HiddenType::class : TextType::class,
                 [
                     'label' => $this->translator->trans('Title', [], 'cmfcmfmediamodule')
                 ]
@@ -168,7 +174,8 @@ abstract class AbstractMediaEntityType extends AbstractType
                 'description',
                 isset($options['hiddenFields']) && in_array(
                     'description',
-                    $options['hiddenFields']) ? HiddenType::class : TextareaType::class,
+                    $options['hiddenFields']
+                ) ? HiddenType::class : TextareaType::class,
                 [
                     'required' => false,
                     'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
@@ -178,7 +185,9 @@ abstract class AbstractMediaEntityType extends AbstractType
                 ]
             )
             ->add(
-                'license', EntityType::class, [
+                'license',
+                EntityType::class,
+                [
                     'required' => false,
                     'label' => $this->translator->trans('License', [], 'cmfcmfmediamodule'),
                     'class' => LicenseEntity::class,
@@ -196,36 +205,44 @@ abstract class AbstractMediaEntityType extends AbstractType
                     'choice_label' => 'title',
                     'attr' => isset($options['hiddenFields']) && in_array(
                         'license',
-                        $options['hiddenFields']) ? $hiddenAttr : [],
+                        $options['hiddenFields']
+                    ) ? $hiddenAttr : [],
                     'label_attr' => isset($options['hiddenFields']) && in_array(
                         'license',
-                        $options['hiddenFields']) ? $hiddenAttr : []
+                        $options['hiddenFields']
+                    ) ? $hiddenAttr : []
                 ]
             )
-            ->add('author',
+            ->add(
+                'author',
                 isset($options['hiddenFields']) && in_array(
                     'author',
-                    $options['hiddenFields']) ? HiddenType::class : TextType::class,
+                    $options['hiddenFields']
+                ) ? HiddenType::class : TextType::class,
                 [
                     'label' => $this->translator->trans('Author', [], 'cmfcmfmediamodule'),
                     'required' => false,
                     'empty_data' => null
                 ]
             )
-            ->add('authorUrl',
+            ->add(
+                'authorUrl',
                 isset($options['hiddenFields']) && in_array(
                     'authorUrl',
-                    $options['hiddenFields']) ? HiddenType::class : UrlType::class,
+                    $options['hiddenFields']
+                ) ? HiddenType::class : UrlType::class,
                 [
                     'label' => $this->translator->trans('Author URL', [], 'cmfcmfmediamodule'),
                     'required' => false,
                     'empty_data' => null
                 ]
             )
-            ->add('authorAvatarUrl',
+            ->add(
+                'authorAvatarUrl',
                 isset($options['hiddenFields']) && in_array(
                     'authorAvatarUrl',
-                    $options['hiddenFields']) ? HiddenType::class : UrlType::class,
+                    $options['hiddenFields']
+                ) ? HiddenType::class : UrlType::class,
                 [
                     'label' => $this->translator->trans('Author Avatar URL', [], 'cmfcmfmediamodule'),
                     'required' => false,

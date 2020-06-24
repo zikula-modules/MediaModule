@@ -100,7 +100,8 @@ class PermissionLevelType extends AbstractType
     private function fixSecurityGraph()
     {
         if (!$this->securityGraph->hasVertex(
-            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)
+            CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS
+        )
         ) {
             // Already fixed.
             return;

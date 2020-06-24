@@ -17,7 +17,6 @@ use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Imagine\Image\ImageInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Symfony\Component\Config\FileLocatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class AbstractFileMediaType extends AbstractMediaType
 {
