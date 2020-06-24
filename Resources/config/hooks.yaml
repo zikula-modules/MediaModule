@@ -6,10 +6,6 @@ services:
         bind:
             $securityManager: '@cmfcmf_media_module.security_manager'
 
-    Cmfcmf\Module\MediaModule\:
-        resource: '../../*'
-        exclude: '../../{bootstrap.php,Tests,vendor}'
-
     # Providers
     Cmfcmf\Module\MediaModule\HookProvider\CollectionUiHooksProvider:
         calls:

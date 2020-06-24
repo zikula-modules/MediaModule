@@ -43,8 +43,7 @@ class FontLoader implements FontLoaderInterface
                 "cmfcmfmediamodule:${fontName}",
                 $title,
                 $file->getPathname(),
-                $fontName
-            );
+                $fontName);
         }
 
         return $fonts;

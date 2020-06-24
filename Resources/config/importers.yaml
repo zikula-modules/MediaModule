@@ -4,10 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    Cmfcmf\Module\MediaModule\:
-        resource: '../../*'
-        exclude: '../../{bootstrap.php,Tests,vendor}'
-
     cmfcmf_media_module.importer_collection:
         class: Cmfcmf\Module\MediaModule\Importer\ImporterCollection
 

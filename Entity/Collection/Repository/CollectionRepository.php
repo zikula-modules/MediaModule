@@ -14,11 +14,12 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\Entity\Collection\Repository;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 
-class CollectionRepository extends NestedTreeRepository
+class CollectionRepository extends NestedTreeRepository implements ServiceEntityRepositoryInterface
 {
     /**
      * Code from Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository

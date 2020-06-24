@@ -18,6 +18,7 @@ use Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 use Zikula\ExtensionsModule\ModuleInterface\Content\AbstractContentType;
 use Zikula\ExtensionsModule\ModuleInterface\Content\ContentTypeInterface;

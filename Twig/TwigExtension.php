@@ -22,6 +22,7 @@ use Github\Exception\RuntimeException;
 use Michelf\MarkdownExtra;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcherInterface;
 use Zikula\Bundle\HookBundle\Hook\FilterHook;
@@ -101,7 +102,7 @@ class TwigExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFunction('cmfcmfmediamodule_getdescription', [$this, 'escapeDescription'], ['is_safe' => ['html']])
+            new TwigFilter('cmfcmfmediamodule_getdescription', [$this, 'escapeDescription'], ['is_safe' => ['html']])
         ];
     }
 

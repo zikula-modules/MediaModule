@@ -80,8 +80,7 @@ abstract class AbstractPermissionType extends AbstractType
                     'help' => $this->translator->trans(
                         'This is just for you to remember why you created this permission.',
                         [],
-                        'cmfcmfmediamodule'
-                    )
+                        'cmfcmfmediamodule')
                 ]
             ])
             ->add('appliedToSelf', CheckboxType::class, [
@@ -118,8 +117,7 @@ abstract class AbstractPermissionType extends AbstractType
                     'help' => $this->translator->trans(
                         'If you specify a date, the permission rule will only be taken into account after the specified date.',
                         [],
-                        'cmfcmfmediamodule'
-                    )
+                        'cmfcmfmediamodule')
                 ]
             ])
             ->add('validUntil', DateTimeType::class, [
@@ -130,8 +128,7 @@ abstract class AbstractPermissionType extends AbstractType
                     'help' => $this->translator->trans(
                         'If you specify a date, the permission rule will only be taken into account until the specified date.',
                         [],
-                        'cmfcmfmediamodule'
-                    )
+                        'cmfcmfmediamodule')
                 ]
             ])
         ;

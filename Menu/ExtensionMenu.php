@@ -24,6 +24,7 @@ use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;
 
 class ExtensionMenu extends AbstractExtensionMenu
 {
+
     /**
      * @var SecurityManager
      */
@@ -71,8 +72,7 @@ class ExtensionMenu extends AbstractExtensionMenu
         $menu = $this->factory->createItem('mediaModuleAdminMenu');
         if ($this->securityManager->hasPermission(
             $this->rootCollection,
-            CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW
-        )
+            CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)
         ) {
             $menu->addChild('Frontend', [
                 'route' => 'cmfcmfmediamodule_collection_displayroot',
@@ -100,12 +100,11 @@ class ExtensionMenu extends AbstractExtensionMenu
         $menu = $this->factory->createItem('mediaModuleUserMenu');
         if ($this->securityManager->hasPermission(
             $this->rootCollection,
-            CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW
-        )
+            CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)
         ) {
             $menu->addChild('Collections', [
                 'route' => 'cmfcmfmediamodule_collection_displayroot',
-            ])->setAttribute('icon', 'fas fa-folder-o');
+            ])->setAttribute('icon', 'far fa-folder');
         }
         if ($this->securityManager->hasPermission('watermark', 'moderate')) {
             $menu->addChild('Watermarks', [

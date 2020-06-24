@@ -4,10 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    Cmfcmf\Module\MediaModule\:
-        resource: '../../*'
-        exclude: '../../{bootstrap.php,Tests,vendor}'
-
     cmfcmf_media_module.form.type.color:
         class: Cmfcmf\Module\MediaModule\Form\Type\ColorType
         tags: ['form.type']

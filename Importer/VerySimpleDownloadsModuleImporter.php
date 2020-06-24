@@ -95,8 +95,7 @@ class VerySimpleDownloadsModuleImporter extends AbstractImporter
         ]);
 
         $conn = $this->em->getConnection();
-        $result = $conn->executeQuery(
-            <<<'SQL'
+        $result = $conn->executeQuery(<<<'SQL'
 SELECT d.id, d.downloadTitle, d.downloadDescription, d.fileUpload, d.createdBy, d.updatedBy, d.createdDate, d.updatedDate, c.categoryId
 FROM vesido_download d
 LEFT JOIN vesido_download_category c ON c.entityId = d.id

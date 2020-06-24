@@ -4,10 +4,6 @@ services:
         autoconfigure: true
         public: false
 
-    Cmfcmf\Module\MediaModule\:
-        resource: '../../*'
-        exclude: '../../{bootstrap.php,Tests,vendor}'
-
     # Content types
     Cmfcmf\Module\MediaModule\ContentType\CollectionType:
         parent: zikula.content_type.base
