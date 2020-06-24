@@ -325,7 +325,9 @@ class HookedObjectEntity
         $showChildCollections
     ) {
         $hookedObjectCollection = new HookedObjectCollectionEntity(
-            $template, $showParentCollection, $showChildCollections
+            $template,
+            $showParentCollection,
+            $showChildCollections
         );
         $hookedObjectCollection->setCollection($collectionEntity)->setHookedObject($this);
 

@@ -39,11 +39,11 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Zikula\Bundle\CoreBundle\Response\PlainResponse;
+use Zikula\Bundle\CoreBundle\RouteUrl;
 use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
 use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
 use Zikula\ThemeModule\Engine\Annotation\Theme;
-use Zikula\Bundle\CoreBundle\Response\PlainResponse;
-use Zikula\Bundle\CoreBundle\RouteUrl;
 
 class MediaController extends AbstractController
 {
@@ -207,7 +207,8 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA)
+            CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA
+        )
         ) {
             throw new AccessDeniedException();
         }
@@ -397,7 +398,8 @@ class MediaController extends AbstractController
 
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA)
+            CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA
+        )
         ) {
             throw new AccessDeniedException();
         }
@@ -595,7 +597,8 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS
+        )
         ) {
             throw new AccessDeniedException();
         }
@@ -615,7 +618,8 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS
+        )
         ) {
             throw new AccessDeniedException();
         }
@@ -662,7 +666,8 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM)
+            CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM
+        )
         ) {
             throw new AccessDeniedException();
         }
@@ -705,7 +710,8 @@ class MediaController extends AbstractController
     {
         if (!$this->securityManager->hasPermission(
             $entity,
-            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS)
+            CollectionPermissionSecurityTree::PERM_LEVEL_MEDIA_DETAILS
+        )
         ) {
             throw new AccessDeniedException();
         }

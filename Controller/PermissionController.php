@@ -227,7 +227,6 @@ class PermissionController extends AbstractController
         $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
 
         if ($request->isMethod('GET')) {
-
             return [
                 'permission' => $permissionEntity,
                 'collectionPermission' => $this->collectionPermissionTypeContainer
