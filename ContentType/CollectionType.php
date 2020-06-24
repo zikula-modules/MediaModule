@@ -60,7 +60,7 @@ class CollectionType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getIcon() :string
+    public function getIcon(): string
     {
         return 'folder-o';
     }
@@ -68,7 +68,7 @@ class CollectionType extends AbstractContentType
     /**
      * {@inheritdoc}
      */
-    public function getTitle() :string
+    public function getTitle(): string
     {
         return $this->translator->trans('Media collection', 'cmfcmfmediamodule');
     }
