@@ -14,11 +14,17 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\Entity\Media\Repository;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Persistence\ManagerRegistry;
 
-class MediaRepository extends EntityRepository
+class MediaRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, AbstractMediaEntity::class);
+    }
+
     /**
      * Creates a Doctrine Paginator with the given page and entities per page.
      *

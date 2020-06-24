@@ -15,7 +15,6 @@ namespace Cmfcmf\Module\MediaModule\Upgrade;
 
 use Github\Client as GitHubClient;
 use Github\Exception\RuntimeException;
-use Github\HttpClient\CachedHttpClient as GitHubCachedHttpClient;
 use Github\HttpClient\Message\ResponseMediator as GitHubResponseMediator;
 use Github\ResultPager as GitHubResultPager;
 use vierbergenlars\SemVer\expression;
@@ -216,8 +215,10 @@ class VersionChecker
     private function getClient()
     {
         $client = new GitHubClient(
-            new GitHubCachedHttpClient(['cache_dir' => $this->githubApiCache])
+//            new GitHubCachedHttpClient(['cache_dir' => $this->githubApiCache])
         );
+        // @see https://github.com/KnpLabs/php-github-api/blob/master/doc/caching.md
+//        $client->addCache( );
 
         return $client;
     }

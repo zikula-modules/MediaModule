@@ -13,7 +13,7 @@ services:
         parent: zikula.content_type.base
         shared: false
         calls:
-            - [setEntityManager, ['@doctrine.orm.entity_manager']]
+            - [setCollectionRepository, ['@Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository']]
             - [setSecurityManager, ['@cmfcmf_media_module.security_manager']]
             - [setSelectedTemplateFactory, ['@cmfcmf_media_module.collection_template.selected_factory']]
             - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
@@ -27,7 +27,7 @@ services:
         parent: zikula.content_type.base
         shared: false
         calls:
-            - [setEntityManager, ['@doctrine.orm.entity_manager']]
+            - [setMediaRepository, ['@Cmfcmf\Module\MediaModule\Entity\Media\Repository\MediaRepository']]
             - [setSecurityManager, ['@cmfcmf_media_module.security_manager']]
             - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
             - [setEnableMediaViewCounter, ['@Zikula\ExtensionsModule\Api\VariableApi']]

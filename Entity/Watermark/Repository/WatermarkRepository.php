@@ -15,11 +15,17 @@ namespace Cmfcmf\Module\MediaModule\Entity\Watermark\Repository;
 
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 
-class WatermarkRepository extends EntityRepository
+class WatermarkRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, AbstractWatermarkEntity::class);
+    }
+
     /**
      * Removes all thumbnails generated for media with the given entity.
      *

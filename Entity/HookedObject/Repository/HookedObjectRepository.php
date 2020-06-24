@@ -14,11 +14,17 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\Entity\HookedObject\Repository;
 
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Zikula\Bundle\HookBundle\Hook\Hook;
 
-class HookedObjectRepository extends EntityRepository
+class HookedObjectRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, HookedObjectEntity::class);
+    }
+
     /**
      * Returns the HookedObject related to the given Hook. If none exists, a new one is created.
      *

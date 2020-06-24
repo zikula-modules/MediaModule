@@ -15,6 +15,7 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Exception\InvalidPositionException;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer;
@@ -269,9 +270,7 @@ class PermissionController extends AbstractController
             return $this->json([], JsonResponse::HTTP_FORBIDDEN);
         }
 
-        $repository = $this->getDoctrine()->getRepository(
-            'CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity'
-        );
+        $repository = $this->getDoctrine()->getRepository(AbstractPermissionEntity::class);
 
         $permissionEntity->setVersion($permissionVersion);
 
@@ -302,17 +301,15 @@ class PermissionController extends AbstractController
      * @return QueryBuilder
      */
     private function getPermissionsOfCollectionAndParentCollectionsQueryBuilder(
-        CollectionEntity $collectionEntity
+        CollectionEntity $collectionEntity,
+        CollectionRepository $collectionRepository
     ) {
-        $em = $this->getDoctrine()->getManager();
-        $collectionRepository = $em->getRepository(CollectionEntity::class);
-
         $qb = $collectionRepository->getPathQueryBuilder($collectionEntity);
         $qb->select('p')
             ->add(
                 'from',
                 new Expr\From(
-                    'CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity',
+                    AbstractPermissionEntity::class,
                     'p',
                     null
                 ),

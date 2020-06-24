@@ -19,6 +19,7 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Zikula\ExtensionsModule\ModuleInterface\Content\ContentTypeInterface;
@@ -159,12 +160,9 @@ class CollectionType extends AbstractContentType
         return FormType::class;
     }
 
-    /**
-     * @param EntityManagerInterface $em
-     */
-    public function setEntityManager(EntityManagerInterface $em)
+    public function setCollectionRepository(CollectionRepository $collectionRepository)
     {
-        $this->collectionRepository = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
+        $this->collectionRepository = $collectionRepository;
     }
 
     /**

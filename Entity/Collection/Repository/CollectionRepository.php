@@ -17,7 +17,6 @@ use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
-use Zikula\CategoriesModule\Entity\CategoryEntity;
 
 class CollectionRepository extends NestedTreeRepository
 {
@@ -26,7 +25,7 @@ class CollectionRepository extends NestedTreeRepository
      */
     public function __construct(ManagerRegistry $registry)
     {
-        $entityClass = CategoryEntity::class;
+        $entityClass = CollectionEntity::class;
 
         /** @var EntityManagerInterface $manager */
         $manager = $registry->getManagerForClass($entityClass);

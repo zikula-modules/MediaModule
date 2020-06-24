@@ -15,10 +15,13 @@ namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Form\Collection\CollectionType;
+use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Cmfcmf\Module\MediaModule\MediaType\UploadableMediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionSecurityTree;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\OptimisticLockException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -31,13 +34,37 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Zikula\Bundle\CoreBundle\Response\PlainResponse;
 use Zikula\Bundle\CoreBundle\RouteUrl;
 use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
 use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
+use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcherInterface;
+use Zikula\ExtensionsModule\AbstractExtension;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
+use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;
 
 class CollectionController extends AbstractController
 {
+    /**
+     * @var CollectionRepository
+     */
+    private $collectionRepository;
+
+    public function __construct(
+        AbstractExtension $extension,
+        PermissionApiInterface $permissionApi,
+        VariableApiInterface $variableApi,
+        TranslatorInterface $translator,
+        HookDispatcherInterface $hookDispatcher,
+        SecurityManager $securityManager,
+        MediaTypeCollection $mediaTypeCollection,
+        CollectionRepository $collectionRepository
+    ) {
+        parent::__construct($extension, $permissionApi, $variableApi, $translator, $hookDispatcher, $securityManager, $mediaTypeCollection);
+        $this->collectionRepository = $collectionRepository;
+    }
+
     /**
      * @Route("/new/{slug}", requirements={"slug" = ".+"})
      * @Template("@CmfcmfMediaModule/Collection/edit.html.twig")
@@ -226,17 +253,16 @@ class CollectionController extends AbstractController
         $newPosition = $request->query->get('new-position');
         $diff = $newPosition - $oldPosition;
 
-        $repository = $this->getDoctrine()->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
-        $entity = $repository->find($id);
+        $entity = $this->collectionRepository->find($id);
 
         if (!$this->securityManager->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION)) {
             throw new AccessDeniedException();
         }
 
         if ($diff > 0) {
-            $result = $repository->moveDown($entity, $diff);
+            $result = $this->collectionRepository->moveDown($entity, $diff);
         } else {
-            $result = $repository->moveUp($entity, $diff * -1);
+            $result = $this->collectionRepository->moveUp($entity, $diff * -1);
         }
         if (!$result) {
             throw new \RuntimeException();
@@ -252,8 +278,7 @@ class CollectionController extends AbstractController
      */
     public function displayRootAction()
     {
-        $em = $this->getDoctrine()->getManager();
-        $rootCollection = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->getRootNode();
+        $rootCollection = $this->collectionRepository->getRootNode();
 
         if (!$this->securityManager->hasPermission($rootCollection, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
@@ -311,7 +336,7 @@ class CollectionController extends AbstractController
             /** @var EntityManagerInterface $em */
             $em = $this->getDoctrine()->getManager();
             $qb = $em->createQueryBuilder();
-            $qb->update('CmfcmfMediaModule:Collection\CollectionEntity', 'c')
+            $qb->update(CollectionEntity::class, 'c')
                 ->where($qb->expr()->eq('c.id', ':id'))
                 ->set('c.views', 'c.views + 1')
                 ->setParameter('id', $entity->getId())

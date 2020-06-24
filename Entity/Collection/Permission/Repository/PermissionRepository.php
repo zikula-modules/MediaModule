@@ -15,10 +15,16 @@ namespace Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Repository;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\AbstractPermissionEntity;
 use Cmfcmf\Module\MediaModule\Exception\InvalidPositionException;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-class PermissionRepository extends EntityRepository
+class PermissionRepository extends ServiceEntityRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, AbstractPermissionEntity::class);
+    }
+
     /**
      * Persists / merges the permission entity and flushes afterwards.
      *

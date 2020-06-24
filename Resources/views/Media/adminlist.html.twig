@@ -1,9 +1,9 @@
-{% extends 'CmfcmfMediaModule::adminBase.html.twig' %}
+{% extends '@CmfcmfMediaModule/adminBase.html.twig' %}
 {% block title 'Media list'|trans %}
 {% block content %}
     <form action="{{ path('cmfcmfmediamodule_media_adminlist') }}" method="GET" class="form-inline">
         <div class="form-group">
-            <label for="searchTerm">{% trans %}Search', 'zikula{% endtrans %}:</label>
+            <label for="searchTerm">{% trans %}Search{% endtrans %}:</label>
             <input type="search" id="searchTerm" name="q" value="{{ currentSearchTerm|e('html_attr') }}" class="form-control">
         </div>
         <button type="submit" class="btn btn-default btn-sm">{% trans %}OK{% endtrans %}</button>
@@ -77,19 +77,19 @@
         <ul class="pager">
             <li class="previous{% if page == 1 %} disabled{% endif %}">
                 <a href="{% if page == 1 %}#{% else %}{{ path('cmfcmfmediamodule_media_adminlist', {page: (page - 1), q: currentSearchTerm}) }}{% endif %}">
-                    <span aria-hidden="true">&larr;</span> {% trans %}Previous') }}
+                    <span aria-hidden="true">&larr;</span> {% trans %}Previous{% endtrans%}
                 </a>
             </li>
             <li class="next{% if page == maxPage %} disabled{% endif %}"{% if page == maxPage %} disabled{% endif %}>
                 <a href="{{ path('cmfcmfmediamodule_media_adminlist', {page: (page + 1), q: currentSearchTerm}) }}">
-                    {% trans %}Next') }} <span aria-hidden="true">&rarr;</span>
+                    {% trans %}Next{% endtrans%} <span aria-hidden="true">&rarr;</span>
                 </a>
             </li>
         </ul>
     </nav>
     {% if cmfcmfmediamodule_hasPermission('media', 'new') %}
         <a href="{{ path('cmfcmfmediamodule_media_new') }}" class="btn btn-default">
-            <i class="fa fa-fw fa-plus"></i> {% trans %}Create new media') }}
+            <i class="fa fa-fw fa-plus"></i> {% trans %}Create new media{% endtrans %}
         </a>
     {% endif %}
 {% endblock %}

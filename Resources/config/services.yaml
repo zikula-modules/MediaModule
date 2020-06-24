@@ -68,14 +68,6 @@ services:
         class: Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener
         tags: ['kernel.event_subscriber']
 
-    # Link container
-#    cmfcmf_media_module.container.links:
-#        class: Cmfcmf\Module\MediaModule\Container\LinkContainer
-#        arguments:
-#            $securityManager: '@cmfcmf_media_module.security_manager'
-#        tags: ['zikula.link_container']
-
-
     # Collection of media types
     cmfcmf_media_module.media_type_collection:
         class: Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection

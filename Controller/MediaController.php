@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\Controller;
 
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
+use Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractFileEntity;
 use Cmfcmf\Module\MediaModule\Entity\Media\AbstractMediaEntity;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeInterface;
@@ -69,7 +70,7 @@ class MediaController extends AbstractController
         $em = $this->getDoctrine()->getManager();
 
         $perPage = 30;
-        $q = trim($request->query->get('q'));
+        $q = trim($request->query->get('q', ''));
 
         /** @var Paginator|AbstractMediaEntity[] $entities */
         $paginator = $em->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity')->getPaginated($page - 1, $perPage, $q);
@@ -94,8 +95,11 @@ class MediaController extends AbstractController
      *
      * @return array
      */
-    public function editAction(Request $request, AbstractMediaEntity $entity)
-    {
+    public function editAction(
+        Request $request,
+        CollectionRepository $collectionRepository,
+        AbstractMediaEntity $entity
+    ) {
         $editPermission = $this->securityManager->hasPermission(
             $entity,
             CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA
@@ -110,7 +114,7 @@ class MediaController extends AbstractController
         $em = $this->getDoctrine()->getManager();
         $parent = $request->query->get('parent', null);
         if (null !== $parent) {
-            $parent = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity')->findOneBy(['slug' => $parent]);
+            $parent = $collectionRepository->findOneBy(['slug' => $parent]);
         }
 
         $mediaType = $this->mediaTypeCollection->getMediaTypeFromEntity($entity);

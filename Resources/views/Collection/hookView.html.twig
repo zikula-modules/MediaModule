@@ -2,6 +2,6 @@
     <h3>{% trans %}Media collections{% endtrans %}</h3>
     {% for hookedObjectCollection in hookedObjectCollections %}
         <h4>{{ hookedObjectCollection.collection.title }}</h4>
-        {{ render(controller('CmfcmfMediaModule:Collection:display', {slug: hookedObjectCollection.collection.slug}, {isHook: true})) }}
+        {{ render(controller('@CmfcmfMediaModule/Collection/display', {slug: hookedObjectCollection.collection.slug}, {isHook: true})) }}
     {% endfor %}
 {% endif %}

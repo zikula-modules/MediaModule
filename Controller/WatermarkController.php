@@ -19,6 +19,8 @@ use Cmfcmf\Module\MediaModule\Entity\Watermark\Repository\WatermarkRepository;
 use Cmfcmf\Module\MediaModule\Entity\Watermark\TextWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Form\Watermark\ImageWatermarkType;
 use Cmfcmf\Module\MediaModule\Form\Watermark\TextWatermarkType;
+use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\OptimisticLockException;
 use Gedmo\Uploadable\Uploadable;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
@@ -31,12 +33,33 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Zikula\Bundle\HookBundle\Dispatcher\HookDispatcherInterface;
+use Zikula\ExtensionsModule\AbstractExtension;
+use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
+use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;
 
 /**
  * @Route("/watermarks")
  */
 class WatermarkController extends AbstractController
 {
+    private $watermarkRepository;
+
+    public function __construct(
+        AbstractExtension $extension,
+        PermissionApiInterface $permissionApi,
+        VariableApiInterface $variableApi,
+        TranslatorInterface $translator,
+        HookDispatcherInterface $hookDispatcher,
+        SecurityManager $securityManager,
+        MediaTypeCollection $mediaTypeCollection,
+        WatermarkRepository $watermarkRepository
+    ) {
+        parent::__construct($extension, $permissionApi, $variableApi, $translator, $hookDispatcher, $securityManager, $mediaTypeCollection);
+        $this->watermarkRepository = $watermarkRepository;
+    }
+
     /**
      * @Route("/", methods={"GET"})
      * @Template("@CmfcmfMediaModule/Watermark/index.html.twig")
@@ -47,9 +70,8 @@ class WatermarkController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $em = $this->getDoctrine()->getManager();
         /** @var AbstractWatermarkEntity[] $entities */
-        $entities = $em->getRepository(AbstractWatermarkEntity::class)->findAll();
+        $entities = $this->watermarkRepository->findAll();
 
         return ['entities' => $entities];
     }
@@ -152,9 +174,7 @@ class WatermarkController extends AbstractController
 
         // Cleanup existing thumbnails
 
-        /** @var WatermarkRepository $repository */
-        $repository = $em->getRepository(AbstractWatermarkEntity::class);
-        $repository->cleanupThumbs($entity, $imagineCacheManager);
+        $this->watermarkRepository->cleanupThumbs($entity, $imagineCacheManager);
 
         $this->addFlash('status', $this->trans('Watermark updated!'));
 
@@ -186,11 +206,7 @@ class WatermarkController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
 
-        // Cleanup existing thumbnails
-
-        /** @var WatermarkRepository $repository */
-        $repository = $em->getRepository('CmfcmfMediaModule:Watermark\AbstractWatermarkEntity');
-        $repository->cleanupThumbs($entity, $imagineCacheManager);
+        $this->watermarkRepository->cleanupThumbs($entity, $imagineCacheManager);
 
         $em->remove($entity);
         $em->flush();

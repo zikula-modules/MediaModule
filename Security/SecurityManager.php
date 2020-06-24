@@ -74,6 +74,7 @@ class SecurityManager
 
         $this->levels = [
             'view' => ACCESS_OVERVIEW,
+            'overview' => ACCESS_OVERVIEW,
             'display' => ACCESS_READ,
             'download' => ACCESS_COMMENT,
             'moderate' => ACCESS_MODERATE,

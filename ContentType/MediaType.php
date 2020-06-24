@@ -146,12 +146,9 @@ class MediaType extends AbstractContentType
         return FormType::class;
     }
 
-    /**
-     * @param EntityManagerInterface $em
-     */
-    public function setEntityManager(EntityManagerInterface $em)
+    public function setMediaRepository(MediaRepository $mediaRepository)
     {
-        $this->mediaRepository = $em->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity');
+        $this->mediaRepository = $mediaRepository;
     }
 
     /**
