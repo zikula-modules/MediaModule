@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\Listener;
 
+use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Zikula\ExtensionsModule\Event\ExtensionPostRemoveEvent;
@@ -62,8 +63,11 @@ class ModuleListener implements EventSubscriberInterface
                 return;
             }
         }
+        if ('CmfCmfMediaModule' === $name) {
+            return; // when uninstalling this module, all tables are deleted, so this is not necessary
+        }
 
-        $this->em->getRepository('CmfcmfMediaModule:HookedObject\HookedObjectEntity')
+        $this->em->getRepository(HookedObjectEntity::class)
             ->deleteAllOfModule($name);
     }
 }
