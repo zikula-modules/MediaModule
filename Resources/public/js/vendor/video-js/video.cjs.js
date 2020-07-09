@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.8.1 <http://videojs.com/>
+ * Video.js 7.8.4 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -36,7 +36,7 @@ var CaptionParser = _interopDefault(require('mux.js/lib/mp4/caption-parser'));
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.8.1";
+var version = "7.8.4";
 
 /**
  * @file create-logger.js
@@ -3744,8 +3744,13 @@ var Component = /*#__PURE__*/function () {
       // If inserting before a component, insert before that component's element
       var refNode = null;
 
-      if (this.children_[index + 1] && this.children_[index + 1].el_) {
-        refNode = this.children_[index + 1].el_;
+      if (this.children_[index + 1]) {
+        // Most children are components, but the video tech is an HTML element
+        if (this.children_[index + 1].el_) {
+          refNode = this.children_[index + 1].el_;
+        } else if (isEl(this.children_[index + 1])) {
+          refNode = this.children_[index + 1];
+        }
       }
 
       this.contentEl().insertBefore(component.el(), refNode);
@@ -19327,7 +19332,9 @@ var Html5 = /*#__PURE__*/function (_Tech) {
       if ('webkitPresentationMode' in this.el_ && this.el_.webkitPresentationMode !== 'picture-in-picture') {
         this.one('webkitendfullscreen', endFn);
         this.trigger('fullscreenchange', {
-          isFullscreen: true
+          isFullscreen: true,
+          // set a flag in case another tech triggers fullscreenchange
+          nativeIOSFullscreen: true
         });
       }
     };
@@ -22719,6 +22726,10 @@ var Player = /*#__PURE__*/function (_Component) {
 
   _proto.handleTechFullscreenChange_ = function handleTechFullscreenChange_(event, data) {
     if (data) {
+      if (data.nativeIOSFullscreen) {
+        this.toggleClass('vjs-ios-native-fs');
+      }
+
       this.isFullscreen(data.isFullscreen);
     }
   };
@@ -23464,8 +23475,8 @@ var Player = /*#__PURE__*/function (_Component) {
       var self = this;
       return new PromiseClass(function (resolve, reject) {
         function offHandler() {
-          self.off(self.fsApi_.fullscreenerror, errorHandler);
-          self.off(self.fsApi_.fullscreenchange, changeHandler);
+          self.off('fullscreenerror', errorHandler);
+          self.off('fullscreenchange', changeHandler);
         }
 
         function changeHandler() {
@@ -23549,8 +23560,8 @@ var Player = /*#__PURE__*/function (_Component) {
       var self = this;
       return new PromiseClass(function (resolve, reject) {
         function offHandler() {
-          self.off(self.fsApi_.fullscreenerror, errorHandler);
-          self.off(self.fsApi_.fullscreenchange, changeHandler);
+          self.off('fullscreenerror', errorHandler);
+          self.off('fullscreenchange', changeHandler);
         }
 
         function changeHandler() {

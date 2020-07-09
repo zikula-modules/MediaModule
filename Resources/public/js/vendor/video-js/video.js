@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.8.1 <http://videojs.com/>
+ * Video.js 7.8.4 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -19,7 +19,7 @@
   window$3 = window$3 && Object.prototype.hasOwnProperty.call(window$3, 'default') ? window$3['default'] : window$3;
   document = document && Object.prototype.hasOwnProperty.call(document, 'default') ? document['default'] : document;
 
-  var version = "7.8.1";
+  var version = "7.8.4";
 
   /**
    * @file create-logger.js
@@ -3753,8 +3753,13 @@
         // If inserting before a component, insert before that component's element
         var refNode = null;
 
-        if (this.children_[index + 1] && this.children_[index + 1].el_) {
-          refNode = this.children_[index + 1].el_;
+        if (this.children_[index + 1]) {
+          // Most children are components, but the video tech is an HTML element
+          if (this.children_[index + 1].el_) {
+            refNode = this.children_[index + 1].el_;
+          } else if (isEl(this.children_[index + 1])) {
+            refNode = this.children_[index + 1];
+          }
         }
 
         this.contentEl().insertBefore(component.el(), refNode);
@@ -21751,7 +21756,9 @@
         if ('webkitPresentationMode' in this.el_ && this.el_.webkitPresentationMode !== 'picture-in-picture') {
           this.one('webkitendfullscreen', endFn);
           this.trigger('fullscreenchange', {
-            isFullscreen: true
+            isFullscreen: true,
+            // set a flag in case another tech triggers fullscreenchange
+            nativeIOSFullscreen: true
           });
         }
       };
@@ -25143,6 +25150,10 @@
 
     _proto.handleTechFullscreenChange_ = function handleTechFullscreenChange_(event, data) {
       if (data) {
+        if (data.nativeIOSFullscreen) {
+          this.toggleClass('vjs-ios-native-fs');
+        }
+
         this.isFullscreen(data.isFullscreen);
       }
     };
@@ -25888,8 +25899,8 @@
         var self = this;
         return new PromiseClass(function (resolve, reject) {
           function offHandler() {
-            self.off(self.fsApi_.fullscreenerror, errorHandler);
-            self.off(self.fsApi_.fullscreenchange, changeHandler);
+            self.off('fullscreenerror', errorHandler);
+            self.off('fullscreenchange', changeHandler);
           }
 
           function changeHandler() {
@@ -25973,8 +25984,8 @@
         var self = this;
         return new PromiseClass(function (resolve, reject) {
           function offHandler() {
-            self.off(self.fsApi_.fullscreenerror, errorHandler);
-            self.off(self.fsApi_.fullscreenchange, changeHandler);
+            self.off('fullscreenerror', errorHandler);
+            self.off('fullscreenchange', changeHandler);
           }
 
           function changeHandler() {
