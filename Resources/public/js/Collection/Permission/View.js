@@ -4,8 +4,8 @@
         var $table = $('#cmfcmfmedia-permission-sortable-table').find('tbody');
         Sortable.create($table[0], {
             animation: 150,
-            handle: ".fa-sort",
-            draggable: "tr",
+            handle: '.fa-sort',
+            draggable: 'tr',
             onUpdate: function (evt) {
                 var $item = $(evt.item);
                 if (evt.oldIndex > evt.newIndex && !$item.hasClass('goOn')) {
@@ -20,7 +20,10 @@
                     });
                     // Element is before the lowest locked element.
                     if (evt.newIndex < highestLockedIndex) {
-                        window.toastr['error'](Translator.__('You cannot move a permission with goOn = no above a locked permission.'), Translator.__('Problem detected!'));
+                        window.toastr['error'](
+                            Translator.trans('You cannot move a permission with goOn = no above a locked permission.'),
+                            Translator.trans('Problem detected!')
+                        );
                         $table.find('tr:nth-child(' + parseInt(evt.oldIndex + 1) + ')').after($item);
 
                         return;
@@ -32,7 +35,7 @@
                         newIndex: parseInt(evt.newIndex)
                 })).success(function (data) {
                     $item.data('version', data.newVersion);
-                    window.toastr['success']('', Translator.__('Saved new position.'));
+                    window.toastr['success']('', Translator.trans('Saved new position.'));
                 }).fail(window.CmfcmfMediaModule.Util.Ajax.fail);
             }
         });

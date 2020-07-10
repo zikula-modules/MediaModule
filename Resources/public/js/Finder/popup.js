@@ -3,19 +3,19 @@
         $(document).on('cmfcmfmediamodule:media:finder:getbuttons', function (event) {
             event.tableResult += '<button class="cmfcmfmedia-finder-select-btn btn btn-primary btn-sm" type="button" ' +
                 'data-embedcode="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(event.entity.embedCodes.full) + '">' +
-                Translator.__('Full size') + '</button>'
+                Translator.trans('Full size') + '</button>'
             ;
             event.tableResult += '<button class="cmfcmfmedia-finder-select-btn btn btn-primary btn-sm" type="button" ' +
                 'data-embedcode="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(event.entity.embedCodes.medium) + '">' +
-                Translator.__('Medium size') + '</button>'
+                Translator.trans('Medium size') + '</button>'
             ;
             event.tableResult += '<button class="cmfcmfmedia-finder-select-btn btn btn-primary btn-sm" type="button" ' +
                 'data-embedcode="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(event.entity.embedCodes.small) + '">' +
-                Translator.__('Small size') + '</button>'
+                Translator.trans('Small size') + '</button>'
             ;
             event.tableResult += '<button class="cmfcmfmedia-finder-select-btn btn btn-primary btn-sm" type="button" ' +
                 'data-embedcode="' + window.CmfcmfMediaModule.Util.htmlAttrEncode('<a href="' + Routing.generate('cmfcmfmediamodule_media_download', {'slug': event.entity.slug, 'collectionSlug': event.entity.collection.slug}) + '">' + event.entity.title + '</a>') + '">' +
-                Translator.__('Link') + '</button>'
+                Translator.trans('Link') + '</button>'
             ;
         });
 
@@ -36,7 +36,7 @@
                     window.opener.CmfcmfMediaModule.currentEditorInstance.insertContent(html);
                     break;
             }
-            window.opener.toastr['success'](Translator.__('The medium has been successfully inserted.'), Translator.__('Medium inserted'));
+            window.opener.toastr['success'](Translator.trans('The medium has been successfully inserted.'), Translator.trans('Medium inserted'));
             window.opener.focus();
             window.close();
         });

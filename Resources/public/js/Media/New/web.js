@@ -133,7 +133,7 @@
                     return;
                 }
                 $results.empty();
-                $results.append('<tr><td colspan="' + (tableColumns.length + 1) + '" class="text-center">' + Translator.__('Searching...') + '</td></tr>');
+                $results.append('<tr><td colspan="' + (tableColumns.length + 1) + '" class="text-center">' + Translator.trans('Searching...') + '</td></tr>');
 
                 var dropdownValue = $btn.val();
                 if (typeof onSearch === "function") {
@@ -156,7 +156,7 @@
                     $results.empty();
                     if (resultSet.results.length == 0) {
                         $results.append(
-                            '<tr><td colspan="' + (tableColumns.length + 1) + '" class="text-center">' + Translator.__('No results found.') + '</td></tr>'
+                            '<tr><td colspan="' + (tableColumns.length + 1) + '" class="text-center">' + Translator.trans('No results found.') + '</td></tr>'
                         );
                         return;
                     }
@@ -171,7 +171,7 @@
                         var settings = window.CmfcmfMediaModule.Util.htmlAttrEncode(JSON.stringify(resultSet.results[i][0]));
                         resultTable += '<td>' +
                             '<button type="submit" class="btn btn-primary cmfcmfmedia-web-mediatype-' + mediaType +
-                            '-submit-btn" data-settings="' + settings + '">' + Translator.__('Choose') + ' <i class="fa fa-fw fa-arrow-right"></i></button>' +
+                            '-submit-btn" data-settings="' + settings + '">' + Translator.trans('Choose') + ' <i class="fa fa-fw fa-arrow-right"></i></button>' +
                             '</td>';
                         resultTable += '</tr>';
                     }

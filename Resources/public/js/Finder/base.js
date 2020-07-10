@@ -50,7 +50,7 @@
                     } else {
                         tr += '<td>--</td>';
                     }
-                    tr += '<td><a target="_blank" href="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(Routing.generate('cmfcmfmediamodule_media_display', {slug: results[i].slug, collectionSlug: results[i].collection.slug})) + '">' + Translator.__('view') + '</a></td>';
+                    tr += '<td><a target="_blank" href="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(Routing.generate('cmfcmfmediamodule_media_display', {slug: results[i].slug, collectionSlug: results[i].collection.slug})) + '">' + Translator.trans('view') + '</a></td>';
 
                     tr += '<td>';
 

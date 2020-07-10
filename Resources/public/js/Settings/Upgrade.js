@@ -35,7 +35,7 @@
                     } else {
                         $li.addClass('text-danger');
                         $upgradeButton.removeClass('btn-primary').addClass('btn-danger');
-                        $upgradeButton.text(Translator.__('Upgrade failed.'));
+                        $upgradeButton.text(Translator.trans('Upgrade failed.'));
                         alert(result.message);
                     }
                 })

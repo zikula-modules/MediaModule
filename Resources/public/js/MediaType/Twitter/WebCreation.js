@@ -9,11 +9,11 @@
                 new window.CmfcmfMediaModule.WebCreation.tableColumns.TextColumn('')
             ],
             {
-                /*everything: Translator.__('Everything'),*/
-                tweets: Translator.__('Tweets')/*,
-                users: Translator.__('Users')*/
+                /*everything: Translator.trans('Everything'),*/
+                tweets: Translator.trans('Tweets')/*,
+                users: Translator.trans('Users')*/
             },
-            Translator.__('Search for tweets')
+            Translator.trans('Search for tweets')
         );
     });
 })(jQuery);

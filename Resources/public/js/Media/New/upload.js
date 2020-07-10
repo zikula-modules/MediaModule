@@ -9,7 +9,10 @@
         function onOneFileUpload (file) {
             getMediaTypeFromFiles([fileToArray(file)], function (response) {
                 if (!response.result[0]) {
-                    window.toastr['error'](Translator.__('This media type is currently not supported'), Translator.__("We're sorry!"));
+                    window.toastr['error'](
+                        Translator.trans('This media type is currently not supported'),
+                        Translator.trans("We're sorry!")
+                    );
                     $('#cmfcmfmedia-tab-content').spin(false);
                     return;
                 }
@@ -37,10 +40,16 @@
                 }
                 if (response.notFound > 0) {
                     if (!canUpload) {
-                        window.toastr['error'](Translator.__('These files are not supported.'), Translator.__('Cannot upload files!'));
+                        window.toastr['error'](
+                            Translator.trans('These files are not supported.'),
+                            Translator.trans('Cannot upload files!')
+                        );
                         return;
                     }
-                    window.toastr['warning'](Translator.__('Some of these files will not be uploaded.'), Translator.__('Cannot upload everything!'));
+                    window.toastr['warning'](
+                        Translator.trans('Some of these files will not be uploaded.'),
+                        Translator.trans('Cannot upload everything!')
+                    );
                 }
 
                 openCollectionSelectModal(function (collection) {
@@ -133,7 +142,7 @@
             myDropzone.on('queuecomplete', function(progress) {
                 document.querySelector("#cmfcmfmedia-upload-total-progress").style.opacity = '0';
 
-                window.toastr["success"]('', Translator.__('Files have been uploaded'));
+                window.toastr["success"]('', Translator.trans('Files have been uploaded'));
             });
 
             myDropzone.on('sending', function(file, xhr, formData) {

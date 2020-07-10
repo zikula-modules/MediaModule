@@ -40,7 +40,7 @@
                         'new-position': evt.newIndex,
                         'old-position': evt.oldIndex
                     }).done(function () {
-                        window.toastr['success']('', Translator.__('Saved new position.'));
+                        window.toastr['success']('', Translator.trans('Saved new position.'));
                     }).fail(window.CmfcmfMediaModule.Util.Ajax.fail);
                 }
             });
