@@ -18,6 +18,7 @@
         "php": "^7.2.5",
         "clue/graph": "^0.9",
         "google/apiclient": "^2",
+        "php-http/guzzle6-adapter": "*",
         "j7mbo/twitter-api-php": "^1",
         "james-heinrich/getid3": "^1",
         "knplabs/github-api": "^2",
