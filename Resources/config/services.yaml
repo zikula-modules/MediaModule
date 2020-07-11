@@ -1,7 +1,6 @@
 imports:
   - { resource: 'mediatypes.yaml' }
   - { resource: 'collectiontemplates.yaml' }
-  - { resource: 'formtypes.yaml' }
   - { resource: 'hooks.yaml' }
   - { resource: 'importers.yaml' }
   - { resource: 'contenttypes.yaml' }
@@ -39,8 +38,7 @@ services:
         lazy: true
 
     # Collection of "Collection" templates
-    cmfcmf_media_module.collection_template_collection:
-        class: Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection
+    Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection:
         arguments:
             $templates: !tagged_iterator cmfcmf_media_module.collection_template
         lazy: true

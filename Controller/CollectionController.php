@@ -30,6 +30,7 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -309,11 +310,12 @@ class CollectionController extends AbstractController
     /**
      * @Route("/{slug}", methods={"GET"}, requirements={"slug"=".*[^/]"}, options={"expose" = true})
      * @Template("@CmfcmfMediaModule/Collection/display.html.twig")
-     *
-     * @return array
      */
-    public function displayAction(Request $request, CollectionEntity $entity, SelectedTemplateFactory $selectedTemplateFactory)
-    {
+    public function displayAction(
+        Request $request,
+        CollectionEntity $entity,
+        SelectedTemplateFactory $selectedTemplateFactory
+    ): Response {
         if (!$this->securityManager->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
         }
