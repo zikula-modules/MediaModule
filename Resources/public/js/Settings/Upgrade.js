@@ -4,7 +4,7 @@
 
         $upgradeButton.one('click', function () {
             $(this).attr('disabled', true);
-            $(this).find('.fa').removeClass('hidden');
+            $(this).find('.fa').removeClass('d-none');
             executeStep(0);
         });
 

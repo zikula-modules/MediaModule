@@ -11,20 +11,20 @@
         $searchInput.keyup(function(){
             clearTimeout(typingTimer);
             if ($searchInput.val) {
-                $cog.removeClass('hidden');
+                $cog.removeClass('d-none');
                 typingTimer = setTimeout(doneTyping, doneTypingInterval);
             }
         });
 
         function doneTyping () {
             if ($searchInput.val().length == 0) {
-                $cog.addClass('hidden');
+                $cog.addClass('d-none');
 
                 return;
             }
 
             $.getJSON(Routing.generate('cmfcmfmediamodule_finder_ajaxfind'), {q: $searchInput.val()}, function (results) {
-                $cog.addClass('hidden');
+                $cog.addClass('d-none');
 
                 var $table = $('#cmfcmfmedia-finder-table-body');
                 $table.empty();
