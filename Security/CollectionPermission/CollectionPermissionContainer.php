@@ -25,9 +25,12 @@ class CollectionPermissionContainer
      */
     private $permissions;
 
-    public function __construct()
+    public function __construct(iterable $permissions = [])
     {
         $this->permissions = [];
+        foreach ($permissions as $permission) {
+            $this->addCollectionPermission($permission);
+        }
     }
 
     /**

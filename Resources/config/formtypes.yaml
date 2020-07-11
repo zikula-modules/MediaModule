@@ -17,27 +17,27 @@ services:
     cmfcmf_media_module.form.type.permission_level:
         class: Cmfcmf\Module\MediaModule\Form\Type\PermissionLevelType
         arguments:
-            - '@cmfcmf_media_module.security_manager'
+            - '@Cmfcmf\Module\MediaModule\Security\SecurityManager'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection:
         class: Cmfcmf\Module\MediaModule\Form\Collection\CollectionType
         arguments:
             $templateCollection: '@cmfcmf_media_module.collection_template_collection'
-            $securityManager: '@cmfcmf_media_module.security_manager'
+            $securityManager: '@Cmfcmf\Module\MediaModule\Security\SecurityManager'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection_block:
         class: Cmfcmf\Module\MediaModule\Form\Collection\CollectionBlockType
         arguments:
-            $securityManager: '@cmfcmf_media_module.security_manager'
+            $securityManager: '@Cmfcmf\Module\MediaModule\Security\SecurityManager'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection_template:
         class: Cmfcmf\Module\MediaModule\Form\CollectionTemplate\TemplateType
         arguments:
             $templateCollection: '@cmfcmf_media_module.collection_template_collection'
-            $selectedTemplateFactory: '@cmfcmf_media_module.collection_template.selected_factory'
+            $selectedTemplateFactory: '@Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory'
         tags: ['form.type']
 
     cmfcmf_media_module.form.type.collection_template.galleria:
@@ -52,7 +52,7 @@ services:
         class: Cmfcmf\Module\MediaModule\Form\Media\AbstractFileType
 #        abstract: true
         arguments:
-            $securityManager: '@cmfcmf_media_module.security_manager'
+            $securityManager: '@Cmfcmf\Module\MediaModule\Security\SecurityManager'
     cmfcmf_media_module.form.type.media.archive:
         class: Cmfcmf\Module\MediaModule\Form\Media\ArchiveType
         parent: cmfcmf_media_module.form.type.media.base
@@ -118,7 +118,7 @@ services:
         class: Cmfcmf\Module\MediaModule\Form\Collection\Permission\AbstractPermissionType
 #        abstract: true
         arguments:
-            $securityManager: '@cmfcmf_media_module.security_manager'
+            $securityManager: '@Cmfcmf\Module\MediaModule\Security\SecurityManager'
     cmfcmf_media_module.form.type.collection.permission.group:
         class: Cmfcmf\Module\MediaModule\Form\Collection\Permission\GroupPermissionType
         parent: cmfcmf_media_module.form.type.collection.permission.base
@@ -139,7 +139,7 @@ services:
     cmfcmf_media_module.form.type.import:
         class: Cmfcmf\Module\MediaModule\Form\ImportType
         arguments:
-            $securityManager: '@cmfcmf_media_module.security_manager'
+            $securityManager: '@Cmfcmf\Module\MediaModule\Security\SecurityManager'
         tags: ['form.type']
     cmfcmf_media_module.form.type.importer.base:
         class: Cmfcmf\Module\MediaModule\Form\Importer\AbstractImporterType

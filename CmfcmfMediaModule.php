@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule;
 
-use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\CollectionPermissionCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\CollectionTemplateCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\FontCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\ImporterCompilerPass;
@@ -33,9 +32,7 @@ class CmfcmfMediaModule extends AbstractModule
         parent::build($container);
 
         $container->addCompilerPass(new MediaTypeCompilerPass());
-        $container->addCompilerPass(new CollectionTemplateCompilerPass());
         $container->addCompilerPass(new FontCompilerPass());
-        $container->addCompilerPass(new CollectionPermissionCompilerPass());
         $container->addCompilerPass(new ImporterCompilerPass());
     }
 }

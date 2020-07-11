@@ -10,29 +10,23 @@ services:
     cmfcmf_media_module.collection_template.cards:
         class: Cmfcmf\Module\MediaModule\CollectionTemplate\CardsTemplate
         parent: cmfcmf_media_module.collection_template.abstract_service
-        tags: ['cmfcmf_media_module.collection_template']
 
     cmfcmf_media_module.collection_template.slider:
         class: Cmfcmf\Module\MediaModule\CollectionTemplate\SliderTemplate
         parent: cmfcmf_media_module.collection_template.abstract_service
-        tags: ['cmfcmf_media_module.collection_template']
 
     cmfcmf_media_module.collection_template.grid:
         class: Cmfcmf\Module\MediaModule\CollectionTemplate\GridTemplate
         parent: cmfcmf_media_module.collection_template.abstract_service
-        tags: ['cmfcmf_media_module.collection_template']
 
     cmfcmf_media_module.collection_template.table:
         class: Cmfcmf\Module\MediaModule\CollectionTemplate\TableTemplate
         parent: cmfcmf_media_module.collection_template.abstract_service
-        tags: ['cmfcmf_media_module.collection_template']
 
     cmfcmf_media_module.collection_template.galleria:
         class: Cmfcmf\Module\MediaModule\CollectionTemplate\GalleriaTemplate
         parent: cmfcmf_media_module.collection_template.abstract_service
-        tags: ['cmfcmf_media_module.collection_template']
 
     cmfcmf_media_module.collection_template.lightgallery:
         class: Cmfcmf\Module\MediaModule\CollectionTemplate\LightGalleryTemplate
         parent: cmfcmf_media_module.collection_template.abstract_service
-        tags: ['cmfcmf_media_module.collection_template']

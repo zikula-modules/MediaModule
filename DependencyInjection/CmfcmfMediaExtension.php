@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\DependencyInjection;
 
+use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateInterface;
+use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -30,5 +32,15 @@ class CmfcmfMediaExtension extends Extension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
+
+        $container->registerForAutoconfiguration(CollectionPermissionInterface::class)
+            ->addTag('cmfcmf_media_module.collection_permission')
+            ->setPublic(true)
+        ;
+
+        $container->registerForAutoconfiguration(TemplateInterface::class)
+            ->addTag('cmfcmf_media_module.collection_template')
+            ->setPublic(true)
+        ;
     }
 }

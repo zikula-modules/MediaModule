@@ -78,6 +78,7 @@ class PermissionController extends AbstractController
     public function viewAction(
         Request $request,
         CollectionEntity $collectionEntity,
+        CollectionRepository $collectionRepository,
         CurrentUserApiInterface $currentUserApi
     ) {
         if (!$this->securityManager->hasPermission(
@@ -87,7 +88,7 @@ class PermissionController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        $qb = $this->getPermissionsOfCollectionAndParentCollectionsQueryBuilder($collectionEntity);
+        $qb = $this->getPermissionsOfCollectionAndParentCollectionsQueryBuilder($collectionEntity, $collectionRepository);
         /** @var AbstractPermissionEntity[] $entities */
         $entities = $qb->getQuery()->getResult();
 
@@ -260,6 +261,7 @@ class PermissionController extends AbstractController
      */
     public function reorderAction(
         AbstractPermissionEntity $permissionEntity,
+        CollectionRepository $collectionRepository,
         $permissionVersion,
         $newIndex
     ) {
@@ -274,7 +276,8 @@ class PermissionController extends AbstractController
         $permissionEntity->setVersion($permissionVersion);
 
         $allPermissions = $this->getPermissionsOfCollectionAndParentCollectionsQueryBuilder(
-            $permissionEntity->getCollection()
+            $permissionEntity->getCollection(),
+            $collectionRepository
         )->getQuery()->getArrayResult();
 
         $permissionEntity->setPosition($allPermissions[$newIndex]['position']);

@@ -23,9 +23,12 @@ class TemplateCollection
      */
     private $templates;
 
-    public function __construct()
+    public function __construct(iterable $templates = [])
     {
         $this->templates = [];
+        foreach ($templates as $template) {
+            $this->addCollectionTemplate($template);
+        }
     }
 
     /**

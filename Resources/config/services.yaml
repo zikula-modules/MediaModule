@@ -1,7 +1,6 @@
 imports:
   - { resource: 'mediatypes.yaml' }
   - { resource: 'collectiontemplates.yaml' }
-  - { resource: 'collectionpermissions.yaml' }
   - { resource: 'formtypes.yaml' }
   - { resource: 'hooks.yaml' }
   - { resource: 'importers.yaml' }
@@ -21,86 +20,35 @@ services:
         resource: '../../*'
         exclude: '../../{bootstrap.php,Tests,vendor}'
 
+    Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionContainer:
+        arguments:
+            $permissions: !tagged_iterator cmfcmf_media_module.collection_permission
+
     # Imagine filter
     cmfcmf_media_module.filter.custom_image_filter:
         class: Cmfcmf\Module\MediaModule\Imagine\Filter\Loader\CustomImageFilter
         arguments:
             $imagine: '@liip_imagine'
-            $fontCollection: '@cmfcmf_media_module.font_collection'
+            $fontCollection: '@Cmfcmf\Module\MediaModule\Font\FontCollection'
         tags:
             - { name: 'liip_imagine.filter.loader', loader: cmfcmfmediamodule.custom_image_filter }
-
-    # Security management
-    cmfcmf_media_module.security_manager:
-        class: Cmfcmf\Module\MediaModule\Security\SecurityManager
-        arguments:
-            $collectionPermissionContainer: '@cmfcmf_media_module.collection_permission.container'
-
-    # Module upgrader and version checker
-    cmfcmf_media_module.upgrade.module_upgrader:
-        class: Cmfcmf\Module\MediaModule\Upgrade\ModuleUpgrader
-
-    cmfcmf_media_module.upgrade.version_checker:
-        class: Cmfcmf\Module\MediaModule\Upgrade\VersionChecker
-
-    # Helpers
-    cmfcmf_media_module.search_helper:
-        class: Cmfcmf\Module\MediaModule\Helper\SearchHelper
-        arguments:
-            $securityManager: '@cmfcmf_media_module.security_manager'
-        tags:
-            - { name: zikula.searchable_module, bundleName: CmfcmfMediaModule }
-
-    # Listeners
-    cmfcmf_media_module.listener.doctrine:
-        class: Cmfcmf\Module\MediaModule\Listener\DoctrineListener
-        tags: ['doctrine.event_subscriber']
-
-    cmfcmf_media_module.listener.entity_lifecycle:
-        class: Cmfcmf\Module\MediaModule\Listener\EntityLifecycleListener
-        tags: ['doctrine.event_subscriber']
-
-    cmfcmf_media_module.listener.module:
-        class: Cmfcmf\Module\MediaModule\Listener\ModuleListener
-        tags: ['kernel.event_subscriber']
-
-    cmfcmf_media_module.listener.thirdparty:
-        class: Cmfcmf\Module\MediaModule\Listener\ThirdPartyListener
-        tags: ['kernel.event_subscriber']
 
     # Collection of media types
     cmfcmf_media_module.media_type_collection:
         class: Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection
         lazy: true
 
-
     # Collection of "Collection" templates
     cmfcmf_media_module.collection_template_collection:
         class: Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateCollection
+        arguments:
+            $templates: !tagged_iterator cmfcmf_media_module.collection_template
         lazy: true
-
-
-    # Selected collection template factory
-    Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory:
-        arguments:
-            $templateCollection: '@cmfcmf_media_module.collection_template_collection'
-
-    cmfcmf_media_module.collection_template.selected_factory: '@Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory'
-
-
-    # Twig extension
-    Cmfcmf\Module\MediaModule\Twig\TwigExtension:
-        arguments:
-            $securityManager: '@cmfcmf_media_module.security_manager'
-            $versionChecker: '@cmfcmf_media_module.upgrade.version_checker'
 
     # Fonts
     cmfcmf_media_module.font.font_loader:
         class: Cmfcmf\Module\MediaModule\Font\FontLoader
         tags: ['cmfcmf_media_module.font']
-
-    cmfcmf_media_module.font_collection:
-        class: Cmfcmf\Module\MediaModule\Font\FontCollection
 
 parameters:
     liip_imagine.cache.signer.class: Cmfcmf\Module\MediaModule\Imagine\Cache\DummySigner

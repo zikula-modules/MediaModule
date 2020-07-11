@@ -11,7 +11,7 @@ services:
         calls:
             - [setCollectionRepository, ['@Cmfcmf\Module\MediaModule\Entity\Collection\Repository\CollectionRepository']]
             - [setSecurityManager, ['@cmfcmf_media_module.security_manager']]
-            - [setSelectedTemplateFactory, ['@cmfcmf_media_module.collection_template.selected_factory']]
+            - [setSelectedTemplateFactory, ['@Cmfcmf\Module\MediaModule\CollectionTemplate\SelectedTemplateFactory']]
             - [setMediaTypeCollection, ['@cmfcmf_media_module.media_type_collection']]
         tags: ['zikula.content_type']
     Cmfcmf\Module\MediaModule\ContentType\Form\Type\CollectionType:
