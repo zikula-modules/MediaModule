@@ -34,11 +34,6 @@ use Zikula\PermissionsModule\Api\ApiInterface\PermissionApiInterface;
 class CollectionBlock extends AbstractBlockHandler
 {
     /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
      * @var CollectionRepository
      */
     private $collectionRepository;
@@ -146,6 +141,6 @@ class CollectionBlock extends AbstractBlockHandler
      */
     public function getType(): string
     {
-        return $this->translator->trans('Collection', [], 'cmfcmfmediamodule');
+        return $this->trans('Collection', [], 'cmfcmfmediamodule');
     }
 }
