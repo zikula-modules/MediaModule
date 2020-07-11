@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule;
 
-use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\CollectionTemplateCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\FontCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\ImporterCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\MediaTypeCompilerPass;
