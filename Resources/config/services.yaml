@@ -1,7 +1,6 @@
 imports:
   - { resource: 'collectiontemplates.yaml' }
   - { resource: 'hooks.yaml' }
-  - { resource: 'importers.yaml' }
   - { resource: 'contenttypes.yaml' }
 
 services:
@@ -33,6 +32,11 @@ services:
         tags:
             - { name: 'liip_imagine.filter.loader', loader: cmfcmfmediamodule.custom_image_filter }
 
+    Cmfcmf\Module\MediaModule\Importer\ImporterCollection:
+        arguments:
+            $importers: !tagged_iterator cmfcmf_media_module.importer
+        lazy: true
+
     # Collection of media types
     Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection:
         arguments:
@@ -46,9 +50,10 @@ services:
         lazy: true
 
     # Fonts
-    cmfcmf_media_module.font.font_loader:
-        class: Cmfcmf\Module\MediaModule\Font\FontLoader
-        tags: ['cmfcmf_media_module.font']
+    Cmfcmf\Module\MediaModule\Font\FontCollection:
+        arguments:
+            $loaders: !tagged_iterator cmfcmf_media_module.font_loader
+        lazy: true
 
 parameters:
     liip_imagine.cache.signer.class: Cmfcmf\Module\MediaModule\Imagine\Cache\DummySigner

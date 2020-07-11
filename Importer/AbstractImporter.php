@@ -16,7 +16,7 @@ namespace Cmfcmf\Module\MediaModule\Importer;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -33,7 +33,7 @@ abstract class AbstractImporter implements ImporterInterface
     protected $filesystem;
 
     /**
-     * @var FormFactory
+     * @var FormFactoryInterface
      */
     protected $formFactory;
 
@@ -57,23 +57,14 @@ abstract class AbstractImporter implements ImporterInterface
      */
     protected $dataDirectory;
 
-    /**
-     * @param TranslatorInterface    $translator
-     * @param Filesystem             $filesystem
-     * @param FormFactory            $formFactory
-     * @param MediaTypeCollection    $mediaTypeCollection
-     * @param EntityManagerInterface $em
-     * @param RequestStack           $requestStack
-     * @param string                 $dataDirectory
-     */
     public function __construct(
         TranslatorInterface $translator,
         Filesystem $filesystem,
-        FormFactory $formFactory,
+        FormFactoryInterface $formFactory,
         MediaTypeCollection $mediaTypeCollection,
         EntityManagerInterface $em,
         RequestStack $requestStack,
-        $dataDirectory
+        string $dataDirectory
     ) {
         $this->translator = $translator;
         $this->filesystem = $filesystem;

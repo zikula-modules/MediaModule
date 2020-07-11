@@ -33,9 +33,12 @@ class FontCollection
      */
     private $loaded;
 
-    public function __construct()
+    public function __construct(iterable $loaders = [])
     {
         $this->fonts = [];
+        foreach ($loaders as $loader) {
+            $this->addFontLoader($loader);
+        }
         $this->fontLoaders = [];
         $this->loaded = false;
     }

@@ -13,23 +13,8 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule;
 
-use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\FontCompilerPass;
-use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\ImporterCompilerPass;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Zikula\ExtensionsModule\AbstractModule;
 
 class CmfcmfMediaModule extends AbstractModule
 {
-    /**
-     * {@inheritdoc}
-     *
-     * Adds compiler passes to the container.
-     */
-    public function build(ContainerBuilder $container)
-    {
-        parent::build($container);
-
-        $container->addCompilerPass(new FontCompilerPass());
-        $container->addCompilerPass(new ImporterCompilerPass());
-    }
 }

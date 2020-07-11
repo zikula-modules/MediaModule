@@ -14,6 +14,8 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\DependencyInjection;
 
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateInterface;
+use Cmfcmf\Module\MediaModule\Font\FontLoaderInterface;
+use Cmfcmf\Module\MediaModule\Importer\ImporterInterface;
 use Cmfcmf\Module\MediaModule\MediaType\MediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionInterface;
 use Symfony\Component\Config\FileLocator;
@@ -36,17 +38,27 @@ class CmfcmfMediaExtension extends Extension
 
         $container->registerForAutoconfiguration(CollectionPermissionInterface::class)
             ->addTag('cmfcmf_media_module.collection_permission')
-            ->setPublic(true)
+//             ->setPublic(true)
         ;
 
         $container->registerForAutoconfiguration(TemplateInterface::class)
             ->addTag('cmfcmf_media_module.collection_template')
-            ->setPublic(true)
+//             ->setPublic(true)
         ;
 
         $container->registerForAutoconfiguration(MediaTypeInterface::class)
             ->addTag('cmfcmf_media_module.media_type')
-            ->setPublic(true)
+//             ->setPublic(true)
+        ;
+
+        $container->registerForAutoconfiguration(ImporterInterface::class)
+            ->addTag('cmfcmf_media_module.importer')
+//             ->setPublic(true)
+        ;
+
+        $container->registerForAutoconfiguration(FontLoaderInterface::class)
+            ->addTag('cmfcmf_media_module.font_loader')
+//             ->setPublic(true)
         ;
     }
 }

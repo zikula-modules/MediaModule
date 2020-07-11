@@ -20,9 +20,12 @@ class ImporterCollection
      */
     private $importers;
 
-    public function __construct()
+    public function __construct(iterable $importers = [])
     {
         $this->importers = [];
+        foreach ($importers as $importer) {
+            $this->addImporter($importer);
+        }
     }
 
     /**
