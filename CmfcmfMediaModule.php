@@ -15,7 +15,6 @@ namespace Cmfcmf\Module\MediaModule;
 
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\FontCompilerPass;
 use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\ImporterCompilerPass;
-use Cmfcmf\Module\MediaModule\DependencyInjection\Compiler\MediaTypeCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Zikula\ExtensionsModule\AbstractModule;
 
