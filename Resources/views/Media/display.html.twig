@@ -42,7 +42,6 @@
                 {% if entity.attribution|default %}
                     <p>{{ 'By %s%'|trans({'%s%': entity.attribution})|raw }}</p>
                 {% endif %}
-                <div class="clearfix"></div>
                 <p>
                     <strong>{% trans %}Added by{% endtrans %}</strong>: {{ entity.createdBy.uid|profileLinkByUserId }}
                     {% trans %}at {% endtrans %} {{ entity.createdDate|format_datetime('short', 'short') }}
@@ -50,7 +49,6 @@
                     {% if views >= 0 %}
                         <strong>{% trans %}Views{% endtrans %}</strong>: {{ views }}
                     {% endif %}
-                    <div class="clearfix"></div>
                 </p>
             </div>
             {% set extendedMetaInformation = mediaType.extendedMetaInformation(entity) %}
@@ -67,31 +65,31 @@
             <div class="list-group">
                 {% if entity.downloadAllowed|default and cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_SINGLE_MEDIUM')) %}
                     <a href="{{ path('cmfcmfmediamodule_media_download', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item">
-                        <i class="fa fa-fw fa-download"></i>
+                        <i class="fas fa-fw fa-download"></i>
                         {% trans %}Download{% endtrans %}
                     </a>
                 {% endif %}
                 {% if cmfcmfmediamodule_hasPermission(entity.collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW')) %}
                     <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: entity.collection.slug}) }}" class="list-group-item">
-                        <i class="fa fa-fw fa-folder-o"></i>
+                        <i class="fas fa-fw fa-folder"></i>
                         {% trans %}Back to the collection{% endtrans %}
                     </a>
                 {% endif %}
                 {% if cmfcmfmediamodule_hasPermission('media', 'admin') %}
                     <a href="{{ path('cmfcmfmediamodule_media_adminlist') }}" class="list-group-item">
-                        <i class="fa fa-fw fa-arrow-left"></i>
+                        <i class="fas fa-fw fa-arrow-left"></i>
                         {% trans %}Back to the list{% endtrans %}
                     </a>
                 {% endif %}
                 {% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
                     <a href="{{ path('cmfcmfmediamodule_media_edit', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-warning">
-                        <i class="fa fa-fw fa-edit"></i>
+                        <i class="fas fa-fw fa-edit"></i>
                         {% trans %}Edit{% endtrans %}
                     </a>
                 {% endif %}
                 {% if cmfcmfmediamodule_hasPermission(entity, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_DELETE_MEDIA')) %}
                     <a href="{{ path('cmfcmfmediamodule_media_delete', {slug: entity.slug, collectionSlug: entity.collection.slug}) }}" class="list-group-item list-group-item-danger">
-                        <i class="fa fa-fw fa-trash-o"></i>
+                        <i class="fas fa-fw fa-trash-alt"></i>
                         {% trans %}Delete{% endtrans %}
                     </a>
                 {% endif %}

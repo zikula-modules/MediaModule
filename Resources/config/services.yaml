@@ -55,5 +55,8 @@ services:
             $loaders: !tagged_iterator cmfcmf_media_module.font_loader
         lazy: true
 
+    Cmfcmf\Module\MediaModule\Listener\EntityLifecycleListener:
+        tags: ['doctrine.event_subscriber']
+
 parameters:
     liip_imagine.cache.signer.class: Cmfcmf\Module\MediaModule\Imagine\Cache\DummySigner

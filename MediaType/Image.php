@@ -181,8 +181,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         }
 
         /** @var ImageEntity $entity */
-        $path = $this->dataDirectory . $entity->getPath();
-        $path = str_replace('public/', '', $path);
+        $path = $entity->getPath();
         if (!file_exists($path)) {
             return '';
         }

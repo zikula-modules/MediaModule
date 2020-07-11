@@ -63,9 +63,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
     protected function getImagineRuntimeOptions(AbstractFileEntity $entity, $file, $width, $height, $mode, $optimize)
     {
         if ('original' === $height || 'original' === $width) {
-            $size = getimagesize(
-                $this->zikulaRoot . '/' . $this->dataDirectory . $entity->getPath()
-            );
+            $size = getimagesize($entity->getPath());
             if ('original' === $width) {
                 $width = $size[0];
             }

@@ -70,7 +70,7 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
     {
         unset($defaultPath);
 
-        return $this->dataDirectory . '/cmfcmf-media-module/media';
+        return str_replace('public/', '', $this->dataDirectory) . '/cmfcmf-media-module/media';
     }
 
     public function getPath()
