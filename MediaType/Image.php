@@ -183,6 +183,9 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         /** @var ImageEntity $entity */
         $path = $this->dataDirectory . $entity->getPath();
         $path = str_replace('public/', '', $path);
+        if (!file_exists($path)) {
+            return '';
+        }
         $imagineOptions = $this->getImagineRuntimeOptions($entity, $path, $width, $height, $mode, $optimize);
         $url = $this->imagineCacheManager->getBrowserPath($path, 'zkroot', $imagineOptions);
 
