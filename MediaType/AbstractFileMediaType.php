@@ -28,13 +28,16 @@ abstract class AbstractFileMediaType extends AbstractMediaType
     /**
      * @var string
      */
-    private $zikulaRoot;
+    protected $zikulaRoot;
 
     /**
      * @var CacheManager
      */
     protected $imagineCacheManager;
 
+    /**
+     * @required
+     */
     public function injectThings(
         FileLocatorInterface $fileLocator,
         CacheManager $cacheManager,
@@ -42,7 +45,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
     ) {
         $this->fileLocator = $fileLocator;
         $this->imagineCacheManager = $cacheManager;
-        $this->zikulaRoot = realpath($projectDir . '/..');
+        $this->zikulaRoot = realpath($projectDir);
     }
 
     public function getPathToFile($identifier)
@@ -60,7 +63,9 @@ abstract class AbstractFileMediaType extends AbstractMediaType
     protected function getImagineRuntimeOptions(AbstractFileEntity $entity, $file, $width, $height, $mode, $optimize)
     {
         if ('original' === $height || 'original' === $width) {
-            $size = getimagesize($entity->getPath());
+            $size = getimagesize(
+                $this->zikulaRoot . '/' . $this->dataDirectory . $entity->getPath()
+            );
             if ('original' === $width) {
                 $width = $size[0];
             }

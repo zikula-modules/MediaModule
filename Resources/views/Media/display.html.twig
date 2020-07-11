@@ -45,7 +45,7 @@
                 <div class="clearfix"></div>
                 <p>
                     <strong>{% trans %}Added by{% endtrans %}</strong>: {{ entity.createdBy.uid|profileLinkByUserId }}
-                    {% trans %}at {% endtrans %} {{ entity.createdDate|localizeddate('short', 'short') }}
+                    {% trans %}at {% endtrans %} {{ entity.createdDate|format_datetime('short', 'short') }}
                     {{ userAvatar(entity.createdBy.uid, {rating: 'g', class: 'img img-rounded pull-right', width: 60, height: 60}) }}
                     {% if views >= 0 %}
                         <strong>{% trans %}Views{% endtrans %}</strong>: {{ views }}

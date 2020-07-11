@@ -30,7 +30,6 @@ class CmfcmfMediaModule extends AbstractModule
     {
         parent::build($container);
 
-        $container->addCompilerPass(new MediaTypeCompilerPass());
         $container->addCompilerPass(new FontCompilerPass());
         $container->addCompilerPass(new ImporterCompilerPass());
     }

@@ -25,18 +25,14 @@
                     <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-plus"></i> {% trans %}Create{% endtrans %} <span class="caret"></span>
                     </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}">
-                                <i class="fa fa-fw fa-folder-o"></i> {% trans %}collection{% endtrans %}
-                            </a>
-                        </li>
-                        <li>
-                            <a href="{{ path('cmfcmfmediamodule_media_new', {parent: collection.slug}) }}">
-                                <i class="fa fa-fw fa-picture-o"></i> {% trans %}media{% endtrans %}
-                            </a>
-                        </li>
-                    </ul>
+                    <div class="dropdown-menu">
+                        <a href="{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}" class="dropdown-item">
+                            <i class="fa fa-fw fa-folder-o"></i> {% trans %}Collection{% endtrans %}
+                        </a>
+                        <a href="{{ path('cmfcmfmediamodule_media_new', {parent: collection.slug}) }}" class="dropdown-item">
+                            <i class="fa fa-fw fa-picture-o"></i> {% trans %}Media{% endtrans %}
+                        </a>
+                    </div>
                 </div>
             {% elseif createCollectionPermission %}
                 <a href="{{ path('cmfcmfmediamodule_collection_new', {slug: collection.slug}) }}" class="btn btn-default btn-sm">

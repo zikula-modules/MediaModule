@@ -98,7 +98,8 @@ class MediaController extends AbstractController
     public function editAction(
         Request $request,
         CollectionRepository $collectionRepository,
-        AbstractMediaEntity $entity
+        AbstractMediaEntity $entity,
+        UploadableManager $uploadManager
     ) {
         $editPermission = $this->securityManager->hasPermission(
             $entity,
@@ -134,7 +135,6 @@ class MediaController extends AbstractController
             goto edit_error;
         }
 
-        $uploadManager = $this->get('stof_doctrine_extensions.uploadable.manager');
         $file = $form->has('file') ? $form->get('file')->getData() : null;
         if (null !== $file) {
             if (!($mediaType instanceof UploadableMediaTypeInterface)) {
@@ -507,8 +507,11 @@ class MediaController extends AbstractController
      *
      * @return JsonResponse|Response
      */
-    public function uploadAction(Request $request, UploadableManager $uploadableManager)
-    {
+    public function uploadAction(
+        Request $request,
+        UploadableManager $uploadableManager,
+        string $dataDirectory
+    ) {
         $this->checkMediaCreationAllowed();
 
         try {
@@ -541,8 +544,6 @@ class MediaController extends AbstractController
             if (null === $selectedMediaType) {
                 return new Response($this->trans('File type not supported!'), Response::HTTP_FORBIDDEN);
             }
-
-            $dataDirectory = $this->get('service_container')->getParameter('datadir');
 
             /** @var AbstractFileEntity $entity */
             $entity = $selectedMediaType->getEntityClass();

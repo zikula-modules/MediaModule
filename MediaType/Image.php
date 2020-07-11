@@ -43,7 +43,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         $url = $this->getOriginalWithWatermark($entity, 'url', true);
         $url = htmlentities($url);
 
-        return "<img class=\"img-responsive\" src=\"${url}\" />";
+        return "<img class=\"img-fluid\" src=\"${url}\" />";
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)
@@ -181,7 +181,8 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         }
 
         /** @var ImageEntity $entity */
-        $path = $entity->getPath();
+        $path = $this->dataDirectory . $entity->getPath();
+        $path = str_replace('public/', '', $path);
         $imagineOptions = $this->getImagineRuntimeOptions($entity, $path, $width, $height, $mode, $optimize);
         $url = $this->imagineCacheManager->getBrowserPath($path, 'zkroot', $imagineOptions);
 

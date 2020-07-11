@@ -47,7 +47,7 @@ class Flickr extends AbstractMediaType implements WebMediaTypeInterface
         $url = htmlentities($url);
 
         return <<<EOD
-<img src="${url}" class="img-responsive" alt="${title}" />
+<img src="${url}" class="img-fluid" alt="${title}" />
 EOD;
     }
 

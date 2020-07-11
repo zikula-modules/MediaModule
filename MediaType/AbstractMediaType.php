@@ -58,13 +58,13 @@ abstract class AbstractMediaType implements MediaTypeInterface
         TranslatorInterface $translator,
         VariableApiInterface $variableApi,
         RequestStack $requestStack,
-        string $projectDir
+        string $dataDirectory
     ) {
         $this->twig = $twig;
         $this->translator = $translator;
         $this->variableApi = $variableApi;
         $this->requestStack = $requestStack;
-        $this->dataDirectory = $projectDir . '/public/uploads';
+        $this->dataDirectory = $dataDirectory;
     }
 
     public function getVar($name, $default)

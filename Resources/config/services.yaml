@@ -1,5 +1,4 @@
 imports:
-  - { resource: 'mediatypes.yaml' }
   - { resource: 'collectiontemplates.yaml' }
   - { resource: 'hooks.yaml' }
   - { resource: 'importers.yaml' }
@@ -14,6 +13,8 @@ services:
             $extension: '@Cmfcmf\Module\MediaModule\CmfcmfMediaModule'
             $projectDir: '%kernel.project_dir%'
             $cacheDir: '%kernel.cache_dir%'
+            $dataDirectory: '%datadir%'
+            $fileLocator: '@file_locator'
 
     Cmfcmf\Module\MediaModule\:
         resource: '../../*'
@@ -33,8 +34,9 @@ services:
             - { name: 'liip_imagine.filter.loader', loader: cmfcmfmediamodule.custom_image_filter }
 
     # Collection of media types
-    cmfcmf_media_module.media_type_collection:
-        class: Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection
+    Cmfcmf\Module\MediaModule\MediaType\MediaTypeCollection:
+        arguments:
+            $mediaTypes: !tagged_iterator cmfcmf_media_module.media_type
         lazy: true
 
     # Collection of "Collection" templates

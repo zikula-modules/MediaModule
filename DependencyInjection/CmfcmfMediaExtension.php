@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\DependencyInjection;
 
 use Cmfcmf\Module\MediaModule\CollectionTemplate\TemplateInterface;
+use Cmfcmf\Module\MediaModule\MediaType\MediaTypeInterface;
 use Cmfcmf\Module\MediaModule\Security\CollectionPermission\CollectionPermissionInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -40,6 +41,11 @@ class CmfcmfMediaExtension extends Extension
 
         $container->registerForAutoconfiguration(TemplateInterface::class)
             ->addTag('cmfcmf_media_module.collection_template')
+            ->setPublic(true)
+        ;
+
+        $container->registerForAutoconfiguration(MediaTypeInterface::class)
+            ->addTag('cmfcmf_media_module.media_type')
             ->setPublic(true)
         ;
     }

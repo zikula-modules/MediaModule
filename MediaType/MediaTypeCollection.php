@@ -23,9 +23,12 @@ class MediaTypeCollection
      */
     private $mediaTypes;
 
-    public function __construct()
+    public function __construct(iterable $mediaTypes = [])
     {
         $this->mediaTypes = [];
+        foreach ($mediaTypes as $mediaType) {
+            $this->addMediaType($mediaType);
+        }
     }
 
     public function addMediaType(MediaTypeInterface $mediaType)

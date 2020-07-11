@@ -77,7 +77,7 @@ class ImageEntity extends AbstractFileEntity
     private function cleanData(&$data)
     {
         foreach ($data as $key => $value) {
-            if ('UndefinedTag' === mb_substr($key, 0, mb_strlen('UndefinedTag'))) {
+            if ('UndefinedTag' === mb_substr((string)$key, 0, mb_strlen('UndefinedTag'))) {
                 unset($data[$key]);
                 continue;
             }
@@ -85,7 +85,7 @@ class ImageEntity extends AbstractFileEntity
                 $this->cleanData($value);
                 $data[$key] = $value;
             } else {
-                $data[$key] = utf8_encode($value);
+                $data[$key] = utf8_encode((string)$value);
             }
         }
     }
