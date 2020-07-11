@@ -137,7 +137,7 @@ class CollectionController extends AbstractController
         ]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && !$form->isValid()) {
+        if (!$form->isSubmitted() || !$form->isValid()) {
             goto edit_error;
         }
 

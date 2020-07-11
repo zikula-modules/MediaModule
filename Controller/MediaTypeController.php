@@ -114,7 +114,7 @@ END;
 
         $form = $this->buildYouTubeUploadForm($entity);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && !$form->isValid()) {
+        if (!$form->isSubmitted() || !$form->isValid()) {
             return $this->render('@CmfcmfMediaModule/MediaType/Video/youtubeUpload.html.twig', [
                 'entity' => $entity,
                 'form' => $form->createView()
