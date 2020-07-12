@@ -15,6 +15,7 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Translation\Extractor\Annotation\Ignore;
 
 class UserPermissionType extends AbstractPermissionType
 {
@@ -30,9 +31,9 @@ class UserPermissionType extends AbstractPermissionType
         }
 
         $builder->add('userIds', ChoiceType::class, [
-            'label' => $this->translator->trans('Users', [], 'cmfcmfmediamodule'),
+            'label' => 'Users',
             'multiple' => true,
-            'choices' => $choices
+            'choices' => /** @Ignore */$choices
         ]);
 
         parent::buildForm($builder, $options);

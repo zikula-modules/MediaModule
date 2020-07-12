@@ -36,10 +36,10 @@ class FontCollection
     public function __construct(iterable $loaders = [])
     {
         $this->fonts = [];
+        $this->fontLoaders = [];
         foreach ($loaders as $loader) {
             $this->addFontLoader($loader);
         }
-        $this->fontLoaders = [];
         $this->loaded = false;
     }
 
@@ -133,8 +133,7 @@ class FontCollection
      * Loads all fonts from the loaders.
      */
     private function load()
-    {
-        foreach ($this->fontLoaders as $loader) {
+    {        foreach ($this->fontLoaders as $loader) {
             foreach ($loader->loadFonts() as $font) {
                 $this->fonts[$font->getId()] = $font;
             }

@@ -132,8 +132,12 @@ class WatermarkController extends AbstractController
      *
      * @return array
      */
-    public function editAction(Request $request, UploadableManager $uploadableManager, CacheManager $imagineCacheManager, AbstractWatermarkEntity $entity)
-    {
+    public function editAction(
+        Request $request,
+        UploadableManager $uploadableManager,
+        CacheManager $imagineCacheManager,
+        AbstractWatermarkEntity $entity
+    ) {
         if (!$this->securityManager->hasPermission($entity, 'edit')) {
             throw new AccessDeniedException();
         }
@@ -149,7 +153,7 @@ class WatermarkController extends AbstractController
         $form = $this->createForm($form, $entity, ['entity' => $entity]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && !$form->isValid()) {
+        if (!$form->isSubmitted() || !$form->isValid()) {
             goto edit_error;
         }
         $em = $this->getDoctrine()->getManager();
@@ -172,8 +176,7 @@ class WatermarkController extends AbstractController
             goto edit_error;
         }
 
-        // Cleanup existing thumbnails
-
+        // cleanup existing thumbnails
         $this->watermarkRepository->cleanupThumbs($entity, $imagineCacheManager);
 
         $this->addFlash('status', $this->trans('Watermark updated!'));
@@ -182,7 +185,9 @@ class WatermarkController extends AbstractController
 
         edit_error:
 
-        return ['form' => $form->createView()];
+        return [
+            'form' => $form->createView()
+        ];
     }
 
     /**

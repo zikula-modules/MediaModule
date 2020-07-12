@@ -31,7 +31,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Translation\Extractor\Annotation\Ignore;
+use Translation\Extractor\Annotation\Translate;
 use Zikula\CategoriesModule\Form\Type\CategoriesType;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
@@ -52,19 +53,11 @@ class CollectionType extends AbstractType
      */
     private $variableApi;
 
-    /**
-     * @param TranslatorInterface  $translator
-     * @param TemplateCollection   $templateCollection
-     * @param SecurityManager      $securityManager
-     * @param VariableApiInterface $variableApi
-     */
     public function __construct(
-        TranslatorInterface $translator,
         TemplateCollection $templateCollection,
         SecurityManager $securityManager,
         VariableApiInterface $variableApi
     ) {
-        $this->translator = $translator;
         $this->templateCollection = $templateCollection;
         $this->securityManager = $securityManager;
         $this->variableApi = $variableApi;
@@ -81,14 +74,14 @@ class CollectionType extends AbstractType
         $escapingStrategy = $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection');
         switch ($escapingStrategy) {
             case 'raw':
-                $descriptionHelp = $this->translator->trans('You may use HTML.', [], 'cmfcmfmediamodule');
+                $descriptionHelp = /** @Translate */'You may use HTML.';
                 $editorClass = '';
                 break;
             case 'text':
-                $descriptionHelp = $this->translator->trans('Only plaintext allowed.', [], 'cmfcmfmediamodule');
+                $descriptionHelp = /** @Translate */'Only plaintext allowed.';
                 break;
             case 'markdown':
-                $descriptionHelp = $this->translator->trans('You may use MarkDown.', [], 'cmfcmfmediamodule');
+                $descriptionHelp = /** @Translate */'You may use MarkDown.';
                 break;
             default:
                 throw new \LogicException();
@@ -99,31 +92,32 @@ class CollectionType extends AbstractType
         $securityManager = $this->securityManager;
 
         $builder->add('title', TextType::class, [
-            'label' => $this->translator->trans('Title', [], 'cmfcmfmediamodule')
+            'label' => 'Title'
         ]);
         /**
         If enabled, breaks slug generation of children when the slug is changed.
         if ($this->variableApi->get('CmfcmfMediaModule', 'slugEditable')) {
             $builder->add('slug', TextType::class, [
-                'label' => $this->translator->trans('Slug', [], 'cmfcmfmediamodule'),
+                'label' => 'Slug',
                 'required'=> false,
                 'attr' => [
-                    'placeholder' => $this->translator->trans('Leave empty to autogenerate', [], 'cmfcmfmediamodule')
+                    'placeholder' => 'Leave empty to autogenerate'
                 ]
             ]);
         }*/
 
         $builder
             ->add('description', TextareaType::class, [
-                'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
+                'label' => 'Description',
                 'required' => false,
                 'attr' => [
-                    'help' => $descriptionHelp,
                     'class' => $editorClass
-                ]
+                ],
+                /** @Ignore */
+                'help' => $descriptionHelp
             ])
             ->add('categoryAssignments', CategoriesType::class, [
-                'label' => $this->translator->trans('Categories', [], 'cmfcmfmediamodule'),
+                'label' => 'Categories',
                 'required' => false,
                 'multiple' => true,
                 'module' => 'CmfcmfMediaModule',
@@ -131,13 +125,13 @@ class CollectionType extends AbstractType
                 'entityCategoryClass' => CollectionCategoryAssignmentEntity::class,
             ])
             ->add('defaultTemplate', TemplateType::class, [
-                'label' => $this->translator->trans('Display', [], 'cmfcmfmediamodule'),
+                'label' => 'Display',
             ])
             ->add('parent', EntityType::class, [
                 'class' => CollectionEntity::class,
                 'required' => false,
-                'label' => $this->translator->trans('Parent', [], 'cmfcmfmediamodule'),
-                'placeholder' => $this->translator->trans('No parent', [], 'cmfcmfmediamodule'),
+                'label' => 'Parent',
+                'placeholder' => 'No parent',
                 'query_builder' => function (EntityRepository $er) use (
                     $theCollection,
                     $securityManager
@@ -175,17 +169,17 @@ class CollectionType extends AbstractType
             ->add('watermark', EntityType::class, [
                 'class' => AbstractWatermarkEntity::class,
                 'required' => false,
-                'label' => $this->translator->trans('Watermark', [], 'cmfcmfmediamodule'),
+                'label' => 'Watermark',
                 'data' => null !== $theCollection->getId() ? $theCollection->getWatermark() :
                     (isset($options['parent']) ? $options['parent']->getWatermark() : null),
-                'placeholder' => $this->translator->trans('No watermark', [], 'cmfcmfmediamodule'),
+                'placeholder' => 'No watermark',
                 'choice_label' => 'title',
             ])
             ->add('primaryMedium', EntityType::class, [
                 'class' => AbstractMediaEntity::class,
                 'required' => false,
-                'label' => $this->translator->trans('Primary medium', [], 'cmfcmfmediamodule'),
-                'placeholder' => $this->translator->trans('First medium of collection', [], 'cmfcmfmediamodule'),
+                'label' => 'Primary medium',
+                'placeholder' => 'First medium of collection',
                 'disabled' => null === $theCollection->getId(),
                 'choice_label' => 'title',
                 'query_builder' => function (EntityRepository $er) use ($theCollection) {
@@ -196,9 +190,7 @@ class CollectionType extends AbstractType
 
                     return $qb;
                 },
-                'attr' => [
-                    'help' => $this->translator->trans('The primary medium is used as collection thumbnail. It must be part of the collection.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'The primary medium is used as collection thumbnail. It must be part of the collection.'
             ])
         ;
     }

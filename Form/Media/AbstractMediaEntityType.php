@@ -30,7 +30,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Translation\Extractor\Annotation\Ignore;
+use Translation\Extractor\Annotation\Translate;
 use Zikula\CategoriesModule\Form\Type\CategoriesType;
 use Zikula\ExtensionsModule\Api\ApiInterface\VariableApiInterface;
 
@@ -54,19 +55,11 @@ abstract class AbstractMediaEntityType extends AbstractType
      */
     protected $em;
 
-    /**
-     * @param TranslatorInterface    $translator
-     * @param SecurityManager        $securityManager
-     * @param VariableApiInterface   $variableApi
-     * @param EntityManagerInterface $em
-     */
     public function __construct(
-        TranslatorInterface $translator,
         SecurityManager $securityManager,
         VariableApiInterface $variableApi,
         EntityManagerInterface $em
     ) {
-        $this->translator = $translator;
         $this->securityManager = $securityManager;
         $this->variableApi = $variableApi;
         $this->em = $em;
@@ -86,26 +79,14 @@ abstract class AbstractMediaEntityType extends AbstractType
         );
         switch ($escapingStrategy) {
             case 'raw':
-                $descriptionHelp = $this->translator->trans(
-                    'You may use HTML.',
-                    [],
-                    'cmfcmfmediamodule'
-                );
+                $descriptionHelp = /** @Translate */'You may use HTML.';
                 $editorClass = '';
                 break;
             case 'text':
-                $descriptionHelp = $this->translator->trans(
-                    'Only plaintext allowed.',
-                    [],
-                    'cmfcmfmediamodule'
-                );
+                $descriptionHelp = /** @Translate */'Only plaintext allowed.';
                 break;
             case 'markdown':
-                $descriptionHelp = $this->translator->trans(
-                    'You may use MarkDown.',
-                    [],
-                    'cmfcmfmediamodule'
-                );
+                $descriptionHelp = /** @Translate */'You may use MarkDown.';
                 break;
             default:
                 throw new \LogicException();
@@ -119,7 +100,7 @@ abstract class AbstractMediaEntityType extends AbstractType
         $allowTemporaryUploadCollection = $options['allowTemporaryUploadCollection'] ?? false;
         $collectionOptions = [
             'required' => true,
-            'label' => $this->translator->trans('Collection', [], 'cmfcmfmediamodule'),
+            'label' => 'Collection',
             'class' => 'CmfcmfMediaModule:Collection\CollectionEntity',
             'query_builder' => function (EntityRepository $er) use (
                 $allowTemporaryUploadCollection,
@@ -140,7 +121,7 @@ abstract class AbstractMediaEntityType extends AbstractType
 
                 return $qb;
             },
-            'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
+            'placeholder' => 'Select collection',
             'choice_label' => 'indentedTitle',
         ];
         if (isset($options['parent']) && null !== $options['parent']) {
@@ -155,7 +136,7 @@ abstract class AbstractMediaEntityType extends AbstractType
         $builder
             ->add('collection', EntityType::class, $collectionOptions)
             ->add('categoryAssignments', CategoriesType::class, [
-                'label' => $this->translator->trans('Categories', [], 'cmfcmfmediamodule'),
+                'label' => 'Categories',
                 'required' => false,
                 'multiple' => true,
                 'module' => 'CmfcmfMediaModule',
@@ -169,7 +150,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                     $options['hiddenFields']
                 ) ? HiddenType::class : TextType::class,
                 [
-                    'label' => $this->translator->trans('Title', [], 'cmfcmfmediamodule')
+                    'label' => 'Title'
                 ]
             )
             ->add(
@@ -180,11 +161,12 @@ abstract class AbstractMediaEntityType extends AbstractType
                 ) ? HiddenType::class : TextareaType::class,
                 [
                     'required' => false,
-                    'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
+                    'label' => 'Description',
                     'attr' => [
-                        'help' => $descriptionHelp,
                         'class' => $editorClass
-                    ]
+                    ],
+                    /** @Ignore */
+                    'help' => $descriptionHelp
                 ]
             )
             ->add(
@@ -192,7 +174,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                 EntityType::class,
                 [
                     'required' => false,
-                    'label' => $this->translator->trans('License', [], 'cmfcmfmediamodule'),
+                    'label' => 'License',
                     'class' => LicenseEntity::class,
                     'preferred_choices' => function (LicenseEntity $license) {
                         return !$license->isOutdated();
@@ -204,7 +186,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                             ->where('l.enabledForUpload = 1');
                     // @todo Move to the actual uploadable file types.
                     },
-                    'placeholder' => $this->translator->trans('Unknown', [], 'cmfcmfmediamodule'),
+                    'placeholder' => 'Unknown',
                     'choice_label' => 'title',
                     'attr' => isset($options['hiddenFields']) && in_array(
                         'license',
@@ -223,7 +205,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                     $options['hiddenFields']
                 ) ? HiddenType::class : TextType::class,
                 [
-                    'label' => $this->translator->trans('Author', [], 'cmfcmfmediamodule'),
+                    'label' => 'Author',
                     'required' => false,
                     'empty_data' => null
                 ]
@@ -235,7 +217,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                     $options['hiddenFields']
                 ) ? HiddenType::class : UrlType::class,
                 [
-                    'label' => $this->translator->trans('Author URL', [], 'cmfcmfmediamodule'),
+                    'label' => 'Author URL',
                     'required' => false,
                     'empty_data' => null
                 ]
@@ -247,7 +229,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                     $options['hiddenFields']
                 ) ? HiddenType::class : UrlType::class,
                 [
-                    'label' => $this->translator->trans('Author Avatar URL', [], 'cmfcmfmediamodule'),
+                    'label' => 'Author Avatar URL',
                     'required' => false,
                     'empty_data' => null
                 ]

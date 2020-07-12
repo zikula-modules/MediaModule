@@ -19,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Translation\Extractor\Annotation\Ignore;
 
 /**
  * Displays a font selector.
@@ -45,7 +46,7 @@ class FontType extends AbstractType
     {
         $resolver->setDefaults([
             'expanded' => true,
-            'choices' => $this->fontCollection->getFontsForForm()
+            'choices' => /** @Ignore */$this->fontCollection->getFontsForForm()
         ]);
     }
 

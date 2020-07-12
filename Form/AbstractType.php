@@ -17,20 +17,9 @@ use Symfony\Component\Form\AbstractType as BaseAbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractType extends BaseAbstractType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    public function setTranslator(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
-    }
-
     /**
      * {@inheritdoc}
      */

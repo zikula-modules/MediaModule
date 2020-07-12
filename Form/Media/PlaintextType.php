@@ -27,8 +27,8 @@ class PlaintextType extends AbstractFileType
 
         $builder
             ->add('useSyntaxHighlighting', CheckboxType::class, [
-                'required' => false,
-                'label' => $this->translator->trans('Use syntax highlighting', [], 'cmfcmfmediamodule')
+                'label' => 'Use syntax highlighting',
+                'required' => false
             ])
         ;
     }

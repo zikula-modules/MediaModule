@@ -24,18 +24,16 @@ class ServerDirectoryType extends AbstractImporterType
         $builder
             ->add('serverDirectory', TextType::class, [
                 'required' => true,
-                'label' => $this->translator->trans('Server directory', [], 'cmfcmfmediamodule'),
-                'attr' => [
-                    'help' => $this->translator->trans('Either provide an absolute path or a path relative to the Zikula root directory.', [], 'cmfcmfmediamodule')
-                ]
+                'label' => 'Server directory',
+                'help' => 'Either provide an absolute path or a path relative to the Zikula root directory.'
             ])
             ->add('includeSubDirectories', CheckboxType::class, [
                 'required' => false,
-                'label' => $this->translator->trans('Include sub directories', [], 'cmfcmfmediamodule')
+                'label' => 'Include sub directories'
             ])
             ->add('createSubCollectionsForSubDirectories', CheckboxType::class, [
                 'required' => false,
-                'label' => $this->translator->trans('Create sub collections for sub directories', [], 'cmfcmfmediamodule')
+                'label' => 'Create sub collections for sub directories'
             ])
         ;
     }

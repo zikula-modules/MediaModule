@@ -36,7 +36,7 @@ class DeezerType extends WebType
         ;
         if ($options['showPlaylistCheckbox']) {
             $builder->add('showPlaylist', CheckboxType::class, [
-                'label' => $this->translator->trans('Show playlist', [], 'cmfcmfmediamodule'),
+                'label' => 'Show playlist',
                 'required' => false
             ]);
         }

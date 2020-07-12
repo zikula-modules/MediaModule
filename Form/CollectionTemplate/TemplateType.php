@@ -24,7 +24,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TemplateType extends AbstractType implements EventSubscriberInterface
 {
@@ -32,11 +31,6 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
     {
         return [FormEvents::PRE_SET_DATA => 'preSetData'];
     }
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
 
     /**
      * @var TemplateCollection
@@ -48,17 +42,10 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
      */
     private $selectedTemplateFactory;
 
-    /**
-     * @param TranslatorInterface     $translator
-     * @param TemplateCollection      $templateCollection
-     * @param SelectedTemplateFactory $selectedTemplateFactory
-     */
     public function __construct(
-        TranslatorInterface $translator,
         TemplateCollection $templateCollection,
         SelectedTemplateFactory $selectedTemplateFactory
     ) {
-        $this->translator = $translator;
         $this->templateCollection = $templateCollection;
         $this->selectedTemplateFactory = $selectedTemplateFactory;
     }
@@ -69,9 +56,9 @@ class TemplateType extends AbstractType implements EventSubscriberInterface
 
         $builder
             ->add('template', ChoiceType::class, [
-                'label' => $this->translator->trans('Template', [], 'cmfcmfmediamodule'),
+                'label' => 'Template',
                 'required' => !$options['allowDefaultTemplate'],
-                'placeholder' => $options['allowDefaultTemplate'] ? $this->translator->trans('Default', [], 'cmfcmfmediamodule') : false,
+                'placeholder' => $options['allowDefaultTemplate'] ? 'Default' : false,
                 'choices' => $this->templateCollection->getCollectionTemplateTitles()
             ])
             ->add('options', FormType::class, [

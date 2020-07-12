@@ -99,7 +99,8 @@ class MediaController extends AbstractController
         Request $request,
         CollectionRepository $collectionRepository,
         AbstractMediaEntity $entity,
-        UploadableManager $uploadManager
+        UploadableManager $uploadManager/*,
+        \Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager*/
     ) {
         $editPermission = $this->securityManager->hasPermission(
             $entity,
@@ -148,10 +149,8 @@ class MediaController extends AbstractController
 
             $uploadManager->markEntityToUpload($entity, $file);
 
-            // Cleanup existing thumbnails
-            /** @var Liip\ImagineBundle\Imagine\Cache\CacheManager $imagineCacheManager */
-            //$imagineCacheManager = $this->get('liip_imagine.cache.manager');
-            //$imagineCacheManager->remove($entity->getPath(), ['thumbnail', 'cmfcmfmediamodule.custom_image_filter']);
+            // cleanup existing thumbnails
+            //$imagineCacheManager->remove($entity->getPath());
         }
 
         try {

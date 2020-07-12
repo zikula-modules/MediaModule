@@ -31,32 +31,24 @@ class TextWatermarkType extends AbstractWatermarkType
     {
         $builder
             ->add('text', TextType::class, [
-                'attr' => [
-                    'help' => $this->translator->trans('Text to be used as watermark.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'Text to be used as watermark.'
             ])
             ->add('absoluteSize', NumberType::class, [
                 'scale' => 0,
-                'label' => $this->translator->trans('Font size', [], 'cmfcmfmediamodule'),
+                'label' => 'Font size',
                 'required' => false,
-                'attr' => [
-                    'help' => $this->translator->trans('The font size to use, reagardless of the image size. Either this or the "Relative size" option must be set.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'The font size to use, regardless of the image size. Either this or the "Relative size" option must be set.'
             ])
             ->add('font', FontType::class, [
-                'label' => $this->translator->trans('Font', [], 'cmfcmfmediamodule')
+                'label' => 'Font'
             ])
             ->add('fontColor', ColorType::class, [
-                'label' => $this->translator->trans('Font color', [], 'cmfcmfmediamodule'),
-                'attr' => [
-                    'help' => $this->translator->trans('R-G-B-A', [], 'cmfcmfmediamodule')
-                ]
+                'label' => 'Font color',
+                'help' => 'R-G-B-A'
             ])
             ->add('backgroundColor', ColorType::class, [
-                'label' => $this->translator->trans('Background color', [], 'cmfcmfmediamodule'),
-                'attr' => [
-                    'help' => $this->translator->trans('R-G-B-A', [], 'cmfcmfmediamodule')
-                ]
+                'label' => 'Background color',
+                'help' => 'R-G-B-A'
             ])
         ;
         parent::buildForm($builder, $options);

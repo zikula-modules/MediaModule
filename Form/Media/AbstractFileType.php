@@ -28,13 +28,13 @@ class AbstractFileType extends AbstractMediaEntityType
 
         $builder
             ->add('file', FileType::class, [
-                'label' => $this->translator->trans('Change file', [], 'cmfcmfmediamodule'),
+                'label' => 'Change file',
                 'mapped' => false,
                 'required' => false
             ])
             ->add('downloadAllowed', CheckboxType::class, [
-                'required' => false,
-                'label' => $this->translator->trans('Allow download', [], 'cmfcmfmediamodule')
+                'label' => 'Allow download',
+                'required' => false
             ])
         ;
     }

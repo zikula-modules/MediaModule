@@ -25,15 +25,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CollectionBlockType extends AbstractType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
     /**
      * @var CollectionRepository
      */
@@ -44,17 +38,10 @@ class CollectionBlockType extends AbstractType
      */
     private $securityManager;
 
-    /**
-     * @param TranslatorInterface    $translator
-     * @param SecurityManager        $securityManager
-     * @param EntityManagerInterface $em
-     */
     public function __construct(
-        TranslatorInterface $translator,
         SecurityManager $securityManager,
         EntityManagerInterface $em
     ) {
-        $this->translator = $translator;
         $this->securityManager = $securityManager;
         $this->collectionRepository = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
     }
@@ -66,7 +53,7 @@ class CollectionBlockType extends AbstractType
 
         $collectionOptions = [
             'required' => true,
-            'label' => $this->translator->trans('Collection', [], 'cmfcmfmediamodule'),
+            'label' => 'Collection',
             'class' => CollectionEntity::class,
             'query_builder' => function (EntityRepository $er) use ($securityManager) {
                 /** @var CollectionRepository $er */
@@ -78,26 +65,26 @@ class CollectionBlockType extends AbstractType
 
                 return $qb;
             },
-            'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
+            'placeholder' => 'Select collection',
             'choice_label' => 'indentedTitle',
             'multiple' => false
         ];
         $builder
             ->add('id', EntityType::class, $collectionOptions)
             ->add('showHooks', CheckboxType::class, [
-                'label' => $this->translator->trans('Show hooks', [], 'cmfcmfmediamodule'),
+                'label' => 'Show hooks',
                 'required' => false,
                 'disabled' => true
             ])
             ->add('template', TemplateType::class, [
-                'label' => $this->translator->trans('Display', [], 'cmfcmfmediamodule'),
+                'label' => 'Display',
             ])
             ->add('showChildCollections', CheckboxType::class, [
-                'label' => $this->translator->trans('Show child collections', [], 'cmfcmfmediamodule'),
+                'label' => 'Show child collections',
                 'required' => false
             ])
             ->add('showEditAndDownloadLinks', CheckboxType::class, [
-                'label' => $this->translator->trans('Show edit and download links', [], 'cmfcmfmediamodule'),
+                'label' => 'Show edit and download links',
                 'required' => false
             ])
             ->addModelTransformer(new CallbackTransformer(

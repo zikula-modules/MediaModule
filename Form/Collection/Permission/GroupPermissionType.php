@@ -15,6 +15,8 @@ namespace Cmfcmf\Module\MediaModule\Form\Collection\Permission;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Translation\Extractor\Annotation\Ignore;
+use Translation\Extractor\Annotation\Translate;
 
 class GroupPermissionType extends AbstractPermissionType
 {
@@ -26,16 +28,16 @@ class GroupPermissionType extends AbstractPermissionType
         $groupNames = $this->groupRepository->getGroupNamesById();
 
         $choices = [];
-        $choices[$this->translator->trans('All groups', [], 'cmfcmfmediamodule')] = -1;
+        $choices[/** @Translate */'All groups'] = -1;
 
         foreach ($groupNames as $groupId => $groupName) {
             $choices[$groupName] = $groupId;
         }
 
         $builder->add('groupIds', ChoiceType::class, [
-            'label' => $this->translator->trans('Groups', [], 'cmfcmfmediamodule'),
+            'label' => 'Groups',
             'multiple' => true,
-            'choices' => $choices
+            'choices' => /** @Ignore */$choices
         ]);
 
         parent::buildForm($builder, $options);

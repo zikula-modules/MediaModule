@@ -18,45 +18,30 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LightGalleryType extends AbstractType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(
-        TranslatorInterface $translator
-    ) {
-        $this->translator = $translator;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('thumbWidth', NumberType::class, [
-            'label' => $this->translator->trans('Thumbnail width', [], 'cmfcmfmediamodule')
+            'label' => 'Thumbnail width'
         ])
         ->add('thumbHeight', NumberType::class, [
-            'label' => $this->translator->trans('Thumbnail height', [], 'cmfcmfmediamodule')
+            'label' => 'Thumbnail height'
         ])
         ->add('thumbMode', ChoiceType::class, [
-            'label' => $this->translator->trans('Thumbnail mode', [], 'cmfcmfmediamodule'),
+            'label' => 'Thumbnail mode',
             'choices' => [
-                $this->translator->trans('inset', [], 'cmfcmfmediamodule') => 'inset',
-                $this->translator->trans('outbound', [], 'cmfcmfmediamodule') => 'outbound'
+                'inset' => 'inset',
+                'outbound' => 'outbound'
             ],
         ])
         ->add('showTitleBelowThumbs', CheckboxType::class, [
-            'label' => $this->translator->trans('Show the image titles below thumbnails.', [], 'cmfcmfmediamodule'),
+            'label' => 'Show the image titles below thumbnails.',
             'required' => false
         ])
         ->add('showAttributionBelowThumbs', CheckboxType::class, [
-            'label' => $this->translator->trans('Show the image attributions below thumbnails.', [], 'cmfcmfmediamodule'),
+            'label' => 'Show the image attributions below thumbnails.',
             'required' => false
         ]);
     }

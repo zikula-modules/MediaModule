@@ -24,7 +24,7 @@ class PasswordPermissionType extends AbstractPermissionType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('password', PasswordType::class, [
-            'label' => $this->translator->trans('Password', [], 'cmfcmfmediamodule'),
+            'label' => 'Password',
         ]);
 
         parent::buildForm($builder, $options);

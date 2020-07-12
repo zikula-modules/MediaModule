@@ -35,11 +35,9 @@ class ImageWatermarkType extends AbstractWatermarkType
         $builder->add('file', FileType::class, [
             'multiple' => false,
             'mapped' => false,
-            'attr' => [
-                'help' => $this->translator->trans('Image to be used as watermark.', [], 'cmfcmfmediamodule')
-            ],
-            'data' => $file, // @todo Still needed??
+            'data' => $file, // @todo still needed??
             'required' => (null === $file),
+            'help' => 'Image to be used as watermark.',
             'constraints' => [
                 new Assert\File([
                     // NOTE: If you change the allowed mime types here, make sure to

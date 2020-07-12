@@ -22,7 +22,6 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Zikula\GroupsModule\Entity\RepositoryInterface\GroupRepositoryInterface;
 use Zikula\UsersModule\Entity\RepositoryInterface\UserRepositoryInterface;
 
@@ -43,19 +42,11 @@ abstract class AbstractPermissionType extends AbstractType
      */
     protected $userRepository;
 
-    /**
-     * @param TranslatorInterface      $translator
-     * @param SecurityManager          $securityManager
-     * @param GroupRepositoryInterface $groupRepository
-     * @param UserRepositoryInterface  $userRepository
-     */
     public function __construct(
-        TranslatorInterface $translator,
         SecurityManager $securityManager,
         GroupRepositoryInterface $groupRepository,
         UserRepositoryInterface $userRepository
     ) {
-        $this->translator = $translator;
         $this->securityManager = $securityManager;
         $this->groupRepository = $groupRepository;
         $this->userRepository = $userRepository;
@@ -70,38 +61,32 @@ abstract class AbstractPermissionType extends AbstractType
 
         $builder
             ->add('permissionLevels', PermissionLevelType::class, [
-                'label' => $this->translator->trans('Permission level', [], 'cmfcmfmediamodule'),
+                'label' => 'Permission level',
                 'permissionLevel' => $options['permissionLevel']
             ])
             ->add('description', TextareaType::class, [
-                'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
+                'label' => 'Description',
                 'required' => false,
-                'attr' => [
-                    'help' => $this->translator->trans(
-                        'This is just for you to remember why you created this permission.',
-                        [],
-                        'cmfcmfmediamodule'
-                    )
-                ]
+                'help' => 'This is just for you to remember why you created this permission.'
             ])
             ->add('appliedToSelf', CheckboxType::class, [
-                'label' => $this->translator->trans('Applies to the collection itself', [], 'cmfcmfmediamodule'),
+                'label' => 'Applies to the collection itself',
                 'required' => false
             ])
             ->add('appliedToSubCollections', CheckboxType::class, [
-                'label' => $this->translator->trans('Applies to sub-collections', [], 'cmfcmfmediamodule'),
+                'label' => 'Applies to sub-collections',
                 'required' => false
             ])
         ;
 
         if ($this->securityManager->hasPermission($options['collection'], CollectionPermissionSecurityTree::PERM_LEVEL_CHANGE_PERMISSIONS)) {
             $builder->add('goOn', CheckboxType::class, [
-                'label' => $this->translator->trans('Go on if this permission is not sufficient', [], 'cmfcmfmediamodule'),
+                'label' => 'Go on if this permission is not sufficient',
                 'required' => false
             ]);
         } else {
             $builder->add('goOn', CheckboxType::class, [
-                'label' => $this->translator->trans('Go on if this permission is not sufficient', [], 'cmfcmfmediamodule'),
+                'label' => 'Go on if this permission is not sufficient',
                 'data' => true,
                 'attr' => [
                     'disabled' => true
@@ -111,28 +96,16 @@ abstract class AbstractPermissionType extends AbstractType
 
         $builder
             ->add('validAfter', DateTimeType::class, [
-                'label' => $this->translator->trans('Valid after', [], 'cmfcmfmediamodule'),
+                'label' => 'Valid after',
                 'widget' => 'choice',
                 'required' => false,
-                'attr' => [
-                    'help' => $this->translator->trans(
-                        'If you specify a date, the permission rule will only be taken into account after the specified date.',
-                        [],
-                        'cmfcmfmediamodule'
-                    )
-                ]
+                'help' => 'If you specify a date, the permission rule will only be taken into account after the specified date.'
             ])
             ->add('validUntil', DateTimeType::class, [
-                'label' => $this->translator->trans('Valid until', [], 'cmfcmfmediamodule'),
+                'label' => 'Valid until',
                 'widget' => 'choice',
                 'required' => false,
-                'attr' => [
-                    'help' => $this->translator->trans(
-                        'If you specify a date, the permission rule will only be taken into account until the specified date.',
-                        [],
-                        'cmfcmfmediamodule'
-                    )
-                ]
+                'help' => 'If you specify a date, the permission rule will only be taken into account until the specified date.'
             ])
         ;
     }

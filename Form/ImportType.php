@@ -23,29 +23,20 @@ use Symfony\Component\Form\AbstractType as SymfonyAbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ImportType extends SymfonyAbstractType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
     /**
      * @var SecurityManager
      */
     private $securityManager;
 
     /**
-     * @param TranslatorInterface $translator
-     * @param SecurityManager     $securityManager
+     * @param SecurityManager $securityManager
      */
     public function __construct(
-        TranslatorInterface $translator,
         SecurityManager $securityManager
     ) {
-        $this->translator = $translator;
         $this->securityManager = $securityManager;
     }
 
@@ -65,7 +56,7 @@ class ImportType extends SymfonyAbstractType
 
                 return $qb;
             },
-            'placeholder' => $this->translator->trans('Select collection', [], 'cmfcmfmediamodule'),
+            'placeholder' => 'Select collection',
             'choice_label' => 'indentedTitle',
         ]);
         if (null !== $options['importerForm']) {

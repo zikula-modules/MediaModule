@@ -46,7 +46,7 @@ class WatermarkRepository extends ServiceEntityRepository
         /** @var AbstractMediaEntity[] $media */
         $media = $qb->getQuery()->execute();
         foreach ($media as $medium) {
-            $imagineCacheManager->remove($medium->getPath(), ['thumbnail', 'cmfcmfmediamodule.custom_image_filter']);
+            $imagineCacheManager->remove($medium->getPath());
         }
     }
 }

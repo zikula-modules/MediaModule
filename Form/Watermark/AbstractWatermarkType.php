@@ -20,21 +20,12 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Form type for a watermark.
  */
 class AbstractWatermarkType extends AbstractType
 {
-    /**
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -44,49 +35,37 @@ class AbstractWatermarkType extends AbstractType
 
         $builder
             ->add('title', TextType::class, [
-                'attr' => [
-                    'help' => $this->translator->trans('A title for you to recognize the watermark.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'A title for you to recognize the watermark.'
             ])
             ->add('positionX', NumberType::class, [
                 'scale' => 0,
-                'attr' => [
-                    'help' => $this->translator->trans('The x position of the watermark inside the picture. Negative numbers will position it right aligned.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'The x position of the watermark inside the picture. Negative numbers will position it right aligned.'
             ])
             ->add('positionY', NumberType::class, [
                 'scale' => 0,
-                'attr' => [
-                    'help' => $this->translator->trans('The y position of the watermark inside the picture. Negative numbers will position it bottom aligned.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'The y position of the watermark inside the picture. Negative numbers will position it bottom aligned.'
             ])
             ->add('minSizeX', NumberType::class, [
-                'label' => $this->translator->trans('Minimum size x', [], 'cmfcmfmediamodule'),
+                'label' => 'Minimum size x',
                 'scale' => 0,
                 'required' => false,
-                'attr' => [
-                    'help' => $this->translator->trans('Smaller images will not be watermarked.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'Smaller images will not be watermarked.'
             ])
             ->add('minSizeY', NumberType::class, [
-                'label' => $this->translator->trans('Minimum size y', [], 'cmfcmfmediamodule'),
+                'label' => 'Minimum size y',
                 'scale' => 0,
                 'required' => false,
-                'attr' => [
-                    'help' => $this->translator->trans('Smaller images will not be watermarked.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'Smaller images will not be watermarked.'
             ])
             ->add('relativeSize', PercentType::class, [
-                'label' => $this->translator->trans('Relative size', [], 'cmfcmfmediamodule'),
+                'label' => 'Relative size',
                 'scale' => 0,
                 'type' => 'integer',
                 'required' => false,
-                'attr' => [
-                    'help' => $this->translator->trans('The size of the watermark in percent. If set, it will resize the watermark accordingly.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => 'The size of the watermark in percent. If set, it will resize the watermark accordingly.'
             ])
             ->add('submit', SubmitType::class, [
-                'label' => $this->translator->trans('Save', [], 'cmfcmfmediamodule')
+                'label' => 'Save'
             ])
         ;
     }
