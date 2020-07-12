@@ -84,11 +84,11 @@ class HookedObjectEntity
     private $module;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(length=150)
      *
      * No assertions.
      *
-     * @var int
+     * @var string
      */
     private $areaId;
 
@@ -202,12 +202,12 @@ class HookedObjectEntity
         return $this;
     }
 
-    public function getAreaId(): ?int
+    public function getAreaId(): ?string
     {
         return $this->areaId;
     }
 
-    public function setAreaId(int $areaId): self
+    public function setAreaId(string $areaId): self
     {
         $this->areaId = $areaId;
 
