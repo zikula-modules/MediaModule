@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ArchiveEntity extends AbstractFileEntity
 {
-    public function onNewFile(array $info)
+    public function onNewFile(array $info): void
     {
         parent::onNewFile($info);
 
@@ -116,13 +116,15 @@ class ArchiveEntity extends AbstractFileEntity
         $this->extraData['files'] = $files;
     }
 
-    public function getNumberOfFiles()
+    public function getNumberOfFiles(): ?int
     {
-        return isset($this->extraData['numberOfFiles']) ? $this->extraData['numberOfFiles'] : false;
+        return $this->extraData['numberOfFiles'] ?? false;
     }
 
-    public function setNumberOfFiles($numberOfFiles)
+    public function setNumberOfFiles(int $numberOfFiles): self
     {
         $this->extraData['numberOfFiles'] = $numberOfFiles;
+
+        return $this;
     }
 }

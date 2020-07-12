@@ -20,60 +20,36 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DeezerEntity extends UrlEntity
 {
-    /**
-     * @return string
-     */
-    public function getMusicType()
+    public function getMusicId(): ?string
     {
-        return isset($this->extraData['musicType']) ? $this->extraData['musicType'] : null;
+        return $this->extraData['musicId'] ?? null;
     }
 
-    /**
-     * @param string $musicType
-     *
-     * @return DeezerEntity
-     */
-    public function setMusicType($musicType)
-    {
-        $this->extraData['musicType'] = $musicType;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMusicId()
-    {
-        return isset($this->extraData['musicId']) ? $this->extraData['musicId'] : null;
-    }
-
-    /**
-     * @param string $musicId
-     *
-     * @return DeezerEntity
-     */
-    public function setMusicId($musicId)
+    public function setMusicId(string $musicId): self
     {
         $this->extraData['musicId'] = $musicId;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isShowPlaylist()
+    public function getMusicType(): ?string
     {
-        return isset($this->extraData['showPlaylist']) ? $this->extraData['showPlaylist'] : false;
+        return $this->extraData['musicType'] ?? null;
     }
 
-    /**
-     * @param bool $showPlaylist
-     *
-     * @return DeezerEntity
-     */
-    public function setShowPlaylist($showPlaylist)
+    public function setMusicType(string $musicType): self
+    {
+        $this->extraData['musicType'] = $musicType;
+
+        return $this;
+    }
+
+    public function isShowPlaylist(): bool
+    {
+        return $this->extraData['showPlaylist'] ?? false;
+    }
+
+    public function setShowPlaylist(bool $showPlaylist): self
     {
         $this->extraData['showPlaylist'] = $showPlaylist;
 

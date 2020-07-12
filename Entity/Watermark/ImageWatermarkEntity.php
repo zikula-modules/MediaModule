@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Uploadable\Uploadable;
 use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
 
 /**
@@ -48,15 +49,12 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
      */
     protected $fileSize;
 
-    /**
-     * {@inheritdoc}
-     */
     public function getImagineImage(
         ImagineInterface $imagine,
         FontCollection $fontCollection,
-        $width,
-        $height
-    ) {
+        int $width,
+        int $height
+    ): ImageInterface {
         $watermarkImage = $imagine->open($this->getPath());
         if (null !== $this->getRelativeSize()) {
             $y = (int) $height * $this->getRelativeSize() / 100;
@@ -74,32 +72,29 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         return $watermarkImage;
     }
 
-    public function getPathToUploadTo($defaultPath)
+    public function getPathToUploadTo($defaultPath): string
     {
         unset($defaultPath);
 
         return $this->dataDirectory . '/cmfcmf-media-module/watermarks';
     }
 
-    public function getPath()
+    public function getPath(): string
     {
         return $this->getPathToUploadTo(null) . '/' . $this->fileName;
     }
 
-    public function getFileName()
+    public function getFileName(): string
     {
         return $this->fileName;
     }
 
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->requestStack->getCurrentRequest()->getBasePath() . '/' . $this->getPath();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getViewTableContent()
+    public function getViewTableContent(): string
     {
         $src = htmlentities($this->getUrl());
         $title = htmlentities($this->title);

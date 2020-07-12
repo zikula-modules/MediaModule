@@ -20,39 +20,39 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class YouTubeEntity extends UrlEntity
 {
-    public function setYouTubeId($youTubeId)
+    public function getYouTubeId(): ?string
+    {
+        return $this->extraData['youTubeId'] ?? null;
+    }
+
+    public function setYouTubeId(string $youTubeId): self
     {
         $this->extraData['youTubeId'] = $youTubeId;
 
         return $this;
     }
 
-    public function getYouTubeId()
+    public function getYouTubeType(): ?string
     {
-        return isset($this->extraData['youTubeId']) ? $this->extraData['youTubeId'] : null;
+        return $this->extraData['youTubeType'] ?? null;
     }
 
-    public function setYouTubeType($youTubeType)
+    public function setYouTubeType(string $youTubeType): self
     {
         $this->extraData['youTubeType'] = $youTubeType;
 
         return $this;
     }
 
-    public function getYouTubeType()
+    public function getYouTubeThumbnailUrl(): ?string
     {
-        return isset($this->extraData['youTubeType']) ? $this->extraData['youTubeType'] : null;
+        return $this->extraData['youTubeThumbnailUrl'] ?? null;
     }
 
-    public function setYouTubeThumbnailUrl($youTubeThumbnailUrl)
+    public function setYouTubeThumbnailUrl(string $youTubeThumbnailUrl): self
     {
         $this->extraData['youTubeThumbnailUrl'] = $youTubeThumbnailUrl;
 
         return $this;
-    }
-
-    public function getYouTubeThumbnailUrl()
-    {
-        return isset($this->extraData['youTubeThumbnailUrl']) ? $this->extraData['youTubeThumbnailUrl'] : null;
     }
 }

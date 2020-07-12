@@ -29,13 +29,15 @@ class CollectionCategoryAssignmentEntity extends AbstractCategoryAssignment
      */
     private $entity;
 
-    public function getEntity()
+    public function getEntity(): CollectionEntity
     {
         return $this->entity;
     }
 
-    public function setEntity($entity)
+    public function setEntity($entity): self
     {
         $this->entity = $entity;
+
+        return $this;
     }
 }

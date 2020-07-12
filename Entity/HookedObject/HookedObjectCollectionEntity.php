@@ -91,120 +91,72 @@ class HookedObjectCollectionEntity
         $this->showChildCollections = $showChildCollection;
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return HookedObjectCollectionEntity
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return HookedObjectEntity
-     */
-    public function getHookedObject()
+    public function getHookedObject(): ?HookedObjectEntity
     {
         return $this->hookedObject;
     }
 
-    /**
-     * @param HookedObjectEntity $hookedObject
-     *
-     * @return HookedObjectCollectionEntity
-     */
-    public function setHookedObject($hookedObject)
+    public function setHookedObject(HookedObjectEntity $hookedObject): self
     {
         $this->hookedObject = $hookedObject;
 
         return $this;
     }
 
-    /**
-     * @return CollectionEntity
-     */
-    public function getCollection()
+    public function getCollection(): ?CollectionEntity
     {
         return $this->collection;
     }
 
-    /**
-     * @param CollectionEntity $collection
-     *
-     * @return HookedObjectCollectionEntity
-     */
-    public function setCollection($collection)
+    public function setCollection(CollectionEntity $collection): self
     {
         $this->collection = $collection;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTemplate()
+    public function getTemplate(): ?string
     {
         return $this->template;
     }
 
-    /**
-     * @param string $template
-     *
-     * @return HookedObjectCollectionEntity
-     */
-    public function setTemplate($template)
+    public function setTemplate(string $template): self
     {
         $this->template = $template;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isShowParentCollections()
+    public function isShowParentCollections(): bool
     {
         return $this->showParentCollections;
     }
 
-    /**
-     * @param bool $showParentCollections
-     *
-     * @return HookedObjectCollectionEntity
-     */
-    public function setShowParentCollections($showParentCollections)
+    public function setShowParentCollections(bool $showParentCollections): self
     {
         $this->showParentCollections = $showParentCollections;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isShowChildCollections()
+    public function isShowChildCollections(): bool
     {
         return $this->showChildCollections;
     }
 
-    /**
-     * @param bool $showChildCollections
-     *
-     * @return HookedObjectCollectionEntity
-     */
-    public function setShowChildCollections($showChildCollections)
+    public function setShowChildCollections(bool $showChildCollections): self
     {
         $this->showChildCollections = $showChildCollections;
 

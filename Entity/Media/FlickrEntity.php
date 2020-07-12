@@ -48,80 +48,48 @@ class FlickrEntity extends UrlEntity
      */
     protected $flickrId;
 
-    /**
-     * @return string
-     */
-    public function getFlickrFarm()
+    public function getFlickrFarm(): ?string
     {
-        return isset($this->extraData['flickrFarm']) ? $this->extraData['flickrFarm'] : null;
+        return $this->extraData['flickrFarm'] ?? null;
     }
 
-    /**
-     * @param string $flickrFarm
-     *
-     * @return FlickrEntity
-     */
-    public function setFlickrFarm($flickrFarm)
+    public function setFlickrFarm(string $flickrFarm): self
     {
         $this->extraData['flickrFarm'] = $flickrFarm;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getFlickrServer()
+    public function getFlickrServer(): ?string
     {
-        return isset($this->extraData['flickrServer']) ? $this->extraData['flickrServer'] : null;
+        return $this->extraData['flickrServer'] ?? null;
     }
 
-    /**
-     * @param string $flickrServer
-     *
-     * @return FlickrEntity
-     */
-    public function setFlickrServer($flickrServer)
+    public function setFlickrServer(string $flickrServer): self
     {
         $this->extraData['flickrServer'] = $flickrServer;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getFlickrSecret()
+    public function getFlickrSecret(): ?string
     {
-        return isset($this->extraData['flickrSecret']) ? $this->extraData['flickrSecret'] : null;
+        return $this->extraData['flickrSecret'] ?? null;
     }
 
-    /**
-     * @param string $flickrSecret
-     *
-     * @return FlickrEntity
-     */
-    public function setFlickrSecret($flickrSecret)
+    public function setFlickrSecret(string $flickrSecret): self
     {
         $this->extraData['flickrSecret'] = $flickrSecret;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getFlickrId()
+    public function getFlickrId(): ?string
     {
-        return isset($this->extraData['flickrId']) ? $this->extraData['flickrId'] : null;
+        return $this->extraData['flickrId'] ?? null;
     }
 
-    /**
-     * @param string $flickrId
-     *
-     * @return FlickrEntity
-     */
-    public function setFlickrId($flickrId)
+    public function setFlickrId(string $flickrId): self
     {
         $this->extraData['flickrId'] = $flickrId;
 

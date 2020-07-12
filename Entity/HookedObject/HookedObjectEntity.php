@@ -124,20 +124,12 @@ class HookedObjectEntity
         $this->hookedObjectMedia = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return HookedObjectEntity
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
@@ -154,10 +146,8 @@ class HookedObjectEntity
 
     /**
      * @param LicenseEntity[]|ArrayCollection $licenses
-     *
-     * @return HookedObjectEntity
      */
-    public function setLicenses($licenses)
+    public function setLicenses($licenses): self
     {
         $this->licenses = $licenses;
 
@@ -174,10 +164,8 @@ class HookedObjectEntity
 
     /**
      * @param HookedObjectCollectionEntity[]|ArrayCollection $hookedObjectCollections
-     *
-     * @return HookedObjectEntity
      */
-    public function setHookedObjectCollections($hookedObjectCollections)
+    public function setHookedObjectCollections($hookedObjectCollections): self
     {
         $this->hookedObjectCollections = $hookedObjectCollections;
 
@@ -194,90 +182,56 @@ class HookedObjectEntity
 
     /**
      * @param HookedObjectMediaEntity[]|ArrayCollection $hookedObjectMedia
-     *
-     * @return HookedObjectEntity
      */
-    public function setHookedObjectMedia($hookedObjectMedia)
+    public function setHookedObjectMedia($hookedObjectMedia): self
     {
         $this->hookedObjectMedia = $hookedObjectMedia;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getModule()
+    public function getModule(): ?string
     {
         return $this->module;
     }
 
-    /**
-     * @param string $module
-     *
-     * @return HookedObjectEntity
-     */
-    public function setModule($module)
+    public function setModule(string $module): self
     {
         $this->module = $module;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getAreaId()
+    public function getAreaId(): ?int
     {
         return $this->areaId;
     }
 
-    /**
-     * @param int $areaId
-     *
-     * @return HookedObjectEntity
-     */
-    public function setAreaId($areaId)
+    public function setAreaId(int $areaId): self
     {
         $this->areaId = $areaId;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getObjectId()
+    public function getObjectId(): ?int
     {
         return $this->objectId;
     }
 
-    /**
-     * @param int $objectId
-     *
-     * @return HookedObjectEntity
-     */
-    public function setObjectId($objectId)
+    public function setObjectId(int $objectId): self
     {
         $this->objectId = $objectId;
 
         return $this;
     }
 
-    /**
-     * @return UrlInterface
-     */
-    public function getUrlObject()
+    public function getUrlObject(): ?UrlInterface
     {
         return $this->urlObject;
     }
 
-    /**
-     * @param UrlInterface $urlObject
-     *
-     * @return HookedObjectEntity
-     */
-    public function setUrlObject(UrlInterface $urlObject)
+    public function setUrlObject(UrlInterface $urlObject): self
     {
         $this->urlObject = $urlObject;
 
@@ -286,10 +240,8 @@ class HookedObjectEntity
 
     /**
      * Adds the given license to this HookedObject.
-     *
-     * @param LicenseEntity $licenseEntity
      */
-    public function addLicense(LicenseEntity $licenseEntity)
+    public function addLicense(LicenseEntity $licenseEntity): void
     {
         $licenseEntity->getHookedObjects()->add($this);
         $this->licenses->add($licenseEntity);
@@ -297,10 +249,8 @@ class HookedObjectEntity
 
     /**
      * Adds the given medium to this HookedObject.
-     *
-     * @param AbstractMediaEntity $mediaEntity
      */
-    public function addMedium(AbstractMediaEntity $mediaEntity)
+    public function addMedium(AbstractMediaEntity $mediaEntity): void
     {
         $hookedObjectMedia = new HookedObjectMediaEntity();
         $hookedObjectMedia->setMedia($mediaEntity)->setHookedObject($this);
@@ -312,18 +262,13 @@ class HookedObjectEntity
     /**
      * Adds the given collection to this HookedObject. Also includes the template to use
      * and whether or not parent and child collections shall be shown.
-     *
-     * @param CollectionEntity       $collectionEntity
-     * @param TemplateInterface|null $template
-     * @param bool                   $showParentCollection
-     * @param bool                   $showChildCollections
      */
     public function addCollection(
         CollectionEntity $collectionEntity,
         TemplateInterface $template = null,
-        $showParentCollection,
-        $showChildCollections
-    ) {
+        bool $showParentCollection,
+        bool $showChildCollections
+    ): void {
         $hookedObjectCollection = new HookedObjectCollectionEntity(
             $template,
             $showParentCollection,
@@ -338,7 +283,7 @@ class HookedObjectEntity
     /**
      * Removes all hooked licenses from this HookedObject.
      */
-    public function clearLicenses()
+    public function clearLicenses(): void
     {
         foreach ($this->licenses as $licenseEntity) {
             $licenseEntity->getHookedObjects()->remove($this->getId());
@@ -350,12 +295,15 @@ class HookedObjectEntity
     /**
      * Removes all hooked media from this HookedObject.
      */
-    public function clearMedia()
+    public function clearMedia(): void
     {
         foreach ($this->hookedObjectMedia as $hookedObjectMediaEntity) {
             $hookedObjectMediaEntity
                 ->getMedia()->getHookedObjectMedia()->removeElement($hookedObjectMediaEntity);
-            $hookedObjectMediaEntity->setMedia(null)->setHookedObject(null);
+            $hookedObjectMediaEntity
+                ->setMedia(null)
+                ->setHookedObject(null)
+            ;
         }
 
         $this->hookedObjectMedia->clear();
@@ -364,14 +312,17 @@ class HookedObjectEntity
     /**
      * Removes all hooked collections from this HookedObject.
      */
-    public function clearCollections()
+    public function clearCollections(): void
     {
         foreach ($this->hookedObjectCollections as$hookedObjectCollectionEntity) {
             $hookedObjectCollectionEntity
                 ->getCollection()->getHookedObjectCollections()->removeElement(
                     $hookedObjectCollectionEntity
                 );
-            $hookedObjectCollectionEntity->setCollection(null)->setHookedObject(null);
+            $hookedObjectCollectionEntity
+                ->setCollection(null)
+                ->setHookedObject(null)
+            ;
         }
 
         $this->hookedObjectCollections->clear();

@@ -32,20 +32,12 @@ class PasswordPermissionRestrictionEntity extends AbstractPermissionRestrictionE
      */
     protected $password;
 
-    /**
-     * @return string
-     */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
 
-    /**
-     * @param string $password
-     *
-     * @return $this
-     */
-    public function setPassword($password)
+    public function setPassword(string $password): self
     {
         $this->password = $password;
 

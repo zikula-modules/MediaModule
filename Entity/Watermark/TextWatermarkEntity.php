@@ -15,6 +15,7 @@ namespace Cmfcmf\Module\MediaModule\Entity\Watermark;
 
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Imagine\Image\ImageInterface;
 use Imagine\Image\ImagineInterface;
 use Imagine\Image\Palette\RGB;
 use Imagine\Image\Point;
@@ -71,11 +72,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
      */
     protected $backgroundColor;
 
-    /**
-     * @param RequestStack $requestStack
-     * @param string       $dataDirectory
-     */
-    public function __construct(RequestStack $requestStack, $dataDirectory = '')
+    public function __construct(RequestStack $requestStack, string $dataDirectory = '')
     {
         parent::__construct($requestStack, $dataDirectory);
 
@@ -83,28 +80,24 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         $this->backgroundColor = '#00000000';
     }
 
-    /**
-     * @return string
-     */
-    public function getText()
+    public function getText(): ?string
     {
         return $this->text;
     }
 
-    /**
-     * @param string $text
-     *
-     * @return TextWatermarkEntity
-     */
-    public function setText($text)
+    public function setText(string $text): self
     {
         $this->text = $text;
 
         return $this;
     }
 
-    public function getImagineImage(ImagineInterface $imagine, FontCollection $fontCollection, $width, $height)
-    {
+    public function getImagineImage(
+        ImagineInterface $imagine,
+        FontCollection $fontCollection,
+        int $width,
+        int $height
+    ): ImageInterface {
         $fontPath = $fontCollection->getFontById($this->font)->getPath();
         if (null !== $this->getAbsoluteSize()) {
             $fontSize = $this->getAbsoluteSize();
@@ -130,10 +123,8 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
      * @Assert\Callback()
      *
      * Make sure that either relativeSize xor absoluteSize is set.
-     *
-     * @return bool
      */
-    public function assertRelativeOrAbsoluteSizeSet()
+    public function assertRelativeOrAbsoluteSizeSet(): bool
     {
         $r = null !== $this->relativeSize;
         $a = null !== $this->absoluteSize;
@@ -141,99 +132,56 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         return $r xor $a;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getViewTableContent()
+    public function getViewTableContent(): string
     {
-        return htmlentities($this->text);
+        return htmlentities($this->text ?: '');
     }
 
-    /**
-     * Get the value of Absolute Size.
-     *
-     * @return int
-     */
-    public function getAbsoluteSize()
+    public function getAbsoluteSize(): ?int
     {
         return $this->absoluteSize;
     }
 
-    /**
-     * Set the value of Absolute Size.
-     *
-     * @param int $absoluteSize
-     *
-     * @return self
-     */
-    public function setAbsoluteSize($absoluteSize)
+    public function setAbsoluteSize(int $absoluteSize): self
     {
         $this->absoluteSize = $absoluteSize;
 
         return $this;
     }
 
-    /**
-     * Get the value of Font.
-     *
-     * @return string
-     */
-    public function getFont()
+    public function getFont(): ?string
     {
         return $this->font;
     }
 
-    /**
-     * Set the value of Font.
-     *
-     * @param string $font
-     *
-     * @return self
-     */
-    public function setFont($font)
+    public function setFont(string $font): self
     {
         $this->font = $font;
 
         return $this;
     }
 
-    /**
-     * @param string $fontColor
-     *
-     * @return TextWatermarkEntity
-     */
-    public function setFontColor($fontColor)
+    public function getFontColor(): ?string
+    {
+        return $this->fontColor;
+    }
+
+    public function setFontColor(string $fontColor): self
     {
         $this->fontColor = $fontColor;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getFontColor()
+    public function getBackgroundColor(): ?string
     {
-        return $this->fontColor;
+        return $this->backgroundColor;
     }
 
-    /**
-     * @param string $backgroundColor
-     *
-     * @return TextWatermarkEntity
-     */
-    public function setBackgroundColor($backgroundColor)
+    public function setBackgroundColor(string $backgroundColor): self
     {
         $this->backgroundColor = $backgroundColor;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBackgroundColor()
-    {
-        return $this->backgroundColor;
     }
 }

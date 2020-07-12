@@ -20,15 +20,15 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TwitterEntity extends UrlEntity
 {
-    public function setTweetId($tweetId)
+    public function getTweetId(): ?string
+    {
+        return $this->extraData['tweetId'] ?? null;
+    }
+
+    public function setTweetId(string $tweetId): self
     {
         $this->extraData['tweetId'] = $tweetId;
 
         return $this;
-    }
-
-    public function getTweetId()
-    {
-        return isset($this->extraData['tweetId']) ? $this->extraData['tweetId'] : null;
     }
 }

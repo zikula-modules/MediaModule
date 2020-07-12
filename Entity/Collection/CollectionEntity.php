@@ -257,23 +257,18 @@ class CollectionEntity implements Node, Sluggable
     /**
      * @Assert\IsTrue(message="The selected primary medium is not part of the collection!")
      */
-    public function isPrimaryMediumInMediaCollection()
+    public function isPrimaryMediumInMediaCollection(): bool
     {
         return null === $this->primaryMedium || $this->media->contains($this->primaryMedium);
     }
 
     /**
      * Converts the entity to an array to be used for JsTree.
-     *
-     * @param MediaTypeCollection     $mediaTypeCollection
-     * @param HookedObjectEntity|null $hookedObjectEntity
-     *
-     * @return array
      */
     public function toArrayForJsTree(
         MediaTypeCollection $mediaTypeCollection,
         HookedObjectEntity $hookedObjectEntity = null
-    ) {
+    ): array {
         $children = true;
 
         $isSelected = false;
@@ -291,7 +286,7 @@ class CollectionEntity implements Node, Sluggable
             'id' => $this->getId(),
             'children' => $children,
             'text' => $this->getTitle(),
-            'icon' => 'fa fa-fw fa-picture-o',
+            'icon' => 'fas fa-fw fa-image',
             'state' => [
                 //'opened' => false, @todo If we set opened to false, already selected collections
                 // will not be shown unless the parent is opened.
@@ -304,12 +299,8 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * Converts the entity to an array to be used with the finder.
-     *
-     * @param MediaTypeCollection $mediaTypeCollection
-     *
-     * @return array
      */
-    public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection)
+    public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection): array
     {
         $thumbnail = $this->getMediaForThumbnail();
 
@@ -327,57 +318,24 @@ class CollectionEntity implements Node, Sluggable
         return $array;
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Get title.
-     *
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * Set title.
-     *
-     * @param string $title
-     *
-     * @return CollectionEntity
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
         return $this;
     }
 
-    /**
-     * @deprecated use $this->getPrimaryMedium() instead
-     *
-     * @return AbstractMediaEntity|null
-     */
-    public function getMediaForThumbnail()
-    {
-        return $this->getPrimaryMedium(true);
-    }
-
-    /**
-     * @param RouterInterface $router
-     * @param bool            $selfIsClickable whether or not this collection is clickable
-     *
-     * @return array
-     */
-    public function getBreadcrumbs(RouterInterface $router, $selfIsClickable = false)
+    public function getBreadcrumbs(RouterInterface $router, bool $selfIsClickable = false): array
     {
         $child = $this;
         $breadcrumbs = [];
@@ -410,44 +368,28 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * Whether or not this collection is the root collection.
-     *
-     * @return bool
      */
-    public function isRoot()
+    public function isRoot(): bool
     {
         return null === $this->parent;
     }
 
-    /**
-     * @return CollectionEntity
-     */
-    public function getParent()
+    public function getParent(): ?self
     {
         return $this->parent;
     }
 
-    /**
-     * @param CollectionEntity|null $parent
-     */
-    public function setParent(CollectionEntity $parent = null)
+    public function setParent(CollectionEntity $parent = null): void
     {
         $this->parent = $parent;
     }
 
-    /**
-     * @return string
-     */
-    public function getSlug()
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     *
-     * @return CollectionEntity
-     */
-    public function setSlug($slug)
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
 
@@ -456,16 +398,14 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * Returns the title prefixed with multiple "--" depending on the tree level.
-     *
-     * @return string
      */
-    public function getIndentedTitle()
+    public function getIndentedTitle(): string
     {
         $indented = '';
         if ($this->lvl > 0) {
             $indented .= '|-';
-            if ($this->lvl > 1) {
-                $indented .= str_repeat("--", --$this->lvl);
+            if (1 < $this->lvl) {
+                $indented .= str_repeat('--', --$this->lvl);
             }
             $indented .= ' ';
         }
@@ -473,44 +413,24 @@ class CollectionEntity implements Node, Sluggable
         return $indented . $this->title;
     }
 
-    /**
-     * Get description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * Set description.
-     *
-     * @param string $description
-     *
-     * @return CollectionEntity
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * @return AbstractWatermarkEntity|null
-     */
-    public function getWatermark()
+    public function getWatermark(): ?AbstractWatermarkEntity
     {
         return $this->watermark;
     }
 
-    /**
-     * @param AbstractWatermarkEntity|null $watermark
-     *
-     * @return CollectionEntity
-     */
-    public function setWatermark($watermark)
+    public function setWatermark(?AbstractWatermarkEntity $watermark = null): self
     {
         $this->watermark = $watermark;
 
@@ -527,10 +447,8 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param AbstractMediaEntity[]|ArrayCollection $media
-     *
-     * @return CollectionEntity
      */
-    public function setMedia($media)
+    public function setMedia($media): self
     {
         $this->media = $media;
 
@@ -547,10 +465,8 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param CollectionEntity[]|ArrayCollection $children
-     *
-     * @return CollectionEntity
      */
-    public function setChildren($children)
+    public function setChildren($children): self
     {
         $this->children = $children;
 
@@ -567,50 +483,32 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * @param HookedObjectCollectionEntity[]|ArrayCollection $hookedObjectCollections
-     *
-     * @return CollectionEntity
      */
-    public function setHookedObjectCollections($hookedObjectCollections)
+    public function setHookedObjectCollections($hookedObjectCollections): self
     {
         $this->hookedObjectCollections = $hookedObjectCollections;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getVersion()
+    public function getVersion(): ?int
     {
         return $this->version;
     }
 
-    /**
-     * @param int $version
-     *
-     * @return CollectionEntity
-     */
-    public function setVersion($version)
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDefaultTemplate()
+    public function getDefaultTemplate(): ?string
     {
         return $this->defaultTemplate;
     }
 
-    /**
-     * @param string $defaultTemplate
-     *
-     * @return CollectionEntity
-     */
-    public function setDefaultTemplate($defaultTemplate)
+    public function setDefaultTemplate(string $defaultTemplate): self
     {
         $this->defaultTemplate = $defaultTemplate;
 
@@ -625,19 +523,13 @@ class CollectionEntity implements Node, Sluggable
         return $this->permissions;
     }
 
-    /**
-     * @param AbstractPermissionEntity $permission
-     */
-    public function addPermission(AbstractPermissionEntity $permission)
+    public function addPermission(AbstractPermissionEntity $permission): void
     {
         $permission->setCollection($this);
         $this->permissions->add($permission);
     }
 
-    /**
-     * @param AbstractPermissionEntity $permission
-     */
-    public function removePermission(AbstractPermissionEntity $permission)
+    public function removePermission(AbstractPermissionEntity $permission): void
     {
         $this->permissions->removeElement($permission);
     }
@@ -654,10 +546,8 @@ class CollectionEntity implements Node, Sluggable
 
     /**
      * Set page category assignments.
-     *
-     * @param ArrayCollection $assignments
      */
-    public function setCategoryAssignments(ArrayCollection $assignments)
+    public function setCategoryAssignments(ArrayCollection $assignments): void
     {
         foreach ($this->categoryAssignments as $categoryAssignment) {
             if (false === $key = $this->collectionContains($assignments, $categoryAssignment)) {
@@ -674,13 +564,12 @@ class CollectionEntity implements Node, Sluggable
     /**
      * Check if a collection contains an element based only on two criteria (categoryRegistryId, category).
      *
-     * @param ArrayCollection                    $collection
-     * @param CollectionCategoryAssignmentEntity $element
-     *
      * @return bool|int
      */
-    private function collectionContains(ArrayCollection $collection, CollectionCategoryAssignmentEntity $element)
-    {
+    private function collectionContains(
+        ArrayCollection $collection,
+        CollectionCategoryAssignmentEntity $element
+    ) {
         foreach ($collection as $key => $collectionAssignment) {
             /** @var CollectionCategoryAssignmentEntity $collectionAssignment */
             if ($collectionAssignment->getCategoryRegistryId() === $element->getCategoryRegistryId()
@@ -693,64 +582,38 @@ class CollectionEntity implements Node, Sluggable
         return false;
     }
 
-    /**
-     * @return int
-     */
-    public function getViews()
+    public function getViews(): ?int
     {
         return $this->views;
     }
 
-    /**
-     * @param int $views
-     *
-     * @return $this
-     */
-    public function setViews($views)
+    public function setViews(int $views): self
     {
         $this->views = $views;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getDownloads()
+    public function getDownloads(): ?int
     {
         return $this->downloads;
     }
 
-    /**
-     * @param int $downloads
-     *
-     * @return $this
-     */
-    public function setDownloads($downloads)
+    public function setDownloads(int $downloads): self
     {
         $this->downloads = $downloads;
 
         return $this;
     }
 
-    /**
-     * @param AbstractMediaEntity $primaryMedium
-     *
-     * @return CollectionEntity
-     */
-    public function setPrimaryMedium($primaryMedium)
+    public function setPrimaryMedium(AbstractMediaEntity $primaryMedium): self
     {
         $this->primaryMedium = $primaryMedium;
 
         return $this;
     }
 
-    /**
-     * @param bool $useFirstIfNoneSpecified
-     *
-     * @return AbstractMediaEntity
-     */
-    public function getPrimaryMedium($useFirstIfNoneSpecified = false)
+    public function getPrimaryMedium(bool $useFirstIfNoneSpecified = false): ?AbstractMediaEntity
     {
         if ($useFirstIfNoneSpecified && null === $this->primaryMedium && !$this->media->isEmpty()) {
             return $this->media->first();

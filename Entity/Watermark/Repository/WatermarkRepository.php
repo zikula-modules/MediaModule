@@ -28,9 +28,6 @@ class WatermarkRepository extends ServiceEntityRepository
 
     /**
      * Removes all thumbnails generated for media with the given entity.
-     *
-     * @param AbstractWatermarkEntity $entity
-     * @param CacheManager            $imagineCacheManager
      */
     public function cleanupThumbs(
         AbstractWatermarkEntity $entity,

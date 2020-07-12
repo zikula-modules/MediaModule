@@ -80,80 +80,48 @@ abstract class AbstractPermissionRestrictionEntity
         $this->shared = false;
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return AbstractPermissionRestrictionEntity
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getVersion()
+    public function getVersion(): ?int
     {
         return $this->version;
     }
 
-    /**
-     * @param int $version
-     *
-     * @return AbstractPermissionRestrictionEntity
-     */
-    public function setVersion($version)
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     *
-     * @return AbstractPermissionRestrictionEntity
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isShared()
+    public function isShared(): bool
     {
         return $this->shared;
     }
 
-    /**
-     * @param bool $shared
-     *
-     * @return AbstractPermissionRestrictionEntity
-     */
-    public function setShared($shared)
+    public function setShared(bool $shared): self
     {
         $this->shared = $shared;
 

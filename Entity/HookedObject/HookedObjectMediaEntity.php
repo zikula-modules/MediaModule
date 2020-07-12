@@ -54,60 +54,36 @@ class HookedObjectMediaEntity
      */
     private $media;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return HookedObjectMediaEntity
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return HookedObjectEntity
-     */
-    public function getHookedObject()
+    public function getHookedObject(): ?HookedObjectEntity
     {
         return $this->hookedObject;
     }
 
-    /**
-     * @param HookedObjectEntity $hookedObject
-     *
-     * @return HookedObjectMediaEntity
-     */
-    public function setHookedObject($hookedObject)
+    public function setHookedObject(HookedObjectEntity $hookedObject): self
     {
         $this->hookedObject = $hookedObject;
 
         return $this;
     }
 
-    /**
-     * @return AbstractMediaEntity
-     */
-    public function getMedia()
+    public function getMedia(): ?AbstractMediaEntity
     {
         return $this->media;
     }
 
-    /**
-     * @param AbstractMediaEntity $media
-     *
-     * @return HookedObjectMediaEntity
-     */
-    public function setMedia($media)
+    public function setMedia(AbstractMediaEntity $media): self
     {
         $this->media = $media;
 

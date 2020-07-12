@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class AudioEntity extends AbstractFileEntity
 {
-    public function onNewFile(array $info)
+    public function onNewFile(array $info): void
     {
         parent::onNewFile($info);
 
@@ -42,7 +42,7 @@ class AudioEntity extends AbstractFileEntity
         }
     }
 
-    private function getInformationToKeep($meta, $mimeType)
+    private function getInformationToKeep(array $meta, string $mimeType): array
     {
         $data = [];
         switch ($mimeType) {
@@ -75,7 +75,7 @@ class AudioEntity extends AbstractFileEntity
         return $data;
     }
 
-    private function cleanData(&$data)
+    private function cleanData(&$data): void
     {
         foreach ($data as $key => $value) {
             if ('UndefinedTag' === mb_substr($key, 0, mb_strlen('UndefinedTag'))) {

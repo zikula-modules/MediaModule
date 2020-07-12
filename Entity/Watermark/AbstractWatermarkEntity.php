@@ -123,11 +123,7 @@ abstract class AbstractWatermarkEntity
      */
     protected $dataDirectory;
 
-    /**
-     * @param RequestStack $requestStack
-     * @param string       $dataDirectory
-     */
-    public function __construct(RequestStack $requestStack, $dataDirectory = '')
+    public function __construct(RequestStack $requestStack, string $dataDirectory = '')
     {
         $this->minSizeX = 200;
         $this->minSizeY = 80;
@@ -139,212 +135,120 @@ abstract class AbstractWatermarkEntity
 
     /**
      * Returns the HTML content to be displayed inside the watermarks overview table.
-     *
-     * @return string
      */
-    abstract public function getViewTableContent();
+    abstract public function getViewTableContent(): string;
 
-    /**
-     * @param ImagineInterface $imagine
-     * @param FontCollection   $fontCollection
-     * @param                  $width
-     * @param                  $height
-     *
-     * @return ImageInterface
-     */
     abstract public function getImagineImage(
         ImagineInterface $imagine,
         FontCollection $fontCollection,
-        $width,
-        $height
-    );
+        int $width,
+        int $height
+    ): ImageInterface;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getPositionX()
+    public function getPositionX(): ?int
     {
         return $this->positionX;
     }
 
-    /**
-     * @param int $positionX
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setPositionX($positionX)
+    public function setPositionX(int $positionX): self
     {
         $this->positionX = $positionX;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getPositionY()
+    public function getPositionY(): ?int
     {
         return $this->positionY;
     }
 
-    /**
-     * @param int $positionY
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setPositionY($positionY)
+    public function setPositionY(int $positionY): self
     {
         $this->positionY = $positionY;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getRelativeSize()
+    public function getRelativeSize(): ?int
     {
         return $this->relativeSize;
     }
 
-    /**
-     * @param int $relativeSize
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setRelativeSize($relativeSize)
+    public function setRelativeSize(int $relativeSize): self
     {
         $this->relativeSize = $relativeSize;
 
         return $this;
     }
 
-    /**
-     * Get the value of Min Size.
-     *
-     * @return int
-     */
-    public function getMinSizeX()
+    public function getMinSizeX(): ?int
     {
         return $this->minSizeX;
     }
 
-    /**
-     * Set the value of Min Size.
-     *
-     * @param int $minSizeX
-     *
-     * @return self
-     */
-    public function setMinSizeX($minSizeX)
+    public function setMinSizeX(int $minSizeX): self
     {
         $this->minSizeX = $minSizeX;
 
         return $this;
     }
 
-    /**
-     * Get the value of Min Size.
-     *
-     * @return int
-     */
-    public function getMinSizeY()
+    public function getMinSizeY(): ?int
     {
         return $this->minSizeY;
     }
 
-    /**
-     * Set the value of Min Size.
-     *
-     * @param int $minSizeY
-     *
-     * @return self
-     */
-    public function setMinSizeY($minSizeY)
+    public function setMinSizeY(int $minSizeY): self
     {
         $this->minSizeY = $minSizeY;
 
         return $this;
     }
 
-    /**
-     * @param int $version
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setVersion($version)
+    public function getVersion(): ?int
+    {
+        return $this->version;
+    }
+
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    /**
-     * @param RequestStack $requestStack
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setRequestStack(RequestStack $requestStack)
+    public function setRequestStack(RequestStack $requestStack): self
     {
         $this->requestStack = $requestStack;
 
         return $this;
     }
 
-    /**
-     * @param string $dataDirectory
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setDataDirectory($dataDirectory)
+    public function setDataDirectory(string $dataDirectory): self
     {
         $this->dataDirectory = $dataDirectory;
 

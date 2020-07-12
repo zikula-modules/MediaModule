@@ -195,13 +195,9 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
      */
     protected $dataDirectory;
 
-    /**
-     * @param RequestStack $requestStack
-     * @param string       $dataDirectory
-     */
-    public function __construct(RequestStack $requestStack, $dataDirectory = '')
+    public function __construct(RequestStack $requestStack, string $dataDirectory = '')
     {
-        // Position at the end of the album.
+        // position at the end of the album
         $this->position = -1;
         $this->extraData = [];
         $this->views = 0;
@@ -217,7 +213,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     /**
      * @ORM\PreRemove()
      */
-    public function makeNonPrimaryOnDelete()
+    public function makeNonPrimaryOnDelete(): void
     {
         $primaryMedium = $this->collection->getPrimaryMedium();
         if ($primaryMedium && $primaryMedium->getId() === $this->id) {
@@ -225,12 +221,12 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         }
     }
 
-    public function getImagineId()
+    public function getImagineId(): string
     {
         return 'media-' . $this->id;
     }
 
-    public function getAttribution($format = 'html')
+    public function getAttribution($format = 'html'): ?string
     {
         if (null === $this->author && null === $this->authorUrl) {
             return null;
@@ -258,222 +254,130 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         return $author;
     }
 
-    /**
-     * @return CollectionEntity
-     */
-    public function getCollection()
+    public function getCollection(): ?CollectionEntity
     {
         return $this->collection;
     }
 
-    /**
-     * @param CollectionEntity $collection
-     *
-     * @return $this
-     */
-    public function setCollection($collection)
+    public function setCollection(CollectionEntity $collection): self
     {
         $this->collection = $collection;
 
         return $this;
     }
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set title.
-     *
-     * @param string $title
-     *
-     * @return $this
-     */
-    public function setTitle($title)
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getSlug()
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    /**
-     * @param mixed $slug
-     *
-     * @return $this
-     */
-    public function setSlug($slug)
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
 
         return $this;
     }
 
-    /**
-     * Get title.
-     *
-     * @return string
-     */
-    public function getTitle()
+    public function getDescription(): ?string
     {
-        return $this->title;
+        return $this->description;
     }
 
-    /**
-     * Set description.
-     *
-     * @param string $description
-     *
-     * @return $this
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * Get description.
-     *
-     * @return string
-     */
-    public function getDescription()
+    public function getLicense(): ?LicenseEntity
     {
-        return $this->description;
+        return $this->license;
     }
 
-    /**
-     * Set license.
-     *
-     * @param LicenseEntity $license
-     *
-     * @return $this
-     */
-    public function setLicense($license)
+    public function setLicense(LicenseEntity $license): self
     {
         $this->license = $license;
 
         return $this;
     }
 
-    /**
-     * Get license.
-     *
-     * @return LicenseEntity|null
-     */
-    public function getLicense()
-    {
-        return $this->license;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPosition()
+    public function getPosition(): ?int
     {
         return $this->position;
     }
 
-    /**
-     * @param mixed $position
-     *
-     * @return $this
-     */
-    public function setPosition($position)
+    public function setPosition(?int $position): self
     {
         $this->position = $position;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getAuthor()
+    public function getAuthor(): ?string
     {
         return $this->author;
     }
 
-    /**
-     * @param string $author
-     *
-     * @return $this
-     */
-    public function setAuthor($author)
+    public function setAuthor(string $author): self
     {
         $this->author = $author;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getAuthorAvatarUrl()
+    public function getAuthorAvatarUrl(): ?string
     {
         return $this->authorAvatarUrl;
     }
 
-    /**
-     * @param string $authorAvatarUrl
-     *
-     * @return $this
-     */
-    public function setAuthorAvatarUrl($authorAvatarUrl)
+    public function setAuthorAvatarUrl(string $authorAvatarUrl): self
     {
         $this->authorAvatarUrl = $authorAvatarUrl;
 
         return $this;
     }
 
-    /**
-     * @param array $extraData
-     *
-     * @return $this
-     */
-    public function setExtraData($extraData)
+    public function getExtraData(): ?array
+    {
+        return $this->extraData;
+    }
+
+    public function setExtraData(array $extraData): self
     {
         $this->extraData = $extraData;
 
         return $this;
     }
 
-    /**
-     * @param array $extraData
-     *
-     * @return $this
-     */
-    public function addExtraData($extraData)
+    public function addExtraData(array $extraData): self
     {
         $this->extraData = array_merge($this->extraData, $extraData);
 
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getExtraData()
-    {
-        return $this->extraData;
-    }
-
-    public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection, $includeCollection = true)
-    {
+    public function toArrayForFinder(
+        MediaTypeCollection $mediaTypeCollection,
+        bool $includeCollection = true
+    ): array {
         $class = get_class($this);
         $type = mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('Entity'));
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($this);
@@ -504,18 +408,6 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * @param HookedObjectEntity[]|ArrayCollection $hookedObjectMedia
-     *
-     * @return AbstractMediaEntity
-     */
-    public function setHookedObjectMedia($hookedObjectMedia)
-    {
-        $this->hookedObjectMedia = $hookedObjectMedia;
-
-        return $this;
-    }
-
-    /**
      * @return HookedObjectEntity[]|ArrayCollection
      */
     public function getHookedObjectMedia()
@@ -524,43 +416,37 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     }
 
     /**
-     * @param string $authorUrl
-     *
-     * @return $this
+     * @param HookedObjectEntity[]|ArrayCollection $hookedObjectMedia
      */
-    public function setAuthorUrl($authorUrl)
+    public function setHookedObjectMedia($hookedObjectMedia): self
+    {
+        $this->hookedObjectMedia = $hookedObjectMedia;
+
+        return $this;
+    }
+
+    public function getAuthorUrl(): ?string
+    {
+        return $this->authorUrl;
+    }
+
+    public function setAuthorUrl(string $authorUrl): self
     {
         $this->authorUrl = $authorUrl;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getAuthorUrl()
+    public function getVersion(): ?int
     {
-        return $this->authorUrl;
+        return $this->version;
     }
 
-    /**
-     * @param int $version
-     *
-     * @return AbstractMediaEntity
-     */
-    public function setVersion($version)
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getVersion()
-    {
-        return $this->version;
     }
 
     /**
@@ -575,10 +461,8 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
 
     /**
      * Set page category assignments.
-     *
-     * @param ArrayCollection $assignments
      */
-    public function setCategoryAssignments(ArrayCollection $assignments)
+    public function setCategoryAssignments(ArrayCollection $assignments): self
     {
         foreach ($this->categoryAssignments as $categoryAssignment) {
             if (false === $key = $this->collectionContains($assignments, $categoryAssignment)) {
@@ -595,13 +479,12 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
     /**
      * Check if a collection contains an element based only on two criteria (categoryRegistryId, category).
      *
-     * @param ArrayCollection               $collection
-     * @param MediaCategoryAssignmentEntity $element
-     *
      * @return bool|int
      */
-    private function collectionContains(ArrayCollection $collection, MediaCategoryAssignmentEntity $element)
-    {
+    private function collectionContains(
+        ArrayCollection $collection,
+        MediaCategoryAssignmentEntity $element
+    ) {
         foreach ($collection as $key => $collectionAssignment) {
             /** @var MediaCategoryAssignmentEntity $collectionAssignment */
             if ($collectionAssignment->getCategoryRegistryId() === $element->getCategoryRegistryId()
@@ -614,69 +497,43 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         return false;
     }
 
-    /**
-     * @param int $views
-     *
-     * @return AbstractMediaEntity
-     */
-    public function setViews($views)
+    public function getViews(): ?int
+    {
+        return $this->views;
+    }
+
+    public function setViews(int $views): self
     {
         $this->views = $views;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getViews()
-    {
-        return $this->views;
-    }
-
-    /**
-     * @return int
-     */
-    public function getDownloads()
+    public function getDownloads(): ?int
     {
         return $this->downloads;
     }
 
-    /**
-     * @param int $downloads
-     *
-     * @return $this
-     */
-    public function setDownloads($downloads)
+    public function setDownloads(int $downloads): self
     {
         $this->downloads = $downloads;
 
         return $this;
     }
 
-    protected function getBaseUri()
+    protected function getBaseUri(): string
     {
         return $this->requestStack->getCurrentRequest()->getBasePath();
     }
 
-    /**
-     * @param RequestStack $requestStack
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setRequestStack(RequestStack $requestStack)
+    public function setRequestStack(RequestStack $requestStack): self
     {
         $this->requestStack = $requestStack;
 
         return $this;
     }
 
-    /**
-     * @param string $dataDirectory
-     *
-     * @return AbstractWatermarkEntity
-     */
-    public function setDataDirectory($dataDirectory)
+    public function setDataDirectory(string $dataDirectory): self
     {
         $this->dataDirectory = $dataDirectory;
 

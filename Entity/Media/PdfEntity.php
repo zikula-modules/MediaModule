@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PdfEntity extends AbstractFileEntity
 {
-    public function onNewFile(array $info)
+    public function onNewFile(array $info): void
     {
         parent::onNewFile($info);
 

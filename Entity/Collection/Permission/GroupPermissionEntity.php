@@ -39,30 +39,25 @@ class GroupPermissionEntity extends AbstractPermissionEntity
     }
 
     /**
-     * @param \int[] $groupIds
-     *
-     * @return GroupPermissionEntity
+     * @return \int[]
      */
-    public function setGroupIds($groupIds)
+    public function getGroupIds()
+    {
+        return $this->groupIds;
+    }
+
+    /**
+     * @param \int[] $groupIds
+     */
+    public function setGroupIds($groupIds): self
     {
         $this->groupIds = $groupIds;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isTargetingAllGroups()
+    public function isTargetingAllGroups(): bool
     {
         return 0 === count($this->groupIds);
-    }
-
-    /**
-     * @return \int[]
-     */
-    public function getGroupIds()
-    {
-        return $this->groupIds;
     }
 }

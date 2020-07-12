@@ -29,13 +29,15 @@ class MediaCategoryAssignmentEntity extends AbstractCategoryAssignment
      */
     private $entity;
 
-    public function getEntity()
+    public function getEntity(): AbstractMediaEntity
     {
         return $this->entity;
     }
 
-    public function setEntity($entity)
+    public function setEntity($entity): self
     {
         $this->entity = $entity;
+
+        return $this;
     }
 }

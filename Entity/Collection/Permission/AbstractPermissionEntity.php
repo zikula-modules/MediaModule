@@ -16,6 +16,7 @@ namespace Cmfcmf\Module\MediaModule\Entity\Collection\Permission;
 use Cmfcmf\Module\MediaModule\Entity\Collection\CollectionEntity;
 use Cmfcmf\Module\MediaModule\Entity\Collection\Permission\Restriction\AbstractPermissionRestrictionEntity;
 use Cmfcmf\Module\MediaModule\Traits\StandardFieldsTrait;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -165,7 +166,7 @@ abstract class AbstractPermissionEntity implements Sortable
 
     public function __construct()
     {
-        $this->description = "";
+        $this->description = '';
         $this->goOn = false;
         $this->appliedToSubCollections = true;
         $this->appliedToSelf = true;
@@ -194,60 +195,36 @@ abstract class AbstractPermissionEntity implements Sortable
         }
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     *
-     * @return $this
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getVersion()
+    public function getVersion(): ?int
     {
         return $this->version;
     }
 
-    /**
-     * @param int $version
-     *
-     * @return $this
-     */
-    public function setVersion($version)
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     *
-     * @return $this
-     */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -264,150 +241,92 @@ abstract class AbstractPermissionEntity implements Sortable
 
     /**
      * @param string[] $permissionLevels
-     *
-     * @return $this
      */
-    public function setPermissionLevels($permissionLevels)
+    public function setPermissionLevels($permissionLevels): self
     {
         $this->permissionLevels = $permissionLevels;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getPosition()
+    public function getPosition(): ?int
     {
         return $this->position;
     }
 
-    /**
-     * @param int $position
-     *
-     * @return $this
-     */
-    public function setPosition($position)
+    public function setPosition(int $position): self
     {
         $this->position = $position;
 
         return $this;
     }
 
-    /**
-     * @return CollectionEntity
-     */
-    public function getCollection()
+    public function getCollection(): ?CollectionEntity
     {
         return $this->collection;
     }
 
-    /**
-     * @param CollectionEntity $collection
-     *
-     * @return $this
-     */
-    public function setCollection($collection)
+    public function setCollection(CollectionEntity $collection): self
     {
         $this->collection = $collection;
 
         return $this;
     }
 
-    /**
-     * @return \DateTime|null
-     */
-    public function getValidAfter()
+    public function getValidAfter(): ?DateTime
     {
         return $this->validAfter;
     }
 
-    /**
-     * @param \DateTime|null $validAfter
-     *
-     * @return $this
-     */
-    public function setValidAfter($validAfter)
+    public function setValidAfter(?DateTime $validAfter): self
     {
         $this->validAfter = $validAfter;
 
         return $this;
     }
 
-    /**
-     * @return \DateTime|null
-     */
-    public function getValidUntil()
+    public function getValidUntil(): ?DateTime
     {
         return $this->validUntil;
     }
 
-    /**
-     * @param \DateTime|null $validUntil
-     *
-     * @return $this
-     */
-    public function setValidUntil($validUntil)
+    public function setValidUntil(?DateTime $validUntil): self
     {
         $this->validUntil = $validUntil;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isGoOn()
+    public function isGoOn(): bool
     {
         return $this->goOn;
     }
 
-    /**
-     * @param bool $goOn
-     *
-     * @return $this
-     */
-    public function setGoOn($goOn)
+    public function setGoOn(bool $goOn): self
     {
         $this->goOn = $goOn;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isAppliedToSelf()
+    public function isAppliedToSelf(): bool
     {
         return $this->appliedToSelf;
     }
 
-    /**
-     * @param bool $appliedToSelf
-     *
-     * @return $this
-     */
-    public function setAppliedToSelf($appliedToSelf)
+    public function setAppliedToSelf(bool $appliedToSelf): self
     {
         $this->appliedToSelf = $appliedToSelf;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isAppliedToSubCollections()
+    public function isAppliedToSubCollections(): bool
     {
         return $this->appliedToSubCollections;
     }
 
-    /**
-     * @param bool $appliedToSubCollections
-     *
-     * @return $this
-     */
-    public function setAppliedToSubCollections($appliedToSubCollections)
+    public function setAppliedToSubCollections(bool $appliedToSubCollections): self
     {
         $this->appliedToSubCollections = $appliedToSubCollections;
 
@@ -422,20 +341,12 @@ abstract class AbstractPermissionEntity implements Sortable
         return $this->restrictions;
     }
 
-    /**
-     * @return bool
-     */
-    public function isLocked()
+    public function isLocked(): bool
     {
         return $this->locked;
     }
 
-    /**
-     * @param bool $locked
-     *
-     * @return $this
-     */
-    public function setLocked($locked)
+    public function setLocked(bool $locked): self
     {
         $this->locked = $locked;
 

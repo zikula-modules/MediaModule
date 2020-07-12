@@ -122,10 +122,8 @@ class LicenseEntity
 
     /**
      * Converts the license entity to an array.
-     *
-     * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'id' => $this->id,
@@ -138,132 +136,84 @@ class LicenseEntity
         ];
     }
 
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $id
-     *
-     * @return $this
-     */
-    public function setId($id)
+    public function setId(string $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     *
-     * @return $this
-     */
-    public function setTitle($title)
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    /**
-     * @param string $url
-     *
-     * @return $this
-     */
-    public function setUrl($url)
+    public function setUrl(string $url): self
     {
         $this->url = $url;
 
         return $this;
     }
 
-    /**
-     * @param string $imageUrl
-     *
-     * @return LicenseEntity
-     */
-    public function setImageUrl($imageUrl)
+    public function getImageUrl(): ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function setImageUrl(string $imageUrl): self
     {
         $this->imageUrl = $imageUrl;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getImageUrl()
-    {
-        return $this->imageUrl;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnabledForUpload()
+    public function isEnabledForUpload(): bool
     {
         return $this->enabledForUpload;
     }
 
-    /**
-     * @param bool $enabledForUpload
-     *
-     * @return LicenseEntity
-     */
-    public function setEnabledForUpload($enabledForUpload)
+    public function setEnabledForUpload(bool $enabledForUpload): self
     {
         $this->enabledForUpload = $enabledForUpload;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isEnabledForWeb()
+    public function isEnabledForWeb(): bool
     {
         return $this->enabledForWeb;
     }
 
-    /**
-     * @param bool $enabledForWeb
-     *
-     * @return LicenseEntity
-     */
-    public function setEnabledForWeb($enabledForWeb)
+    public function setEnabledForWeb(bool $enabledForWeb): self
     {
         $this->enabledForWeb = $enabledForWeb;
 
         return $this;
     }
 
-    /**
-     * @param bool $outdated
-     *
-     * @return LicenseEntity
-     */
-    public function setOutdated($outdated)
+    public function isOutdated(): bool
+    {
+        return $this->outdated;
+    }
+
+    public function setOutdated(bool $outdated): self
     {
         $this->outdated = $outdated;
 
@@ -271,19 +221,9 @@ class LicenseEntity
     }
 
     /**
-     * @return bool
-     */
-    public function isOutdated()
-    {
-        return $this->outdated;
-    }
-
-    /**
      * @param HookedObjectEntity[]|ArrayCollection $hookedObjects
-     *
-     * @return LicenseEntity
      */
-    public function setHookedObjects($hookedObjects)
+    public function setHookedObjects($hookedObjects): self
     {
         $this->hookedObjects = $hookedObjects;
 
@@ -298,23 +238,15 @@ class LicenseEntity
         return $this->hookedObjects;
     }
 
-    /**
-     * @param int $version
-     *
-     * @return LicenseEntity
-     */
-    public function setVersion($version)
+    public function getVersion(): ?int
+    {
+        return $this->version;
+    }
+
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 
         return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getVersion()
-    {
-        return $this->version;
     }
 }

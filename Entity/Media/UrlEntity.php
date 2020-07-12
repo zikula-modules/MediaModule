@@ -30,20 +30,12 @@ class UrlEntity extends AbstractMediaEntity
      */
     protected $url;
 
-    /**
-     * @return string
-     */
-    public function getUrl()
+    public function getUrl(): ?string
     {
         return $this->url;
     }
 
-    /**
-     * @param string $url
-     *
-     * @return $this
-     */
-    public function setUrl($url)
+    public function setUrl(string $url): self
     {
         $this->url = $url;
 

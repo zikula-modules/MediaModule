@@ -20,40 +20,24 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class SoundCloudEntity extends UrlEntity
 {
-    /**
-     * @return string
-     */
-    public function getMusicId()
+    public function getMusicId(): ?string
     {
-        return isset($this->extraData['musicId']) ? $this->extraData['musicId'] : null;
+        return $this->extraData['musicId'] ?? null;
     }
 
-    /**
-     * @param string $musicId
-     *
-     * @return DeezerEntity
-     */
-    public function setMusicId($musicId)
+    public function setMusicId(string $musicId): self
     {
         $this->extraData['musicId'] = $musicId;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getMusicType()
+    public function getMusicType(): ?int
     {
-        return isset($this->extraData['musicType']) ? $this->extraData['musicType'] : null;
+        return $this->extraData['musicType'] ?? null;
     }
 
-    /**
-     * @param int $musicType
-     *
-     * @return SoundCloudEntity
-     */
-    public function setMusicType($musicType)
+    public function setMusicType(int $musicType): self
     {
         $this->extraData['musicType'] = $musicType;
 

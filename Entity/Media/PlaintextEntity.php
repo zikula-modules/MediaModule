@@ -21,24 +21,22 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class PlaintextEntity extends AbstractFileEntity
 {
-    /**
-     * @param RequestStack $requestStack
-     * @param string       $dataDirectory
-     */
-    public function __construct(RequestStack $requestStack, $dataDirectory = '')
+    public function __construct(RequestStack $requestStack, string $dataDirectory = '')
     {
         parent::__construct($requestStack, $dataDirectory);
 
         $this->setUseSyntaxHighlighting(true);
     }
 
-    public function getUseSyntaxHighlighting()
+    public function getUseSyntaxHighlighting(): bool
     {
-        return isset($this->extraData['useSyntaxHighlighting']) ? $this->extraData['useSyntaxHighlighting'] : false;
+        return $this->extraData['useSyntaxHighlighting'] ?? false;
     }
 
-    public function setUseSyntaxHighlighting($useSyntaxHighlighting)
+    public function setUseSyntaxHighlighting(bool $useSyntaxHighlighting): self
     {
         $this->extraData['useSyntaxHighlighting'] = $useSyntaxHighlighting;
+
+        return $this;
     }
 }
