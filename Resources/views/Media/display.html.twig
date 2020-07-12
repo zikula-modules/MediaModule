@@ -32,7 +32,7 @@
                     <p><strong>{% trans %}Categories{% endtrans %}</strong>:</p>
                     <ul>
                     {% for assignment in entity.categoryAssignments %}
-                        <li>{{ assignment.category.getDisplay_name(app.request.locale) }}</li>
+                        <li>{{ assignment.category.getDisplayName(app.request.locale) }}</li>
                     {% endfor %}
                     </ul>
                 {% endif %}
