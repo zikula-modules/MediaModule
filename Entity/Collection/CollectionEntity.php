@@ -302,7 +302,7 @@ class CollectionEntity implements Node, Sluggable
      */
     public function toArrayForFinder(MediaTypeCollection $mediaTypeCollection): array
     {
-        $thumbnail = $this->getMediaForThumbnail();
+        $thumbnail = $this->getPrimaryMedium(true);
 
         $array = [
             'title' => $this->title,
