@@ -33,7 +33,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
      */
     public function getIcon()
     {
-        return 'fa-file-text-o';
+        return 'fa-file-alt';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)

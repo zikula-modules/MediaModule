@@ -33,7 +33,7 @@ class Url extends AbstractMediaType implements PasteMediaTypeInterface
 
     public function getIcon()
     {
-        return 'fa-external-link';
+        return 'fa-external-link-alt';
     }
 
     /**

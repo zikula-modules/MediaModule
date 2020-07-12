@@ -33,7 +33,7 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function getIcon()
     {
-        return 'fa-file-audio-o';
+        return 'fa-file-audio';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)

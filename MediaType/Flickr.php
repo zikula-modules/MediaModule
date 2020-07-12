@@ -28,7 +28,7 @@ class Flickr extends AbstractMediaType implements WebMediaTypeInterface
 
     public function isEnabled()
     {
-        return "" !== $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey', '');
+        return '' !== $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey', '');
     }
 
     /**

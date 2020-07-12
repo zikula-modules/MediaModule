@@ -33,7 +33,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
      */
     public function getIcon()
     {
-        return 'fa-file-pdf-o';
+        return 'fa-file-pdf';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)

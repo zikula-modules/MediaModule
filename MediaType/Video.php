@@ -32,7 +32,7 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function getIcon()
     {
-        return 'fa-file-video-o';
+        return 'fa-file-video';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)

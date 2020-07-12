@@ -32,12 +32,12 @@ class Unknown extends AbstractFileMediaType implements UploadableMediaTypeInterf
      */
     public function getIcon()
     {
-        return 'fa-file-o';
+        return 'fa-file';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)
     {
-        return "";
+        return '';
     }
 
     public function getExtendedMetaInformation(AbstractMediaEntity $entity)

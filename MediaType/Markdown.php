@@ -43,6 +43,9 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
         return 'fa-align-right';
     }
 
+    /**
+     * @required
+     */
     public function setMarkdownParser(MarkdownExtra $markdownExtraParser)
     {
         $this->markdownExtraParser = $markdownExtraParser;

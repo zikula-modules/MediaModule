@@ -32,7 +32,7 @@ class Archive extends AbstractFileMediaType implements UploadableMediaTypeInterf
      */
     public function getIcon()
     {
-        return 'fa-file-archive-o';
+        return 'fa-file-archive';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)
