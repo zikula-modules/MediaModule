@@ -203,6 +203,9 @@ class TwigExtension extends AbstractExtension
         $eventName = 'cmfcmfmediamodule.filter_hooks.' . $hookName . '.filter';
         $hook = new FilterHook($description);
         $description = $this->hookDispatcher->dispatch($eventName, $hook)->getData();
+        if (null === $description) {
+            $description = '';
+        }
 
         switch ($strategy) {
             case 'raw':
