@@ -128,11 +128,6 @@ abstract class AbstractMediaEntityType extends AbstractType
             $collectionOptions['data'] = $options['parent'];
         }
 
-        $defaultLicense = $this->variableApi->get('CmfcmfMediaModule', 'defaultLicense', null);
-        if (null !== $defaultLicense) {
-            $defaultLicense = $this->em->find('CmfcmfMediaModule:License\LicenseEntity', $defaultLicense);
-        }
-
         $builder
             ->add('collection', EntityType::class, $collectionOptions)
             ->add('categoryAssignments', CategoriesType::class, [
@@ -169,35 +164,42 @@ abstract class AbstractMediaEntityType extends AbstractType
                     'help' => $descriptionHelp
                 ]
             )
-            ->add(
+        ;
+        $licenseData = [
+            'required' => false,
+            'label' => 'License',
+            'class' => LicenseEntity::class,
+            'preferred_choices' => function (LicenseEntity $license) {
+                return !$license->isOutdated();
+            },
+            'query_builder' => function (EntityRepository $er) {
+                return $er->createQueryBuilder('l')
+                    ->orderBy('l.title', 'ASC')
+                    ->where('l.enabledForUpload = 1');
+            // @todo Move to the actual uploadable file types.
+            },
+            'placeholder' => 'Unknown',
+            'choice_label' => 'title',
+            'attr' => isset($options['hiddenFields']) && in_array(
                 'license',
-                EntityType::class,
-                [
-                    'required' => false,
-                    'label' => 'License',
-                    'class' => LicenseEntity::class,
-                    'preferred_choices' => function (LicenseEntity $license) {
-                        return !$license->isOutdated();
-                    },
-                    'data' => $defaultLicense,
-                    'query_builder' => function (EntityRepository $er) {
-                        return $er->createQueryBuilder('l')
-                            ->orderBy('l.title', 'ASC')
-                            ->where('l.enabledForUpload = 1');
-                    // @todo Move to the actual uploadable file types.
-                    },
-                    'placeholder' => 'Unknown',
-                    'choice_label' => 'title',
-                    'attr' => isset($options['hiddenFields']) && in_array(
-                        'license',
-                        $options['hiddenFields']
-                    ) ? $hiddenAttr : [],
-                    'label_attr' => isset($options['hiddenFields']) && in_array(
-                        'license',
-                        $options['hiddenFields']
-                    ) ? $hiddenAttr : []
-                ]
-            )
+                $options['hiddenFields']
+            ) ? $hiddenAttr : [],
+            'label_attr' => isset($options['hiddenFields']) && in_array(
+                'license',
+                $options['hiddenFields']
+            ) ? $hiddenAttr : []
+        ];
+        if (true === $options['isCreation']) {
+            $defaultLicense = $this->variableApi->get('CmfcmfMediaModule', 'defaultLicense', null);
+            if (null !== $defaultLicense) {
+                $defaultLicense = $this->em->find('CmfcmfMediaModule:License\LicenseEntity', $defaultLicense);
+            }
+            $licenseData['data'] = $defaultLicense;
+        }
+
+        $builder->add('license', EntityType::class, $licenseData);
+
+        $builder
             ->add(
                 'author',
                 isset($options['hiddenFields']) && in_array(
