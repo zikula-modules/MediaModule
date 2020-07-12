@@ -11,10 +11,10 @@
             {{ form_widget(form) }}
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" class="btn btn-success">
-                    <i class="fa fa-fw fa-save"></i> {% trans %}Save{% endtrans %}
+                    <i class="fas fa-fw fa-save"></i> {% trans %}Save{% endtrans %}
                 </button>
-                <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-default">
-                    <i class="fa fa-fw fa-ban"></i> {{ 'Cancel'|trans }}
+                <a href="{{ path('cmfcmfmediamodule_permission_view', {slug: collection.slug}) }}" class="btn btn-secondary">
+                    <i class="fas fa-fw fa-ban"></i> {{ 'Cancel'|trans }}
                 </a>
             </div>
         </fieldset>

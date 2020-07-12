@@ -4,12 +4,12 @@
 {% endblock %}
 {% block content %}
     {% if cmfcmfmediamodule_hasPermission('watermark', 'new') %}
-        <a href="{{ path('cmfcmfmediamodule_watermark_new', {type: 'image'}) }}" class="btn btn-default">
-            <i class="fa fa-fw fa-picture-o"></i>
+        <a href="{{ path('cmfcmfmediamodule_watermark_new', {type: 'image'}) }}" class="btn btn-secondary">
+            <i class="fas fa-fw fa-image"></i>
             {% trans %}Create a new image-based watermark{% endtrans %}
         </a>
-        <a href="{{ path('cmfcmfmediamodule_watermark_new', {type: 'text'}) }}" class="btn btn-default">
-            <i class="fa fa-fw fa-font"></i>
+        <a href="{{ path('cmfcmfmediamodule_watermark_new', {type: 'text'}) }}" class="btn btn-secondary">
+            <i class="fas fa-fw fa-font"></i>
             {% trans %}Create a new text-based watermark{% endtrans %}
         </a>
         <br />
@@ -54,12 +54,12 @@
                     <td headers="hEntity{{ entity.id }} hActions" class="text-right">
                         {% if cmfcmfmediamodule_hasPermission(entity, 'edit') %}
                             <a href="{{ path('cmfcmfmediamodule_watermark_edit', {id: entity.id}) }}">
-                                <i class="fa fa-edit fa-fw"></i>
+                                <i class="fas fa-edit fa-fw"></i>
                             </a>
                         {% endif %}
                         {% if cmfcmfmediamodule_hasPermission(entity, 'delete') %}
                             <a href="{{ path('cmfcmfmediamodule_watermark_delete', {id: entity.id}) }}" class="text-danger">
-                                <i class="fa fa-trash-o fa-fw"></i>
+                                <i class="fas fa-trash-alt fa-fw"></i>
                             </a>
                         {% endif %}
                     </td>

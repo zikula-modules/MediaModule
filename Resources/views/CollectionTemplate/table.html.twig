@@ -24,7 +24,7 @@
                     <tr class="active">
                         <td headers="hTitle">
                             <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: collection.parent.slug})|e('html_attr') }}">
-                                <i class="fa fa-fw fa-folder-o"></i> ..
+                                <i class="fas fa-fw fa-folder"></i> ..
                             </a>
                         </td>
                         <td colspan="3"></td>
@@ -37,12 +37,12 @@
                     <tr>
                         <th headers="hTitle" scope="row" colspan="3">
                             <a href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
-                                <i class="fa fa-fw fa-folder-o"></i> {{ child.title }}
+                                <i class="fas fa-fw fa-folder"></i> {{ child.title }}
                             </a>
                         </th>
                         <td headers="hActions" class="text-right">
-                            <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
-                                <i class="fa fa-search"></i> {% trans %}View collection{% endtrans %}
+                            <a class="btn btn-secondary btn-xs" href="{{ path('cmfcmfmediamodule_collection_display', {slug: child.slug})|e('html_attr') }}">
+                                <i class="fas fa-search"></i> {% trans %}View collection{% endtrans %}
                             </a>
                         </td>
                     </tr>
@@ -60,7 +60,7 @@
                         <a href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
                     {% endif %}
                             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
-                            <i class="fa fa-fw {{ mediaType.icon }}"></i>
+                            <i class="fas fa-fw {{ mediaType.icon|e('html_attr') }}"></i>
                         {{ media.title }}
                     {% if viewMediaPermission %}
                         </a>
@@ -90,18 +90,18 @@
                 </td>
                 <td headers="hActions" class="text-right">
                     {% if viewMediaPermission %}
-                        <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
-                            <i class="fa fa-search"></i> {% trans %}Details{% endtrans %}
+                        <a class="btn btn-secondary btn-xs" href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
+                            <i class="fas fa-search"></i> {% trans %}Details{% endtrans %}
                         </a>
                     {% endif %}
                     {% if downloadMediaPermission and media.downloadAllowed|default %}
-                        <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
-                            <i class="fa fa-download"></i> {% trans %}Download{% endtrans %}
+                        <a class="btn btn-secondary btn-xs" href="{{ path('cmfcmfmediamodule_media_download', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
+                            <i class="fas fa-download"></i> {% trans %}Download{% endtrans %}
                         </a>
                     {% endif %}
                     {% if editMediaPermission %}
-                        <a class="btn btn-default btn-xs" href="{{ path('cmfcmfmediamodule_media_edit', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
-                            <i class="fa fa-pencil"></i> {% trans %}Edit{% endtrans %}
+                        <a class="btn btn-secondary btn-xs" href="{{ path('cmfcmfmediamodule_media_edit', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
+                            <i class="fas fa-pencil-alt"></i> {% trans %}Edit{% endtrans %}
                         </a>
                     {% endif %}
                 </td>

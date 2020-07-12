@@ -4,10 +4,10 @@
 
 {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/Fullscreen.js')) }}
 {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:css/Media/Display/Fullscreen.css')) }}
-<button type="button" class="cmfcmfmedia-fullscreen-btn btn btn-default" data-fullscreen-element="#cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}">
-    <i class="fa fa-fw fa-arrows-alt"></i> {% trans %}Fullscreen{% endtrans %}
+<button type="button" class="cmfcmfmedia-fullscreen-btn btn btn-secondary" data-fullscreen-element="#cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}">
+    <i class="fas fa-fw fa-expand-arrows-alt"></i> {% trans %}Fullscreen{% endtrans %}
 </button>
 <br />
 <br />
 
-<pre id="cmfcmfmedia-media-display-{{ entity.id }}"><i class="fa fa-fw fa-3x fa-times pull-right fullscreen-exit-btn hidden"></i><code class="cmfcmfmedia-plaintext-highlight">{{ content }}</code></pre>
+<pre id="cmfcmfmedia-media-display-{{ entity.id }}"><i class="fas fa-fw fa-3x fa-times pull-right fullscreen-exit-btn d-none"></i><code class="cmfcmfmedia-plaintext-highlight">{{ content }}</code></pre>

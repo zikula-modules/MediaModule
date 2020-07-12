@@ -11,7 +11,7 @@
 {% block upgradeNotification %}
     {% if not renderRaw|default and hasPermission('ZikulaExtensionsModule::', '::', 'ACCESS_ADMIN') and hasPermission('CmfcmfMediaModule:settings:', '::', 'ACCESS_ADMIN') and cmfcmfmediamodule_newversionavailable() %}
         <div class="alert alert-warning">
-            <i class="fa fa-fw fa-download fa-2x pull-left"></i>
+            <i class="fas fa-fw fa-download fa-2x pull-left"></i>
             {{ 'The %s% version of the MediaModule is available for download. You can apply the automatic upgrade by clicking here:'|trans({'%s%': cmfcmfmediamodule_newversionavailable()}) }}
             <a href="{{ path('cmfcmfmediamodule_upgrade_doupgrade') }}" class="alert-link">{% trans %}Upgrade now!{% endtrans %}</a>
             <div class="clearfix"></div>

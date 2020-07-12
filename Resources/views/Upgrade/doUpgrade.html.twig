@@ -12,13 +12,13 @@
     <ul class="fa-ul" id="cmfcmfmedia-settings-upgrade-steps-list">
         {% for id, step in steps %}
             <li class="text-muted" data-step="{{ id|e('html_attr') }}">
-                <i class="fa fa-li fa-fw {{ step.icon|e('html_attr') }}"></i>
+                <i class="fas fa-li fa-fw {{ step.icon|e('html_attr') }}"></i>
                 {{ step.text }}
             </li>
         {% endfor %}
     </ul>
     <button class="btn btn-primary btn-lg" id="cmfcmfmedia-settings-upgrade-start-btn" data-steps="{{ steps|length|e('html_attr') }}" autocomplete="off"{% if not hasPermission %} disabled{% endif %}>
-        <i class="fa fa-fw fa-cog fa-spin hidden"></i>
+        <i class="fas fa-fw fa-cog fa-spin d-none"></i>
         {% trans %}Start upgrade{% endtrans %}
     </button>
 {% endblock %}

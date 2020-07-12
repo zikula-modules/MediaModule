@@ -3,8 +3,8 @@
 {% block content %}
     {{ parent() }}
     {% if cmfcmfmediamodule_hasPermission('license', 'add') %}
-        <a href="{{ path('cmfcmfmediamodule_license_new') }}" class="btn btn-default">
-            <i class="fa fa-fw fa-plus"></i> {% trans %}Create new license{% endtrans %}
+        <a href="{{ path('cmfcmfmediamodule_license_new') }}" class="btn btn-secondary">
+            <i class="fas fa-fw fa-plus"></i> {% trans %}Create new license{% endtrans %}
         </a>
         <br />
         <br />
@@ -75,12 +75,12 @@
                     <td headers="hEntity{{ entity.id }} hActions" class="text-right">
                         {% if cmfcmfmediamodule_hasPermission(entity, 'edit') %}
                             <a href="{{ path('cmfcmfmediamodule_license_edit', {id: entity.id}) }}">
-                                <i class="fa fa-fw fa-edit"></i>
+                                <i class="fas fa-fw fa-edit"></i>
                             </a>
                         {% endif %}
                         {% if cmfcmfmediamodule_hasPermission(entity, 'delete') %}
                             <a href="{{ path('cmfcmfmediamodule_license_delete', {id: entity.id}) }}" class="text-danger">
-                                <i class="fa fa-fw fa-trash-o"></i>
+                                <i class="fas fa-fw fa-trash-alt"></i>
                             </a>
                         {% endif %}
                     </td>

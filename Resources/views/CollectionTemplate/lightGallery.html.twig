@@ -20,10 +20,10 @@
                 <img src="{{ thumbnail|e('html_attr') }}" class="img-responsive" />
                 <div class="caption">
                     {% if media.title|default %}
-                        <h4{% if not options.showTitleBelowThumbs %} class="hidden"{% endif %}>{{ media.title }}</h4>
+                        <h4{% if not options.showTitleBelowThumbs %} class="d-none"{% endif %}>{{ media.title }}</h4>
                     {% endif %}
                     {% if media.attribution|default %}
-                        <p{% if not options.showAttributionBelowThumbs %} class="hidden"{% endif %}>{{ 'By %s%'|trans({'%s%': media.attribution})|raw }}</p>
+                        <p{% if not options.showAttributionBelowThumbs %} class="d-none"{% endif %}>{{ 'By %s%'|trans({'%s%': media.attribution})|raw }}</p>
                     {% endif %}
                 </div>
             </a>

@@ -104,7 +104,7 @@
                 '<div class="input-group">' +
                     '<div class="input-group-btn">' +
                         '<button type="button" value="' + firstOptionKey + '" ' +
-                            'class="btn btn-default dropdown-toggle cmfcmfmedia-web-search-type-btn" ' +
+                            'class="btn btn-secondary dropdown-toggle cmfcmfmedia-web-search-type-btn" ' +
                             'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ' +
                             'id="cmfcmfmedia-mediatype-' + mediaType + '-search-type">' +
                             dropdownOptions[firstOptionKey] + ' <span class="caret"></span>' +

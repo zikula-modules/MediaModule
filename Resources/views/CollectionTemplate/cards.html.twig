@@ -12,10 +12,10 @@
     <div class="col-xs-12 col-sm-6 col-sm-4 col-md-3{% if sortableId %} sortable{% endif %}" style="padding: 10px"{% if sortableId %} data-id="{{ sortableId|e('html_attr') }}"{% endif %}>
         <div class="card">
             {% if sortableId %}
-                <i class="fa fa-sort fa-lg hidden" style="position:absolute; cursor: move; top: 10px; right: 10px;"></i>
+                <i class="fas fa-sort fa-lg d-none" style="position:absolute; cursor: move; top: 10px; right: 10px"></i>
             {% endif %}
             {% if thumbnail %}
-                <img class="card-img-top" src="{{ thumbnail }}" alt="" style="width: 100%;">
+                <img class="card-img-top" src="{{ thumbnail }}" alt="" style="width: 100%">
             {% endif %}
             <div class="card-block">
                 <h4 class="card-title">
@@ -35,7 +35,7 @@
                     </a>
                 {% endfor %}
             </div>
-            <i class="fa fa-fw {{ icon|e('html_attr') }}" style="position: absolute; right: 5px; bottom: 5px;"></i>
+            <i class="fas fa-fw {{ icon|e('html_attr') }}" style="position: absolute; right: 5px; bottom: 5px;"></i>
         </div>
     </div>
 {% endmacro %}
@@ -45,8 +45,8 @@
 {% set editMediaPermission = cmfcmfmediamodule_hasPermission(collection, constant('Cmfcmf\\Module\\MediaModule\\Security\\CollectionPermission\\CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_MEDIA')) %}
 
 {% if editMediaPermission or editCollectionPermission %}
-    <button class="btn btn-default btn-sm" type="button" autocomplete="off" id="cmfcmfmedia-sortable-btn">
-        <i class="fa fa-sort"></i> {% trans %}Sort items{% endtrans %}
+    <button class="btn btn-secondary btn-sm" type="button" autocomplete="off" id="cmfcmfmedia-sortable-btn">
+        <i class="fas fa-sort"></i> {% trans %}Sort items{% endtrans %}
     </button>
 {% endif %}
 

@@ -30,7 +30,7 @@
                         </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
                         <button type="button" class="btn btn-primary" data-dismiss="modal" id="cmfcmfmedia-upload-form-modal-save-btn">{% trans %}Start upload{% endtrans %}</button>
                     </div>
                 </div>
@@ -40,26 +40,25 @@
     {{ pageAddAsset('footer', modal) }}
 
     <div>
-        <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active">
                 <a href="#cmfcmfmedia-upload" aria-controls="cmfcmfmedia-upload" role="tab" data-toggle="tab">
-                    <i class="fa fa-fw fa-upload"></i> {% trans %}File upload{% endtrans %}
+                    <i class="fas fa-fw fa-upload"></i> {% trans %}File upload{% endtrans %}
                 </a>
             </li>
             <li role="presentation">
                 <a href="#cmfcmfmedia-web" aria-controls="cmfcmfmedia-web" role="tab" data-toggle="tab">
-                    <i class="fa fa-fw fa-globe"></i> {% trans %}Search the web{% endtrans %}
+                    <i class="fas fa-fw fa-globe"></i> {% trans %}Search the web{% endtrans %}
                 </a>
             </li>
             <li role="presentation">
                 <a href="#cmfcmfmedia-paste" aria-controls="cmfcmfmedia-paste" role="tab" data-toggle="tab">
-                    <i class="fa fa-fw fa-paste"></i> {% trans %}Paste URL / Embed code{% endtrans %}
+                    <i class="fas fa-fw fa-clipboard"></i> {% trans %}Paste URL / Embed code{% endtrans %}
                 </a>
             </li>
             <li role="presentation">
                 <a href="{{ path('cmfcmfmediamodule_media_adminlist') }}" role="tab">
-                    <i class="fa fa-fw fa-table"></i> {% trans %}Back to overview{% endtrans %}
+                    <i class="fas fa-fw fa-table"></i> {% trans %}Back to overview{% endtrans %}
                 </a>
             </li>
         </ul>
@@ -71,17 +70,17 @@
                 <div id="cmfcmfmedia-upload-actions" class="row">
                     <div class="col-lg-9">
                         <span class="btn btn-success" id="cmfcmfmedia-upload-fileinput-btn">
-                            <i class="fa fa-fw fa-plus"></i>
+                            <i class="fas fa-fw fa-plus"></i>
                             <span>{% trans %}Add files (try drag and drop as well!){% endtrans %}</span>
                         </span>
                         {% if not isPopup %}
                             <button type="submit" class="btn btn-primary start" id="cmfcmfmedia-upload-start-fast-btn" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="bottom" data-content="{% trans %}If you use the fast upload, all media will be uploaded instantly and you will only be able to select the collection to upload the media too. If you would like to edit further settings, i.e. titles, descriptions or licenses, you can do so by either not using the fast upload and uploading the media one by one or by editing the media after you uploaded everything{% endtrans %}">
-                                <i class="fa fa-fw fa-upload"></i>
+                                <i class="fas fa-fw fa-upload"></i>
                                 <span>{% trans %}Fast upload{% endtrans %}</span>
                             </button>
                         {% endif %}
                         {#<button type="reset" class="btn btn-warning cancel">
-                            <i class="fa fa-fw fa-ban"></i>
+                            <i class="fas fa-fw fa-ban"></i>
                             <span>{% trans %}Cancel upload{% endtrans %}</span>
                         </button>#}
                     </div>
@@ -109,15 +108,15 @@
                         </div>
                         <div>
                             <button class="btn btn-primary start">
-                                <i class="fa fa-fw fa-upload"></i>
+                                <i class="fas fa-fw fa-upload"></i>
                                 <span>{% trans %}Start{% endtrans %}</span>
                             </button>
                             <button data-dz-remove class="btn btn-warning cancel">
-                                <i class="fa fa-fw fa-ban"></i>
+                                <i class="fas fa-fw fa-ban"></i>
                                 <span>{% trans %}Cancel{% endtrans %}</span>
                             </button>
                             {#<button data-dz-remove class="btn btn-danger delete">
-                                <i class="fa fa-fw fa-trash"></i>
+                                <i class="fas fa-fw fa-trash-alt"></i>
                                 <span>{% trans %}Delete{% endtrans %}</span>
                             </button>#}
                         </div>
@@ -139,7 +138,7 @@
                             {% for mediaType in webMediaTypes %}
                                 <li>
                                     <a href="#cmfcmfmedia-web-provider-{{ mediaType.alias }}" data-toggle="pill">
-                                        <i class="fa fa-fw {{ mediaType.icon }}"></i> {{ mediaType.displayName }}
+                                        <i class="fas fa-fw {{ mediaType.icon|e('html_attr') }}"></i> {{ mediaType.displayName }}
                                     </a>
                                 </li>
                             {% endfor %}
@@ -183,7 +182,7 @@
                     <br />
                     <br />
                     <button type="button" class="btn btn-primary" id="cmfcmfmedia-paste-btn-parse" autocomplete="off">
-                        <i class="fa fa-fw fa-cog"></i> {% trans %}Parse{% endtrans %}
+                        <i class="fas fa-fw fa-cog"></i> {% trans %}Parse{% endtrans %}
                     </button>
                 </form>
             </div>

@@ -26,13 +26,13 @@
     </div>
     <div role="tabpanel" class="tab-pane" id="raw">
         <br />
-        <button type="button" class="cmfcmfmedia-fullscreen-btn btn btn-default" data-fullscreen-element="#cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}-raw">
-            <i class="fa fa-fw fa-arrows-alt"></i> {% trans %}Fullscreen{% endtrans %}
+        <button type="button" class="cmfcmfmedia-fullscreen-btn btn btn-secondary" data-fullscreen-element="#cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}-raw">
+            <i class="fas fa-fw fa-expand-arrows-alt"></i> {% trans %}Fullscreen{% endtrans %}
         </button>
         <br />
         <br />
 
-        <pre id="cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}-raw"><i class="fa fa-fw fa-3x fa-times pull-right fullscreen-exit-btn hidden"></i><code class="cmfcmfmedia-markdown-highlight">{{ raw }}</code></pre>
+        <pre id="cmfcmfmedia-media-display-{{ entity.id|e('html_attr') }}-raw"><i class="fas fa-fw fa-3x fa-times pull-right fullscreen-exit-btn d-none"></i><code class="cmfcmfmedia-markdown-highlight">{{ raw }}</code></pre>
     </div>
 </div>
 
