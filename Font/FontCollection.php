@@ -133,7 +133,8 @@ class FontCollection
      * Loads all fonts from the loaders.
      */
     private function load()
-    {        foreach ($this->fontLoaders as $loader) {
+    {
+        foreach ($this->fontLoaders as $loader) {
             foreach ($loader->loadFonts() as $font) {
                 $this->fonts[$font->getId()] = $font;
             }
