@@ -62,7 +62,7 @@ abstract class AbstractFileEntity extends AbstractMediaEntity implements Uploada
         $this->downloadAllowed = true;
     }
 
-    public function getPathToUploadTo(string $defaultPath): string
+    public function getPathToUploadTo(?string $defaultPath): string
     {
         unset($defaultPath);
 

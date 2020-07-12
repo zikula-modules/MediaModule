@@ -72,7 +72,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         return $watermarkImage;
     }
 
-    public function getPathToUploadTo($defaultPath): string
+    public function getPathToUploadTo(?string $defaultPath): string
     {
         unset($defaultPath);
 
