@@ -124,26 +124,20 @@ class SettingsType extends SymfonyAbstractType
                 'label' => $this->translator->trans('Enable media view counter', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'enableMediaViewCounter', false),
-                'attr' => [
-                    'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.', [], 'cmfcmfmediamodule')
             ])
             ->add('enableCollectionViewCounter', CheckboxType::class, [
                 'label' => $this->translator->trans('Enable collection view counter', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'enableCollectionViewCounter', false),
-                'attr' => [
-                    'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => $this->translator->trans('Please note that this will cause an additional database update query per page view. Be also aware that the "updated date" and "updated user" fields will be updated every time as well.', [], 'cmfcmfmediamodule')
             ])
             ->add('soundCloudApiKey', TextType::class, [
                 'label' => $this->translator->trans('SoundCloud "Client ID"', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey'),
-                'attr' => [
-                    'help' => $this->translator->trans('Go to http://soundcloud.com/you/apps/new and create a new application. The name doesn\'t matter. In the next screen, enter the url of your Zikula installation at "Website of your App" and leave "Redirect URI for Authentication" empty. Then save and paste the "Client ID" here.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => $this->translator->trans('Go to http://soundcloud.com/you/apps/new and create a new application. The name doesn\'t matter. In the next screen, enter the url of your Zikula installation at "Website of your App" and leave "Redirect URI for Authentication" empty. Then save and paste the "Client ID" here.', [], 'cmfcmfmediamodule')
             ])
             /*@todo Flickr currently disabled.
             ->add('flickrApiKey', TextType::class, [
@@ -151,45 +145,35 @@ class SettingsType extends SymfonyAbstractType
                'required' => false,
                'empty_data' => null,
                'data' => $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey'),
-               'attr' => [
-                   'help' => $this->translator->trans('Go to https://www.flickr.com/services/apps/create/apply and create a new application. The name doesn\'t matter. Paste the "Key" here (not the "secret key", [], 'cmfcmfmediamodule').')
-               ]
+               'help' => $this->translator->trans('Go to https://www.flickr.com/services/apps/create/apply and create a new application. The name doesn\'t matter. Paste the "Key" here (not the "secret key", [], 'cmfcmfmediamodule').')
             ])*/
             ->add('googleApiKey', TextType::class, [
                 'label' => $this->translator->trans('Google API Developer Key', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey'),
-                'attr' => [
-                    'help' => $this->translator->trans('Go to https://console.developers.google.com/project and create a new project. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> API-Key -> Server-Key". Again, the name does\'t matter. Then paste the API key here.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => $this->translator->trans('Go to https://console.developers.google.com/project and create a new project. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> API-Key -> Server-Key". Again, the name does\'t matter. Then paste the API key here.', [], 'cmfcmfmediamodule')
             ])
             ->add('googleApiOAuthClientID', TextType::class, [
                 'label' => $this->translator->trans('Google API OAuth2 Client ID', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiOAuthClientID'),
-                'attr' => [
-                    'help' => $this->translator->trans('Go to https://console.developers.google.com/project and create a new project. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> OAuth-Client-ID -> Webapplication". Again, the name does\'t matter. Then paste the Client-ID here.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => $this->translator->trans('Go to https://console.developers.google.com/project and create a new project. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> OAuth-Client-ID -> Webapplication". Again, the name does\'t matter. Then paste the Client-ID here.', [], 'cmfcmfmediamodule')
             ])
             ->add('googleApiOAuthClientSecret', TextType::class, [
                 'label' => $this->translator->trans('Google API OAuth2 Client Secret', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiOAuthClientSecret'),
-                'attr' => [
-                    'help' => $this->translator->trans('Use the OAuth Client-Secret you got when creating your OAuth Client-ID.', [], 'cmfcmfmediamodule')
-                ]
+                'help' => $this->translator->trans('Use the OAuth Client-Secret you got when creating your OAuth Client-ID.', [], 'cmfcmfmediamodule')
             ])
             ->add('twitterApiKey', TextType::class, [
                 'label' => $this->translator->trans('Twitter API Consumer Key', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey'),
-                'attr' => [
-                    'help' => $this->translator->trans('Go to https://apps.twitter.com/ and create a new application. The name doesn\'t matter and "Callback URL" should be empty. Then go to "Keys and Access Tokens". At the bottom, click at "Create my access token".', [], 'cmfcmfmediamodule')
-                ]
+                'help' => $this->translator->trans('Go to https://apps.twitter.com/ and create a new application. The name doesn\'t matter and "Callback URL" should be empty. Then go to "Keys and Access Tokens". At the bottom, click at "Create my access token".', [], 'cmfcmfmediamodule')
             ])
             ->add('twitterApiSecret', TextType::class, [
                 'label' => $this->translator->trans('Twitter API Secret', [], 'cmfcmfmediamodule'),

@@ -77,10 +77,12 @@ class CollectionType extends AbstractType
     {
         parent::buildForm($builder, $options);
 
+        $editorClass = 'noeditor';
         $escapingStrategy = $this->variableApi->get('CmfcmfMediaModule', 'descriptionEscapingStrategyForCollection');
         switch ($escapingStrategy) {
             case 'raw':
                 $descriptionHelp = $this->translator->trans('You may use HTML.', [], 'cmfcmfmediamodule');
+                $editorClass = '';
                 break;
             case 'text':
                 $descriptionHelp = $this->translator->trans('Only plaintext allowed.', [], 'cmfcmfmediamodule');
@@ -116,7 +118,8 @@ class CollectionType extends AbstractType
                 'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
                 'required' => false,
                 'attr' => [
-                    'help' => $descriptionHelp
+                    'help' => $descriptionHelp,
+                    'class' => $editorClass
                 ]
             ])
             ->add('categoryAssignments', CategoriesType::class, [

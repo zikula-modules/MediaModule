@@ -79,6 +79,7 @@ abstract class AbstractMediaEntityType extends AbstractType
     {
         parent::buildForm($builder, $options);
 
+        $editorClass = 'noeditor';
         $escapingStrategy = $this->variableApi->get(
             'CmfcmfMediaModule',
             'descriptionEscapingStrategyForMedia'
@@ -90,6 +91,7 @@ abstract class AbstractMediaEntityType extends AbstractType
                     [],
                     'cmfcmfmediamodule'
                 );
+                $editorClass = '';
                 break;
             case 'text':
                 $descriptionHelp = $this->translator->trans(
@@ -110,7 +112,7 @@ abstract class AbstractMediaEntityType extends AbstractType
         }
 
         $hiddenAttr = [
-            'class' => 'hidden',
+            'class' => 'd-none'
         ];
 
         $securityManager = $this->securityManager;
@@ -180,7 +182,8 @@ abstract class AbstractMediaEntityType extends AbstractType
                     'required' => false,
                     'label' => $this->translator->trans('Description', [], 'cmfcmfmediamodule'),
                     'attr' => [
-                        'help' => $descriptionHelp
+                        'help' => $descriptionHelp,
+                        'class' => $editorClass
                     ]
                 ]
             )

@@ -1,18 +1,5 @@
 {% extends '@ZikulaFormExtension/Form/bootstrap_4_zikula_admin_layout.html.twig' %}
 
-{% block form_help -%}
-    {% for attrname, attrvalue in attr %}
-        {% if attrname == 'help' %}
-            <span class="help-block">{{ attrvalue }}</span>
-        {% endif %}
-    {% endfor %}
-{%- endblock form_help %}
-
-{% block form_errors -%}
-    {{ parent() }}
-    {{- block('form_help') -}}
-{%- endblock form_errors %}
-
 {%- block widget_attributes -%}
     {% set tmp = false %}
     {% if attr.help|default %}
@@ -28,8 +15,8 @@
 {%- block cmfcmfmediamodule_font_choice_widget -%}
     {{ pageAddAsset('stylesheet', fontUrl) }}
     {{ block('choice_widget') }}
-    <script type="text/javascript">
-        // Using JavaScript here is extremely ugly. Oh well..
+    <script>
+        {# using JavaScript here is extremely ugly. Oh well... #}
         (function ($) {
             $('#{{ id|e('js') }}').find('.radio label').each(function () {
                 var font = $(this).text().trim();
