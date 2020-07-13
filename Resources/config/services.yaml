@@ -57,5 +57,11 @@ services:
     Cmfcmf\Module\MediaModule\Listener\EntityLifecycleListener:
         tags: ['doctrine.event_subscriber']
 
+    _instanceof:
+        Zikula\ExtensionsModule\ModuleInterface\Content\ContentTypeInterface:
+            bind:
+                $permissionHelper: '@?Zikula\ContentModule\Helper\PermissionHelper'
+                $twigLoader: '@twig.loader'
+
 parameters:
     liip_imagine.cache.signer.class: Cmfcmf\Module\MediaModule\Imagine\Cache\DummySigner
