@@ -60,7 +60,7 @@ class MediaType extends AbstractContentType
      */
     public function getIcon(): string
     {
-        return 'picture-o';
+        return 'image';
     }
 
     /**

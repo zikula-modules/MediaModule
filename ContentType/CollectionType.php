@@ -62,7 +62,7 @@ class CollectionType extends AbstractContentType
      */
     public function getIcon(): string
     {
-        return 'folder-o';
+        return 'folder';
     }
 
     /**
