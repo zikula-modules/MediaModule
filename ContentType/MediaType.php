@@ -68,7 +68,7 @@ class MediaType extends AbstractContentType
      */
     public function getTitle(): string
     {
-        return $this->translator->trans('Media detail', 'cmfcmfmediamodule');
+        return $this->translator->trans('Media detail');
     }
 
     /**
@@ -76,7 +76,7 @@ class MediaType extends AbstractContentType
      */
     public function getDescription(): string
     {
-        return $this->translator->trans('Display a single medium.', 'cmfcmfmediamodule');
+        return $this->translator->trans('Display a single medium.');
     }
 
     /**
@@ -129,7 +129,7 @@ class MediaType extends AbstractContentType
     public function displayEditing(): string
     {
         if (null === $this->data['id'] || empty($this->data['id'])) {
-            return $this->translator->trans('No medium selected.', 'cmfcmfmediamodule');
+            return $this->translator->trans('No medium selected.');
         }
 
         return parent::displayEditing();
