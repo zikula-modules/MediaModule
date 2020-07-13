@@ -159,32 +159,18 @@ class CollectionType extends AbstractContentType
         return FormType::class;
     }
 
-    public function setCollectionRepository(CollectionRepository $collectionRepository)
-    {
+    /**
+     * @required
+     */
+    public function injectAdditions(
+        CollectionRepository $collectionRepository,
+        SecurityManager $securityManager,
+        SelectedTemplateFactory $selectedTemplateFactory,
+        MediaTypeCollection $mediaTypeCollection
+    ): void {
         $this->collectionRepository = $collectionRepository;
-    }
-
-    /**
-     * @param SecurityManager $securityManager
-     */
-    public function setSecurityManager(SecurityManager $securityManager)
-    {
         $this->securityManager = $securityManager;
-    }
-
-    /**
-     * @param SelectedTemplateFactory $selectedTemplateFactory
-     */
-    public function setSelectedTemplateFactory(SelectedTemplateFactory $selectedTemplateFactory)
-    {
         $this->selectedTemplateFactory = $selectedTemplateFactory;
-    }
-
-    /**
-     * @param MediaTypeCollection $mediaTypeCollection
-     */
-    public function setMediaTypeCollection(MediaTypeCollection $mediaTypeCollection)
-    {
         $this->mediaTypeCollection = $mediaTypeCollection;
     }
 

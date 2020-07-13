@@ -22,7 +22,6 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Zikula\ExtensionsModule\ModuleInterface\Content\Form\Type\AbstractContentFormType;
 
 /**
@@ -40,17 +39,10 @@ class MediaType extends AbstractContentFormType
      */
     private $securityManager;
 
-    /**
-     * @param TranslatorInterface    $translator
-     * @param SecurityManager        $securityManager
-     * @param EntityManagerInterface $em
-     */
     public function __construct(
-        TranslatorInterface $translator,
         SecurityManager $securityManager,
         EntityManagerInterface $em
     ) {
-        $this->setTranslator($translator);
         $this->securityManager = $securityManager;
         $this->mediaRepository = $em->getRepository('CmfcmfMediaModule:Media\AbstractMediaEntity');
     }
@@ -62,7 +54,7 @@ class MediaType extends AbstractContentFormType
 
         $mediumOptions = [
             'required' => true,
-            'label' => $this->trans('Medium', 'cmfcmfmediamodule'),
+            'label' => 'Medium',
             'class' => AbstractMediaEntity::class,
             'query_builder' => function (EntityRepository $er) use ($securityManager) {
                 /** @var MediaRepository $er */
@@ -73,7 +65,7 @@ class MediaType extends AbstractContentFormType
 
                 return $qb;
             },
-            'placeholder' => $this->trans('Select medium', 'cmfcmfmediamodule'),
+            'placeholder' => 'Select medium',
             'choice_label' => 'title',
             'multiple' => false
         ];

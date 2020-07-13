@@ -24,7 +24,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Zikula\ExtensionsModule\ModuleInterface\Content\Form\Type\AbstractContentFormType;
 
 /**
@@ -42,17 +41,10 @@ class CollectionType extends AbstractContentFormType
      */
     private $securityManager;
 
-    /**
-     * @param TranslatorInterface    $translator
-     * @param SecurityManager        $securityManager
-     * @param EntityManagerInterface $em
-     */
     public function __construct(
-        TranslatorInterface $translator,
         SecurityManager $securityManager,
         EntityManagerInterface $em
     ) {
-        $this->setTranslator($translator);
         $this->securityManager = $securityManager;
         $this->collectionRepository = $em->getRepository('CmfcmfMediaModule:Collection\CollectionEntity');
     }
@@ -64,7 +56,7 @@ class CollectionType extends AbstractContentFormType
 
         $collectionOptions = [
             'required' => true,
-            'label' => $this->trans('Collection', 'cmfcmfmediamodule'),
+            'label' => 'Collection',
             'class' => CollectionEntity::class,
             'query_builder' => function (EntityRepository $er) use ($securityManager) {
                 /** @var CollectionRepository $er */
@@ -76,21 +68,21 @@ class CollectionType extends AbstractContentFormType
 
                 return $qb;
             },
-            'placeholder' => $this->trans('Select collection', 'cmfcmfmediamodule'),
+            'placeholder' => 'Select collection',
             'choice_label' => 'indentedTitle',
             'multiple' => false
         ];
         $builder
             ->add('id', EntityType::class, $collectionOptions)
             ->add('template', TemplateType::class, [
-                'label' => $this->trans('Display', 'cmfcmfmediamodule'),
+                'label' => 'Display',
             ])
             ->add('showChildCollections', CheckboxType::class, [
-                'label' => $this->trans('Show child collections', 'cmfcmfmediamodule'),
+                'label' => 'Show child collections',
                 'required' => false
             ])
             ->add('showEditAndDownloadLinks', CheckboxType::class, [
-                'label' => $this->trans('Show edit and download links', 'cmfcmfmediamodule'),
+                'label' => 'Show edit and download links',
                 'required' => false
             ])
             ->addModelTransformer(new CallbackTransformer(

@@ -145,29 +145,18 @@ class MediaType extends AbstractContentType
         return FormType::class;
     }
 
-    public function setMediaRepository(MediaRepository $mediaRepository)
-    {
+    /**
+     * @required
+     */
+    public function injectAdditions(
+        MediaRepository $mediaRepository,
+        SecurityManager $securityManager,
+        MediaTypeCollection $mediaTypeCollection,
+        VariableApiInterface $variableApi
+    ): void {
         $this->mediaRepository = $mediaRepository;
-    }
-
-    /**
-     * @param SecurityManager $securityManager
-     */
-    public function setSecurityManager(SecurityManager $securityManager)
-    {
         $this->securityManager = $securityManager;
-    }
-
-    /**
-     * @param MediaTypeCollection $mediaTypeCollection
-     */
-    public function setMediaTypeCollection(MediaTypeCollection $mediaTypeCollection)
-    {
         $this->mediaTypeCollection = $mediaTypeCollection;
-    }
-
-    public function setEnableMediaViewCounter(VariableApiInterface $variableApi)
-    {
         $this->enableMediaViewCounter = $variableApi->get('CmfcmfMediaModule', 'enableMediaViewCounter', false);
     }
 
