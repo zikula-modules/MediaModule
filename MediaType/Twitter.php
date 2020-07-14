@@ -41,7 +41,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getIcon()
     {
-        return 'fa-twitter';
+        return 'fa-dove';
     }
 
     /**

@@ -36,7 +36,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getIcon()
     {
-        return 'fa-youtube';
+        return 'fa-video';
     }
 
     /**

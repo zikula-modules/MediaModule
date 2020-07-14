@@ -36,7 +36,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
      */
     public function getIcon()
     {
-        return 'fa-soundcloud';
+        return 'fa-music';
     }
 
     /**

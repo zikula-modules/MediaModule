@@ -304,7 +304,7 @@ class MediaController extends AbstractController
 
         $em = $this->getDoctrine()->getManager();
 
-        $init = $request->request->get('init', false);
+        $init = $request->request->getBoolean('init', false);
         $mediaType = $this->mediaTypeCollection->getMediaType($mediaType);
         $entity = $this->getDefaultEntity($request, $type, $mediaType, $init, $collection, $projectDir . '/public/uploads');
 
@@ -761,11 +761,11 @@ class MediaController extends AbstractController
         Request $request,
         string $type,
         MediaTypeInterface $mediaType,
-        int $init,
+        bool $init,
         $collection,
         $uploadDir
     ) {
-        if (!(bool) $init) {
+        if (!$init) {
             $entity = $mediaType->getEntityClass();
             $entity = new $entity($this->get('request_stack'), $uploadDir);
 
