@@ -1,6 +1,5 @@
 imports:
   - { resource: 'collectiontemplates.yaml' }
-  - { resource: 'hooks.yaml' }
 
 services:
     _defaults:

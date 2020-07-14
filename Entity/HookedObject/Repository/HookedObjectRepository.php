@@ -27,12 +27,8 @@ class HookedObjectRepository extends ServiceEntityRepository
 
     /**
      * Returns the HookedObject related to the given Hook. If none exists, a new one is created.
-     *
-     * @param Hook $hook
-     *
-     * @return HookedObjectEntity
      */
-    public function getByHookOrCreate(Hook $hook)
+    public function getByHookOrCreate(Hook $hook): HookedObjectEntity
     {
         /** @var HookedObjectEntity $entity */
         $entity = $this->findOneBy([
@@ -47,10 +43,8 @@ class HookedObjectRepository extends ServiceEntityRepository
     /**
      * Saves the given HookedObject if something is hooked to it.
      * Deletes it otherwise.
-     *
-     * @param HookedObjectEntity $hookedObjectEntity
      */
-    public function saveOrDelete(HookedObjectEntity $hookedObjectEntity)
+    public function saveOrDelete(HookedObjectEntity $hookedObjectEntity): void
     {
         $entityManager = $this->getEntityManager();
         if ($hookedObjectEntity->getId()) {
@@ -70,27 +64,21 @@ class HookedObjectRepository extends ServiceEntityRepository
 
     /**
      * Deletes all HookedObjects related to the given module name.
-     *
-     * @param string $name the module name
      */
-    public function deleteAllOfModule($name)
+    public function deleteAllOfModule(string $moduleName)
     {
         $qb = $this->createQueryBuilder('h');
         $qb
-            ->delete('CmfcmfMediaModule:HookedObject\HookedObjectEntity', 'h')
-            ->where($qb->expr()->eq('h.module', $qb->expr()->literal($name)))
+            ->delete(HookedObjectEntity::class, 'h')
+            ->where($qb->expr()->eq('h.module', $qb->expr()->literal($moduleName)))
             ->getQuery()
             ->execute();
     }
 
     /**
      * Checks if something is hooked to the HookedObject.
-     *
-     * @param HookedObjectEntity $hookedObjectEntity
-     *
-     * @return bool
      */
-    private function isSomethingHooked(HookedObjectEntity $hookedObjectEntity)
+    private function isSomethingHooked(HookedObjectEntity $hookedObjectEntity): bool
     {
         return
             !$hookedObjectEntity->getLicenses()->isEmpty() ||

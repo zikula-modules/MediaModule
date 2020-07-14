@@ -14,14 +14,16 @@ declare(strict_types=1);
 namespace Cmfcmf\Module\MediaModule\HookProvider;
 
 use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
+use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
-use Zikula\Bundle\HookBundle\Category\UiHooksCategory;
-use Zikula\Bundle\HookBundle\Hook\ProcessHook;
+use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
+use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareResponse;
 use Zikula\Bundle\HookBundle\HookProviderInterface;
 
-abstract class AbstractUiHooksProvider implements HookProviderInterface
+abstract class AbstractFormAwareHookProvider implements HookProviderInterface
 {
     /**
      * @var TranslatorInterface
@@ -34,18 +36,32 @@ abstract class AbstractUiHooksProvider implements HookProviderInterface
     protected $entityManager;
 
     /**
+     * @var RequestStack
+     */
+    protected $requestStack;
+
+    /**
      * @var Environment
      */
     protected $twig;
 
+    /**
+     * @var SecurityManager
+     */
+    protected $securityManager;
+
     public function __construct(
         TranslatorInterface $translator,
         EntityManagerInterface $entityManager,
-        Environment $twig
+        RequestStack $requestStack,
+        Environment $twig,
+        SecurityManager $securityManager
     ) {
         $this->translator = $translator;
         $this->entityManager = $entityManager;
+        $this->requestStack = $requestStack;
         $this->twig = $twig;
+        $this->securityManager = $securityManager;
     }
 
     public function getOwner(): string
@@ -55,13 +71,13 @@ abstract class AbstractUiHooksProvider implements HookProviderInterface
 
     public function getCategory(): string
     {
-        return UiHooksCategory::NAME;
+        return FormAwareCategory::NAME;
     }
 
     /**
      * Processes the hook deletion by removing the HookedObject.
      */
-    public function processDelete(ProcessHook $hook)
+    public function processDelete(FormAwareResponse $hook)
     {
         $repository = $this->entityManager
             ->getRepository(HookedObjectEntity::class);
