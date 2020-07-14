@@ -126,49 +126,42 @@
 
             <!-- Web selection -->
             <div role="tabpanel" class="tab-pane fade" id="cmfcmfmedia-web">
-                <div class="row">
-                    <!-- Available types -->
-                    <div class="col-sm-3 col-md-2">
-                        <ul class="nav nav-pills nav-stacked">
-                            <li class="active">
-                                <a href="#cmfcmfmedia-web-provider-default" data-toggle="pill">
-                                    {% trans %}Select a service below{% endtrans %}
-                                </a>
-                            </li>
-                            {% for mediaType in webMediaTypes %}
-                                <li>
-                                    <a href="#cmfcmfmedia-web-provider-{{ mediaType.alias }}" data-toggle="pill">
-                                        <i class="fas fa-fw {{ mediaType.icon|e('html_attr') }}"></i> {{ mediaType.displayName }}
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                <ul class="nav nav-pills">
+                    <li class="nav-item">
+                        <a href="#cmfcmfmedia-web-provider-default" class="nav-link active" data-toggle="pill">
+                            {% trans %}Select a service{% endtrans %}
+                        </a>
+                    </li>
+                    {% for mediaType in webMediaTypes %}
+                        <li class="nav-item">
+                            <a href="#cmfcmfmedia-web-provider-{{ mediaType.alias }}" class="nav-link" data-toggle="pill">
+                                <i class="fas fa-fw {{ mediaType.icon|e('html_attr') }}"></i> {{ mediaType.displayName }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="cmfcmfmedia-web-provider-default">
+                        {# Nothing here #}
                     </div>
-                    <div class="col-sm-9 col-md-10">
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="cmfcmfmedia-web-provider-default">
-                                <!-- Nothing here -->
-                            </div>
-                            {% for mediaType in webMediaTypes %}
-                                <div class="tab-pane" id="cmfcmfmedia-web-provider-{{ mediaType.alias }}">
-                                    {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/MediaType/' ~ mediaType.alias[:1]|upper ~ mediaType.alias[1:] ~ '/WebCreation.js')) }}
-                                    <form method="post" action="{{ path('cmfcmfmediamodule_media_create', {type: 'web', mediaType: mediaType.alias, popup: isPopup }) }}">
-                                        <input type="hidden" value="1" name="init" />
-                                        <input type="hidden" name="settings" id="cmfcmfmedia-web-mediatype-{{ mediaType.alias }}-settings" />
+                    {% for mediaType in webMediaTypes %}
+                        <div class="tab-pane" id="cmfcmfmedia-web-provider-{{ mediaType.alias }}">
+                            {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/MediaType/' ~ mediaType.alias[:1]|upper ~ mediaType.alias[1:] ~ '/WebCreation.js')) }}
+                            <form method="post" action="{{ path('cmfcmfmediamodule_media_create', {type: 'web', mediaType: mediaType.alias, popup: isPopup }) }}">
+                                <input type="hidden" value="1" name="init" />
+                                <input type="hidden" name="settings" id="cmfcmfmedia-web-mediatype-{{ mediaType.alias }}-settings" />
 
-                                        {{ mediaType.renderWebCreationTemplate|raw }}
+                                {{ mediaType.renderWebCreationTemplate|raw }}
 
-                                        <div class="table-responsive">
-                                            <table class="table table-striped table-condensed table-hover">
-                                                <thead></thead>
-                                                <tbody id="cmfcmfmedia-mediatype-{{ mediaType.alias }}-results"></tbody>
-                                            </table>
-                                        </div>
-                                    </form>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-condensed table-hover">
+                                        <thead></thead>
+                                        <tbody id="cmfcmfmedia-mediatype-{{ mediaType.alias }}-results"></tbody>
+                                    </table>
                                 </div>
-                            {% endfor %}
+                            </form>
                         </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
             <!-- Pasting -->

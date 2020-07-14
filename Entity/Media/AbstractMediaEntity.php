@@ -348,7 +348,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         return $this->authorAvatarUrl;
     }
 
-    public function setAuthorAvatarUrl(string $authorAvatarUrl): self
+    public function setAuthorAvatarUrl(?string $authorAvatarUrl): self
     {
         $this->authorAvatarUrl = $authorAvatarUrl;
 
@@ -474,6 +474,8 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         foreach ($assignments as $assignment) {
             $this->categoryAssignments->add($assignment);
         }
+
+        return $this;
     }
 
     /**
