@@ -22,11 +22,9 @@ services:
             $permissions: !tagged_iterator cmfcmf_media_module.collection_permission
 
     # Imagine filter
-    cmfcmf_media_module.filter.custom_image_filter:
-        class: Cmfcmf\Module\MediaModule\Imagine\Filter\Loader\CustomImageFilter
-        arguments:
+    Cmfcmf\Module\MediaModule\Imagine\Filter\Loader\CustomImageFilter:
+        bind:
             $imagine: '@liip_imagine'
-            $fontCollection: '@Cmfcmf\Module\MediaModule\Font\FontCollection'
         tags:
             - { name: 'liip_imagine.filter.loader', loader: cmfcmfmediamodule.custom_image_filter }
 

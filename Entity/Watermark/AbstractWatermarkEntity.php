@@ -198,9 +198,9 @@ abstract class AbstractWatermarkEntity
         return $this->relativeSize;
     }
 
-    public function setRelativeSize(int $relativeSize): self
+    public function setRelativeSize(?int $relativeSize): self
     {
-        $this->relativeSize = $relativeSize;
+        $this->relativeSize = ($relativeSize ?? 0);
 
         return $this;
     }

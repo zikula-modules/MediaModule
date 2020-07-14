@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\Imagine\Filter\Loader;
 
+use Cmfcmf\Module\MediaModule\Entity\Watermark\AbstractWatermarkEntity;
 use Cmfcmf\Module\MediaModule\Font\FontCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Imagine\Filter\Basic\Autorotate;
@@ -41,11 +42,6 @@ class CustomImageFilter implements LoaderInterface
      */
     private $fontCollection;
 
-    /**
-     * @param ImagineInterface       $imagine
-     * @param EntityManagerInterface $em
-     * @param FontCollection         $fontCollection
-     */
     public function __construct(
         ImagineInterface $imagine,
         EntityManagerInterface $em,
@@ -57,21 +53,16 @@ class CustomImageFilter implements LoaderInterface
     }
 
     /**
-     * @param ImageInterface $image
-     * @param array          $options
-     *
      * @return ImageInterface
      */
     public function load(ImageInterface $image, array $options = [])
     {
-        $transformation = $this->getTransformation();
+        $transformation = $this->getTransformation($options);
 
         return $transformation->apply($image);
     }
 
     /**
-     * @param array $options
-     *
      * @return Transformation
      */
     protected function getTransformation(array $options = [])
@@ -85,11 +76,12 @@ class CustomImageFilter implements LoaderInterface
             ;
         }
 
-        if (!isset($options['watermark']) || null === $options['watermark'] || !is_array($options['watermark']) || !count($options['watermark'])) {
+        if (!isset($options['watermark']) || null === $options['watermark']) {
             // The image shall not be watermarked.
             return $transformation;
         }
-        $watermark = $this->em->getRepository('CmfcmfMediaModule:Watermark\\AbstractWatermarkEntity')->find($options['watermark']);
+
+        $watermark = $this->em->getRepository(AbstractWatermarkEntity::class)->find($options['watermark']);
         if (null === $watermark) {
             // watermark not found
             return $transformation;
@@ -100,29 +92,28 @@ class CustomImageFilter implements LoaderInterface
 
         // Generate the watermark image.
         // It will already be correctly sized for the thumbnail.
-
         $wWidth = $wHeight = 0;
-        if (isset($options['mode']) && ImageInterface::THUMBNAIL_OUTBOUND === $options['mode']) {
-            $wWidth = $options['width'];
-            $wHeight = $options['height'];
-        } elseif (!isset($options['mode']) || ImageInterface::THUMBNAIL_INSET === $options['mode']) {
+        if (isset($options['mode']) && ImageInterface::THUMBNAIL_OUTBOUND === (int)$options['mode']) {
+            $wWidth = (int)$options['width'];
+            $wHeight = (int)$options['height'];
+        } elseif (!isset($options['mode']) || ImageInterface::THUMBNAIL_INSET === (int)$options['mode']) {
             $imageSize = getimagesize($options['file']);
 
             $ratios = [
                 $options['width'] / $imageSize[0],
                 $options['height'] / $imageSize[1]
             ];
-            $wWidth = min($ratios) * $imageSize[0];
-            $wHeight = min($ratios) * $imageSize[1];
+            $wWidth = (int)(min($ratios) * $imageSize[0]);
+            $wHeight = (int)(min($ratios) * $imageSize[1]);
         } else {
             throw new \LogicException();
         }
 
         // Check whether the image is big enough to be watermarked.
-        if (null !== $watermark['minSizeX'] && $wWidth < $watermark['minSizeX']) {
+        if (null !== $watermark->getMinSizeX() && $wWidth < $watermark->getMinSizeX()) {
             return $transformation;
         }
-        if (null !== $watermark['minSizeY'] && $wHeight < $watermark['minSizeY']) {
+        if (null !== $watermark->getMinSizeY() && $wHeight < $watermark->getMinSizeY()) {
             return $transformation;
         }
 
@@ -133,21 +124,21 @@ class CustomImageFilter implements LoaderInterface
         // it as an offset from the bottom / the right side of the image.
         $x = $watermark->getPositionX();
         $y = $watermark->getPositionY();
-        if ($x < 0) {
+        if (0 > $x) {
             $x += $wWidth - $watermarkSize->getWidth();
         }
-        if ($y < 0) {
+        if (0 > $y) {
             $y += $wHeight - $watermarkSize->getHeight();
         }
 
         // If the watermark still exceeds the image's width or height, resize the watermark.
-        if ($x < 0 || $y < 0 || $x + $watermarkSize->getWidth() > $wWidth || $y + $watermarkSize->getHeight() > $wHeight) {
+        if (0 > $x || 0 > $y || $x + $watermarkSize->getWidth() > $wWidth || $y + $watermarkSize->getHeight() > $wHeight) {
             $xOffset = 0;
-            if ($x < 0) {
+            if (0 > $x) {
                 $xOffset = $x * -1;
             }
             $yOffset = 0;
-            if ($y < 0) {
+            if (0 > $y) {
                 $yOffset = $y * -1;
             }
 
