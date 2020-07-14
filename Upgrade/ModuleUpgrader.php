@@ -124,11 +124,11 @@ class ModuleUpgrader
             ],
             'version-check' => [
                 'text' => $this->translator->trans('Checking installed and available versions', [], 'cmfcmfmediamodule'),
-                'icon' => 'fa-github'
+                'icon' => 'fa-search'
             ],
             'permission-check' => [
                 'text' => $this->translator->trans('Checking file system permissions', [], 'cmfcmfmediamodule'),
-                'icon' => 'fa-files-o'
+                'icon' => 'fa-copy'
             ],
             'download' => [
                 'text' => $this->translator->trans('Downloading new version', [], 'cmfcmfmediamodule'),
@@ -136,11 +136,11 @@ class ModuleUpgrader
             ],
             'zikula-version-check' => [
                 'text' => $this->translator->trans('Checking installed Zikula version', [], 'cmfcmfmediamodule'),
-                'icon' => 'fa-code-fork'
+                'icon' => 'fa-code-branch'
             ],
             'extracting' => [
                 'text' => $this->translator->trans('Extracting new version', [], 'cmfcmfmediamodule'),
-                'icon' => 'fa-file-archive-o'
+                'icon' => 'fa-file-archive'
             ],
             'upgrading' => [
                 'text' => $this->translator->trans('Running upgrade', [], 'cmfcmfmediamodule'),
