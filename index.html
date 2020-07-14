@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Media Module by @cmfcmf</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/agency.css" rel="stylesheet">
+    <link href="css/landing.css" rel="stylesheet">
+
+    <link href="//cdn.rawgit.com/noelboss/featherlight/1.3.4/release/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body id="page-top" class="index">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">Media Module</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#features">Features</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#screenshots">
+                            <span class="hidden-sm">Screenshots</span>
+                            <span class="visible-sm-inline">Screens</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#timeline">Timeline</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#creators">Creators</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href="#issue">
+                            Report
+                            <span class="hidden-sm"> issue</span>
+                            <span class="hidden-sm hidden-md">or request feature</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <!--
+    <header>
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in">A module for Zikula 1.4.3+</div>
+                <div class="intro-heading">Media Module by cmfcmf</div>
+                <a href="#services" class="page-scroll btn btn-xl">Tell Me More</a>
+            </div>
+        </div>
+    </header>
+    -->
+    <div class="intro-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="intro-message">
+                        <h1>Media Module</h1>
+                        <h3>A Zikula 1.4.3+ module by cmfcmf</h3>
+                        <hr class="intro-divider">
+                        <ul class="list-inline intro-social-buttons">
+                            <li>
+                                <a href="https://github.com/cmfcmf/MediaModule/releases/latest" class="btn btn-primary btn-lg"><i class="fa fa-download fa-fw"></i> Download</a>
+                            </li>
+                            <li>
+                                <a href="docs/" class="btn btn-info btn-lg"><i class="fa fa-file-text-o fa-fw"></i> Documentation</a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/cmfcmf/MediaModule" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> Github</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section-a">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Upload all sorts of media</h2>
+                    <p class="lead">
+                        The module supports many media types natively (<strong>images, plaintext, MarkDown,
+                        videos, audio, pdf, &hellip;</strong>) and further types can be added with ease!
+                        Media can be dragged- and dropped and is uploaded in the background.
+                    </p>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <a href="#" data-featherlight="img/screenshots/new-media.png">
+                        <img class="img-responsive img-thumbnail" src="img/screenshots/new-media.png" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-section-b">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Embed and add media from the web</h2>
+                    <p class="lead">Not only can you upload media, you can also search for and embed all kinds of media
+                        from the web! Here are some: <strong>Tweets, YouTube videos, Music, Flickr images, &hellip;</strong>
+                    </p>
+                </div>
+                <div class="col-lg-5 col-sm-pull-6  col-sm-6">
+                    <a href="#" data-featherlight="img/screenshots/new-media-web-deezer.PNG">
+                        <img class="img-responsive img-thumbnail" src="img/screenshots/new-media-web-deezer.PNG" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-section-a">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">Full watermark support</h2>
+                    <p class="lead">You can create text- and image-based watermarks to watermark all uploaded
+                        images. The watermarks scale automatically and can be exchanged at any time. The original
+                        images are preserved.
+                    </p>
+                </div>
+                <div class="col-lg-5 col-lg-offset-2 col-sm-6">
+                    <a href="#" data-featherlight="img/screenshots/media-watermark.jpg">
+                        <img class="img-responsive img-thumbnail" src="img/screenshots/media-watermark.jpg" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content-section-b">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5 col-lg-offset-1 col-sm-push-6  col-sm-6">
+                    <hr class="section-heading-spacer">
+                    <div class="clearfix"></div>
+                    <h2 class="section-heading">A module which just works</h2>
+                    <p class="lead">Rendered MarkDown files? Syntax-highlighted source code? Automatic updates?
+                        Thumbnail generation? Works on mobile? YES. All of this. Read on or download the module already!
+                    </p>
+                </div>
+                <div class="col-lg-5 col-sm-pull-6 col-sm-6">
+                    <a href="https://github.com/cmfcmf/MediaModule/releases/latest"
+                       class="btn btn-primary btn-lg btn-block" style="margin-top: 30px">
+                        <i class="fa fa-fw fa-download fa-5x pull-left"></i>
+                        <h3>Download now</h3>
+                        <div class="clearfix"></div>
+                    </a>
+                    <a href="https://github.com/cmfcmf/MediaModule"
+                       class="btn btn-default btn-lg btn-block text-primary">
+                        <i class="fa fa-fw fa-github fa-5x pull-left"></i>
+                        <h3>Checkout on GitHub</h3>
+                        <div class="clearfix"></div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section id="features">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">More features</h2>
+                    <h3 class="section-subheading text-muted">Read on or download the module already!</h3>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-upload fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Automatic module upgrades!</h4>
+                    <p class="text-muted">
+                        For the first time ever, <strong>a module can upgrade itself with just a single
+                        click</strong>. No need to manually download new versions from GitHub anymore! Receive bug fixes right
+                        when they are ready.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-font fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Full Scribite integration</h4>
+                    <p class="text-muted">
+                        Include and upload media right from Scribite's CKEditor. <strong>This means you can embed
+                        images, tweets, videos, &hellip; right from Scribite.</strong>
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-hospital-o fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Full Hook integration</h4>
+                    <p class="text-muted">
+                        Hook single media objects or entire collections to <em>any</em> Zikula content supporting hooks.
+                    </p>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-download fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">ZIP downloads</h4>
+                    <p class="text-muted">
+                        If you enable it, all media in a collection can be downloaded as ZIP file. Additionally,
+                        every medium can be downloaded at it's own.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-cog fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Automatic metadata extraction!</h4>
+                    <p class="text-muted">
+                        Regardless whether you upload an image, a video or a pdf file: Metadata is extracted on the
+                        fly, filtered and displayed! This includes, but is not limited to: video length and
+                        compression, music genre and artist, image size and flash settings.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-globe fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Beautiful and SEO URLs!</h4>
+                    <p class="text-muted">
+                        All URLs use the new Zikula "Routing", resulting in URLs like
+                        <code>/collections/pictures/cats/f/my-cat</code> as well as
+                        <code>/collections/media/new</code>.
+                    </p>
+                </div>
+            </div>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-sort fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Sortable media and collections</h4>
+                    <p class="text-muted">
+                        All media objects can be sorted inside their collections. Additionally,
+                        all collections can be sorted. It is as easy as dragging
+                        and dropping them! As easy as a piece of cake!
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-newspaper-o fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">No legacy, only the latest bits!</h4>
+                    <p class="text-muted">
+                        The module uses as little of Zikula's legacy code as possible. All templates are using
+                        Bootstrap and Twig. The module is service-based and uses Symfony forms.
+                        This will make it easier to keep up with the core development.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <span class="fa-stack fa-4x">
+                        <i class="fa fa-circle fa-stack-2x text-primary"></i>
+                        <i class="fa fa-legal fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <h4 class="service-heading">Legal tools</h4>
+                    <p class="text-muted">
+                        The module provides you with any features you need these days: Select licenses for every
+                        medium, add attribution and authors.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Grid Section -->
+    <section id="screenshots" class="bg-light-gray">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Screenshots (and more features)</h2>
+                    <h3 class="section-subheading text-muted">Yes! The feature list doesn't end (yet).</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#" data-featherlight="img/screenshots/licenses-view.PNG">
+                        <img src="img/screenshots/licenses-view.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Licenses</h4>
+                        <p class="text-muted">
+                            Create and edit licenses. You can also hook a license to any other
+                            Zikula module using hooks!
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#" data-featherlight="img/screenshots/collection-new.PNG">
+                        <img src="img/screenshots/collection-new.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>HTML, MarkDown or Plaintext</h4>
+                        <p class="text-muted">
+                            Media and collection descriptions can either be plaintext, markdown or HTML (using
+                            Scribite).
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#" data-featherlight="img/screenshots/media-display-pdf.PNG">
+                        <img src="img/screenshots/media-display-pdf.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Live preview of PDF files</h4>
+                        <p class="text-muted">
+                            If your browser supports it, PDF files can be viewed directly on-page.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#" data-featherlight="img/screenshots/media-display-php.PNG">
+                        <img src="img/screenshots/media-display-php.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Automatic syntax highlighting</h4>
+                        <p class="text-muted">
+                            Uploaded plaintext files will be syntax highlighted automatically. Bonus: You can also
+                            view them in fullscreen mode.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#" data-featherlight="img/screenshots/media-display-markdown.PNG">
+                        <img src="img/screenshots/media-display-markdown.PNG" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Rendered MarkDown files</h4>
+                        <p class="text-muted">
+                            Uploaded MarkDown files will be rendered automatically for you.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 portfolio-item">
+                    <a href="#" data-featherlight="img/screenshots/collection-display-grid.jpg">
+                        <img src="img/screenshots/collection-display-grid.jpg" class="img-responsive" alt="">
+                    </a>
+                    <div class="portfolio-caption">
+                        <h4>Multiple collection templates</h4>
+                        <p class="text-muted">
+                            You want your images to be displayed in a slideshow? Or a simple table? Or a grid? Now
+                            worries, three different templates are included.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="timeline">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Timeline</h2>
+                    <h3 class="section-subheading text-muted">How it all came together.</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="timeline">
+                        <li>
+                            <div class="timeline-image" style="background-color: white">
+                                <img class="img-circle img-responsive" src="img/zikula.png" alt="">
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4>Camp Zikula 2014</h4>
+                                    <h4 class="subheading">Discussions about SimpleMedia 2</h4>
+                                </div>
+                                <div class="timeline-body">
+                                    <p class="text-muted">
+                                        Zikula needs a new media module! At this time, I volunteered to work on it
+                                        first, but then didn't find the time.
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-inverted">
+                            <div class="timeline-image" style="background-color: white">
+                                <img class="img-circle img-responsive" src="img/zikula.png" alt="">
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4>Camp Zikula 2015 / Core 1.4.0 </h4>
+                                    <h4 class="subheading">A new Core, but still no media module</h4>
+                                </div>
+                                <div class="timeline-body">
+                                    <p class="text-muted">
+                                        I started to think about working on a new module, using all of the latest Zikula
+                                        1.4.3 features. I wanted to create a module <em>which just works</em>.
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="timeline-image" style="background-color: white">
+                                <img class="img-circle img-responsive" src="img/flowers.JPG" alt="">
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4>Summer 2015</h4>
+                                    <h4 class="subheading">Started working on the module</h4>
+                                </div>
+                                <div class="timeline-body">
+                                    <p class="text-muted">
+                                        I finally started working on it! I didn't tell anyone. I wanted to avoid
+                                        having a half-finished module sitting around. I also discovered many new issues
+                                        in the core while developing. So I quickly came to the decision to require
+                                        Zikula 1.4.3+.
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-inverted">
+                            <div class="timeline-image" style="background-color: white">
+                                <img class="img-circle img-responsive" src="img/original.png" alt="">
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4>October 2015</h4>
+                                    <h4 class="subheading">First release!</h4>
+                                </div>
+                                <div class="timeline-body">
+                                    <p class="text-muted">
+                                        Finally. I wanted to create something working. Something great. And here it is.
+                                    </p>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="timeline-inverted">
+                            <a href="https://github.com/cmfcmf/MediaModule/releases/latest">
+                                <div class="timeline-image" style="padding-top: 14px">
+                                    <h4>
+                                        Download now!
+                                    </h4>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="creators" class="bg-light-gray">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">The creators</h2>
+                    <h3 class="section-subheading text-muted">People who built the module.</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="https://s.gravatar.com/avatar/7ed38fddec9e6f79b68797cceb4577c2?s=300" class="img-responsive img-circle" alt="">
+                        <h4>Christian Flach</h4>
+                        <p class="text-muted">Initial creator</p>
+                        <ul class="list-inline social-buttons">
+                            <li>
+                                <a href="https://github.com/cmfcmf">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="http://christianflach.de">
+                                    <i class="fa fa-globe"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="http://twitter.com/christianmflach">
+                                    <i class="fa fa-twitter"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="img/original.png" class="img-responsive img-circle" alt="">
+                        <h4>GitHub Contributors</h4>
+                        <p class="text-muted">Check 'em out!</p>
+                        <ul class="list-inline social-buttons">
+                            <li>
+                                <a href="https://github.com/cmfcmf/MediaModule/graphs/contributors">
+                                    <i class="fa fa-github"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="team-member">
+                        <img src="img/femalecodertocat.png" class="img-responsive img-circle" alt="">
+                        <h4>You?</h4>
+                        <p class="text-muted">Help out if you can!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <p class="large text-muted">The module is Open Source, so everyone can help! Even if you just found a minor typo, any fix is highly appreciated.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Aside -->
+    <!--
+    <aside class="clients">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-6">
+                    <a href="#">
+                        <img src="img/logos/envato.jpg" class="img-responsive img-centered" alt="">
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="#">
+                        <img src="img/logos/designmodo.jpg" class="img-responsive img-centered" alt="">
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="#">
+                        <img src="img/logos/themeforest.jpg" class="img-responsive img-centered" alt="">
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="#">
+                        <img src="img/logos/creative-market.jpg" class="img-responsive img-centered" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </aside>
+    -->
+    
+    <!-- Contact Section -->
+    <section id="issue">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2 class="section-heading">Report an issue</h2>
+                    <h3 class="section-subheading text-muted">Or request a feature. This requires a GitHub account. Don't you have one? Create one, it's worth it!</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <form action="https://github.com/cmfcmf/MediaModule/issues/new">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Issue title *" required name="title">
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <textarea class="form-control" placeholder="Issue Description *" required name="body"></textarea>
+                                    <p class="help-block text-danger"></p>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-lg-12 text-center">
+                                <div id="success"></div>
+                                <button type="submit" class="btn btn-xl">Create issue</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <span class="copyright">Copyright &copy; Christian Flach 2016</span>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-inline social-buttons">
+                        <li>
+                            <a href="https://github.com/cmfcmf">
+                                <i class="fa fa-github"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://christianflach.de">
+                                <i class="fa fa-globe"></i>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://twitter.com/christianmflach">
+                                <i class="fa fa-twitter"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <ul class="list-inline quicklinks">
+                        <li>
+                            <a href="http://christianflach.de/datenschutz">Datenschutz</a>
+                        </li>
+                        <li>
+                            <a href="http://christianflach.de/impressum">Impressum</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/agency.js"></script>
+
+    <script src="//cdn.rawgit.com/noelboss/featherlight/1.3.4/release/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>
