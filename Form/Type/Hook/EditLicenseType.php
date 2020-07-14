@@ -59,7 +59,6 @@ class EditLicenseType extends AbstractType
         ;
     }
 
-
     public function getBlockPrefix()
     {
         return 'cmfcmfmediamodule_hook_editlicense';
