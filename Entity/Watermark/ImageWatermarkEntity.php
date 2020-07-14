@@ -76,7 +76,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
     {
         unset($defaultPath);
 
-        return $this->dataDirectory . '/cmfcmf-media-module/watermarks';
+        return str_replace('public/', '', $this->dataDirectory) . '/cmfcmf-media-module/watermarks';
     }
 
     public function getPath(): string
@@ -84,7 +84,7 @@ class ImageWatermarkEntity extends AbstractWatermarkEntity implements Uploadable
         return $this->getPathToUploadTo(null) . '/' . $this->fileName;
     }
 
-    public function getFileName(): string
+    public function getFileName(): ?string
     {
         return $this->fileName;
     }
