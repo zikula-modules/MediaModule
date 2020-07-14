@@ -9,7 +9,7 @@ webroot:
 
 
 {% highlight bash %}
-$ phpunit --configuration modules/cmfcmf/media-module/phpunit.xml.dist
+$ phpunit --configuration src/extensions/cmfcmf/media-module/phpunit.xml.dist
 {% endhighlight %}
 
 Tests should now run (and pass, of course).

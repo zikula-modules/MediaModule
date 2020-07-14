@@ -5,8 +5,8 @@ excerpt: "Read how to install and upgrade the module."
 
 ## Installation
 
-1. **Download the module from https://github.com/cmfcmf/MediaModule/releases/latest.**
-2. Extract it to `modules/cmfcmf/media-module` (so that the `media-module` folder contains 
+1. **Download the module from https://github.com/zikula-modules/MediaModule/releases/latest.**
+2. Extract it to `src/extensions/cmfcmf/media-module` (so that the `media-module` folder contains 
    all the files).
 3. Install it from the Extensions Module.
 

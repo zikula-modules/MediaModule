@@ -38,31 +38,23 @@ interface FontInterface
 {
     /**
      * The font title.
-     *
-     * @return string
      */
-    public function getTitle();
+    public function getTitle(): string;
 
     /**
      * The font id. Must be unique!
-     *
-     * @return string
      */
-    public function getId();
+    public function getId(): string;
 
     /**
      * The path to the .ttf file.
-     *
-     * @return string
      */
-    public function getPath();
+    public function getPath(): string;
 
     /**
      * Returns the font name of the corresponding Google font. Returns null if it doesn't exist.
-     *
-     * @return null|string
      */
-    public function getGoogleFontName();
+    public function getGoogleFontName(): ?string;
 }
 ```
 

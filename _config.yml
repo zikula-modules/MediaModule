@@ -2,9 +2,9 @@ title: Media Module Docs
 email: hi@christianflach.de
 description: > # this means to ignore newlines until "baseurl:"
   Documentation for the Zikula Media Module.
-url: "http://christianflach.de/MediaModule"
+url: "https://zikula-modules.github.io/MediaModule/"
 baseurl: "/MediaModule"
-repository: "cmfcmf/MediaModule"
+repository: "zikula-modules/MediaModule"
 
 markdown: kramdown
 highlighter: rouge
