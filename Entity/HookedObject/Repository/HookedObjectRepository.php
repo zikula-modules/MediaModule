@@ -28,7 +28,7 @@ class HookedObjectRepository extends ServiceEntityRepository
     /**
      * Returns the HookedObject related to the given Hook. If none exists, a new one is created.
      */
-    public function getByHookOrCreate(Hook $hook): HookedObjectEntity
+    public function getByHookOrCreate(Hook $hook, ?int $objectId = null): HookedObjectEntity
     {
         /** @var HookedObjectEntity $entity */
         $entity = $this->findOneBy([
@@ -37,7 +37,7 @@ class HookedObjectRepository extends ServiceEntityRepository
             'objectId' => $hook->getId()
         ]);
 
-        return $entity ? $entity : new HookedObjectEntity($hook);
+        return $entity ? $entity : new HookedObjectEntity($hook, $objectId);
     }
 
     /**

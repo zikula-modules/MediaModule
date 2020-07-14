@@ -51,6 +51,8 @@ class MediaFormAwareHookProvider extends AbstractFormAwareHookProvider
      */
     public function edit(FormAwareHook $hook): void
     {
+        $this->saveObjectId($hook->getId());
+
         $repository = $this->entityManager->getRepository(HookedObjectEntity::class);
         $hookedObject = $repository->getByHookOrCreate($hook);
 
@@ -100,7 +102,7 @@ class MediaFormAwareHookProvider extends AbstractFormAwareHookProvider
         }
 
         $repository = $this->entityManager->getRepository(HookedObjectEntity::class);
-        $hookedObject = $repository->getByHookOrCreate($hook);
+        $hookedObject = $repository->getByHookOrCreate($hook, $this->restoreObjectId());
 
         $hookedObject->clearMedia();
         foreach ($entities as $mediaEntity) {

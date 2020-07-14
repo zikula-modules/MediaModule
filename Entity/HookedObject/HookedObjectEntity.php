@@ -110,11 +110,11 @@ class HookedObjectEntity
      */
     private $urlObject;
 
-    public function __construct(Hook $hook)
+    public function __construct(Hook $hook, ?int $objectId = null)
     {
         $this->setModule($hook->getCaller());
         $this->setAreaId($hook->getAreaId());
-        $this->setObjectId($hook->getId());
+        $this->setObjectId($objectId ?? $hook->getId());
         if ($hook instanceof ProcessHook || $hook instanceof DisplayHook) {
             $this->setUrlObject($hook->getUrl());
         }

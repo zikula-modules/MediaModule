@@ -13,14 +13,12 @@ declare(strict_types=1);
 
 namespace Cmfcmf\Module\MediaModule\HookProvider;
 
-use Cmfcmf\Module\MediaModule\Entity\HookedObject\HookedObjectEntity;
 use Cmfcmf\Module\MediaModule\Security\SecurityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 use Zikula\Bundle\HookBundle\Category\FormAwareCategory;
-use Zikula\Bundle\HookBundle\FormAwareHook\FormAwareResponse;
 use Zikula\Bundle\HookBundle\HookProviderInterface;
 
 abstract class AbstractFormAwareHookProvider implements HookProviderInterface
@@ -74,16 +72,13 @@ abstract class AbstractFormAwareHookProvider implements HookProviderInterface
         return FormAwareCategory::NAME;
     }
 
-    /**
-     * Processes the hook deletion by removing the HookedObject.
-     */
-    public function processDelete(FormAwareResponse $hook)
+    protected function saveObjectId(int $objectId): void
     {
-        $repository = $this->entityManager
-            ->getRepository(HookedObjectEntity::class);
-        $hookedObject = $repository->getByHookOrCreate($hook);
+        $this->requestStack->getCurrentRequest()->getSession()->set('mediaHookObjectId', $objectId);
+    }
 
-        $this->entityManager->remove($hookedObject);
-        $this->entityManager->flush();
+    protected function restoreObjectId(): int
+    {
+        return $this->requestStack->getCurrentRequest()->getSession()->get('mediaHookObjectId');
     }
 }

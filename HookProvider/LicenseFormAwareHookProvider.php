@@ -43,6 +43,8 @@ class LicenseFormAwareHookProvider extends AbstractFormAwareHookProvider
      */
     public function edit(FormAwareHook $hook): void
     {
+        $this->saveObjectId($hook->getId());
+
         $repository = $this->entityManager->getRepository(LicenseEntity::class);
         $preferredLicenses = $repository->findBy(['outdated' => false]);
         $outdatedLicenses = $repository->findBy(['outdated' => true]);
@@ -88,7 +90,7 @@ class LicenseFormAwareHookProvider extends AbstractFormAwareHookProvider
         }
 
         $repository = $this->entityManager->getRepository(HookedObjectEntity::class);
-        $hookedObject = $repository->getByHookOrCreate($hook);
+        $hookedObject = $repository->getByHookOrCreate($hook, $this->restoreObjectId());
 
         $hookedObject->clearLicenses();
         foreach ($entities as $licenseEntity) {

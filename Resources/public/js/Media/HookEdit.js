@@ -31,7 +31,7 @@
                     '</td>' +
                     '<td>' +
                         '<button type="button" class="cmfcmfmedia-media-hook-table-remove btn btn-danger btn-sm">' +
-                            '<i class="fa fa-trash-o"></i>' +
+                            '<i class="fa fa-trash-alt"></i>' +
                         '</button>' +
                         '<input type="hidden" value="' + window.CmfcmfMediaModule.Util.htmlAttrEncode(entity.id) +
                             '" name="cmfcmfmediamodule[media][]" />' +
