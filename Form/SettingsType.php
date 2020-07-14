@@ -123,7 +123,8 @@ class SettingsType extends SymfonyAbstractType
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'soundCloudApiKey'),
-                'help' => 'Go to http://soundcloud.com/you/apps/new and create a new application. The name doesn\'t matter. In the next screen, enter the url of your Zikula installation at "Website of your App" and leave "Redirect URI for Authentication" empty. Then save and paste the "Client ID" here.'
+                'help' => 'Create a new application <a href="https://soundcloud.com/you/apps/new" target="_blank">here</a>. The name doesn\'t matter. In the next screen, enter the url of your Zikula installation at "Website of your App" and leave "Redirect URI for Authentication" empty. Then save and paste the "Client ID" here.',
+                'help_html' => true
             ])
             /*@todo Flickr currently disabled.
             ->add('flickrApiKey', TextType::class, [
@@ -131,35 +132,39 @@ class SettingsType extends SymfonyAbstractType
                'required' => false,
                'empty_data' => null,
                'data' => $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey'),
-               'help' => 'Go to https://www.flickr.com/services/apps/create/apply and create a new application. The name doesn\'t matter. Paste the "Key" here (not the "secret key".')
+               'help' => 'Go to https://www.flickr.com/services/apps/create/apply and create a new application. The name doesn\'t matter. Paste the "Key" here (not the "secret key".',
+                'help_html' => true)
             ])*/
             ->add('googleApiKey', TextType::class, [
                 'label' => 'Google API Developer Key',
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiKey'),
-                'help' => 'Go to https://console.developers.google.com/project and create a new project. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> API-Key -> Server-Key". Again, the name does\'t matter. Then paste the API key here.'
+                'help' => 'Create a new project <a href="https://console.developers.google.com/project" target="_blank">here</a>. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> API-Key -> Server-Key". Again, the name does\'t matter. Then paste the API key here.',
+                'help_html' => true
             ])
             ->add('googleApiOAuthClientID', TextType::class, [
                 'label' => 'Google API OAuth2 Client ID',
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiOAuthClientID'),
-                'help' => 'Go to https://console.developers.google.com/project and create a new project. The name and id don\'t matter. Then go to "APIs and Authentication -> APIs" and enable the "YouTube Data API v3". Then go to "APIs and Authentication -> Credentials" and click "Add credentials -> OAuth-Client-ID -> Webapplication". Again, the name does\'t matter. Then paste the Client-ID here.'
+                'help' => 'After you created the project for "Google API Developer Key" above go to "APIs and Authentication -> Credentials" again and click "Add credentials -> OAuth-Client-ID -> Webapplication". Again, the name does\'t matter. Then paste the Client-ID here.',
+                'help_html' => true
             ])
             ->add('googleApiOAuthClientSecret', TextType::class, [
                 'label' => 'Google API OAuth2 Client Secret',
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'googleApiOAuthClientSecret'),
-                'help' => 'Use the OAuth Client-Secret you got when creating your OAuth Client-ID.'
+                'help' => 'Use the OAuth Client Secret you got when creating your OAuth Client ID.'
             ])
             ->add('twitterApiKey', TextType::class, [
                 'label' => 'Twitter API Consumer Key',
                 'required' => false,
                 'empty_data' => null,
                 'data' => $this->variableApi->get('CmfcmfMediaModule', 'twitterApiKey'),
-                'help' => 'Go to https://apps.twitter.com/ and create a new application. The name doesn\'t matter and "Callback URL" should be empty. Then go to "Keys and Access Tokens". At the bottom, click at "Create my access token".'
+                'help' => 'Create a new application <a href="https://apps.twitter.com/" target="_blank">here</a>. The name doesn\'t matter and "Callback URL" should be empty. Then go to "Keys and Access Tokens". At the bottom, click at "Create my access token".',
+                'help_html' => true
             ])
             ->add('twitterApiSecret', TextType::class, [
                 'label' => 'Twitter API Secret',
