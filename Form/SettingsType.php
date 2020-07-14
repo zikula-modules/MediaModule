@@ -132,7 +132,7 @@ class SettingsType extends SymfonyAbstractType
                'required' => false,
                'empty_data' => null,
                'data' => $this->variableApi->get('CmfcmfMediaModule', 'flickrApiKey'),
-               'help' => 'Go to https://www.flickr.com/services/apps/create/apply and create a new application. The name doesn\'t matter. Paste the "Key" here (not the "secret key".',
+               'help' => 'Create a new application <a href="https://www.flickr.com/services/apps/create/apply" target="_blank">here</a>. The name doesn\'t matter. Paste the "Key" here (not the "secret key".',
                 'help_html' => true)
             ])*/
             ->add('googleApiKey', TextType::class, [
@@ -198,7 +198,7 @@ class SettingsType extends SymfonyAbstractType
                     return null;
                 }
 
-                return $em->find('CmfcmfMediaModule:License\LicenseEntity', $modelData);
+                return $em->find(LicenseEntity::class, $modelData);
             }, function ($viewData) {
                 /** @var null|LicenseEntity $viewData */
                 if (null === $viewData) {
