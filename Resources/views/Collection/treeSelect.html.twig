@@ -1,9 +1,0 @@
-{{ pageAddAsset('javascript', zasset('jstree/dist/jstree.min.js'), 98) }}
-{{ pageAddAsset('stylesheet', zasset('jstree/dist/themes/default/style.min.css'), 98) }}
-{{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Collection/TreeSelect.js')) }}
-
-{% if inputName|default %}
-    <input type="hidden" name="{{ inputName|e('html_attr') }}" value="{{ selected|json_encode|e('html_attr') }}" />
-{% endif %}
-<!-- <input type="text" class="form-control" id="cmfcmfmedia-hook-collection-tree-search" /> -->
-<div id="cmfcmfmedia-hook-collection-tree"{% if hookedObject|default %} data-hooked-object-id="{{ hookedObject.id|e('html_attr') }}"{% endif %} data-multiple="{{ multiple|default(true)|e('html_attr') }}"{% if inputName|default %} data-input-name="{{ inputName|e('html_attr') }}"{% endif %}></div>

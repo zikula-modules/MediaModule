@@ -1,7 +1,0 @@
-{% if hookedObjectMedia is not empty %}
-    <h3>{% trans %}Media{% endtrans %}</h3>
-    {% for hookedObjectMedium in hookedObjectMedia %}
-        <h4>{{ hookedObjectMedium.media.title }}</h4>
-        {{ mediaTypeCollection.mediaTypeFromEntity(hookedObjectMedium.media).embedCode(hookedObjectMedium.media, 'medium')|raw }}
-    {% endfor %}
-{% endif %}
