@@ -32,7 +32,7 @@ class Unknown extends AbstractFileMediaType implements UploadableMediaTypeInterf
      */
     public function getIcon()
     {
-        return 'fa-file';
+        return 'fas fa-file';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)
@@ -48,7 +48,7 @@ class Unknown extends AbstractFileMediaType implements UploadableMediaTypeInterf
     /**
      * {@inheritdoc}
      */
-    public function canUpload(File $file)
+    public function canUpload(File $file): int
     {
         return 1;
     }
@@ -56,7 +56,7 @@ class Unknown extends AbstractFileMediaType implements UploadableMediaTypeInterf
     /**
      * {@inheritdoc}
      */
-    public function mightUpload($mimeType, $size, $name)
+    public function mightUpload(string $mimeType, int $size, string $name): int
     {
         return 1;
     }

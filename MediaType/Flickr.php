@@ -36,7 +36,7 @@ class Flickr extends AbstractMediaType implements WebMediaTypeInterface
      */
     public function getIcon()
     {
-        return 'fa-flickr';
+        return 'fab fa-flickr';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)

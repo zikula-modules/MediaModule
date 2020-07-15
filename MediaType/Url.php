@@ -33,13 +33,13 @@ class Url extends AbstractMediaType implements PasteMediaTypeInterface
 
     public function getIcon()
     {
-        return 'fa-external-link-alt';
+        return 'fas fa-external-link-alt';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function matchesPaste($pastedText)
+    public function matchesPaste(string $pastedText): int
     {
         return false !== filter_var($pastedText, FILTER_VALIDATE_URL) ? 1 : 0;
     }
@@ -47,7 +47,7 @@ class Url extends AbstractMediaType implements PasteMediaTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function getEntityFromPaste($pastedText)
+    public function getEntityFromPaste(string $pastedText): AbstractMediaEntity
     {
         $entity = new UrlEntity($this->requestStack, $this->dataDirectory);
         $entity->setUrl($pastedText);

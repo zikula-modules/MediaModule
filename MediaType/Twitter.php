@@ -41,13 +41,13 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getIcon()
     {
-        return 'fa-dove';
+        return 'fab fa-twitter';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function matchesPaste($pastedText)
+    public function matchesPaste(string $pastedText): int
     {
         return false !== $this->extractTweetIdFromPaste($pastedText) ? 10 : 0;
     }
@@ -55,7 +55,7 @@ class Twitter extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     /**
      * {@inheritdoc}
      */
-    public function getEntityFromPaste($pastedText)
+    public function getEntityFromPaste(string $pastedText): AbstractMediaEntity
     {
         $entity = new TwitterEntity($this->requestStack, $this->dataDirectory);
 

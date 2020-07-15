@@ -33,7 +33,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
      */
     public function getIcon()
     {
-        return 'fa-file-alt';
+        return 'fas fa-file-alt';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)
@@ -55,7 +55,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
     /**
      * {@inheritdoc}
      */
-    public function canUpload(File $file)
+    public function canUpload(File $file): int
     {
         $mimeType = $file->getMimeType();
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
@@ -93,7 +93,7 @@ class Plaintext extends AbstractFileMediaType implements UploadableMediaTypeInte
     /**
      * {@inheritdoc}
      */
-    public function mightUpload($mimeType, $size, $name)
+    public function mightUpload(string $mimeType, int $size, string $name): int
     {
         if (in_array($mimeType, $this->getSupportedMimeTypes())) {
             return 4;

@@ -31,13 +31,13 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
      */
     public function getIcon()
     {
-        return 'fa-music';
+        return 'fab fa-deezer';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function matchesPaste($pastedText)
+    public function matchesPaste(string $pastedText): int
     {
         return false !== $this->getParametersFromPastedText($pastedText) ? 10 : 0;
     }
@@ -45,7 +45,7 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
     /**
      * {@inheritdoc}
      */
-    public function getEntityFromPaste($pastedText)
+    public function getEntityFromPaste(string $pastedText): AbstractMediaEntity
     {
         $parameters = $this->getParametersFromPastedText($pastedText);
         if (false === $parameters) {

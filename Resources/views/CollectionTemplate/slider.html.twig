@@ -27,7 +27,7 @@
                     {% if bigThumbnail %}
                         <img data-lazy="{{ bigThumbnail|e('html_attr') }}" />
                     {% else %}
-                        <i class="fas fa-fw fa-5x {{ mediaType.icon|e('html_attr') }}"></i>
+                        <i class="fa-fw fa-5x {{ mediaType.icon|e('html_attr') }}"></i>
                         {{ media|cmfcmfmediamodule_getdescription }}
                     {% endif %}
                 </a>

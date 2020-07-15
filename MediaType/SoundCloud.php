@@ -36,13 +36,13 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
      */
     public function getIcon()
     {
-        return 'fa-music';
+        return 'fab fa-soundcloud';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function matchesPaste($pastedText)
+    public function matchesPaste(string $pastedText): int
     {
         return false !== $this->getTrackFromPastedText($pastedText) ? 10 : 0;
     }
@@ -50,7 +50,7 @@ class SoundCloud extends AbstractMediaType implements WebMediaTypeInterface, Pas
     /**
      * {@inheritdoc}
      */
-    public function getEntityFromPaste($pastedText)
+    public function getEntityFromPaste(string $pastedText): AbstractMediaEntity
     {
         $trackId = $this->getTrackFromPastedText($pastedText);
         if (false === $trackId) {

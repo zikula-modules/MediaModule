@@ -34,7 +34,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
      */
     public function getIcon()
     {
-        return 'fa-image';
+        return 'fas fa-image';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)
@@ -149,7 +149,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     /**
      * {@inheritdoc}
      */
-    public function canUpload(File $file)
+    public function canUpload(File $file): int
     {
         return in_array($file->getMimeType(), $this->getSupportedMimeTypes()) ? 5 : 0;
     }
@@ -169,7 +169,7 @@ class Image extends AbstractFileMediaType implements UploadableMediaTypeInterfac
     /**
      * {@inheritdoc}
      */
-    public function mightUpload($mimeType, $size, $name)
+    public function mightUpload(string $mimeType, int $size, string $name): int
     {
         return in_array($mimeType, $this->getSupportedMimeTypes()) ? 5 : 0;
     }

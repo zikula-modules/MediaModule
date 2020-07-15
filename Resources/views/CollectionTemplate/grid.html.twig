@@ -17,8 +17,8 @@
                 {% if thumbnail %}
                     <img src="{{ thumbnail|e('html_attr') }}" />
                 {% else %}
-                    <span style="line-height: 20px;">{{ media.title }}</span>
-                    <i class="fas fa-fw {{ mediaType.icon|e('html_attr') }}" style="position: absolute; left: 5px; top: 5px;"></i>
+                    <span style="line-height: 20px">{{ media.title }}</span>
+                    <i class="fa-fw {{ mediaType.icon|e('html_attr') }}" style="position: absolute; left: 5px; top: 5px;"></i>
                 {% endif %}
             </a>
         {% endfor %}

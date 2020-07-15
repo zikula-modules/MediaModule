@@ -36,13 +36,13 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
      */
     public function getIcon()
     {
-        return 'fa-video';
+        return 'fab fa-youtube';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function matchesPaste($pastedText)
+    public function matchesPaste(string $pastedText): int
     {
         return false !== $this->extractYouTubeIdAndTypeFromPaste($pastedText) ? 10 : 0;
     }
@@ -50,7 +50,7 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     /**
      * {@inheritdoc}
      */
-    public function getEntityFromPaste($pastedText)
+    public function getEntityFromPaste(string $pastedText): AbstractMediaEntity
     {
         $entity = new YouTubeEntity($this->requestStack, $this->dataDirectory);
 

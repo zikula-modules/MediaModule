@@ -20,17 +20,8 @@ interface PasteMediaTypeInterface
     /**
      * Checks whether or not the media type matches the pasted text. Can return something in between 0 (does not match)
      * and 10.
-     *
-     * @param $pastedText
-     *
-     * @return int
      */
-    public function matchesPaste($pastedText);
+    public function matchesPaste(string $pastedText): int;
 
-    /**
-     * @param string $pastedText
-     *
-     * @return AbstractMediaEntity
-     */
-    public function getEntityFromPaste($pastedText);
+    public function getEntityFromPaste(string $pastedText): AbstractMediaEntity;
 }

@@ -60,7 +60,7 @@
                         <a href="{{ path('cmfcmfmediamodule_media_display', {slug: media.slug, collectionSlug: media.collection.slug})|e('html_attr') }}">
                     {% endif %}
                             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
-                            <i class="fas fa-fw {{ mediaType.icon|e('html_attr') }}"></i>
+                            <i class="fa-fw {{ mediaType.icon|e('html_attr') }}"></i>
                         {{ media.title }}
                     {% if viewMediaPermission %}
                         </a>

@@ -35,7 +35,7 @@
                     </a>
                 {% endfor %}
             </div>
-            <i class="fas fa-fw {{ icon|e('html_attr') }}" style="position: absolute; right: 5px; bottom: 5px;"></i>
+            <i class="fa-fw {{ icon|e('html_attr') }}" style="position: absolute; right: 5px; bottom: 5px;"></i>
         </div>
     </div>
 {% endmacro %}
@@ -67,7 +67,7 @@
                         {% endif %}
                     {% endif %}
                     {% set supportText = supportText ~ child|cmfcmfmediamodule_getdescription %}
-                    {{ macro.box(child.title, supportText, buttons, thumbnail, editCollectionPermission ? child.id : false, 'fa-folder-o', false) }}
+                    {{ macro.box(child.title, supportText, buttons, thumbnail, editCollectionPermission ? child.id : false, 'fas fa-folder', false) }}
                 {% endif %}
             {% endfor %}
         </div>

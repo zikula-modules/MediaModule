@@ -40,7 +40,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
      */
     public function getIcon()
     {
-        return 'fa-align-right';
+        return 'fab fa-markdown';
     }
 
     /**
@@ -72,7 +72,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
     /**
      * {@inheritdoc}
      */
-    public function canUpload(File $file)
+    public function canUpload(File $file): int
     {
         if ('text/plain' === $file->getMimeType()) {
             if ('md' === $file->getExtension() || ($file instanceof UploadedFile && 'md' === $file->getClientOriginalExtension())) {
@@ -86,7 +86,7 @@ class Markdown extends AbstractFileMediaType implements UploadableMediaTypeInter
     /**
      * {@inheritdoc}
      */
-    public function mightUpload($mimeType, $size, $name)
+    public function mightUpload(string $mimeType, int $size, string $name): int
     {
         if ('text/plain' === $mimeType && 'md' === pathinfo($name, PATHINFO_EXTENSION)) {
             return 5;

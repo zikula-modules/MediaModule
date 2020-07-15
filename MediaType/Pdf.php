@@ -33,7 +33,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
      */
     public function getIcon()
     {
-        return 'fa-file-pdf';
+        return 'fas fa-file-pdf';
     }
 
     public function renderFullpage(AbstractMediaEntity $entity)
@@ -50,7 +50,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function canUpload(File $file)
+    public function canUpload(File $file): int
     {
         return in_array($file->getMimeType(), $this->getSupportedMimeTypes()) ? 5 : 0;
     }
@@ -69,7 +69,7 @@ class Pdf extends AbstractFileMediaType implements UploadableMediaTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function mightUpload($mimeType, $size, $name)
+    public function mightUpload(string $mimeType, int $size, string $name): int
     {
         return in_array($mimeType, $this->getSupportedMimeTypes()) ? 5 : 0;
     }
