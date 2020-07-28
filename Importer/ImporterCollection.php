@@ -30,8 +30,6 @@ class ImporterCollection
 
     /**
      * Adds an importer to the collection.
-     *
-     * @param ImporterInterface $importer
      */
     public function addImporter(ImporterInterface $importer)
     {

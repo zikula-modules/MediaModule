@@ -55,7 +55,7 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     protected function getType()
     {
-        $class = get_class($this);
+        $class = static::class;
 
         return mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('Template'));
     }

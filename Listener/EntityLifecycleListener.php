@@ -29,9 +29,6 @@ class EntityLifecycleListener implements EventSubscriber, ContainerAwareInterfac
 {
     use ContainerAwareTrait;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->setContainer($container);

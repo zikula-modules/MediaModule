@@ -101,7 +101,6 @@ class VersionChecker
     }
 
     /**
-     * @param version $currentVersion
      * @param $releases
      *
      * @return bool|array
@@ -122,7 +121,6 @@ class VersionChecker
     }
 
     /**
-     * @param version $currentVersion
      * @param $releases
      *
      * @return bool|array

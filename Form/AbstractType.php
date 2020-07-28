@@ -35,7 +35,7 @@ abstract class AbstractType extends BaseAbstractType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $class = get_class($this);
+        $class = static::class;
         $class = mb_substr($class, mb_strlen('Cmfcmf\\Module\\MediaModule\\Form\\'));
         $class = mb_substr($class, 0, -mb_strlen('Type')) . 'Entity';
 
@@ -49,7 +49,7 @@ abstract class AbstractType extends BaseAbstractType
      */
     public function getBlockPrefix()
     {
-        $class = get_class($this);
+        $class = static::class;
         $class = mb_substr($class, mb_strlen('Cmfcmf\\Module\\MediaModule\\Form\\'));
         $class = str_replace('\\', '_', $class);
 

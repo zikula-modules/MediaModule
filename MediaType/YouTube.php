@@ -85,8 +85,6 @@ class YouTube extends AbstractMediaType implements WebMediaTypeInterface, PasteM
     }
 
     /**
-     * @param AbstractMediaEntity $entity
-     *
      * @return string
      */
     public function renderFullpage(AbstractMediaEntity $entity)

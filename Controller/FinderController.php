@@ -56,8 +56,6 @@ class FinderController extends AbstractController
     /**
      * @Route("/ajax/find", options={"expose" = true})
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function ajaxFindAction(Request $request)

@@ -56,8 +56,6 @@ class Url extends AbstractMediaType implements PasteMediaTypeInterface
     }
 
     /**
-     * @param AbstractMediaEntity $entity
-     *
      * @return string
      */
     public function renderFullpage(AbstractMediaEntity $entity)

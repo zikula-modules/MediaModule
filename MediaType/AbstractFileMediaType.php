@@ -78,7 +78,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
         $options = [
             'thumbnail' => [
                 'size'      => [$width, $height],
-                'mode'      => ($mode ? $mode : ImageInterface::THUMBNAIL_OUTBOUND),
+                'mode'      => ($mode ?: ImageInterface::THUMBNAIL_OUTBOUND),
                 'extension' => null // file extension for thumbnails (jpg, png, gif; null for original file type)
             ],
             'cmfcmfmediamodule.custom_image_filter' => [
@@ -110,7 +110,7 @@ abstract class AbstractFileMediaType extends AbstractMediaType
             }
             $chosenSize = $size;
         }
-        $extension = $forceExtension ? $forceExtension : pathinfo($entity->getFileName(), PATHINFO_EXTENSION);
+        $extension = $forceExtension ?: pathinfo($entity->getFileName(), PATHINFO_EXTENSION);
         $icon = '@CmfcmfMediaModule/Resources/public/images/file-icons/' . $chosenSize . 'px/' . $extension . '.png';
 
         try {

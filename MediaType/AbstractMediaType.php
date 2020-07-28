@@ -46,13 +46,6 @@ abstract class AbstractMediaType implements MediaTypeInterface
      */
     protected $dataDirectory;
 
-    /**
-     * @param Environment      $twig
-     * @param TranslatorInterface  $translator
-     * @param VariableApiInterface $variableApi
-     * @param RequestStack         $requestStack
-     * @param string               $dataDirectory
-     */
     public function __construct(
         Environment $twig,
         TranslatorInterface $translator,
@@ -112,7 +105,7 @@ abstract class AbstractMediaType implements MediaTypeInterface
 
     public function getAlias()
     {
-        $class = get_class($this);
+        $class = static::class;
         $class = explode('\\', $class);
         $class = $class[count($class) - 1];
 

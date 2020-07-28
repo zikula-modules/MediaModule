@@ -60,7 +60,6 @@ class DoctrineListener implements EventSubscriber
     /**
      * @param object        $object
      * @param object        $uow
-     * @param ClassMetadata $meta
      * @param string        $field
      * @param mixed         $value
      * @param bool          $notifyPropertyChanged

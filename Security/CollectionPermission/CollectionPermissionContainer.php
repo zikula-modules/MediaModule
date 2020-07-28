@@ -35,8 +35,6 @@ class CollectionPermissionContainer
 
     /**
      * Adds a new collection permission to the list.
-     *
-     * @param CollectionPermissionInterface $permission
      */
     public function addCollectionPermission(CollectionPermissionInterface $permission)
     {
@@ -61,8 +59,6 @@ class CollectionPermissionContainer
 
     /**
      * Returns the appropriate collection permission for the given entity.
-     *
-     * @param AbstractPermissionEntity $permissionEntity
      *
      * @return CollectionPermissionInterface
      */

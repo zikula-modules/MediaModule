@@ -69,15 +69,6 @@ class TwigExtension extends AbstractExtension
      */
     private $variableApi;
 
-    /**
-     * @param TranslatorInterface          $translator
-     * @param MarkdownExtra                $markdownExtra
-     * @param HookDispatcherInterface      $hookDispatcher
-     * @param SecurityManager              $securityManager
-     * @param VersionChecker               $versionChecker
-     * @param ExtensionRepositoryInterface $extensionRepository
-     * @param VariableApiInterface         $variableApi
-     */
     public function __construct(
         TranslatorInterface $translator,
         MarkdownExtra $markdownExtra,

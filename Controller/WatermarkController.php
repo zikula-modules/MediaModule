@@ -80,7 +80,6 @@ class WatermarkController extends AbstractController
      * @Route("/new/{type}", requirements={"type"="image|text"})
      * @Template("@CmfcmfMediaModule/Watermark/edit.html.twig")
      *
-     * @param Request $request
      * @param $type
      *
      * @return array|RedirectResponse
@@ -126,9 +125,6 @@ class WatermarkController extends AbstractController
     /**
      * @Route("/edit/{id}")
      * @Template("@CmfcmfMediaModule/Watermark/edit.html.twig")
-     *
-     * @param Request                 $request
-     * @param AbstractWatermarkEntity $entity
      *
      * @return array
      */
@@ -193,9 +189,6 @@ class WatermarkController extends AbstractController
     /**
      * @Route("/delete/{id}")
      * @Template("@CmfcmfMediaModule/Watermark/delete.html.twig")
-     *
-     * @param Request                 $request
-     * @param AbstractWatermarkEntity $entity
      *
      * @return array|RedirectResponse
      */

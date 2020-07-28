@@ -70,9 +70,6 @@ class CollectionController extends AbstractController
      * @Route("/new/{slug}", requirements={"slug" = ".+"})
      * @Template("@CmfcmfMediaModule/Collection/edit.html.twig")
      *
-     * @param Request          $request
-     * @param CollectionEntity $parent
-     *
      * @return array|RedirectResponse
      */
     public function newAction(Request $request, CollectionEntity $parent)
@@ -120,9 +117,6 @@ class CollectionController extends AbstractController
     /**
      * @Route("/edit/{slug}", requirements={"slug" = ".+"})
      * @Template("@CmfcmfMediaModule/Collection/edit.html.twig")
-     *
-     * @param Request          $request
-     * @param CollectionEntity $entity
      *
      * @return array
      */
@@ -175,8 +169,6 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/download/{slug}.zip", requirements={"slug"=".+"})
-     *
-     * @param CollectionEntity $entity
      *
      * @return BinaryFileResponse
      */
@@ -243,8 +235,6 @@ class CollectionController extends AbstractController
     /**
      * @Route("/ajax/reorder", options={"expose" = true})
      *
-     * @param Request $request
-     *
      * @return PlainResponse
      */
     public function reorderAction(Request $request)
@@ -290,8 +280,6 @@ class CollectionController extends AbstractController
 
     /**
      * @Route("/show-by-id/{id}", options={"expose" = true})
-     *
-     * @param CollectionEntity $entity
      *
      * @return RedirectResponse
      */

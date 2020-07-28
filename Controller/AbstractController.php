@@ -87,7 +87,6 @@ abstract class AbstractController extends BaseAbstractController
      * @param string            $name
      * @param string            $hookType
      * @param string|null       $id
-     * @param UrlInterface|null $url
      *
      * @return string
      */
@@ -116,7 +115,6 @@ abstract class AbstractController extends BaseAbstractController
      * @param string            $name
      * @param string            $hookType
      * @param string            $id
-     * @param UrlInterface|null $url
      */
     protected function applyProcessHook($name, $hookType, $id, UrlInterface $url = null)
     {
@@ -128,10 +126,8 @@ abstract class AbstractController extends BaseAbstractController
     /**
      * Applies form aware display hooks.
      *
-     * @param Form              $form
      * @param string            $name
      * @param string            $hookType
-     * @param UrlInterface|null $url
      */
     protected function applyFormAwareDisplayHook(Form $form, $name, $hookType, UrlInterface $url = null)
     {
@@ -145,11 +141,9 @@ abstract class AbstractController extends BaseAbstractController
     /**
      * Applies form aware process hooks.
      *
-     * @param Form                $form
      * @param string              $name
      * @param string              $hookType
      * @param object|array|string $formSubject
-     * @param UrlInterface|null   $url
      */
     protected function applyFormAwareProcessHook(Form $form, $name, $hookType, $formSubject, UrlInterface $url = null)
     {
@@ -179,8 +173,6 @@ abstract class AbstractController extends BaseAbstractController
 
     /**
      * Adds an error message to the form.
-     *
-     * @param Form $form
      */
     protected function hookValidationError(Form $form)
     {

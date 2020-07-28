@@ -379,7 +379,7 @@ class CollectionEntity implements Node, Sluggable
         return $this->parent;
     }
 
-    public function setParent(CollectionEntity $parent = null): void
+    public function setParent(self $parent = null): void
     {
         $this->parent = $parent;
     }

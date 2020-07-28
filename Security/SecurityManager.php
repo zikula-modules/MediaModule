@@ -55,12 +55,6 @@ class SecurityManager
      */
     private $collectionPermissionContainer;
 
-    /**
-     * @param TranslatorInterface           $translator
-     * @param PermissionApiInterface        $permissionApi
-     * @param EntityManagerInterface        $em
-     * @param CollectionPermissionContainer $collectionPermissionContainer
-     */
     public function __construct(
         TranslatorInterface $translator,
         PermissionApiInterface $permissionApi,
@@ -129,7 +123,6 @@ class SecurityManager
     /**
      * Check whether the current user has $permLevel access to the specified collection.
      *
-     * @param CollectionEntity $collection
      * @param                  $permLevel
      *
      * @return bool

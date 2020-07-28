@@ -29,9 +29,6 @@ class ModuleListener implements EventSubscriberInterface
      */
     private $em;
 
-    /**
-     * @param EntityManagerInterface $em
-     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -49,8 +46,6 @@ class ModuleListener implements EventSubscriberInterface
 
     /**
      * Called if a module is removed.
-     *
-     * @param ExtensionStateEvent $event
      */
     public function moduleRemoved(ExtensionStateEvent $event)
     {

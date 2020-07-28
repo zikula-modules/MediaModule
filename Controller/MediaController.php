@@ -90,9 +90,6 @@ class MediaController extends AbstractController
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template("@CmfcmfMediaModule/Media/edit.html.twig")
      *
-     * @param Request             $request
-     * @param AbstractMediaEntity $entity
-     *
      * @return array
      */
     public function editAction(
@@ -197,9 +194,6 @@ class MediaController extends AbstractController
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template("@CmfcmfMediaModule/Media/delete.html.twig")
      *
-     * @param Request             $request
-     * @param AbstractMediaEntity $entity
-     *
      * @return array
      */
     public function deleteAction(Request $request, AbstractMediaEntity $entity)
@@ -250,8 +244,6 @@ class MediaController extends AbstractController
      * @Route("/media/new", methods={"GET"})
      * @Template("@CmfcmfMediaModule/Media/new.html.twig")
      *
-     * @param Request $request
-     *
      * @return array
      */
     public function newAction(Request $request)
@@ -283,7 +275,6 @@ class MediaController extends AbstractController
      * @Route("/media/create/{type}/{mediaType}/{collection}", options={"expose"=true})
      * @Template("@CmfcmfMediaModule/Media/create.html.twig")
      *
-     * @param Request $request
      * @param $type
      * @param $mediaType
      * @param null $collection
@@ -348,8 +339,6 @@ class MediaController extends AbstractController
     /**
      * @Route("/media/ajax/matches-paste", methods={"POST"}, options={"expose" = true})
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function matchesPasteAction(Request $request)
@@ -380,8 +369,6 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/media/ajax/reorder", options={"expose" = true})
-     *
-     * @param Request $request
      *
      * @return PlainResponse
      */
@@ -415,8 +402,6 @@ class MediaController extends AbstractController
     /**
      * @Route("/media/ajax/creation-results/web/{mediaType}", methods={"POST"}, options={"expose"=true})
      *
-     * @param Request $request
-     *
      * @return JsonResponse
      */
     public function webCreationAjaxResultsAction(Request $request, $mediaType)
@@ -449,8 +434,6 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/media/ajax/get-media-type", methods={"POST"}, options={"expose"=true})
-     *
-     * @param Request $request
      *
      * @return JsonResponse
      */
@@ -501,8 +484,6 @@ class MediaController extends AbstractController
      * Endpoint for file uploads.
      *
      * @Route("/media/upload", methods={"POST"}, options={"expose"=true})
-     *
-     * @param Request $request
      *
      * @return JsonResponse|Response
      */
@@ -588,9 +569,6 @@ class MediaController extends AbstractController
      * @Route("/media/popup-embed/{id}", methods={"GET"})
      * @Template("@CmfcmfMediaModule/Media/popupEmbed.html.twig")
      *
-     * @param Request $request
-     * @param AbstractMediaEntity $entity
-     *
      * @return array
      */
     public function popupEmbedAction(Request $request, AbstractMediaEntity $entity)
@@ -608,9 +586,6 @@ class MediaController extends AbstractController
 
     /**
      * @Route("/media/embed-data/{id}", methods={"GET"}, options={"expose"=true})
-     *
-     * @param Request $request
-     * @param AbstractMediaEntity $entity
      *
      * @return array
      */
@@ -658,8 +633,6 @@ class MediaController extends AbstractController
      * @Route("/download/{collectionSlug}/f/{slug}", methods={"GET"}, requirements={"collectionSlug" = ".+?"}, options={"expose"=true})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractFileEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      *
-     * @param AbstractFileEntity $entity
-     *
      * @return BinaryFileResponse
      */
     public function downloadAction(Request $request, AbstractFileEntity $entity)
@@ -701,8 +674,6 @@ class MediaController extends AbstractController
      * @Route("/{collectionSlug}/f/{slug}", methods={"GET"}, requirements={"collectionSlug" = ".+?"}, options={"expose" = true})
      * @ParamConverter("entity", class="CmfcmfMediaModule:Media\AbstractMediaEntity", options={"repository_method" = "findBySlugs", "map_method_signature" = true})
      * @Template("@CmfcmfMediaModule/Media/display.html.twig")
-     *
-     * @param AbstractMediaEntity $entity
      *
      * @return array
      */

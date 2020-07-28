@@ -31,8 +31,6 @@ class SecurityGraph extends Graph
     /**
      * Returns all vertices in the specified category.
      *
-     * @param CollectionPermissionCategory $securityCategory
-     *
      * @return Vertices
      */
     public function getVerticesByCategory(CollectionPermissionCategory $securityCategory)
@@ -44,8 +42,6 @@ class SecurityGraph extends Graph
 
     /**
      * Returns all vertices required by the given vertex.
-     *
-     * @param Vertex $vertex
      *
      * @return Vertices
      */
@@ -68,8 +64,6 @@ class SecurityGraph extends Graph
     /**
      * Returns all vertices conflicting with the given vertex.
      *
-     * @param Vertex $vertex
-     *
      * @return Vertices
      */
     public function getConflictedVertices(Vertex $vertex)
@@ -83,8 +77,6 @@ class SecurityGraph extends Graph
 
     /**
      * Return all vertices requiring the given vertex.
-     *
-     * @param Vertex $vertex
      *
      * @return Vertices
      */

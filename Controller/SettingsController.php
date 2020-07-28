@@ -189,8 +189,6 @@ class SettingsController extends AbstractController
      * @Template("@CmfcmfMediaModule/Settings/general.html.twig")
      * @Theme("admin")
      *
-     * @param Request $request
-     *
      * @return array|RedirectResponse
      */
     public function generalAction(Request $request)

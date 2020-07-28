@@ -236,9 +236,9 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
             if (null === $this->authorUrl) {
                 $author = htmlentities($this->author);
             } elseif (null === $this->author) {
-                $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->authorUrl) . '</a>';
+                $author = '<a href="' . htmlentities($this->authorUrl) . '">' . htmlentities($this->authorUrl) . '</a>';
             } else {
-                $author = '<a href="' . htmlentities($this->authorUrl). '">' . htmlentities($this->author) . '</a>';
+                $author = '<a href="' . htmlentities($this->authorUrl) . '">' . htmlentities($this->author) . '</a>';
             }
         } elseif ('raw' === $format) {
             $author = '';
@@ -378,7 +378,7 @@ abstract class AbstractMediaEntity implements Sluggable, Sortable
         MediaTypeCollection $mediaTypeCollection,
         bool $includeCollection = true
     ): array {
-        $class = get_class($this);
+        $class = static::class;
         $type = mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('Entity'));
         $mediaType = $mediaTypeCollection->getMediaTypeFromEntity($this);
 

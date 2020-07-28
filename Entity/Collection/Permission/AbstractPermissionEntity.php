@@ -178,8 +178,6 @@ abstract class AbstractPermissionEntity implements Sortable
      * Make sure at least one of appliedToSelf and appliedToSubCollections is set.
      *
      * @Assert\Callback
-     *
-     * @param ExecutionContextInterface $context
      */
     public function validate(ExecutionContextInterface $context)
     {

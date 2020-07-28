@@ -31,9 +31,6 @@ class ImportType extends SymfonyAbstractType
      */
     private $securityManager;
 
-    /**
-     * @param SecurityManager $securityManager
-     */
     public function __construct(
         SecurityManager $securityManager
     ) {
