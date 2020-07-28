@@ -70,28 +70,21 @@ abstract class AbstractController extends BaseAbstractController
 
     /**
      * Notifies subscribers of the given hook.
-     *
-     * @param string $name Hook event name
-     * @param Hook   $hook Hook interface
-     *
-     * @return Hook
      */
-    protected function dispatchHooks($name, Hook $hook)
+    protected function dispatchHooks(string $eventName, Hook $hook): Hook
     {
-        return $this->hookDispatcher->dispatch($name, $hook);
+        return $this->hookDispatcher->dispatch($eventName, $hook);
     }
 
     /**
      * Get the display hook content for the given hook.
-     *
-     * @param string            $name
-     * @param string            $hookType
-     * @param string|null       $id
-     *
-     * @return string
      */
-    protected function getDisplayHookContent($name, $hookType, $id = null, UrlInterface $url = null)
-    {
+    protected function getDisplayHookContent(
+        string $name,
+        string $hookType,
+        string $id = null,
+        UrlInterface $url = null
+    ): string {
         $eventName = 'cmfcmfmediamodule.ui_hooks.' . $name . '.' . $hookType;
         $hook = new DisplayHook($id, $url);
         $this->hookDispatcher->dispatch($eventName, $hook);
@@ -111,13 +104,13 @@ abstract class AbstractController extends BaseAbstractController
 
     /**
      * Applies process hooks.
-     *
-     * @param string            $name
-     * @param string            $hookType
-     * @param string            $id
      */
-    protected function applyProcessHook($name, $hookType, $id, UrlInterface $url = null)
-    {
+    protected function applyProcessHook(
+        string $name,
+        string $hookType,
+        string $id,
+        UrlInterface $url = null
+    ): void {
         $eventName = 'cmfcmfmediamodule.ui_hooks.' . $name . '.' . $hookType;
         $hook = new ProcessHook($id, $url);
         $this->dispatchHooks($eventName, $hook);
@@ -125,12 +118,13 @@ abstract class AbstractController extends BaseAbstractController
 
     /**
      * Applies form aware display hooks.
-     *
-     * @param string            $name
-     * @param string            $hookType
      */
-    protected function applyFormAwareDisplayHook(Form $form, $name, $hookType, UrlInterface $url = null)
-    {
+    protected function applyFormAwareDisplayHook(
+        Form $form,
+        string $name,
+        string $hookType,
+        UrlInterface $url = null
+    ): Hook {
         $eventName = 'cmfcmfmediamodule.form_aware_hook.' . $name . '.' . $hookType;
         $hook = new FormAwareHook($form);
         $this->dispatchHooks($eventName, $hook);
@@ -141,12 +135,15 @@ abstract class AbstractController extends BaseAbstractController
     /**
      * Applies form aware process hooks.
      *
-     * @param string              $name
-     * @param string              $hookType
      * @param object|array|string $formSubject
      */
-    protected function applyFormAwareProcessHook(Form $form, $name, $hookType, $formSubject, UrlInterface $url = null)
-    {
+    protected function applyFormAwareProcessHook(
+        Form $form,
+        string $name,
+        string $hookType,
+        $formSubject,
+        UrlInterface $url = null
+    ): void {
         $formResponse = new FormAwareResponse($form, $formSubject, $url);
         $eventName = 'cmfcmfmediamodule.form_aware_hook.' . $name . '.' . $hookType;
 
@@ -155,13 +152,8 @@ abstract class AbstractController extends BaseAbstractController
 
     /**
      * Checks whether or not the hook validates.
-     *
-     * @param string $name
-     * @param string $hookType
-     *
-     * @return bool
      */
-    protected function hookValidates($name, $hookType)
+    protected function hookValidates(string $name, string $hookType): bool
     {
         $eventName = 'cmfcmfmediamodule.ui_hooks.' . $name . '.' . $hookType;
         $validationHook = new ValidationHook();
