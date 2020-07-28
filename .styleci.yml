@@ -13,7 +13,6 @@ enabled:
   - multiline_comment_opening_closing
   - no_null_property_initialization
   - no_php4_constructor
-  - no_unneeded_final_method
   - no_useless_else
   - php_unit_mock
   - php_unit_namespaced
