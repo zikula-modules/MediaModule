@@ -45,8 +45,6 @@ class FontCollection
 
     /**
      * Adds a font loader to the collection.
-     *
-     * @param FontLoaderInterface $fontLoader
      */
     public function addFontLoader(FontLoaderInterface $fontLoader)
     {

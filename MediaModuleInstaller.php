@@ -129,12 +129,14 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     ->getQuery()
                     ->execute()
                 ;
+                // no break
             case '1.0.1':
             case '1.0.2':
             case '1.0.3':
             case '1.0.4':
             case '1.0.5':
             /** @noinspection PhpMissingBreakStatementInspection */
+            // no break
             case '1.0.6':
                 $this->schemaTool->create([
                     AbstractPermissionEntity::class,
@@ -174,6 +176,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $this->entityManager->find(CollectionEntity::class, 1),
                     $rootCollection
                 );
+                // no break
             case '1.1.0':
             case '1.1.1':
             case '1.1.2':
@@ -195,6 +198,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                 ]);
 
                 $this->createCategoryRegistries();
+                // no break
             case '1.2.0':
             case '1.2.1':
             case '1.2.2':
@@ -215,6 +219,7 @@ class MediaModuleInstaller extends AbstractExtensionInstaller
                     $stmt = $connection->prepare($sql);
                     $stmt->execute();
                 }
+                // no break
             case '1.3.0':
             case '2.0.0':
                 // @todo change datadir to public/uploads in media entities
@@ -371,9 +376,6 @@ TXT;
 
     /**
      * Creates the basic permission scheme.
-     *
-     * @param CollectionEntity $temporaryUploadCollection
-     * @param CollectionEntity $rootCollection
      */
     private function createPermissions(CollectionEntity $temporaryUploadCollection, CollectionEntity $rootCollection)
     {

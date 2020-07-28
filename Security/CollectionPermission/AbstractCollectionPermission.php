@@ -33,10 +33,6 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
      */
     protected $currentUserApi;
 
-    /**
-     * @param TranslatorInterface     $translator
-     * @param CurrentUserApiInterface $currentUserApi
-     */
     public function __construct(
         TranslatorInterface $translator,
         CurrentUserApiInterface $currentUserApi
@@ -66,7 +62,7 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
      */
     protected function getType()
     {
-        $class = get_class($this);
+        $class = static::class;
 
         return mb_substr($class, mb_strrpos($class, '\\') + 1, -mb_strlen('CollectionPermission'));
     }
@@ -80,7 +76,6 @@ abstract class AbstractCollectionPermission implements CollectionPermissionInter
     }
 
     /**
-     * @param QueryBuilder $qb
      * @param              $entity
      * @param              $type
      * @param              $value

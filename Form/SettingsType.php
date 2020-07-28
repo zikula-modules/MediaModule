@@ -200,7 +200,7 @@ class SettingsType extends SymfonyAbstractType
 
                 return $em->find(LicenseEntity::class, $modelData);
             }, function ($viewData) {
-                /** @var null|LicenseEntity $viewData */
+                /** @var LicenseEntity|null $viewData */
                 if (null === $viewData) {
                     return null;
                 }

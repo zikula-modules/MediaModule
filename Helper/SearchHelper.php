@@ -42,10 +42,6 @@ class SearchHelper implements SearchableInterface
      */
     private $securityManager;
 
-    /**
-     * @param RequestStack    $requestStack
-     * @param SecurityManager $securityManager
-     */
     public function __construct(
         RequestStack $requestStack,
         SecurityManager $securityManager
@@ -116,12 +112,11 @@ class SearchHelper implements SearchableInterface
     /**
      * Construct a QueryBuilder Where orX|andX Expr instance.
      *
-     * @param QueryBuilder $qb
      * @param string[] $words  List of words to query for
      * @param string[] $fields List of fields to include into query
      * @param string $searchtype AND|OR|EXACT
      *
-     * @return null|Composite
+     * @return Composite|null
      */
     protected function formatWhere(QueryBuilder $qb, array $words = [], array $fields = [], $searchtype = 'AND')
     {

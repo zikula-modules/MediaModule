@@ -42,9 +42,6 @@ class MediaTypeController extends AbstractController
     /**
      * @Route("/youtube/upload/{id}")
      *
-     * @param VideoEntity $entity
-     * @param Request     $request
-     *
      * @return Response
      */
     public function youtubeUploadAction(VideoEntity $entity, Request $request)
@@ -85,7 +82,7 @@ class MediaTypeController extends AbstractController
 
         if ($request->query->has('code')) {
             if ((string) ($request->getSession()->get('cmfcmfmediamodule_youtube_oauth_state')) !== (string) ($request->query->get('state'))) {
-                die('The session state did not match.');
+                exit('The session state did not match.');
             }
 
             $client->authenticate($request->query->get('code'));
@@ -163,7 +160,7 @@ END;
 
             // Read the media file and upload it chunk by chunk.
             $status = false;
-            $handle = fopen($videoPath, 'rb');
+            $handle = fopen($videoPath, 'r');
             while (!$status && !feof($handle)) {
                 $chunk = fread($handle, $chunkSizeBytes);
                 $status = $media->nextChunk($chunk);
@@ -200,8 +197,6 @@ END;
     }
 
     /**
-     * @param VideoEntity $entity
-     *
      * @return Form|FormInterface
      */
     private function buildYouTubeUploadForm(VideoEntity $entity)
@@ -222,7 +217,6 @@ END;
     }
 
     /**
-     * @param VideoEntity $entity
      * @param string      $locale
      *
      * @return Google_Service_YouTube_VideoSnippet

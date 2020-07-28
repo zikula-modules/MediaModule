@@ -166,9 +166,6 @@ class Deezer extends AbstractMediaType implements WebMediaTypeInterface, PasteMe
         throw new \LogicException();
     }
 
-    /**
-     * @param DeezerEntity $entity
-     */
     public function addExtraData(DeezerEntity $entity)
     {
         if ('track' === $entity->getMusicType() || 'album' === $entity->getMusicType()) {

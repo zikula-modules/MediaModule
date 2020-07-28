@@ -75,8 +75,6 @@ class CollectionBlock extends AbstractBlockHandler
     /**
      * Display block.
      *
-     * @param array $properties
-     *
      * @return string|void The rendered block
      */
     public function display(array $properties): string

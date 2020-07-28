@@ -55,8 +55,6 @@ class MediaTypeCollection
     }
 
     /**
-     * @param File $file
-     *
      * @return MediaTypeInterface|UploadableMediaTypeInterface|null
      */
     public function getBestUploadableMediaTypeForFile(File $file)
@@ -106,8 +104,6 @@ class MediaTypeCollection
     }
 
     /**
-     * @param AbstractMediaEntity $entity
-     *
      * @return MediaTypeInterface
      */
     public function getMediaTypeFromEntity(AbstractMediaEntity $entity)

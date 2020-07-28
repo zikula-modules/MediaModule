@@ -46,7 +46,7 @@ class PHPIniHelper
         $base = log($size, 1024);
         $suffixes = ['', 'K', 'M', 'G', 'T'];
 
-        return round(pow(1024, $base - floor($base)), $precision) . $suffixes[(int)floor($base)] . 'B';
+        return round(1024 ** ($base - floor($base)), $precision) . $suffixes[(int)floor($base)] . 'B';
     }
 
     /**
@@ -71,14 +71,18 @@ class PHPIniHelper
             case 'P':
                 $iValue *= 1024;
             /** @noinspection PhpMissingBreakStatementInspection */
+            // no break
             case 'T':
                 $iValue *= 1024;
             /** @noinspection PhpMissingBreakStatementInspection */
+            // no break
             case 'G':
                 $iValue *= 1024;
             /** @noinspection PhpMissingBreakStatementInspection */
+            // no break
             case 'M':
                 $iValue *= 1024;
+                // no break
             case 'K':
                 $iValue *= 1024;
                 break;

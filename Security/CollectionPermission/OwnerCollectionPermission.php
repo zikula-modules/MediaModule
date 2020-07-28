@@ -45,7 +45,7 @@ class OwnerCollectionPermission extends AbstractCollectionPermission
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
-        if ('cli' === php_sapi_name() || !$this->currentUserApi->isLoggedIn()) {
+        if ('cli' === PHP_SAPI || !$this->currentUserApi->isLoggedIn()) {
             return null;
         }
 

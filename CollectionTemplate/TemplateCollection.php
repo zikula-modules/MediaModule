@@ -33,8 +33,6 @@ class TemplateCollection
 
     /**
      * Adds a collection template to the template list.
-     *
-     * @param TemplateInterface $template
      */
     public function addCollectionTemplate(TemplateInterface $template)
     {

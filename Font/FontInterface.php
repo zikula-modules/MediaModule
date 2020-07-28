@@ -42,7 +42,7 @@ interface FontInterface
     /**
      * Returns the font name of the corresponding Google font. Returns null if it doesn't exist.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getGoogleFontName();
 }

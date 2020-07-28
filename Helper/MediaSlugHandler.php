@@ -22,8 +22,6 @@ class MediaSlugHandler implements SlugHandlerInterface
 {
     /**
      * Construct the slug handler.
-     *
-     * @param SluggableListener $sluggable
      */
     public function __construct(SluggableListener $sluggable)
     {
@@ -34,8 +32,6 @@ class MediaSlugHandler implements SlugHandlerInterface
      * is made whether or not the slug needs to be
      * recalculated.
      *
-     * @param SluggableAdapter $ea
-     * @param array            $config
      * @param object           $object
      * @param string           $slug
      * @param bool             $needToChangeSlug
@@ -54,8 +50,6 @@ class MediaSlugHandler implements SlugHandlerInterface
     /**
      * Callback on slug handlers right after the slug is built.
      *
-     * @param SluggableAdapter $ea
-     * @param array            $config
      * @param object           $object
      * @param string           $slug
      */
@@ -66,8 +60,6 @@ class MediaSlugHandler implements SlugHandlerInterface
     /**
      * Callback for slug handlers on slug completion.
      *
-     * @param SluggableAdapter $ea
-     * @param array            $config
      * @param object           $object
      * @param string           $slug
      */
@@ -85,9 +77,6 @@ class MediaSlugHandler implements SlugHandlerInterface
 
     /**
      * Validate handler options.
-     *
-     * @param array         $options
-     * @param ClassMetadata $meta
      */
     public static function validate(array $options, ClassMetadata $meta)
     {

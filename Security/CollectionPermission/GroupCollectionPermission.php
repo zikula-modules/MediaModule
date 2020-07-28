@@ -30,11 +30,6 @@ class GroupCollectionPermission extends AbstractCollectionPermission
      */
     protected $groupRepository;
 
-    /**
-     * @param TranslatorInterface      $translator
-     * @param CurrentUserApiInterface  $currentUserApi
-     * @param GroupRepositoryInterface $groupRepository
-     */
     public function __construct(
         TranslatorInterface $translator,
         CurrentUserApiInterface $currentUserApi,
@@ -81,7 +76,7 @@ class GroupCollectionPermission extends AbstractCollectionPermission
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
-        if ('cli' === php_sapi_name()) {
+        if ('cli' === PHP_SAPI) {
             return null;
         }
 

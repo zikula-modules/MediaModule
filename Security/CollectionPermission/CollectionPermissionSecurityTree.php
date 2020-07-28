@@ -100,7 +100,6 @@ class CollectionPermissionSecurityTree
     /**
      * Creates the permission graph.
      *
-     * @param TranslatorInterface $translator
      * @param 'cmfcmfmediamodule'
      *
      * @return SecurityGraph
@@ -268,7 +267,6 @@ class CollectionPermissionSecurityTree
     /**
      * Get a list of permission categories.
      *
-     * @param TranslatorInterface $translator
      * @param 'cmfcmfmediamodule'
      *
      * @return CollectionPermissionCategory[]

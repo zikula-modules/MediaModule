@@ -109,6 +109,7 @@ class ArchiveEntity extends AbstractFileEntity
                     $i++;
                 }
                 $rar->close();
+                // no break
             default:
                 throw new \LogicException();
         }

@@ -34,10 +34,6 @@ class ThirdPartyListener implements EventSubscriberInterface
      */
     protected $requestStack;
 
-    /**
-     * @param Filesystem   $filesystem
-     * @param RequestStack $requestStack
-     */
     public function __construct(Filesystem $filesystem, RequestStack $requestStack)
     {
         $this->filesystem = $filesystem;

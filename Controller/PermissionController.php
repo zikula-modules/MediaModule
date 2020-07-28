@@ -70,9 +70,6 @@ class PermissionController extends AbstractController
      * @Route("/show/{slug}", requirements={"slug" = ".+?"})
      * @Template("@CmfcmfMediaModule/Permission/view.html.twig")
      *
-     * @param Request          $request
-     * @param CollectionEntity $collectionEntity
-     *
      * @return array
      */
     public function viewAction(
@@ -105,10 +102,7 @@ class PermissionController extends AbstractController
      * @Route("/new/{type}/{collection}/{afterPermission}", options={"expose"="true"})
      * @Template("@CmfcmfMediaModule/Permission/edit.html.twig")
      *
-     * @param Request                  $request
      * @param string                   $type
-     * @param CollectionEntity         $collection
-     * @param AbstractPermissionEntity $afterPermission
      *
      * @return array|RedirectResponse
      */
@@ -169,9 +163,6 @@ class PermissionController extends AbstractController
      * @Route("/edit/{id}")
      * @Template("@CmfcmfMediaModule/Permission/edit.html.twig")
      *
-     * @param Request                  $request
-     * @param AbstractPermissionEntity $permissionEntity
-     *
      * @return array
      */
     public function editAction(Request $request, AbstractPermissionEntity $permissionEntity)
@@ -218,9 +209,6 @@ class PermissionController extends AbstractController
      * @Route("/delete/{id}")
      * @Template("@CmfcmfMediaModule/Permission/delete.html.twig")
      *
-     * @param Request                  $request
-     * @param AbstractPermissionEntity $permissionEntity
-     *
      * @return array|RedirectResponse
      */
     public function deleteAction(Request $request, AbstractPermissionEntity $permissionEntity)
@@ -253,7 +241,6 @@ class PermissionController extends AbstractController
      * )
      * @ParamConverter("permissionEntity", class="CmfcmfMediaModule:Collection\Permission\AbstractPermissionEntity", options={"id" = "permissionId"})
      *
-     * @param AbstractPermissionEntity $permissionEntity
      * @param int                      $permissionVersion
      * @param int                      $newIndex
      *
@@ -298,8 +285,6 @@ class PermissionController extends AbstractController
     }
 
     /**
-     * @param CollectionEntity $collectionEntity
-     *
      * @return QueryBuilder
      */
     private function getPermissionsOfCollectionAndParentCollectionsQueryBuilder(
@@ -324,7 +309,6 @@ class PermissionController extends AbstractController
     }
 
     /**
-     * @param CollectionEntity         $collectionEntity
      * @param AbstractPermissionEntity $permissionEntity
      *
      * @return string

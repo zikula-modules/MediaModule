@@ -31,9 +31,6 @@ class FontType extends AbstractType
      */
     private $fontCollection;
 
-    /**
-     * @param FontCollection $fontCollection
-     */
     public function __construct(FontCollection $fontCollection)
     {
         $this->fontCollection = $fontCollection;

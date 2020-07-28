@@ -47,7 +47,6 @@ class ImportController extends AbstractController
      * @Template("@CmfcmfMediaModule/Import/execute.html.twig")
      * @Theme("admin")
      *
-     * @param Request $request
      * @param $importer
      *
      * @return array

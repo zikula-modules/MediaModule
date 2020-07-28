@@ -93,7 +93,7 @@ abstract class AbstractImporter implements ImporterInterface
      */
     private function getType()
     {
-        $type = get_class($this);
+        $type = static::class;
         $type = mb_substr($type, mb_strrpos($type, '\\') + 1, -mb_strlen('Importer'));
 
         return $type;

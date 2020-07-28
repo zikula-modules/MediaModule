@@ -34,7 +34,7 @@ class Font implements FontInterface
     private $path;
 
     /**
-     * @var null|string
+     * @var string|null
      */
     private $googleFontName;
 

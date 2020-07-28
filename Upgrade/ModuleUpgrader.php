@@ -80,13 +80,6 @@ class ModuleUpgrader
     /**
      * ModuleUpgrader constructor.
      *
-     * @param TranslatorInterface          $translator
-     * @param Filesystem                   $filesystem
-     * @param EventDispatcherInterface     $eventDispatcher
-     * @param ExtensionRepositoryInterface $extensionRepository
-     * @param BundleSyncHelper             $bundleSyncHelper
-     * @param ExtensionHelper              $extensionHelper
-     * @param CacheClearer                 $cacheClearer
      * @param string                       $kernelCacheDir
      * @param string                       $kernelRootDir
      */
@@ -153,7 +146,6 @@ class ModuleUpgrader
      * Execute the upgrade.
      *
      * @param string         $step           The step to execute
-     * @param VersionChecker $versionChecker
      *
      * @return bool Whether or not the upgrade is done
      */
@@ -323,8 +315,6 @@ class ModuleUpgrader
     }
 
     /**
-     * @param VersionChecker $versionChecker
-     *
      * @return array The release to upgrade to
      */
     private function getReleaseToUpgradeTo(VersionChecker $versionChecker)

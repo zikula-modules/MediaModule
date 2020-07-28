@@ -31,11 +31,6 @@ class UserCollectionPermission extends AbstractCollectionPermission
      */
     protected $userRepository;
 
-    /**
-     * @param TranslatorInterface     $translator
-     * @param CurrentUserApiInterface $currentUserApi
-     * @param UserRepositoryInterface $userRepository
-     */
     public function __construct(
         TranslatorInterface $translator,
         CurrentUserApiInterface $currentUserApi,
@@ -78,7 +73,7 @@ class UserCollectionPermission extends AbstractCollectionPermission
      */
     public function getApplicablePermissionsExpression(QueryBuilder &$qb, $permissionAlias)
     {
-        if ('cli' === php_sapi_name()) {
+        if ('cli' === PHP_SAPI) {
             return null;
         }
 

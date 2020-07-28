@@ -30,7 +30,6 @@ class PermissionRepository extends ServiceEntityRepository
      *
      * It also makes sure that there isn't a goOn = 0 entity above a locked entity.
      *
-     * @param AbstractPermissionEntity $permissionEntity
      * @param bool                     $fixPosition      Whether or not the position of the permission
      *                                                   shall be automatically fixed. If false, an exception will be thrown.
      */
@@ -60,7 +59,7 @@ class PermissionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return null|AbstractPermissionEntity
+     * @return AbstractPermissionEntity|null
      */
     private function getLockedPermissionWithHighestPosition()
     {
