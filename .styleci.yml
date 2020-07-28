@@ -6,8 +6,6 @@ enabled:
   - combine_consecutive_issets
   - combine_consecutive_unsets
   - declare_strict_types
-  - dir_constant
-  - ereg_to_preg
   - escape_implicit_backslashes
   - explicit_indirect_variable
   - explicit_string_variable
@@ -29,6 +27,8 @@ enabled:
 disabled:
   - cast_spaces
   - function_declaration
+  - native_constant_invocation_symfony
+  - native_function_invocation_symfony
   - no_blank_lines_after_phpdoc
   - no_blank_lines_after_throw
   - php_unit_fqcn_annotation
