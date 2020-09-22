@@ -30,7 +30,7 @@ class FinderController extends AbstractController
      * @Route("/choose", options={"expose" = true})
      * @Template("@CmfcmfMediaModule/Finder/chooseMethod.html.twig")
      */
-    public function chooseMethodAction()
+    public function chooseMethod()
     {
         return [];
     }
@@ -39,7 +39,7 @@ class FinderController extends AbstractController
      * @Route("/popup/choose/collection", options={"expose" = true})
      * @Template("@CmfcmfMediaModule/Finder/popupChooseCollections.html.twig")
      */
-    public function popupChooseCollectionsAction()
+    public function popupChooseCollections()
     {
         return [];
     }
@@ -48,7 +48,7 @@ class FinderController extends AbstractController
      * @Route("/popup/choose/media", options={"expose" = true})
      * @Template("@CmfcmfMediaModule/Finder/popupChooseMedia.html.twig")
      */
-    public function popupChooseMediaAction()
+    public function popupChooseMedia()
     {
         return [];
     }
@@ -58,7 +58,7 @@ class FinderController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function ajaxFindAction(Request $request)
+    public function ajaxFind(Request $request)
     {
         $q = trim($request->query->get('q'));
 
@@ -104,7 +104,7 @@ class FinderController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function getCollectionsAction($parentId, $hookedObjectId = null)
+    public function getCollections($parentId, $hookedObjectId = null)
     {
         $mediaTypeCollection = $this->mediaTypeCollection;
 

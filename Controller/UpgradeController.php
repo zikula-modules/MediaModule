@@ -33,7 +33,7 @@ class UpgradeController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function doUpgradeAction(ModuleUpgrader $moduleUpgrader)
+    public function doUpgrade(ModuleUpgrader $moduleUpgrader)
     {
         if (!$this->securityManager->hasPermission('settings', 'admin')) {
             throw new AccessDeniedException();
@@ -54,7 +54,7 @@ class UpgradeController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function ajaxAction(
+    public function ajax(
         ModuleUpgrader $moduleUpgrader,
         VersionChecker $versionChecker,
         $step

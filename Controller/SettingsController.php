@@ -33,7 +33,7 @@ class SettingsController extends AbstractController
     /**
      * @Route("/", options={"expose" = true})
      */
-    public function indexAction()
+    public function index()
     {
         $this->ensurePermission();
 
@@ -45,7 +45,7 @@ class SettingsController extends AbstractController
      * @Template("@CmfcmfMediaModule/Settings/requirements.html.twig")
      * @Theme("admin")
      */
-    public function requirementsAction()
+    public function requirements()
     {
         $this->ensurePermission();
         $fileInfoGuesser = new FileinfoMimeTypeGuesser();
@@ -191,7 +191,7 @@ class SettingsController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function generalAction(Request $request)
+    public function general(Request $request)
     {
         $this->ensurePermission();
 
@@ -218,7 +218,7 @@ class SettingsController extends AbstractController
      *
      * @return array
      */
-    public function scribiteAction(
+    public function scribite(
         ZikulaHttpKernelInterface $kernel
     ) {
         $this->ensurePermission();

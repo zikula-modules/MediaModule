@@ -31,7 +31,7 @@ class ImportController extends AbstractController
      *
      * @return array
      */
-    public function selectAction(ImporterCollection $importerCollection)
+    public function select(ImporterCollection $importerCollection)
     {
         if (!$this->securityManager->hasPermission('import', 'admin')) {
             throw new AccessDeniedException();
@@ -51,7 +51,7 @@ class ImportController extends AbstractController
      *
      * @return array
      */
-    public function executeAction(Request $request, ImporterCollection $importerCollection, $importer)
+    public function execute(Request $request, ImporterCollection $importerCollection, $importer)
     {
         if (!$this->securityManager->hasPermission('import', 'admin')) {
             throw new AccessDeniedException();

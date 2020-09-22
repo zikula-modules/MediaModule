@@ -72,7 +72,7 @@ class CollectionController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(Request $request, CollectionEntity $parent)
+    public function create(Request $request, CollectionEntity $parent)
     {
         if (null === $parent) {
             throw new NotFoundHttpException();
@@ -120,7 +120,7 @@ class CollectionController extends AbstractController
      *
      * @return array
      */
-    public function editAction(Request $request, CollectionEntity $entity)
+    public function edit(Request $request, CollectionEntity $entity)
     {
         if (!$this->securityManager->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_EDIT_COLLECTION)) {
             throw new AccessDeniedException();
@@ -172,7 +172,7 @@ class CollectionController extends AbstractController
      *
      * @return BinaryFileResponse
      */
-    public function downloadAction(CollectionEntity $entity, string $cacheDir)
+    public function download(CollectionEntity $entity, string $cacheDir)
     {
         if (!$this->securityManager->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_DOWNLOAD_COLLECTION)) {
             throw new AccessDeniedException();
@@ -237,7 +237,7 @@ class CollectionController extends AbstractController
      *
      * @return PlainResponse
      */
-    public function reorderAction(Request $request)
+    public function reorder(Request $request)
     {
         $id = $request->query->get('id');
         $oldPosition = $request->query->get('old-position');
@@ -267,7 +267,7 @@ class CollectionController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function displayRootAction()
+    public function displayRoot()
     {
         $rootCollection = $this->collectionRepository->getRootNode();
 
@@ -283,7 +283,7 @@ class CollectionController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function displayByIdAction(CollectionEntity $entity)
+    public function displayById(CollectionEntity $entity)
     {
         if (!$this->securityManager->hasPermission($entity, CollectionPermissionSecurityTree::PERM_LEVEL_OVERVIEW)) {
             throw new AccessDeniedException();
@@ -299,7 +299,7 @@ class CollectionController extends AbstractController
      * @Route("/{slug}", methods={"GET"}, requirements={"slug"=".*[^/]"}, options={"expose" = true})
      * @Template("@CmfcmfMediaModule/Collection/display.html.twig")
      */
-    public function displayAction(
+    public function display(
         Request $request,
         CollectionEntity $entity,
         SelectedTemplateFactory $selectedTemplateFactory

@@ -72,7 +72,7 @@ class PermissionController extends AbstractController
      *
      * @return array
      */
-    public function viewAction(
+    public function view(
         Request $request,
         CollectionEntity $collectionEntity,
         CollectionRepository $collectionRepository,
@@ -106,7 +106,7 @@ class PermissionController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(
+    public function create(
         Request $request,
         $type,
         CollectionEntity $collection,
@@ -165,7 +165,7 @@ class PermissionController extends AbstractController
      *
      * @return array
      */
-    public function editAction(Request $request, AbstractPermissionEntity $permissionEntity)
+    public function edit(Request $request, AbstractPermissionEntity $permissionEntity)
     {
         $permissionLevel = $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
 
@@ -211,7 +211,7 @@ class PermissionController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function deleteAction(Request $request, AbstractPermissionEntity $permissionEntity)
+    public function delete(Request $request, AbstractPermissionEntity $permissionEntity)
     {
         $this->getPermissionLevelOrException($permissionEntity->getCollection(), $permissionEntity);
 
@@ -246,7 +246,7 @@ class PermissionController extends AbstractController
      *
      * @return PlainResponse
      */
-    public function reorderAction(
+    public function reorder(
         AbstractPermissionEntity $permissionEntity,
         CollectionRepository $collectionRepository,
         $permissionVersion,

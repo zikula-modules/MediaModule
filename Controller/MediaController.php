@@ -55,10 +55,8 @@ class MediaController extends AbstractController
      * @param int $page
      *
      * @return array
-     *
-     * @todo Rename this + template to admin*L*istAction once the Routing PR is in the Core.
      */
-    public function adminlistAction(Request $request, $page = 1)
+    public function adminList(Request $request, $page = 1)
     {
         if (!$this->securityManager->hasPermission('media', 'moderate')) {
             throw new AccessDeniedException();
@@ -92,7 +90,7 @@ class MediaController extends AbstractController
      *
      * @return array
      */
-    public function editAction(
+    public function edit(
         Request $request,
         CollectionRepository $collectionRepository,
         AbstractMediaEntity $entity,
@@ -196,7 +194,7 @@ class MediaController extends AbstractController
      *
      * @return array
      */
-    public function deleteAction(Request $request, AbstractMediaEntity $entity)
+    public function delete(Request $request, AbstractMediaEntity $entity)
     {
         if (!$this->securityManager->hasPermission(
             $entity,
@@ -246,7 +244,7 @@ class MediaController extends AbstractController
      *
      * @return array
      */
-    public function newAction(Request $request)
+    public function create(Request $request)
     {
         $this->checkMediaCreationAllowed();
 
@@ -281,7 +279,7 @@ class MediaController extends AbstractController
      *
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function createAction(
+    public function createMedia(
         Request $request,
         string $projectDir,
         string $type,
@@ -341,7 +339,7 @@ class MediaController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function matchesPasteAction(Request $request)
+    public function matchesPaste(Request $request)
     {
         $this->checkMediaCreationAllowed();
 
@@ -372,7 +370,7 @@ class MediaController extends AbstractController
      *
      * @return PlainResponse
      */
-    public function reorderAction(Request $request)
+    public function reorder(Request $request)
     {
         $id = $request->query->get('id');
         $position = $request->query->get('position');
@@ -404,7 +402,7 @@ class MediaController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function webCreationAjaxResultsAction(Request $request, $mediaType)
+    public function webCreationAjaxResults(Request $request, $mediaType)
     {
         $this->checkMediaCreationAllowed();
 
@@ -437,7 +435,7 @@ class MediaController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function getMediaTypeFromFileAction(Request $request)
+    public function getMediaTypeFromFile(Request $request)
     {
         $this->checkMediaCreationAllowed();
 
@@ -487,7 +485,7 @@ class MediaController extends AbstractController
      *
      * @return JsonResponse|Response
      */
-    public function uploadAction(
+    public function upload(
         Request $request,
         UploadableManager $uploadableManager,
         string $dataDirectory
@@ -571,7 +569,7 @@ class MediaController extends AbstractController
      *
      * @return array
      */
-    public function popupEmbedAction(Request $request, AbstractMediaEntity $entity)
+    public function popupEmbed(Request $request, AbstractMediaEntity $entity)
     {
         if (!$this->securityManager->hasPermission(
             $entity,
@@ -581,7 +579,7 @@ class MediaController extends AbstractController
             throw new AccessDeniedException();
         }
 
-        return $this->getEmbedDataAction($request, $entity);
+        return $this->getEmbedData($request, $entity);
     }
 
     /**
@@ -589,7 +587,7 @@ class MediaController extends AbstractController
      *
      * @return array
      */
-    public function getEmbedDataAction(Request $request, AbstractMediaEntity $entity)
+    public function getEmbedData(Request $request, AbstractMediaEntity $entity)
     {
         if (!$this->securityManager->hasPermission(
             $entity,
@@ -635,7 +633,7 @@ class MediaController extends AbstractController
      *
      * @return BinaryFileResponse
      */
-    public function downloadAction(Request $request, AbstractFileEntity $entity)
+    public function download(Request $request, AbstractFileEntity $entity)
     {
         if (!$this->securityManager->hasPermission(
             $entity,
@@ -677,7 +675,7 @@ class MediaController extends AbstractController
      *
      * @return array
      */
-    public function displayAction(AbstractMediaEntity $entity)
+    public function display(AbstractMediaEntity $entity)
     {
         if (!$this->securityManager->hasPermission(
             $entity,

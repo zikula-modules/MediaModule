@@ -44,7 +44,7 @@ class MediaTypeController extends AbstractController
      *
      * @return Response
      */
-    public function youtubeUploadAction(VideoEntity $entity, Request $request)
+    public function youtubeUpload(VideoEntity $entity, Request $request)
     {
         if (!$this->securityManager->hasPermission(
             $entity,
@@ -211,7 +211,8 @@ END;
                 ]
             ])
             ->add('submit', SubmitType::class, [])
-            ->setAction($this->generateUrl('cmfcmfmediamodule_mediatype_youtubeupload', ['id' => $entity->getId()]));
+            ->setAction($this->generateUrl('cmfcmfmediamodule_mediatype_youtubeupload', ['id' => $entity->getId()]))
+        ;
 
         return $builder->getForm();
     }

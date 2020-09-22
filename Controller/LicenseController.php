@@ -34,7 +34,7 @@ class LicenseController extends AbstractController
      *
      * @return array
      */
-    public function indexAction()
+    public function index()
     {
         if (!$this->securityManager->hasPermission('license', 'moderate')) {
             throw new AccessDeniedException();
@@ -55,7 +55,7 @@ class LicenseController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(Request $request)
+    public function create(Request $request)
     {
         if (!$this->securityManager->hasPermission('license', 'add')) {
             throw new AccessDeniedException();
@@ -84,7 +84,7 @@ class LicenseController extends AbstractController
      *
      * @return array
      */
-    public function editAction(Request $request, LicenseEntity $entity)
+    public function edit(Request $request, LicenseEntity $entity)
     {
         if (!$this->securityManager->hasPermission($entity, 'edit')) {
             throw new AccessDeniedException();
@@ -116,7 +116,7 @@ class LicenseController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function deleteAction(Request $request, LicenseEntity $entity)
+    public function delete(Request $request, LicenseEntity $entity)
     {
         if (!$this->securityManager->hasPermission($entity, 'delete')) {
             throw new AccessDeniedException();

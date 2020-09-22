@@ -64,7 +64,7 @@ class WatermarkController extends AbstractController
      * @Route("/", methods={"GET"})
      * @Template("@CmfcmfMediaModule/Watermark/index.html.twig")
      */
-    public function indexAction()
+    public function index()
     {
         if (!$this->securityManager->hasPermission('watermark', 'moderate')) {
             throw new AccessDeniedException();
@@ -84,7 +84,7 @@ class WatermarkController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function newAction(Request $request, UploadableManager $uploadableManager, string $projectDir, $type)
+    public function create(Request $request, UploadableManager $uploadableManager, string $projectDir, $type)
     {
         if (!$this->securityManager->hasPermission('watermark', 'new')) {
             throw new AccessDeniedException();
@@ -128,7 +128,7 @@ class WatermarkController extends AbstractController
      *
      * @return array
      */
-    public function editAction(
+    public function edit(
         Request $request,
         UploadableManager $uploadableManager,
         CacheManager $imagineCacheManager,
@@ -192,7 +192,7 @@ class WatermarkController extends AbstractController
      *
      * @return array|RedirectResponse
      */
-    public function deleteAction(Request $request, CacheManager $imagineCacheManager, AbstractWatermarkEntity $entity)
+    public function delete(Request $request, CacheManager $imagineCacheManager, AbstractWatermarkEntity $entity)
     {
         if (!$this->securityManager->hasPermission($entity, 'delete')) {
             throw new AccessDeniedException();
