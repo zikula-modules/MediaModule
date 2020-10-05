@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.9.5 <http://videojs.com/>
+ * Video.js 7.9.6 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -36,7 +36,7 @@ var CaptionParser = _interopDefault(require('mux.js/lib/mp4/caption-parser'));
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.9.5";
+var version = "7.9.6";
 
 /**
  * @file create-logger.js
@@ -1131,7 +1131,7 @@ function getPointerPosition(el, event) {
     offsetY = event.changedTouches[0].pageY + box.top;
   }
 
-  position.y = Math.max(0, Math.min(1, (offsetY + boxH) / boxH));
+  position.y = 1 - Math.max(0, Math.min(1, offsetY / boxH));
   position.x = Math.max(0, Math.min(1, offsetX / boxW));
   return position;
 }
@@ -20352,7 +20352,7 @@ Html5.resetMediaElement = function (el) {
 'muted',
 /**
  * Set the value of `defaultMuted` on the media element. `defaultMuted` indicates that the current
- * audio level should be silent, but will only effect the muted level on intial playback..
+ * audio level should be silent, but will only effect the muted level on initial playback..
  *
  * @method Html5.prototype.setDefaultMuted
  * @param {boolean} defaultMuted
@@ -22391,7 +22391,7 @@ var Player = /*#__PURE__*/function (_Component) {
         if (!this.lastSource_ || this.lastSource_.tech !== eventSrc && this.lastSource_.player !== playerSrc) {
           updateSourceCaches = function updateSourceCaches() {};
         }
-      } // update the source to the intial source right away
+      } // update the source to the initial source right away
       // in some cases this will be empty string
 
 
@@ -24236,7 +24236,7 @@ var Player = /*#__PURE__*/function (_Component) {
         });
       }, 0);
       return;
-    } // intial sources
+    } // initial sources
 
 
     this.changingSrc_ = true;
