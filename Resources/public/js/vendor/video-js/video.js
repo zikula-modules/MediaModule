@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.9.7 <http://videojs.com/>
+ * Video.js 7.10.0 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -19,7 +19,7 @@
   window$3 = window$3 && Object.prototype.hasOwnProperty.call(window$3, 'default') ? window$3['default'] : window$3;
   document = document && Object.prototype.hasOwnProperty.call(document, 'default') ? document['default'] : document;
 
-  var version = "7.9.7";
+  var version = "7.10.0";
 
   /**
    * @file create-logger.js

@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.9.7 <http://videojs.com/>
+ * Video.js 7.10.0 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/master/LICENSE>
@@ -36,7 +36,7 @@ var CaptionParser = _interopDefault(require('mux.js/lib/mp4/caption-parser'));
 var tsInspector = _interopDefault(require('mux.js/lib/tools/ts-inspector.js'));
 var aesDecrypter = require('aes-decrypter');
 
-var version = "7.9.7";
+var version = "7.10.0";
 
 /**
  * @file create-logger.js
