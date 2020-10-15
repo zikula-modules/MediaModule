@@ -121,7 +121,7 @@ class CollectionType extends AbstractContentType
         $content = $selectedTemplate->getTemplate()->render(
             $collection,
             $this->mediaTypeCollection,
-            isset($this->data['showChildCollections']) ? $this->data['showChildCollections'] : false,
+            $this->data['showChildCollections'] ?? false,
             $selectedTemplate->getOptions()
         );
 
