@@ -666,16 +666,16 @@
         },
         {
             "name": "knplabs/github-api",
-            "version": "v2.16.0",
+            "version": "v2.17.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/php-github-api.git",
-                "reference": "e1c5dca1b7d2abeb218a041c29e522d62f7c6a7f"
+                "reference": "26dafcddb9739c0afc16dc74ae6e0ca2f4d0fe38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/php-github-api/zipball/e1c5dca1b7d2abeb218a041c29e522d62f7c6a7f",
-                "reference": "e1c5dca1b7d2abeb218a041c29e522d62f7c6a7f",
+                "url": "https://api.github.com/repos/KnpLabs/php-github-api/zipball/26dafcddb9739c0afc16dc74ae6e0ca2f4d0fe38",
+                "reference": "26dafcddb9739c0afc16dc74ae6e0ca2f4d0fe38",
                 "shasum": ""
             },
             "require": {
@@ -699,7 +699,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-2.x": "2.15.x-dev",
+                    "dev-2.x": "2.16.x-dev",
                     "dev-master": "3.0.x-dev"
                 }
             },
@@ -733,7 +733,7 @@
             ],
             "support": {
                 "issues": "https://github.com/KnpLabs/php-github-api/issues",
-                "source": "https://github.com/KnpLabs/php-github-api/tree/v2.16.0"
+                "source": "https://github.com/KnpLabs/php-github-api/tree/v2.17.0"
             },
             "funding": [
                 {
@@ -741,7 +741,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-08T13:42:56+00:00"
+            "time": "2020-11-14T17:07:32+00:00"
         },
         {
             "name": "monolog/monolog",
