@@ -1889,16 +1889,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v5.1.9",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "8b236277f97be2f56f79330910ce372293fdc5b4"
+                "reference": "5b9fc5d85a6cec73832ff170ccd468d97dd082d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/8b236277f97be2f56f79330910ce372293fdc5b4",
-                "reference": "8b236277f97be2f56f79330910ce372293fdc5b4",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/5b9fc5d85a6cec73832ff170ccd468d97dd082d9",
+                "reference": "5b9fc5d85a6cec73832ff170ccd468d97dd082d9",
                 "shasum": ""
             },
             "require": {
@@ -1916,6 +1916,7 @@
                 "symfony/http-client-implementation": "1.1"
             },
             "require-dev": {
+                "amphp/amp": "^2.5",
                 "amphp/http-client": "^4.2.1",
                 "amphp/http-tunnel": "^1.0",
                 "amphp/socket": "^1.1",
@@ -1925,7 +1926,8 @@
                 "psr/http-client": "^1.0",
                 "symfony/dependency-injection": "^4.4|^5.0",
                 "symfony/http-kernel": "^4.4.13|^5.1.5",
-                "symfony/process": "^4.4|^5.0"
+                "symfony/process": "^4.4|^5.0",
+                "symfony/stopwatch": "^4.4|^5.0"
             },
             "type": "library",
             "autoload": {
@@ -1953,7 +1955,7 @@
             "description": "Symfony HttpClient component",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v5.1.9"
+                "source": "https://github.com/symfony/http-client/tree/v5.2.0"
             },
             "funding": [
                 {
@@ -1969,7 +1971,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-11-28T13:45:11+00:00"
+            "time": "2020-11-28T13:45:20+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -2052,21 +2054,22 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v5.1.9",
+            "version": "v5.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "c6a02905e4ffc7a1498e8ee019db2b477cd1cc02"
+                "reference": "87a2a4a766244e796dd9cb9d6f58c123358cd986"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/c6a02905e4ffc7a1498e8ee019db2b477cd1cc02",
-                "reference": "c6a02905e4ffc7a1498e8ee019db2b477cd1cc02",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/87a2a4a766244e796dd9cb9d6f58c123358cd986",
+                "reference": "87a2a4a766244e796dd9cb9d6f58c123358cd986",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.5",
                 "symfony/deprecation-contracts": "^2.1",
+                "symfony/polyfill-php73": "~1.0",
                 "symfony/polyfill-php80": "^1.15"
             },
             "type": "library",
@@ -2100,7 +2103,7 @@
                 "options"
             ],
             "support": {
-                "source": "https://github.com/symfony/options-resolver/tree/v5.1.9"
+                "source": "https://github.com/symfony/options-resolver/tree/v5.2.0"
             },
             "funding": [
                 {
@@ -2116,7 +2119,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-24T12:01:57+00:00"
+            "time": "2020-10-24T12:08:07+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",
