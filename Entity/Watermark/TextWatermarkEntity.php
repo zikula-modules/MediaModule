@@ -108,7 +108,7 @@ class TextWatermarkEntity extends AbstractWatermarkEntity
         }
 
         $str2col = function ($str) {
-            return (new RGB())->color(mb_substr($str, 0, 7), (int)round(hexdec(mb_substr($str, 7, 2)) / 2.55));
+            return (new RGB())->color(mb_substr($str, 0, 7), (int) round(hexdec(mb_substr($str, 7, 2)) / 2.55));
         };
 
         $font = $imagine->font($fontPath, $fontSize, $str2col($this->fontColor));

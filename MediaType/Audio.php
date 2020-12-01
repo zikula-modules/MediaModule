@@ -172,8 +172,8 @@ class Audio extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     private function formatDuration($seconds)
     {
-        $seconds = (int)$seconds;
-        $minutes = (int)($seconds / 60);
+        $seconds = (int) $seconds;
+        $minutes = (int) ($seconds / 60);
         $seconds -= $minutes * 60;
         if ($seconds < 10) {
             $seconds = "0" . $seconds;

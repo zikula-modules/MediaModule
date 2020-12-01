@@ -88,13 +88,13 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
             if (isset($video['frame_rate'])) {
                 $meta[] = [
                     'title' => $this->translator->trans('Frame rate', [], 'cmfcmfmediamodule'),
-                    'value' => (int)$video['frame_rate']
+                    'value' => (int) $video['frame_rate']
                 ];
             }
             if (isset($video['bitrate'])) {
                 $meta[] = [
                     'title' => $this->translator->trans('Video bit rate', [], 'cmfcmfmediamodule'),
-                    'value' => (int)$video['bitrate']
+                    'value' => (int) $video['bitrate']
                 ];
             }
         }
@@ -174,11 +174,11 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
         switch ($size) {
             case 'small':
                 $width = 200;
-                $height = (int)($width / 16 * 9);
+                $height = (int) ($width / 16 * 9);
                 break;
             case 'medium':
                 $width = 500;
-                $height = (int)($width / 16 * 9);
+                $height = (int) ($width / 16 * 9);
                 break;
             case 'full':
             default:
@@ -191,8 +191,8 @@ class Video extends AbstractFileMediaType implements UploadableMediaTypeInterfac
 
     private function formatDuration($seconds)
     {
-        $seconds = (int)$seconds;
-        $minutes = (int)($seconds / 60);
+        $seconds = (int) $seconds;
+        $minutes = (int) ($seconds / 60);
         $seconds -= $minutes * 60;
         if ($seconds < 10) {
             $seconds = "0" . $seconds;
