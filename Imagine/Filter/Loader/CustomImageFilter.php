@@ -93,18 +93,18 @@ class CustomImageFilter implements LoaderInterface
         // Generate the watermark image.
         // It will already be correctly sized for the thumbnail.
         $wWidth = $wHeight = 0;
-        if (isset($options['mode']) && ImageInterface::THUMBNAIL_OUTBOUND === (int)$options['mode']) {
-            $wWidth = (int)$options['width'];
-            $wHeight = (int)$options['height'];
-        } elseif (!isset($options['mode']) || ImageInterface::THUMBNAIL_INSET === (int)$options['mode']) {
+        if (isset($options['mode']) && ImageInterface::THUMBNAIL_OUTBOUND === (int) $options['mode']) {
+            $wWidth = (int) $options['width'];
+            $wHeight = (int) $options['height'];
+        } elseif (!isset($options['mode']) || ImageInterface::THUMBNAIL_INSET === (int) $options['mode']) {
             $imageSize = getimagesize($options['file']);
 
             $ratios = [
                 $options['width'] / $imageSize[0],
                 $options['height'] / $imageSize[1]
             ];
-            $wWidth = (int)(min($ratios) * $imageSize[0]);
-            $wHeight = (int)(min($ratios) * $imageSize[1]);
+            $wWidth = (int) (min($ratios) * $imageSize[0]);
+            $wHeight = (int) (min($ratios) * $imageSize[1]);
         } else {
             throw new \LogicException();
         }

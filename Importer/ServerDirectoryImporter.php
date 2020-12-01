@@ -87,7 +87,7 @@ class ServerDirectoryImporter extends AbstractImporter
                 if (!isset($collectionMapping[$relativePath])) {
                     $collection = new CollectionEntity();
                     $lastSeparator = mb_strrpos($relativePath, DIRECTORY_SEPARATOR);
-                    $collection->setParent($collectionMapping[mb_substr($relativePath, 0, (int)$lastSeparator)]);
+                    $collection->setParent($collectionMapping[mb_substr($relativePath, 0, (int) $lastSeparator)]);
                     $collection->setTitle(mb_substr($relativePath, false === $lastSeparator ? 0 : $lastSeparator + 1));
                     $this->em->persist($collection);
                     $collectionMapping[$relativePath] = $collection;

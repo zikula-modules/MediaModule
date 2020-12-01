@@ -46,7 +46,7 @@ class PHPIniHelper
         $base = log($size, 1024);
         $suffixes = ['', 'K', 'M', 'G', 'T'];
 
-        return round(1024 ** ($base - floor($base)), $precision) . $suffixes[(int)floor($base)] . 'B';
+        return round(1024 ** ($base - floor($base)), $precision) . $suffixes[(int) floor($base)] . 'B';
     }
 
     /**

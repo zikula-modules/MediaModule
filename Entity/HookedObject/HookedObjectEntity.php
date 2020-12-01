@@ -314,7 +314,7 @@ class HookedObjectEntity
      */
     public function clearCollections(): void
     {
-        foreach ($this->hookedObjectCollections as$hookedObjectCollectionEntity) {
+        foreach ($this->hookedObjectCollections as $hookedObjectCollectionEntity) {
             $hookedObjectCollectionEntity
                 ->getCollection()->getHookedObjectCollections()->removeElement(
                     $hookedObjectCollectionEntity
