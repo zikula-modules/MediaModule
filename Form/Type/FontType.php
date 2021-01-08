@@ -43,7 +43,7 @@ class FontType extends AbstractType
     {
         $resolver->setDefaults([
             'expanded' => true,
-            'choices' => /** @Ignore */$this->fontCollection->getFontsForForm()
+            'choices' => /** @Ignore */ $this->fontCollection->getFontsForForm()
         ]);
     }
 

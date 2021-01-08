@@ -52,8 +52,8 @@ class EditLicenseType extends AbstractType
                 'multiple' => true,
                 'label' => 'Select license',
                 'placeholder' => 'Unknown',
-                'choices' => /** @Ignore */$choices,
-                'preferred_choices' => /** @Ignore */$preferredChoiecs,
+                'choices' => /** @Ignore */ $choices,
+                'preferred_choices' => /** @Ignore */ $preferredChoiecs,
                 'data' => $selectedChoices
             ])
         ;
