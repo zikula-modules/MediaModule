@@ -28,7 +28,7 @@ class GroupPermissionType extends AbstractPermissionType
         $groupNames = $this->groupRepository->getGroupNamesById();
 
         $choices = [];
-        $choices[/** @Translate */'All groups'] = -1;
+        $choices[/** @Translate */ 'All groups'] = -1;
 
         foreach ($groupNames as $groupId => $groupName) {
             $choices[$groupName] = $groupId;
@@ -37,7 +37,7 @@ class GroupPermissionType extends AbstractPermissionType
         $builder->add('groupIds', ChoiceType::class, [
             'label' => 'Groups',
             'multiple' => true,
-            'choices' => /** @Ignore */$choices
+            'choices' => /** @Ignore */ $choices
         ]);
 
         parent::buildForm($builder, $options);

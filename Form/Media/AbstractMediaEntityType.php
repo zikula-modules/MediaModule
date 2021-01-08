@@ -79,14 +79,14 @@ abstract class AbstractMediaEntityType extends AbstractType
         );
         switch ($escapingStrategy) {
             case 'raw':
-                $descriptionHelp = /** @Translate */'You may use HTML.';
+                $descriptionHelp = /** @Translate */ 'You may use HTML.';
                 $editorClass = '';
                 break;
             case 'text':
-                $descriptionHelp = /** @Translate */'Only plaintext allowed.';
+                $descriptionHelp = /** @Translate */ 'Only plaintext allowed.';
                 break;
             case 'markdown':
-                $descriptionHelp = /** @Translate */'You may use MarkDown.';
+                $descriptionHelp = /** @Translate */ 'You may use MarkDown.';
                 break;
             default:
                 throw new \LogicException();

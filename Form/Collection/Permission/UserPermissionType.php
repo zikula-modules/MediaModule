@@ -33,7 +33,7 @@ class UserPermissionType extends AbstractPermissionType
         $builder->add('userIds', ChoiceType::class, [
             'label' => 'Users',
             'multiple' => true,
-            'choices' => /** @Ignore */$choices
+            'choices' => /** @Ignore */ $choices
         ]);
 
         parent::buildForm($builder, $options);
