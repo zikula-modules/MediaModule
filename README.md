@@ -2,9 +2,9 @@ Zikula 2.0.11+ media module
 ===========================
 
 [![StyleCI](https://styleci.io/repos/43518681/shield)](https://styleci.io/repos/43518681) 
-[![Build Status](https://travis-ci.org/zikula-modules/MediaModule.svg?branch=master)](https://travis-ci.org/zikula-modules/MediaModule) 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/?branch=master)
+[![Build Status](https://travis-ci.org/zikula-modules/MediaModule.svg?branch=main)](https://travis-ci.org/zikula-modules/MediaModule) 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/badges/quality-score.png?b=main)](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/?branch=main)
+[![Code Coverage](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/badges/coverage.png?b=main)](https://scrutinizer-ci.com/g/zikula-modules/MediaModule/?branch=main)
 [![MIT License](https://img.shields.io/github/license/zikula-modules/MediaModule.svg)]()
 
 ## Installation 
@@ -13,7 +13,7 @@ Zikula 2.0.11+ media module
 
 If you want to test the current version (potentially unstable!), download it from here: https://github.com/zikula-modules/MediaModule/raw/dev-builds/MediaModule.zip
 
-**Downloading directly from master would require you to execute `composer install --no-dev`.**
+**Downloading directly from main would require you to execute `composer install --no-dev`.**
 
 ## Information
 The module supports many media types natively (images, plaintext, MarkDown, videos, audio, pdf, …)
