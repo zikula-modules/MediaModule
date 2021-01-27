@@ -1,13 +1,13 @@
 /**
  * @license
- * Video.js 7.11.2 <http://videojs.com/>
+ * Video.js 7.11.4 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
- * <https://github.com/videojs/video.js/blob/master/LICENSE>
+ * <https://github.com/videojs/video.js/blob/main/LICENSE>
  *
  * Includes vtt.js <https://github.com/mozilla/vtt.js>
  * Available under Apache License Version 2.0
- * <https://github.com/mozilla/vtt.js/blob/master/LICENSE>
+ * <https://github.com/mozilla/vtt.js/blob/main/LICENSE>
  */
 
 'use strict';
@@ -39,7 +39,7 @@ var clock = require('mux.js/lib/utils/clock');
 var mp4probe = _interopDefault(require('mux.js/lib/mp4/probe'));
 var codecs_js = require('@videojs/vhs-utils/dist/codecs.js');
 
-var version = "7.11.2";
+var version = "7.11.4";
 
 /**
  * @file create-logger.js
@@ -2490,6 +2490,26 @@ EventTarget.prototype.queueTrigger = function (event) {
  * @file mixins/evented.js
  * @module evented
  */
+
+var objName = function objName(obj) {
+  if (typeof obj.name === 'function') {
+    return obj.name();
+  }
+
+  if (typeof obj.name === 'string') {
+    return obj.name;
+  }
+
+  if (obj.name_) {
+    return obj.name_;
+  }
+
+  if (obj.constructor && obj.constructor.name) {
+    return obj.constructor.name;
+  }
+
+  return typeof obj;
+};
 /**
  * Returns whether or not an object has had the evented mixin applied.
  *
@@ -2499,6 +2519,7 @@ EventTarget.prototype.queueTrigger = function (event) {
  * @return {boolean}
  *         Whether or not the object appears to be evented.
  */
+
 
 var isEvented = function isEvented(object) {
   return object instanceof EventTarget || !!object.eventBusEl_ && ['on', 'one', 'off', 'trigger'].every(function (k) {
@@ -2553,12 +2574,18 @@ var isValidEventType = function isValidEventType(type) {
  *
  * @param  {Object} target
  *         The object to test.
+ *
+ * @param  {Object} obj
+ *         The evented object we are validating for
+ *
+ * @param  {string} fnName
+ *         The name of the evented mixin function that called this.
  */
 
 
-var validateTarget = function validateTarget(target) {
-  if (!target.nodeName && !isEvented(target)) {
-    throw new Error('Invalid target; must be a DOM node or evented object.');
+var validateTarget = function validateTarget(target, obj, fnName) {
+  if (!target || !target.nodeName && !isEvented(target)) {
+    throw new Error("Invalid target for " + objName(obj) + "#" + fnName + "; must be a DOM node or evented object.");
   }
 };
 /**
@@ -2570,12 +2597,18 @@ var validateTarget = function validateTarget(target) {
  *
  * @param  {string|Array} type
  *         The type to test.
+ *
+ * @param  {Object} obj
+*         The evented object we are validating for
+ *
+ * @param  {string} fnName
+ *         The name of the evented mixin function that called this.
  */
 
 
-var validateEventType = function validateEventType(type) {
+var validateEventType = function validateEventType(type, obj, fnName) {
   if (!isValidEventType(type)) {
-    throw new Error('Invalid event type; must be a non-empty string or array.');
+    throw new Error("Invalid event type for " + objName(obj) + "#" + fnName + "; must be a non-empty string or array.");
   }
 };
 /**
@@ -2587,12 +2620,18 @@ var validateEventType = function validateEventType(type) {
  *
  * @param  {Function} listener
  *         The listener to test.
+ *
+ * @param  {Object} obj
+ *         The evented object we are validating for
+ *
+ * @param  {string} fnName
+ *         The name of the evented mixin function that called this.
  */
 
 
-var validateListener = function validateListener(listener) {
+var validateListener = function validateListener(listener, obj, fnName) {
   if (typeof listener !== 'function') {
-    throw new Error('Invalid listener; must be a function.');
+    throw new Error("Invalid listener for " + objName(obj) + "#" + fnName + "; must be a function.");
   }
 };
 /**
@@ -2607,12 +2646,15 @@ var validateListener = function validateListener(listener) {
  * @param  {Array} args
  *         An array of arguments passed to `on()` or `one()`.
  *
+ * @param  {string} fnName
+ *         The name of the evented mixin function that called this.
+ *
  * @return {Object}
  *         An object containing useful values for `on()` or `one()` calls.
  */
 
 
-var normalizeListenArgs = function normalizeListenArgs(self, args) {
+var normalizeListenArgs = function normalizeListenArgs(self, args, fnName) {
   // If the number of arguments is less than 3, the target is always the
   // evented object itself.
   var isTargetingSelf = args.length < 3 || args[0] === self || args[0] === self.eventBusEl_;
@@ -2636,9 +2678,9 @@ var normalizeListenArgs = function normalizeListenArgs(self, args) {
     listener = args[2];
   }
 
-  validateTarget(target);
-  validateEventType(type);
-  validateListener(listener);
+  validateTarget(target, self, fnName);
+  validateEventType(type, self, fnName);
+  validateListener(listener, self, fnName);
   listener = bind(self, listener);
   return {
     isTargetingSelf: isTargetingSelf,
@@ -2667,7 +2709,7 @@ var normalizeListenArgs = function normalizeListenArgs(self, args) {
 
 
 var listen = function listen(target, method, type, listener) {
-  validateTarget(target);
+  validateTarget(target, target, method);
 
   if (target.nodeName) {
     Events[method](target, type, listener);
@@ -2714,7 +2756,7 @@ var EventedMixin = {
       args[_key] = arguments[_key];
     }
 
-    var _normalizeListenArgs = normalizeListenArgs(this, args),
+    var _normalizeListenArgs = normalizeListenArgs(this, args, 'on'),
         isTargetingSelf = _normalizeListenArgs.isTargetingSelf,
         target = _normalizeListenArgs.target,
         type = _normalizeListenArgs.type,
@@ -2776,7 +2818,7 @@ var EventedMixin = {
       args[_key2] = arguments[_key2];
     }
 
-    var _normalizeListenArgs2 = normalizeListenArgs(this, args),
+    var _normalizeListenArgs2 = normalizeListenArgs(this, args, 'one'),
         isTargetingSelf = _normalizeListenArgs2.isTargetingSelf,
         target = _normalizeListenArgs2.target,
         type = _normalizeListenArgs2.type,
@@ -2838,7 +2880,7 @@ var EventedMixin = {
       args[_key4] = arguments[_key4];
     }
 
-    var _normalizeListenArgs3 = normalizeListenArgs(this, args),
+    var _normalizeListenArgs3 = normalizeListenArgs(this, args, 'any'),
         isTargetingSelf = _normalizeListenArgs3.isTargetingSelf,
         target = _normalizeListenArgs3.target,
         type = _normalizeListenArgs3.type,
@@ -2892,9 +2934,9 @@ var EventedMixin = {
       var target = targetOrType;
       var type = typeOrListener; // Fail fast and in a meaningful way!
 
-      validateTarget(target);
-      validateEventType(type);
-      validateListener(listener); // Ensure there's at least a guid, even if the function hasn't been used
+      validateTarget(target, this, 'off');
+      validateEventType(type, this, 'off');
+      validateListener(listener, this, 'off'); // Ensure there's at least a guid, even if the function hasn't been used
 
       listener = bind(this, listener); // Remove the dispose listener on this evented object, which was given
       // the same guid as the event listener in on().
@@ -2924,6 +2966,19 @@ var EventedMixin = {
    *          Whether or not the default behavior was prevented.
    */
   trigger: function trigger$1(event, hash) {
+    validateTarget(this.eventBusEl_, this, 'trigger');
+    var type = event && typeof event !== 'string' ? event.type : event;
+
+    if (!isValidEventType(type)) {
+      var error = "Invalid event type for " + objName(this) + "#trigger; " + 'must be a non-empty string or object with a type key that has a non-empty value.';
+
+      if (event) {
+        (this.log || log).error(error);
+      } else {
+        throw new Error(error);
+      }
+    }
+
     return trigger(this.eventBusEl_, event, hash);
   }
 };
@@ -7575,10 +7630,14 @@ var TextTrack = /*#__PURE__*/function (_Track) {
     var activeCues = new TextTrackCueList(_this.activeCues_);
     var changed = false;
     var timeupdateHandler = bind(_assertThisInitialized(_this), function () {
-      // Accessing this.activeCues for the side-effects of updating itself
+      if (!this.tech_.isReady_ || this.tech_.isDisposed()) {
+        return;
+      } // Accessing this.activeCues for the side-effects of updating itself
       // due to its nature as a getter function. Do not remove or cues will
       // stop updating!
       // Use the setter to prevent deletion from uglify (pure_getters rule)
+
+
       this.activeCues = this.activeCues;
 
       if (changed) {
@@ -7587,10 +7646,14 @@ var TextTrack = /*#__PURE__*/function (_Track) {
       }
     });
 
+    var disposeHandler = function disposeHandler() {
+      _this.tech_.off('timeupdate', timeupdateHandler);
+    };
+
+    _this.tech_.one('dispose', disposeHandler);
+
     if (mode !== 'disabled') {
-      _this.tech_.ready(function () {
-        _this.tech_.on('timeupdate', timeupdateHandler);
-      }, true);
+      _this.tech_.on('timeupdate', timeupdateHandler);
     }
 
     Object.defineProperties(_assertThisInitialized(_this), {
@@ -7624,9 +7687,11 @@ var TextTrack = /*#__PURE__*/function (_Track) {
           return mode;
         },
         set: function set(newMode) {
-          var _this2 = this;
-
           if (!TextTrackMode[newMode]) {
+            return;
+          }
+
+          if (mode === newMode) {
             return;
           }
 
@@ -7637,12 +7702,10 @@ var TextTrack = /*#__PURE__*/function (_Track) {
             loadTrack(this.src, this);
           }
 
+          this.tech_.off('timeupdate', timeupdateHandler);
+
           if (mode !== 'disabled') {
-            this.tech_.ready(function () {
-              _this2.tech_.on('timeupdate', timeupdateHandler);
-            }, true);
-          } else {
-            this.tech_.off('timeupdate', timeupdateHandler);
+            this.tech_.on('timeupdate', timeupdateHandler);
           }
           /**
            * An event that fires when mode changes on this track. This allows
@@ -11745,7 +11808,7 @@ var TimeDisplay = /*#__PURE__*/function (_Component) {
 
       var oldNode = _this2.textNode_;
 
-      if (oldNode && !_this2.contentEl_.contains(oldNode)) {
+      if (oldNode && _this2.contentEl_.firstChild !== oldNode) {
         oldNode = null;
         log.warn('TimeDisplay#updateTextnode_: Prevented replacement of text node element since it was no longer a child of this node. Appending a new node instead.');
       }
@@ -21307,8 +21370,14 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this = _Component.call(this, null, options, ready) || this; // Create bound methods for document listeners.
 
-    _this.boundDocumentFullscreenChange_ = bind(_assertThisInitialized(_this), _this.documentFullscreenChange_);
-    _this.boundFullWindowOnEscKey_ = bind(_assertThisInitialized(_this), _this.fullWindowOnEscKey); // default isFullscreen_ to false
+    _this.boundDocumentFullscreenChange_ = function (e) {
+      return _this.documentFullscreenChange_(e);
+    };
+
+    _this.boundFullWindowOnEscKey_ = function (e) {
+      return _this.fullWindowOnEscKey(e);
+    }; // default isFullscreen_ to false
+
 
     _this.isFullscreen_ = false; // create logger
 
@@ -22987,7 +23056,9 @@ var Player = /*#__PURE__*/function (_Component) {
 
   _proto.handleTechTouchEnd_ = function handleTechTouchEnd_(event) {
     // Stop the mouse events from also happening
-    event.preventDefault();
+    if (event.cancelable) {
+      event.preventDefault();
+    }
   }
   /**
    * native click events on the SWF aren't triggered on IE11, Win8.1RT
