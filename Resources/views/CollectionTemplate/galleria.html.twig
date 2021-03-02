@@ -1,18 +1,27 @@
-{% extends '@CmfcmfMediaModule/CollectionTemplate/cards.html.twig' %}
+{% extends 'CmfcmfMediaModule:CollectionTemplate:cards.html.twig' %}
 
 {% block media %}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/galleria/galleria.min.js'), 98) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/vendor/galleria/themes/classic/galleria.classic.min.js'), 99) }}
     {{ pageAddAsset('stylesheet', zasset('@CmfcmfMediaModule:js/vendor/galleria/themes/classic/galleria.classic.css')) }}
     {{ pageAddAsset('javascript', zasset('@CmfcmfMediaModule:js/Media/Display/galleria.js')) }}
-    <div class="cmfcmfmedia-display-galleria" data-height="{{ options.height|e('html_attr') }}">
+    <div id="galleria{{ collection.id }}" class="cmfcmfmedia-display-galleria" data-height="{{ options.height|e('html_attr') }}">
         {% for media in collection.media %}
             {% set mediaType = mediaTypeCollection.mediaTypeFromEntity(media) %}
             {% set bigThumbnail = mediaType.thumbnail(media, 'original', 'original', 'url', 'inset') %}
             {% set smallThumbnail = mediaType.thumbnail(media, 'original', options.height, 'url', 'inset') %}
             <a href="{{ bigThumbnail }}">
-                <img src="{{ smallThumbnail }}" data-title="{% if media.title|default %}{{ media.title }}{% endif %}" data-description="{% if media.attribution|default %}{{ 'By %s%'|trans({'%s%': media.attribution})|e('html_attr')|raw }}{% endif %}">
+                <img src="{{ smallThumbnail }}" data-title="{% if media.title|default %}{{ media.title }}{% endif %}" data-description="{% if media.attribution|default %}{{ __f('By %s', {'%s': media.attribution})|e('html_attr')|raw }}{% endif %}">
             </a>
         {% endfor %}
     </div>
+    {% set customStyle %}
+        <style>
+            #galleria{{ collection.id }} .galleria-stage {
+                width: 100%;
+                height: {{ options.height|e('html_attr') }}px !important;
+            }
+        </style>
+    {% endset %}
+    {{ pageAddAsset('header', customStyle) }}
 {% endblock %}
