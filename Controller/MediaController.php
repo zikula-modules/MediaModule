@@ -115,6 +115,13 @@ class MediaController extends AbstractController
         }
 
         $mediaType = $this->mediaTypeCollection->getMediaTypeFromEntity($entity);
+
+        $oldFileName = $oldFilePath = null;
+        if ($entity instanceof AbstractFileEntity) {
+            $oldFileName = $entity->getFileName();
+            $oldFilePath = $entity->getPath();
+        }
+
         $formClass = $mediaType->getFormTypeClass();
         $formOptions = $mediaType->getFormOptions($entity);
         $formOptions['parent'] = $parent;
@@ -154,6 +161,13 @@ class MediaController extends AbstractController
         } catch (OptimisticLockException $e) {
             $form->addError(new FormError($this->trans('Someone else edited the collection. Please either cancel editing or force reload the page.')));
             goto edit_error;
+        }
+
+        // ensure that new file can be accessed with old file path (that is maybe used inside content)
+        if (null !== $oldFilePath) {
+            rename($entity->getPath(), $oldFilePath);
+            $entity->setFileName($oldFileName);
+            $em->flush();
         }
 
         $hookUrl = new RouteUrl('cmfcmfmediamodule_media_display', [
