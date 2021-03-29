@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.11.7 <http://videojs.com/>
+ * Video.js 7.11.8 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -40,7 +40,7 @@ var clock = require('mux.js/lib/utils/clock');
 var mp4probe = _interopDefault(require('mux.js/lib/mp4/probe'));
 var codecs_js = require('@videojs/vhs-utils/cjs/codecs.js');
 
-var version = "7.11.7";
+var version = "7.11.8";
 
 /**
  * @file fullscreen-api.js
@@ -13867,9 +13867,18 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
 
     this.off(['mousedown', 'touchstart'], this.handleMouseDown);
     this.off(this.el_, 'mousemove', this.handleMouseMove);
-    this.handleMouseUp();
+    this.removeListenersAddedOnMousedownAndTouchstart();
     this.addClass('disabled');
-    this.enabled_ = false;
+    this.enabled_ = false; // Restore normal playback state if controls are disabled while scrubbing
+
+    if (this.player_.scrubbing()) {
+      var seekBar = this.getChild('seekBar');
+      this.player_.scrubbing(false);
+
+      if (seekBar.videoWasPlaying) {
+        silencePromise(this.player_.play());
+      }
+    }
   }
   /**
    * Enable all controls on the progress control and its children
@@ -13889,6 +13898,18 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
     this.on(this.el_, 'mousemove', this.handleMouseMove);
     this.removeClass('disabled');
     this.enabled_ = true;
+  }
+  /**
+   * Cleanup listeners after the user finishes interacting with the progress controls
+   */
+  ;
+
+  _proto.removeListenersAddedOnMousedownAndTouchstart = function removeListenersAddedOnMousedownAndTouchstart() {
+    var doc = this.el_.ownerDocument;
+    this.off(doc, 'mousemove', this.throttledHandleMouseSeek);
+    this.off(doc, 'touchmove', this.throttledHandleMouseSeek);
+    this.off(doc, 'mouseup', this.handleMouseUp);
+    this.off(doc, 'touchend', this.handleMouseUp);
   }
   /**
    * Handle `mousedown` or `touchstart` events on the `ProgressControl`.
@@ -13926,17 +13947,13 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.handleMouseUp = function handleMouseUp(event) {
-    var doc = this.el_.ownerDocument;
     var seekBar = this.getChild('seekBar');
 
     if (seekBar) {
       seekBar.handleMouseUp(event);
     }
 
-    this.off(doc, 'mousemove', this.throttledHandleMouseSeek);
-    this.off(doc, 'touchmove', this.throttledHandleMouseSeek);
-    this.off(doc, 'mouseup', this.handleMouseUp);
-    this.off(doc, 'touchend', this.handleMouseUp);
+    this.removeListenersAddedOnMousedownAndTouchstart();
   };
 
   return ProgressControl;
