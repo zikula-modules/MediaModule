@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.11.8 <http://videojs.com/>
+ * Video.js 7.12.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -25,8 +25,9 @@ import _construct from '@babel/runtime/helpers/construct';
 import _inherits from '@babel/runtime/helpers/inherits';
 import _resolveUrl from '@videojs/vhs-utils/es/resolve-url.js';
 import { Parser } from 'm3u8-parser';
+import { browserSupportsCodec, DEFAULT_VIDEO_CODEC, DEFAULT_AUDIO_CODEC, muxerSupportsCodec, parseCodecs, translateLegacyCodec, codecsFromDefault, getMimeForCodec, isAudioCodec } from '@videojs/vhs-utils/es/codecs.js';
 import { simpleTypeFromSourceType } from '@videojs/vhs-utils/es/media-types.js';
-import { parseUTCTiming, parse, addSidxSegmentsToPlaylist } from 'mpd-parser';
+import { generateSidxKey, parseUTCTiming, parse, addSidxSegmentsToPlaylist } from 'mpd-parser';
 import parseSidx from 'mux.js/lib/tools/parse-sidx';
 import { getId3Offset } from '@videojs/vhs-utils/es/id3-helpers';
 import { detectContainerForBytes, isLikelyFmp4MediaSegment } from '@videojs/vhs-utils/es/containers';
@@ -34,9 +35,8 @@ import { concatTypedArrays, stringToBytes, toUint8 } from '@videojs/vhs-utils/es
 import tsInspector from 'mux.js/lib/tools/ts-inspector.js';
 import { ONE_SECOND_IN_TS } from 'mux.js/lib/utils/clock';
 import mp4probe from 'mux.js/lib/mp4/probe';
-import { browserSupportsCodec, DEFAULT_VIDEO_CODEC, DEFAULT_AUDIO_CODEC, muxerSupportsCodec, parseCodecs, translateLegacyCodec, codecsFromDefault, getMimeForCodec, isAudioCodec, isVideoCodec } from '@videojs/vhs-utils/es/codecs.js';
 
-var version = "7.11.8";
+var version = "7.12.1";
 
 /**
  * @file fullscreen-api.js
@@ -5867,6 +5867,15 @@ var ModalDialog = /*#__PURE__*/function (_Component) {
     var _this;
 
     _this = _Component.call(this, player, options) || this;
+
+    _this.handleKeyDown_ = function (e) {
+      return _this.handleKeyDown(e);
+    };
+
+    _this.close_ = function (e) {
+      return _this.close(e);
+    };
+
     _this.opened_ = _this.hasBeenOpened_ = _this.hasBeenFilled_ = false;
 
     _this.closeable(!_this.options_.uncloseable);
@@ -5996,7 +6005,7 @@ var ModalDialog = /*#__PURE__*/function (_Component) {
         player.pause();
       }
 
-      this.on('keydown', this.handleKeyDown); // Hide controls and note if they were enabled.
+      this.on('keydown', this.handleKeyDown_); // Hide controls and note if they were enabled.
 
       this.hadControls_ = player.controls();
       player.controls(false);
@@ -6061,7 +6070,7 @@ var ModalDialog = /*#__PURE__*/function (_Component) {
       player.play();
     }
 
-    this.off('keydown', this.handleKeyDown);
+    this.off('keydown', this.handleKeyDown_);
 
     if (this.hadControls_) {
       player.controls(true);
@@ -6108,12 +6117,12 @@ var ModalDialog = /*#__PURE__*/function (_Component) {
           controlText: 'Close Modal Dialog'
         });
         this.contentEl_ = temp;
-        this.on(close, 'close', this.close);
+        this.on(close, 'close', this.close_);
       } // If this is being made uncloseable and has a close button, remove it.
 
 
       if (!closeable && close) {
-        this.off(close, 'close', this.close);
+        this.off(close, 'close', this.close_);
         this.removeChild(close);
         close.dispose();
       }
@@ -8358,8 +8367,29 @@ var Tech = /*#__PURE__*/function (_Component) {
     // we don't want the tech to report user activity automatically.
     // This is done manually in addControlsListeners
     options.reportTouchActivity = false;
-    _this = _Component.call(this, null, options, ready) || this; // keep track of whether the current source has played at all to
+    _this = _Component.call(this, null, options, ready) || this;
+
+    _this.onDurationChange_ = function (e) {
+      return _this.onDurationChange(e);
+    };
+
+    _this.trackProgress_ = function (e) {
+      return _this.trackProgress(e);
+    };
+
+    _this.trackCurrentTime_ = function (e) {
+      return _this.trackCurrentTime(e);
+    };
+
+    _this.stopTrackingCurrentTime_ = function (e) {
+      return _this.stopTrackingCurrentTime(e);
+    };
+
+    _this.disposeSourceHandler_ = function (e) {
+      return _this.disposeSourceHandler(e);
+    }; // keep track of whether the current source has played at all to
     // implement a very limited played()
+
 
     _this.hasStarted_ = false;
 
@@ -8469,10 +8499,10 @@ var Tech = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.manualProgressOn = function manualProgressOn() {
-    this.on('durationchange', this.onDurationChange);
+    this.on('durationchange', this.onDurationChange_);
     this.manualProgress = true; // Trigger progress watching when a source begins loading
 
-    this.one('ready', this.trackProgress);
+    this.one('ready', this.trackProgress_);
   }
   /**
    * Turn off the polyfill for `progress` events that was created in
@@ -8483,7 +8513,7 @@ var Tech = /*#__PURE__*/function (_Component) {
   _proto.manualProgressOff = function manualProgressOff() {
     this.manualProgress = false;
     this.stopTrackingProgress();
-    this.off('durationchange', this.onDurationChange);
+    this.off('durationchange', this.onDurationChange_);
   }
   /**
    * This is used to trigger a `progress` event when the buffered percent changes. It
@@ -8581,8 +8611,8 @@ var Tech = /*#__PURE__*/function (_Component) {
 
   _proto.manualTimeUpdatesOn = function manualTimeUpdatesOn() {
     this.manualTimeUpdates = true;
-    this.on('play', this.trackCurrentTime);
-    this.on('pause', this.stopTrackingCurrentTime);
+    this.on('play', this.trackCurrentTime_);
+    this.on('pause', this.stopTrackingCurrentTime_);
   }
   /**
    * Turn off the polyfill for `timeupdate` events that was created in
@@ -8593,8 +8623,8 @@ var Tech = /*#__PURE__*/function (_Component) {
   _proto.manualTimeUpdatesOff = function manualTimeUpdatesOff() {
     this.manualTimeUpdates = false;
     this.stopTrackingCurrentTime();
-    this.off('play', this.trackCurrentTime);
-    this.off('pause', this.stopTrackingCurrentTime);
+    this.off('play', this.trackCurrentTime_);
+    this.off('pause', this.stopTrackingCurrentTime_);
   }
   /**
    * Sets up an interval function to track current time and trigger `timeupdate` every
@@ -9687,14 +9717,14 @@ Tech.withSourceHandlers = function (_Tech) {
 
 
     this.disposeSourceHandler();
-    this.off('dispose', this.disposeSourceHandler);
+    this.off('dispose', this.disposeSourceHandler_);
 
     if (sh !== _Tech.nativeSourceHandler) {
       this.currentSource_ = source;
     }
 
     this.sourceHandler_ = sh.handleSource(source, this, this.options_);
-    this.one('dispose', this.disposeSourceHandler);
+    this.one('dispose', this.disposeSourceHandler_);
   };
   /**
    * Clean up any existing SourceHandlers and listeners when the Tech is disposed.
@@ -10320,6 +10350,22 @@ var ClickableComponent = /*#__PURE__*/function (_Component) {
 
     _this = _Component.call(this, player, options) || this;
 
+    _this.handleMouseOver_ = function (e) {
+      return _this.handleMouseOver(e);
+    };
+
+    _this.handleMouseOut_ = function (e) {
+      return _this.handleMouseOut(e);
+    };
+
+    _this.handleClick_ = function (e) {
+      return _this.handleClick(e);
+    };
+
+    _this.handleKeyDown_ = function (e) {
+      return _this.handleKeyDown(e);
+    };
+
     _this.emitTapEvents();
 
     _this.enable();
@@ -10439,7 +10485,7 @@ var ClickableComponent = /*#__PURE__*/function (_Component) {
     this.controlText_ = text;
     textContent(this.controlTextEl_, localizedText);
 
-    if (!this.nonIconControl) {
+    if (!this.nonIconControl && !this.player_.options_.noUITitleAttributes) {
       // Set title attribute if only an icon is shown
       el.setAttribute('title', localizedText);
     }
@@ -10470,8 +10516,8 @@ var ClickableComponent = /*#__PURE__*/function (_Component) {
         this.el_.setAttribute('tabIndex', this.tabIndex_);
       }
 
-      this.on(['tap', 'click'], this.handleClick);
-      this.on('keydown', this.handleKeyDown);
+      this.on(['tap', 'click'], this.handleClick_);
+      this.on('keydown', this.handleKeyDown_);
     }
   }
   /**
@@ -10488,10 +10534,10 @@ var ClickableComponent = /*#__PURE__*/function (_Component) {
       this.el_.removeAttribute('tabIndex');
     }
 
-    this.off('mouseover', this.handleMouseOver);
-    this.off('mouseout', this.handleMouseOut);
-    this.off(['tap', 'click'], this.handleClick);
-    this.off('keydown', this.handleKeyDown);
+    this.off('mouseover', this.handleMouseOver_);
+    this.off('mouseout', this.handleMouseOut_);
+    this.off(['tap', 'click'], this.handleClick_);
+    this.off('keydown', this.handleKeyDown_);
   }
   /**
    * Handles language change in ClickableComponent for the player in components
@@ -10578,7 +10624,11 @@ var PosterImage = /*#__PURE__*/function (_ClickableComponent) {
 
     _this.update();
 
-    player.on('posterchange', bind(_assertThisInitialized(_this), _this.update));
+    _this.update_ = function (e) {
+      return _this.update(e);
+    };
+
+    player.on('posterchange', _this.update_);
     return _this;
   }
   /**
@@ -10589,7 +10639,7 @@ var PosterImage = /*#__PURE__*/function (_ClickableComponent) {
   var _proto = PosterImage.prototype;
 
   _proto.dispose = function dispose() {
-    this.player().off('posterchange', this.update);
+    this.player().off('posterchange', this.update_);
 
     _ClickableComponent.prototype.dispose.call(this);
   }
@@ -10780,10 +10830,18 @@ var TextTrackDisplay = /*#__PURE__*/function (_Component) {
     var _this;
 
     _this = _Component.call(this, player, options, ready) || this;
-    var updateDisplayHandler = bind(_assertThisInitialized(_this), _this.updateDisplay);
-    player.on('loadstart', bind(_assertThisInitialized(_this), _this.toggleDisplay));
+
+    var updateDisplayHandler = function updateDisplayHandler(e) {
+      return _this.updateDisplay(e);
+    };
+
+    player.on('loadstart', function (e) {
+      return _this.toggleDisplay(e);
+    });
     player.on('texttrackchange', updateDisplayHandler);
-    player.on('loadedmetadata', bind(_assertThisInitialized(_this), _this.preselectTrack)); // This used to be called during player init, but was causing an error
+    player.on('loadedmetadata', function (e) {
+      return _this.preselectTrack(e);
+    }); // This used to be called during player init, but was causing an error
     // if a track should show by default and the display hadn't loaded yet.
     // Should probably be moved to an external track loader when we support
     // tracks that don't need a display.
@@ -11297,7 +11355,9 @@ var BigPlayButton = /*#__PURE__*/function (_Button) {
     _this = _Button.call(this, player, options) || this;
     _this.mouseused_ = false;
 
-    _this.on('mousedown', _this.handleMouseDown);
+    _this.on('mousedown', function (e) {
+      return _this.handleMouseDown(e);
+    });
 
     return _this;
   }
@@ -11517,12 +11577,18 @@ var PlayToggle = /*#__PURE__*/function (_Button) {
 
     options.replay = options.replay === undefined || options.replay;
 
-    _this.on(player, 'play', _this.handlePlay);
+    _this.on(player, 'play', function (e) {
+      return _this.handlePlay(e);
+    });
 
-    _this.on(player, 'pause', _this.handlePause);
+    _this.on(player, 'pause', function (e) {
+      return _this.handlePause(e);
+    });
 
     if (options.replay) {
-      _this.on(player, 'ended', _this.handleEnded);
+      _this.on(player, 'ended', function (e) {
+        return _this.handleEnded(e);
+      });
     }
 
     return _this;
@@ -11624,12 +11690,16 @@ var PlayToggle = /*#__PURE__*/function (_Button) {
   ;
 
   _proto.handleEnded = function handleEnded(event) {
+    var _this2 = this;
+
     this.removeClass('vjs-playing');
     this.addClass('vjs-ended'); // change the button text to "Replay"
 
     this.controlText('Replay'); // on the next seek remove the replay button
 
-    this.one(this.player_, 'seeked', this.handleSeeked);
+    this.one(this.player_, 'seeked', function (e) {
+      return _this2.handleSeeked(e);
+    });
   };
 
   return PlayToggle;
@@ -11761,7 +11831,9 @@ var TimeDisplay = /*#__PURE__*/function (_Component) {
 
     _this = _Component.call(this, player, options) || this;
 
-    _this.on(player, ['timeupdate', 'ended'], _this.updateContent);
+    _this.on(player, ['timeupdate', 'ended'], function (e) {
+      return _this.updateContent(e);
+    });
 
     _this.updateTextNode_();
 
@@ -11981,21 +12053,26 @@ var DurationDisplay = /*#__PURE__*/function (_TimeDisplay) {
   function DurationDisplay(player, options) {
     var _this;
 
-    _this = _TimeDisplay.call(this, player, options) || this; // we do not want to/need to throttle duration changes,
+    _this = _TimeDisplay.call(this, player, options) || this;
+
+    var updateContent = function updateContent(e) {
+      return _this.updateContent(e);
+    }; // we do not want to/need to throttle duration changes,
     // as they should always display the changed duration as
     // it has changed
 
-    _this.on(player, 'durationchange', _this.updateContent); // Listen to loadstart because the player duration is reset when a new media element is loaded,
+
+    _this.on(player, 'durationchange', updateContent); // Listen to loadstart because the player duration is reset when a new media element is loaded,
     // but the durationchange on the user agent will not fire.
     // @see [Spec]{@link https://www.w3.org/TR/2011/WD-html5-20110113/video.html#media-element-load-algorithm}
 
 
-    _this.on(player, 'loadstart', _this.updateContent); // Also listen for timeupdate (in the parent) and loadedmetadata because removing those
+    _this.on(player, 'loadstart', updateContent); // Also listen for timeupdate (in the parent) and loadedmetadata because removing those
     // listeners could have broken dependent applications/libraries. These
     // can likely be removed for 7.0.
 
 
-    _this.on(player, 'loadedmetadata', _this.updateContent);
+    _this.on(player, 'loadedmetadata', updateContent);
 
     return _this;
   }
@@ -12115,7 +12192,9 @@ var RemainingTimeDisplay = /*#__PURE__*/function (_TimeDisplay) {
 
     _this = _TimeDisplay.call(this, player, options) || this;
 
-    _this.on(player, 'durationchange', _this.updateContent);
+    _this.on(player, 'durationchange', function (e) {
+      return _this.updateContent(e);
+    });
 
     return _this;
   }
@@ -12226,7 +12305,9 @@ var LiveDisplay = /*#__PURE__*/function (_Component) {
 
     _this.updateShowing();
 
-    _this.on(_this.player(), 'durationchange', _this.updateShowing);
+    _this.on(_this.player(), 'durationchange', function (e) {
+      return _this.updateShowing(e);
+    });
 
     return _this;
   }
@@ -12310,7 +12391,11 @@ var SeekToLive = /*#__PURE__*/function (_Button) {
     _this.updateLiveEdgeStatus();
 
     if (_this.player_.liveTracker) {
-      _this.on(_this.player_.liveTracker, 'liveedgechange', _this.updateLiveEdgeStatus);
+      _this.updateLiveEdgeStatusHandler_ = function (e) {
+        return _this.updateLiveEdgeStatus(e);
+      };
+
+      _this.on(_this.player_.liveTracker, 'liveedgechange', _this.updateLiveEdgeStatusHandler_);
     }
 
     return _this;
@@ -12374,7 +12459,7 @@ var SeekToLive = /*#__PURE__*/function (_Button) {
 
   _proto.dispose = function dispose() {
     if (this.player_.liveTracker) {
-      this.off(this.player_.liveTracker, 'liveedgechange', this.updateLiveEdgeStatus);
+      this.off(this.player_.liveTracker, 'liveedgechange', this.updateLiveEdgeStatusHandler_);
     }
 
     this.textEl_ = null;
@@ -12429,7 +12514,32 @@ var Slider = /*#__PURE__*/function (_Component) {
   function Slider(player, options) {
     var _this;
 
-    _this = _Component.call(this, player, options) || this; // Set property names to bar to match with the child Slider class is looking for
+    _this = _Component.call(this, player, options) || this;
+
+    _this.handleMouseDown_ = function (e) {
+      return _this.handleMouseDown(e);
+    };
+
+    _this.handleMouseUp_ = function (e) {
+      return _this.handleMouseUp(e);
+    };
+
+    _this.handleKeyDown_ = function (e) {
+      return _this.handleKeyDown(e);
+    };
+
+    _this.handleClick_ = function (e) {
+      return _this.handleClick(e);
+    };
+
+    _this.handleMouseMove_ = function (e) {
+      return _this.handleMouseMove(e);
+    };
+
+    _this.update_ = function (e) {
+      return _this.update(e);
+    }; // Set property names to bar to match with the child Slider class is looking for
+
 
     _this.bar = _this.getChild(_this.options_.barName); // Set a horizontal or vertical class on the slider depending on the slider type
 
@@ -12462,10 +12572,10 @@ var Slider = /*#__PURE__*/function (_Component) {
       return;
     }
 
-    this.on('mousedown', this.handleMouseDown);
-    this.on('touchstart', this.handleMouseDown);
-    this.on('keydown', this.handleKeyDown);
-    this.on('click', this.handleClick); // TODO: deprecated, controlsvisible does not seem to be fired
+    this.on('mousedown', this.handleMouseDown_);
+    this.on('touchstart', this.handleMouseDown_);
+    this.on('keydown', this.handleKeyDown_);
+    this.on('click', this.handleClick_); // TODO: deprecated, controlsvisible does not seem to be fired
 
     this.on(this.player_, 'controlsvisible', this.update);
 
@@ -12488,15 +12598,15 @@ var Slider = /*#__PURE__*/function (_Component) {
     }
 
     var doc = this.bar.el_.ownerDocument;
-    this.off('mousedown', this.handleMouseDown);
-    this.off('touchstart', this.handleMouseDown);
-    this.off('keydown', this.handleKeyDown);
-    this.off('click', this.handleClick);
-    this.off(this.player_, 'controlsvisible', this.update);
-    this.off(doc, 'mousemove', this.handleMouseMove);
-    this.off(doc, 'mouseup', this.handleMouseUp);
-    this.off(doc, 'touchmove', this.handleMouseMove);
-    this.off(doc, 'touchend', this.handleMouseUp);
+    this.off('mousedown', this.handleMouseDown_);
+    this.off('touchstart', this.handleMouseDown_);
+    this.off('keydown', this.handleKeyDown_);
+    this.off('click', this.handleClick_);
+    this.off(this.player_, 'controlsvisible', this.update_);
+    this.off(doc, 'mousemove', this.handleMouseMove_);
+    this.off(doc, 'mouseup', this.handleMouseUp_);
+    this.off(doc, 'touchmove', this.handleMouseMove_);
+    this.off(doc, 'touchend', this.handleMouseUp_);
     this.removeAttribute('tabindex');
     this.addClass('disabled');
 
@@ -12583,10 +12693,10 @@ var Slider = /*#__PURE__*/function (_Component) {
      */
 
     this.trigger('slideractive');
-    this.on(doc, 'mousemove', this.handleMouseMove);
-    this.on(doc, 'mouseup', this.handleMouseUp);
-    this.on(doc, 'touchmove', this.handleMouseMove);
-    this.on(doc, 'touchend', this.handleMouseUp);
+    this.on(doc, 'mousemove', this.handleMouseMove_);
+    this.on(doc, 'mouseup', this.handleMouseUp_);
+    this.on(doc, 'touchmove', this.handleMouseMove_);
+    this.on(doc, 'touchend', this.handleMouseUp_);
     this.handleMouseMove(event);
   }
   /**
@@ -12629,10 +12739,10 @@ var Slider = /*#__PURE__*/function (_Component) {
      */
 
     this.trigger('sliderinactive');
-    this.off(doc, 'mousemove', this.handleMouseMove);
-    this.off(doc, 'mouseup', this.handleMouseUp);
-    this.off(doc, 'touchmove', this.handleMouseMove);
-    this.off(doc, 'touchend', this.handleMouseUp);
+    this.off(doc, 'mousemove', this.handleMouseMove_);
+    this.off(doc, 'mouseup', this.handleMouseUp_);
+    this.off(doc, 'touchmove', this.handleMouseMove_);
+    this.off(doc, 'touchend', this.handleMouseUp_);
     this.update();
   }
   /**
@@ -12806,7 +12916,9 @@ var LoadProgressBar = /*#__PURE__*/function (_Component) {
     _this = _Component.call(this, player, options) || this;
     _this.partEls_ = [];
 
-    _this.on(player, 'progress', _this.update);
+    _this.on(player, 'progress', function (e) {
+      return _this.update(e);
+    });
 
     return _this;
   }
@@ -13289,6 +13401,8 @@ var SeekBar = /*#__PURE__*/function (_Slider) {
   var _proto = SeekBar.prototype;
 
   _proto.setEventHandlers_ = function setEventHandlers_() {
+    var _this2 = this;
+
     this.update_ = bind(this, this.update);
     this.update = throttle(this.update_, UPDATE_REFRESH_INTERVAL);
     this.on(this.player_, ['ended', 'durationchange', 'timeupdate'], this.update);
@@ -13300,8 +13414,17 @@ var SeekBar = /*#__PURE__*/function (_Slider) {
 
 
     this.updateInterval = null;
-    this.on(this.player_, ['playing'], this.enableInterval_);
-    this.on(this.player_, ['ended', 'pause', 'waiting'], this.disableInterval_); // we don't need to update the play progress if the document is hidden,
+
+    this.enableIntervalHandler_ = function (e) {
+      return _this2.enableInterval_(e);
+    };
+
+    this.disableIntervalHandler_ = function (e) {
+      return _this2.disableInterval_(e);
+    };
+
+    this.on(this.player_, ['playing'], this.enableIntervalHandler_);
+    this.on(this.player_, ['ended', 'pause', 'waiting'], this.disableIntervalHandler_); // we don't need to update the play progress if the document is hidden,
     // also, this causes the CPU to spike and eventually crash the page on IE11.
 
     if ('hidden' in document && 'visibilityState' in document) {
@@ -13374,7 +13497,7 @@ var SeekBar = /*#__PURE__*/function (_Slider) {
   ;
 
   _proto.update = function update(event) {
-    var _this2 = this;
+    var _this3 = this;
 
     // ignore updates while the tab is hidden
     if (document.visibilityState === 'hidden') {
@@ -13384,33 +13507,33 @@ var SeekBar = /*#__PURE__*/function (_Slider) {
     var percent = _Slider.prototype.update.call(this);
 
     this.requestNamedAnimationFrame('SeekBar#update', function () {
-      var currentTime = _this2.player_.ended() ? _this2.player_.duration() : _this2.getCurrentTime_();
-      var liveTracker = _this2.player_.liveTracker;
+      var currentTime = _this3.player_.ended() ? _this3.player_.duration() : _this3.getCurrentTime_();
+      var liveTracker = _this3.player_.liveTracker;
 
-      var duration = _this2.player_.duration();
+      var duration = _this3.player_.duration();
 
       if (liveTracker && liveTracker.isLive()) {
-        duration = _this2.player_.liveTracker.liveCurrentTime();
+        duration = _this3.player_.liveTracker.liveCurrentTime();
       }
 
-      if (_this2.percent_ !== percent) {
+      if (_this3.percent_ !== percent) {
         // machine readable value of progress bar (percentage complete)
-        _this2.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
+        _this3.el_.setAttribute('aria-valuenow', (percent * 100).toFixed(2));
 
-        _this2.percent_ = percent;
+        _this3.percent_ = percent;
       }
 
-      if (_this2.currentTime_ !== currentTime || _this2.duration_ !== duration) {
+      if (_this3.currentTime_ !== currentTime || _this3.duration_ !== duration) {
         // human readable value of progress bar (time complete)
-        _this2.el_.setAttribute('aria-valuetext', _this2.localize('progress bar timing: currentTime={1} duration={2}', [formatTime(currentTime, duration), formatTime(duration, duration)], '{1} of {2}'));
+        _this3.el_.setAttribute('aria-valuetext', _this3.localize('progress bar timing: currentTime={1} duration={2}', [formatTime(currentTime, duration), formatTime(duration, duration)], '{1} of {2}'));
 
-        _this2.currentTime_ = currentTime;
-        _this2.duration_ = duration;
+        _this3.currentTime_ = currentTime;
+        _this3.duration_ = duration;
       } // update the progress bar time tooltip with the current time
 
 
-      if (_this2.bar) {
-        _this2.bar.update(getBoundingClientRect(_this2.el()), _this2.getProgress());
+      if (_this3.bar) {
+        _this3.bar.update(getBoundingClientRect(_this3.el()), _this3.getProgress());
       }
     });
     return percent;
@@ -13689,8 +13812,8 @@ var SeekBar = /*#__PURE__*/function (_Slider) {
       this.on(this.player_.liveTracker, 'liveedgechange', this.update);
     }
 
-    this.off(this.player_, ['playing'], this.enableInterval_);
-    this.off(this.player_, ['ended', 'pause', 'waiting'], this.disableInterval_); // we don't need to update the play progress if the document is hidden,
+    this.off(this.player_, ['playing'], this.enableIntervalHandler_);
+    this.off(this.player_, ['ended', 'pause', 'waiting'], this.disableIntervalHandler_); // we don't need to update the play progress if the document is hidden,
     // also, this causes the CPU to spike and eventually crash the page on IE11.
 
     if ('hidden' in document && 'visibilityState' in document) {
@@ -13746,6 +13869,14 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
     _this = _Component.call(this, player, options) || this;
     _this.handleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
     _this.throttledHandleMouseSeek = throttle(bind(_assertThisInitialized(_this), _this.handleMouseSeek), UPDATE_REFRESH_INTERVAL);
+
+    _this.handleMouseUpHandler_ = function (e) {
+      return _this.handleMouseUp(e);
+    };
+
+    _this.handleMouseDownHandler_ = function (e) {
+      return _this.handleMouseDown(e);
+    };
 
     _this.enable();
 
@@ -13861,7 +13992,7 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
       return;
     }
 
-    this.off(['mousedown', 'touchstart'], this.handleMouseDown);
+    this.off(['mousedown', 'touchstart'], this.handleMouseDownHandler_);
     this.off(this.el_, 'mousemove', this.handleMouseMove);
     this.removeListenersAddedOnMousedownAndTouchstart();
     this.addClass('disabled');
@@ -13890,7 +14021,7 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
       return;
     }
 
-    this.on(['mousedown', 'touchstart'], this.handleMouseDown);
+    this.on(['mousedown', 'touchstart'], this.handleMouseDownHandler_);
     this.on(this.el_, 'mousemove', this.handleMouseMove);
     this.removeClass('disabled');
     this.enabled_ = true;
@@ -13904,8 +14035,8 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
     var doc = this.el_.ownerDocument;
     this.off(doc, 'mousemove', this.throttledHandleMouseSeek);
     this.off(doc, 'touchmove', this.throttledHandleMouseSeek);
-    this.off(doc, 'mouseup', this.handleMouseUp);
-    this.off(doc, 'touchend', this.handleMouseUp);
+    this.off(doc, 'mouseup', this.handleMouseUpHandler_);
+    this.off(doc, 'touchend', this.handleMouseUpHandler_);
   }
   /**
    * Handle `mousedown` or `touchstart` events on the `ProgressControl`.
@@ -13928,8 +14059,8 @@ var ProgressControl = /*#__PURE__*/function (_Component) {
 
     this.on(doc, 'mousemove', this.throttledHandleMouseSeek);
     this.on(doc, 'touchmove', this.throttledHandleMouseSeek);
-    this.on(doc, 'mouseup', this.handleMouseUp);
-    this.on(doc, 'touchend', this.handleMouseUp);
+    this.on(doc, 'mouseup', this.handleMouseUpHandler_);
+    this.on(doc, 'touchend', this.handleMouseUpHandler_);
   }
   /**
    * Handle `mouseup` or `touchend` events on the `ProgressControl`.
@@ -13993,9 +14124,13 @@ var PictureInPictureToggle = /*#__PURE__*/function (_Button) {
 
     _this = _Button.call(this, player, options) || this;
 
-    _this.on(player, ['enterpictureinpicture', 'leavepictureinpicture'], _this.handlePictureInPictureChange);
+    _this.on(player, ['enterpictureinpicture', 'leavepictureinpicture'], function (e) {
+      return _this.handlePictureInPictureChange(e);
+    });
 
-    _this.on(player, ['disablepictureinpicturechanged', 'loadedmetadata'], _this.handlePictureInPictureEnabledChange); // TODO: Deactivate button on player emptied event.
+    _this.on(player, ['disablepictureinpicturechanged', 'loadedmetadata'], function (e) {
+      return _this.handlePictureInPictureEnabledChange(e);
+    }); // TODO: Deactivate button on player emptied event.
 
 
     _this.disable();
@@ -14106,7 +14241,9 @@ var FullscreenToggle = /*#__PURE__*/function (_Button) {
 
     _this = _Button.call(this, player, options) || this;
 
-    _this.on(player, 'fullscreenchange', _this.handleFullscreenChange);
+    _this.on(player, 'fullscreenchange', function (e) {
+      return _this.handleFullscreenChange(e);
+    });
 
     if (document[player.fsApi_.fullscreenEnabled] === false) {
       _this.disable();
@@ -14240,6 +14377,237 @@ var VolumeLevel = /*#__PURE__*/function (_Component) {
 Component.registerComponent('VolumeLevel', VolumeLevel);
 
 /**
+ * Volume level tooltips display a volume above or side by side the volume bar.
+ *
+ * @extends Component
+ */
+
+var VolumeLevelTooltip = /*#__PURE__*/function (_Component) {
+  _inheritsLoose(VolumeLevelTooltip, _Component);
+
+  /**
+   * Creates an instance of this class.
+   *
+   * @param {Player} player
+   *        The {@link Player} that this class should be attached to.
+   *
+   * @param {Object} [options]
+   *        The key/value store of player options.
+   */
+  function VolumeLevelTooltip(player, options) {
+    var _this;
+
+    _this = _Component.call(this, player, options) || this;
+    _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+    return _this;
+  }
+  /**
+   * Create the volume tooltip DOM element
+   *
+   * @return {Element}
+   *         The element that was created.
+   */
+
+
+  var _proto = VolumeLevelTooltip.prototype;
+
+  _proto.createEl = function createEl() {
+    return _Component.prototype.createEl.call(this, 'div', {
+      className: 'vjs-volume-tooltip'
+    }, {
+      'aria-hidden': 'true'
+    });
+  }
+  /**
+   * Updates the position of the tooltip relative to the `VolumeBar` and
+   * its content text.
+   *
+   * @param {Object} rangeBarRect
+   *        The `ClientRect` for the {@link VolumeBar} element.
+   *
+   * @param {number} rangeBarPoint
+   *        A number from 0 to 1, representing a horizontal/vertical reference point
+   *        from the left edge of the {@link VolumeBar}
+   *
+   * @param {boolean} vertical
+   *        Referees to the Volume control position
+   *        in the control bar{@link VolumeControl}
+   *
+   */
+  ;
+
+  _proto.update = function update(rangeBarRect, rangeBarPoint, vertical, content) {
+    if (!vertical) {
+      var tooltipRect = getBoundingClientRect(this.el_);
+      var playerRect = getBoundingClientRect(this.player_.el());
+      var volumeBarPointPx = rangeBarRect.width * rangeBarPoint;
+
+      if (!playerRect || !tooltipRect) {
+        return;
+      }
+
+      var spaceLeftOfPoint = rangeBarRect.left - playerRect.left + volumeBarPointPx;
+      var spaceRightOfPoint = rangeBarRect.width - volumeBarPointPx + (playerRect.right - rangeBarRect.right);
+      var pullTooltipBy = tooltipRect.width / 2;
+
+      if (spaceLeftOfPoint < pullTooltipBy) {
+        pullTooltipBy += pullTooltipBy - spaceLeftOfPoint;
+      } else if (spaceRightOfPoint < pullTooltipBy) {
+        pullTooltipBy = spaceRightOfPoint;
+      }
+
+      if (pullTooltipBy < 0) {
+        pullTooltipBy = 0;
+      } else if (pullTooltipBy > tooltipRect.width) {
+        pullTooltipBy = tooltipRect.width;
+      }
+
+      this.el_.style.right = "-" + pullTooltipBy + "px";
+    }
+
+    this.write(content + "%");
+  }
+  /**
+   * Write the volume to the tooltip DOM element.
+   *
+   * @param {string} content
+   *        The formatted volume for the tooltip.
+   */
+  ;
+
+  _proto.write = function write(content) {
+    textContent(this.el_, content);
+  }
+  /**
+   * Updates the position of the volume tooltip relative to the `VolumeBar`.
+   *
+   * @param {Object} rangeBarRect
+   *        The `ClientRect` for the {@link VolumeBar} element.
+   *
+   * @param {number} rangeBarPoint
+   *        A number from 0 to 1, representing a horizontal/vertical reference point
+   *        from the left edge of the {@link VolumeBar}
+   *
+   * @param {boolean} vertical
+   *        Referees to the Volume control position
+   *        in the control bar{@link VolumeControl}
+   *
+   * @param {number} volume
+   *        The volume level to update the tooltip to
+   *
+   * @param {Function} cb
+   *        A function that will be called during the request animation frame
+   *        for tooltips that need to do additional animations from the default
+   */
+  ;
+
+  _proto.updateVolume = function updateVolume(rangeBarRect, rangeBarPoint, vertical, volume, cb) {
+    var _this2 = this;
+
+    this.requestNamedAnimationFrame('VolumeLevelTooltip#updateVolume', function () {
+      _this2.update(rangeBarRect, rangeBarPoint, vertical, volume.toFixed(0));
+
+      if (cb) {
+        cb();
+      }
+    });
+  };
+
+  return VolumeLevelTooltip;
+}(Component);
+
+Component.registerComponent('VolumeLevelTooltip', VolumeLevelTooltip);
+
+/**
+ * The {@link MouseVolumeLevelDisplay} component tracks mouse movement over the
+ * {@link VolumeControl}. It displays an indicator and a {@link VolumeLevelTooltip}
+ * indicating the volume level which is represented by a given point in the
+ * {@link VolumeBar}.
+ *
+ * @extends Component
+ */
+
+var MouseVolumeLevelDisplay = /*#__PURE__*/function (_Component) {
+  _inheritsLoose(MouseVolumeLevelDisplay, _Component);
+
+  /**
+   * Creates an instance of this class.
+   *
+   * @param {Player} player
+   *        The {@link Player} that this class should be attached to.
+   *
+   * @param {Object} [options]
+   *        The key/value store of player options.
+   */
+  function MouseVolumeLevelDisplay(player, options) {
+    var _this;
+
+    _this = _Component.call(this, player, options) || this;
+    _this.update = throttle(bind(_assertThisInitialized(_this), _this.update), UPDATE_REFRESH_INTERVAL);
+    return _this;
+  }
+  /**
+   * Create the DOM element for this class.
+   *
+   * @return {Element}
+   *         The element that was created.
+   */
+
+
+  var _proto = MouseVolumeLevelDisplay.prototype;
+
+  _proto.createEl = function createEl() {
+    return _Component.prototype.createEl.call(this, 'div', {
+      className: 'vjs-mouse-display'
+    });
+  }
+  /**
+   * Enquires updates to its own DOM as well as the DOM of its
+   * {@link VolumeLevelTooltip} child.
+   *
+   * @param {Object} rangeBarRect
+   *        The `ClientRect` for the {@link VolumeBar} element.
+   *
+   * @param {number} rangeBarPoint
+   *        A number from 0 to 1, representing a horizontal/vertical reference point
+   *        from the left edge of the {@link VolumeBar}
+   *
+   * @param {boolean} vertical
+   *        Referees to the Volume control position
+   *        in the control bar{@link VolumeControl}
+   *
+   */
+  ;
+
+  _proto.update = function update(rangeBarRect, rangeBarPoint, vertical) {
+    var _this2 = this;
+
+    var volume = 100 * rangeBarPoint;
+    this.getChild('volumeLevelTooltip').updateVolume(rangeBarRect, rangeBarPoint, vertical, volume, function () {
+      if (vertical) {
+        _this2.el_.style.bottom = rangeBarRect.height * rangeBarPoint + "px";
+      } else {
+        _this2.el_.style.left = rangeBarRect.width * rangeBarPoint + "px";
+      }
+    });
+  };
+
+  return MouseVolumeLevelDisplay;
+}(Component);
+/**
+ * Default options for `MouseVolumeLevelDisplay`
+ *
+ * @type {Object}
+ * @private
+ */
+
+
+MouseVolumeLevelDisplay.prototype.options_ = {
+  children: ['volumeLevelTooltip']
+};
+Component.registerComponent('MouseVolumeLevelDisplay', MouseVolumeLevelDisplay);
+
+/**
  * The bar that contains the volume level and can be clicked on to adjust the level
  *
  * @extends Slider
@@ -14262,9 +14630,13 @@ var VolumeBar = /*#__PURE__*/function (_Slider) {
 
     _this = _Slider.call(this, player, options) || this;
 
-    _this.on('slideractive', _this.updateLastVolume_);
+    _this.on('slideractive', function (e) {
+      return _this.updateLastVolume_(e);
+    });
 
-    _this.on(player, 'volumechange', _this.updateARIAAttributes);
+    _this.on(player, 'volumechange', function (e) {
+      return _this.updateARIAAttributes(e);
+    });
 
     player.ready(function () {
       return _this.updateARIAAttributes();
@@ -14317,6 +14689,21 @@ var VolumeBar = /*#__PURE__*/function (_Slider) {
   ;
 
   _proto.handleMouseMove = function handleMouseMove(event) {
+    var mouseVolumeLevelDisplay = this.getChild('mouseVolumeLevelDisplay');
+
+    if (mouseVolumeLevelDisplay) {
+      var volumeBarEl = this.el();
+      var volumeBarRect = getBoundingClientRect(volumeBarEl);
+      var vertical = this.vertical();
+      var volumeBarPoint = getPointerPosition(volumeBarEl, event);
+      volumeBarPoint = vertical ? volumeBarPoint.y : volumeBarPoint.x; // The default skin has a gap on either side of the `VolumeBar`. This means
+      // that it's possible to trigger this behavior outside the boundaries of
+      // the `VolumeBar`. This ensures we stay within it at all times.
+
+      volumeBarPoint = clamp(volumeBarPoint, 0, 1);
+      mouseVolumeLevelDisplay.update(volumeBarRect, volumeBarPoint, vertical);
+    }
+
     if (!isSingleLeftClick(event)) {
       return;
     }
@@ -14426,12 +14813,17 @@ var VolumeBar = /*#__PURE__*/function (_Slider) {
 VolumeBar.prototype.options_ = {
   children: ['volumeLevel'],
   barName: 'volumeLevel'
-};
+}; // MouseVolumeLevelDisplay tooltip should not be added to a player on mobile devices
+
+if (!IS_IOS && !IS_ANDROID) {
+  VolumeBar.prototype.options_.children.splice(0, 0, 'mouseVolumeLevelDisplay');
+}
 /**
  * Call the update event for this Slider when this event happens on the player.
  *
  * @type {string}
  */
+
 
 VolumeBar.prototype.playerEvent = 'volumechange';
 Component.registerComponent('VolumeBar', VolumeBar);
@@ -14474,9 +14866,21 @@ var VolumeControl = /*#__PURE__*/function (_Component) {
     checkVolumeSupport(_assertThisInitialized(_this), player);
     _this.throttledHandleMouseMove = throttle(bind(_assertThisInitialized(_this), _this.handleMouseMove), UPDATE_REFRESH_INTERVAL);
 
-    _this.on('mousedown', _this.handleMouseDown);
+    _this.handleMouseUpHandler_ = function (e) {
+      return _this.handleMouseUp(e);
+    };
 
-    _this.on('touchstart', _this.handleMouseDown); // while the slider is active (the mouse has been pressed down and
+    _this.on('mousedown', function (e) {
+      return _this.handleMouseDown(e);
+    });
+
+    _this.on('touchstart', function (e) {
+      return _this.handleMouseDown(e);
+    });
+
+    _this.on('mousemove', function (e) {
+      return _this.handleMouseMove(e);
+    }); // while the slider is active (the mouse has been pressed down and
     // is dragging) or in focus we do not want to hide the VolumeBar
 
 
@@ -14534,8 +14938,8 @@ var VolumeControl = /*#__PURE__*/function (_Component) {
     var doc = this.el_.ownerDocument;
     this.on(doc, 'mousemove', this.throttledHandleMouseMove);
     this.on(doc, 'touchmove', this.throttledHandleMouseMove);
-    this.on(doc, 'mouseup', this.handleMouseUp);
-    this.on(doc, 'touchend', this.handleMouseUp);
+    this.on(doc, 'mouseup', this.handleMouseUpHandler_);
+    this.on(doc, 'touchend', this.handleMouseUpHandler_);
   }
   /**
    * Handle `mouseup` or `touchend` events on the `VolumeControl`.
@@ -14552,8 +14956,8 @@ var VolumeControl = /*#__PURE__*/function (_Component) {
     var doc = this.el_.ownerDocument;
     this.off(doc, 'mousemove', this.throttledHandleMouseMove);
     this.off(doc, 'touchmove', this.throttledHandleMouseMove);
-    this.off(doc, 'mouseup', this.handleMouseUp);
-    this.off(doc, 'touchend', this.handleMouseUp);
+    this.off(doc, 'mouseup', this.handleMouseUpHandler_);
+    this.off(doc, 'touchend', this.handleMouseUpHandler_);
   }
   /**
    * Handle `mousedown` or `touchstart` events on the `VolumeControl`.
@@ -14637,7 +15041,9 @@ var MuteToggle = /*#__PURE__*/function (_Button) {
 
     checkMuteSupport(_assertThisInitialized(_this), player);
 
-    _this.on(player, ['loadstart', 'volumechange'], _this.update);
+    _this.on(player, ['loadstart', 'volumechange'], function (e) {
+      return _this.update(e);
+    });
 
     return _this;
   }
@@ -14804,19 +15210,35 @@ var VolumePanel = /*#__PURE__*/function (_Component) {
       options.volumeControl.vertical = !options.inline;
     }
 
-    _this = _Component.call(this, player, options) || this;
+    _this = _Component.call(this, player, options) || this; // this handler is used by mouse handler methods below
 
-    _this.on(player, ['loadstart'], _this.volumePanelState_);
+    _this.handleKeyPressHandler_ = function (e) {
+      return _this.handleKeyPress(e);
+    };
 
-    _this.on(_this.muteToggle, 'keyup', _this.handleKeyPress);
+    _this.on(player, ['loadstart'], function (e) {
+      return _this.volumePanelState_(e);
+    });
 
-    _this.on(_this.volumeControl, 'keyup', _this.handleVolumeControlKeyUp);
+    _this.on(_this.muteToggle, 'keyup', function (e) {
+      return _this.handleKeyPress(e);
+    });
 
-    _this.on('keydown', _this.handleKeyPress);
+    _this.on(_this.volumeControl, 'keyup', function (e) {
+      return _this.handleVolumeControlKeyUp(e);
+    });
 
-    _this.on('mouseover', _this.handleMouseOver);
+    _this.on('keydown', function (e) {
+      return _this.handleKeyPress(e);
+    });
 
-    _this.on('mouseout', _this.handleMouseOut); // while the slider is active (the mouse has been pressed down and
+    _this.on('mouseover', function (e) {
+      return _this.handleMouseOver(e);
+    });
+
+    _this.on('mouseout', function (e) {
+      return _this.handleMouseOut(e);
+    }); // while the slider is active (the mouse has been pressed down and
     // is dragging) we do not want to hide the VolumeBar
 
 
@@ -14931,7 +15353,7 @@ var VolumePanel = /*#__PURE__*/function (_Component) {
 
   _proto.handleMouseOver = function handleMouseOver(event) {
     this.addClass('vjs-hover');
-    on(document, 'keyup', bind(this, this.handleKeyPress));
+    on(document, 'keyup', this.handleKeyPressHandler_);
   }
   /**
    * This gets called when a `VolumePanel` gains hover via a `mouseout` event.
@@ -14947,7 +15369,7 @@ var VolumePanel = /*#__PURE__*/function (_Component) {
 
   _proto.handleMouseOut = function handleMouseOut(event) {
     this.removeClass('vjs-hover');
-    off(document, 'keyup', bind(this, this.handleKeyPress));
+    off(document, 'keyup', this.handleKeyPressHandler_);
   }
   /**
    * Handles `keyup` event on the document or `keydown` event on the `VolumePanel`,
@@ -15012,11 +15434,19 @@ var Menu = /*#__PURE__*/function (_Component) {
 
     _this.focusedChild_ = -1;
 
-    _this.on('keydown', _this.handleKeyDown); // All the menu item instances share the same blur handler provided by the menu container.
+    _this.on('keydown', function (e) {
+      return _this.handleKeyDown(e);
+    }); // All the menu item instances share the same blur handler provided by the menu container.
 
 
-    _this.boundHandleBlur_ = bind(_assertThisInitialized(_this), _this.handleBlur);
-    _this.boundHandleTapClick_ = bind(_assertThisInitialized(_this), _this.handleTapClick);
+    _this.boundHandleBlur_ = function (e) {
+      return _this.handleBlur(e);
+    };
+
+    _this.boundHandleTapClick_ = function (e) {
+      return _this.handleTapClick(e);
+    };
+
     return _this;
   }
   /**
@@ -15317,23 +15747,37 @@ var MenuButton = /*#__PURE__*/function (_Component) {
 
     _this.enabled_ = true;
 
-    _this.on(_this.menuButton_, 'tap', _this.handleClick);
+    var handleClick = function handleClick(e) {
+      return _this.handleClick(e);
+    };
 
-    _this.on(_this.menuButton_, 'click', _this.handleClick);
+    _this.handleMenuKeyUp_ = function (e) {
+      return _this.handleMenuKeyUp(e);
+    };
 
-    _this.on(_this.menuButton_, 'keydown', _this.handleKeyDown);
+    _this.on(_this.menuButton_, 'tap', handleClick);
+
+    _this.on(_this.menuButton_, 'click', handleClick);
+
+    _this.on(_this.menuButton_, 'keydown', function (e) {
+      return _this.handleKeyDown(e);
+    });
 
     _this.on(_this.menuButton_, 'mouseenter', function () {
       _this.addClass('vjs-hover');
 
       _this.menu.show();
 
-      on(document, 'keyup', bind(_assertThisInitialized(_this), _this.handleMenuKeyUp));
+      on(document, 'keyup', _this.handleMenuKeyUp_);
     });
 
-    _this.on('mouseleave', _this.handleMouseLeave);
+    _this.on('mouseleave', function (e) {
+      return _this.handleMouseLeave(e);
+    });
 
-    _this.on('keydown', _this.handleSubmenuKeyDown);
+    _this.on('keydown', function (e) {
+      return _this.handleSubmenuKeyDown(e);
+    });
 
     return _this;
   }
@@ -15543,7 +15987,7 @@ var MenuButton = /*#__PURE__*/function (_Component) {
 
   _proto.handleMouseLeave = function handleMouseLeave(event) {
     this.removeClass('vjs-hover');
-    off(document, 'keyup', bind(this, this.handleMenuKeyUp));
+    off(document, 'keyup', this.handleMenuKeyUp_);
   }
   /**
    * Set the focus to the actual button, not to this element
@@ -17096,14 +17540,11 @@ var AudioTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
   ;
 
   _proto.handleClick = function handleClick(event) {
-    var tracks = this.player_.audioTracks();
+    _MenuItem.prototype.handleClick.call(this, event); // the audio track list will automatically toggle other tracks
+    // off for us.
 
-    _MenuItem.prototype.handleClick.call(this, event);
 
-    for (var i = 0; i < tracks.length; i++) {
-      var track = tracks[i];
-      track.enabled = track === this.track;
-    }
+    this.track.enabled = true;
   }
   /**
    * Handle any {@link AudioTrack} change.
@@ -17246,7 +17687,9 @@ var PlaybackRateMenuItem = /*#__PURE__*/function (_MenuItem) {
     _this.label = label;
     _this.rate = rate;
 
-    _this.on(player, 'ratechange', _this.update);
+    _this.on(player, 'ratechange', function (e) {
+      return _this.update(e);
+    });
 
     return _this;
   }
@@ -17324,9 +17767,13 @@ var PlaybackRateMenuButton = /*#__PURE__*/function (_MenuButton) {
 
     _this.updateLabel();
 
-    _this.on(player, 'loadstart', _this.updateVisibility);
+    _this.on(player, 'loadstart', function (e) {
+      return _this.updateVisibility(e);
+    });
 
-    _this.on(player, 'ratechange', _this.updateLabel);
+    _this.on(player, 'ratechange', function (e) {
+      return _this.updateLabel(e);
+    });
 
     return _this;
   }
@@ -17664,7 +18111,9 @@ var ErrorDisplay = /*#__PURE__*/function (_ModalDialog) {
 
     _this = _ModalDialog.call(this, player, options) || this;
 
-    _this.on(player, 'error', _this.open);
+    _this.on(player, 'error', function (e) {
+      return _this.open(e);
+    });
 
     return _this;
   }
@@ -17899,7 +18348,7 @@ var TextTrackSettings = /*#__PURE__*/function (_ModalDialog) {
 
     options.temporary = false;
     _this = _ModalDialog.call(this, player, options) || this;
-    _this.updateDisplay = bind(_assertThisInitialized(_this), _this.updateDisplay); // fill the modal and pretend we have opened it
+    _this.updateDisplay = _this.updateDisplay.bind(_assertThisInitialized(_this)); // fill the modal and pretend we have opened it
 
     _this.fill();
 
@@ -18408,9 +18857,35 @@ var LiveTracker = /*#__PURE__*/function (_Component) {
     });
     _this = _Component.call(this, player, options_) || this;
 
+    _this.handleVisibilityChange_ = function (e) {
+      return _this.handleVisibilityChange(e);
+    };
+
+    _this.trackLiveHandler_ = function () {
+      return _this.trackLive_();
+    };
+
+    _this.handlePlay_ = function (e) {
+      return _this.handlePlay(e);
+    };
+
+    _this.handleFirstTimeupdate_ = function (e) {
+      return _this.handleFirstTimeupdate(e);
+    };
+
+    _this.handleSeeked_ = function (e) {
+      return _this.handleSeeked(e);
+    };
+
+    _this.seekToLiveEdge_ = function (e) {
+      return _this.seekToLiveEdge(e);
+    };
+
     _this.reset_();
 
-    _this.on(_this.player_, 'durationchange', _this.handleDurationchange); // we should try to toggle tracking on canplay as native playback engines, like Safari
+    _this.on(_this.player_, 'durationchange', function (e) {
+      return _this.handleDurationchange(e);
+    }); // we should try to toggle tracking on canplay as native playback engines, like Safari
     // may not have the proper values for things like seekableEnd until then
 
 
@@ -18422,7 +18897,7 @@ var LiveTracker = /*#__PURE__*/function (_Component) {
 
 
     if (IE_VERSION && 'hidden' in document && 'visibilityState' in document) {
-      _this.on(document, 'visibilitychange', _this.handleVisibilityChange);
+      _this.on(document, 'visibilitychange', _this.handleVisibilityChange_);
     }
 
     return _this;
@@ -18525,15 +19000,15 @@ var LiveTracker = /*#__PURE__*/function (_Component) {
       this.timeupdateSeen_ = this.player_.hasStarted();
     }
 
-    this.trackingInterval_ = this.setInterval(this.trackLive_, UPDATE_REFRESH_INTERVAL);
+    this.trackingInterval_ = this.setInterval(this.trackLiveHandler_, UPDATE_REFRESH_INTERVAL);
     this.trackLive_();
-    this.on(this.player_, ['play', 'pause'], this.trackLive_);
+    this.on(this.player_, ['play', 'pause'], this.trackLiveHandler_);
 
     if (!this.timeupdateSeen_) {
-      this.one(this.player_, 'play', this.handlePlay);
-      this.one(this.player_, 'timeupdate', this.handleFirstTimeupdate);
+      this.one(this.player_, 'play', this.handlePlay_);
+      this.one(this.player_, 'timeupdate', this.handleFirstTimeupdate_);
     } else {
-      this.on(this.player_, 'seeked', this.handleSeeked);
+      this.on(this.player_, 'seeked', this.handleSeeked_);
     }
   }
   /**
@@ -18544,7 +19019,7 @@ var LiveTracker = /*#__PURE__*/function (_Component) {
 
   _proto.handleFirstTimeupdate = function handleFirstTimeupdate() {
     this.timeupdateSeen_ = true;
-    this.on(this.player_, 'seeked', this.handleSeeked);
+    this.on(this.player_, 'seeked', this.handleSeeked_);
   }
   /**
    * Keep track of what time a seek starts, and listen for seeked
@@ -18565,7 +19040,7 @@ var LiveTracker = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.handlePlay = function handlePlay() {
-    this.one(this.player_, 'timeupdate', this.seekToLiveEdge);
+    this.one(this.player_, 'timeupdate', this.seekToLiveEdge_);
   }
   /**
    * Stop tracking, and set all internal variables to
@@ -18583,11 +19058,11 @@ var LiveTracker = /*#__PURE__*/function (_Component) {
     this.skipNextSeeked_ = false;
     this.clearInterval(this.trackingInterval_);
     this.trackingInterval_ = null;
-    this.off(this.player_, ['play', 'pause'], this.trackLive_);
-    this.off(this.player_, 'seeked', this.handleSeeked);
-    this.off(this.player_, 'play', this.handlePlay);
-    this.off(this.player_, 'timeupdate', this.handleFirstTimeupdate);
-    this.off(this.player_, 'timeupdate', this.seekToLiveEdge);
+    this.off(this.player_, ['play', 'pause'], this.trackLiveHandler_);
+    this.off(this.player_, 'seeked', this.handleSeeked_);
+    this.off(this.player_, 'play', this.handlePlay_);
+    this.off(this.player_, 'timeupdate', this.handleFirstTimeupdate_);
+    this.off(this.player_, 'timeupdate', this.seekToLiveEdge_);
   }
   /**
    * stop tracking live playback
@@ -18762,7 +19237,7 @@ var LiveTracker = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.dispose = function dispose() {
-    this.off(document, 'visibilitychange', this.handleVisibilityChange);
+    this.off(document, 'visibilitychange', this.handleVisibilityChange_);
     this.stopTracking();
 
     _Component.prototype.dispose.call(this);
@@ -21445,6 +21920,42 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.boundFullWindowOnEscKey_ = function (e) {
       return _this.fullWindowOnEscKey(e);
+    };
+
+    _this.boundUpdateStyleEl_ = function (e) {
+      return _this.updateStyleEl_(e);
+    };
+
+    _this.boundApplyInitTime_ = function (e) {
+      return _this.applyInitTime_(e);
+    };
+
+    _this.boundUpdateCurrentBreakpoint_ = function (e) {
+      return _this.updateCurrentBreakpoint_(e);
+    };
+
+    _this.boundHandleTechClick_ = function (e) {
+      return _this.handleTechClick_(e);
+    };
+
+    _this.boundHandleTechDoubleClick_ = function (e) {
+      return _this.handleTechDoubleClick_(e);
+    };
+
+    _this.boundHandleTechTouchStart_ = function (e) {
+      return _this.handleTechTouchStart_(e);
+    };
+
+    _this.boundHandleTechTouchMove_ = function (e) {
+      return _this.handleTechTouchMove_(e);
+    };
+
+    _this.boundHandleTechTouchEnd_ = function (e) {
+      return _this.handleTechTouchEnd_(e);
+    };
+
+    _this.boundHandleTechTap_ = function (e) {
+      return _this.handleTechTap_(e);
     }; // default isFullscreen_ to false
 
 
@@ -21547,7 +22058,7 @@ var Player = /*#__PURE__*/function (_Component) {
     }
 
     if (_this.fluid_) {
-      _this.on(['playerreset', 'resize'], _this.updateStyleEl_);
+      _this.on(['playerreset', 'resize'], _this.boundUpdateStyleEl_);
     } // We also want to pass the original player options to each component and plugin
     // as well so they don't need to reach back into the player for options later.
     // We also need to do another copy of this.options_ so we don't end up with
@@ -21626,13 +22137,21 @@ var Player = /*#__PURE__*/function (_Component) {
 
     _this.reportUserActivity();
 
-    _this.one('play', _this.listenForUserActivity_);
+    _this.one('play', function (e) {
+      return _this.listenForUserActivity_(e);
+    });
 
-    _this.on('stageclick', _this.handleStageClick_);
+    _this.on('stageclick', function (e) {
+      return _this.handleStageClick_(e);
+    });
 
-    _this.on('keydown', _this.handleKeyDown);
+    _this.on('keydown', function (e) {
+      return _this.handleKeyDown(e);
+    });
 
-    _this.on('languagechange', _this.handleLanguagechange);
+    _this.on('languagechange', function (e) {
+      return _this.handleLanguagechange(e);
+    });
 
     _this.breakpoints(_this.options_.breakpoints);
 
@@ -21990,14 +22509,14 @@ var Player = /*#__PURE__*/function (_Component) {
     this.fluid_ = !!bool;
 
     if (isEvented(this)) {
-      this.off(['playerreset', 'resize'], this.updateStyleEl_);
+      this.off(['playerreset', 'resize'], this.boundUpdateStyleEl_);
     }
 
     if (bool) {
       this.addClass('vjs-fluid');
       this.fill(false);
       addEventedCallback(this, function () {
-        _this3.on(['playerreset', 'resize'], _this3.updateStyleEl_);
+        _this3.on(['playerreset', 'resize'], _this3.boundUpdateStyleEl_);
       });
     } else {
       this.removeClass('vjs-fluid');
@@ -22238,7 +22757,9 @@ var Player = /*#__PURE__*/function (_Component) {
     textTrackConverter.jsonToTextTracks(this.textTracksJson_ || [], this.tech_); // Listen to all HTML5-defined events and trigger them on the player
 
     TECH_EVENTS_RETRIGGER.forEach(function (event) {
-      _this4.on(_this4.tech_, event, _this4["handleTech" + toTitleCase(event) + "_"]);
+      _this4.on(_this4.tech_, event, function (e) {
+        return _this4["handleTech" + toTitleCase(event) + "_"](e);
+      });
     });
     Object.keys(TECH_EVENTS_QUEUE).forEach(function (event) {
       _this4.on(_this4.tech_, event, function (eventObj) {
@@ -22254,24 +22775,58 @@ var Player = /*#__PURE__*/function (_Component) {
         _this4["handleTech" + TECH_EVENTS_QUEUE[event] + "_"](eventObj);
       });
     });
-    this.on(this.tech_, 'loadstart', this.handleTechLoadStart_);
-    this.on(this.tech_, 'sourceset', this.handleTechSourceset_);
-    this.on(this.tech_, 'waiting', this.handleTechWaiting_);
-    this.on(this.tech_, 'ended', this.handleTechEnded_);
-    this.on(this.tech_, 'seeking', this.handleTechSeeking_);
-    this.on(this.tech_, 'play', this.handleTechPlay_);
-    this.on(this.tech_, 'firstplay', this.handleTechFirstPlay_);
-    this.on(this.tech_, 'pause', this.handleTechPause_);
-    this.on(this.tech_, 'durationchange', this.handleTechDurationChange_);
-    this.on(this.tech_, 'fullscreenchange', this.handleTechFullscreenChange_);
-    this.on(this.tech_, 'fullscreenerror', this.handleTechFullscreenError_);
-    this.on(this.tech_, 'enterpictureinpicture', this.handleTechEnterPictureInPicture_);
-    this.on(this.tech_, 'leavepictureinpicture', this.handleTechLeavePictureInPicture_);
-    this.on(this.tech_, 'error', this.handleTechError_);
-    this.on(this.tech_, 'loadedmetadata', this.updateStyleEl_);
-    this.on(this.tech_, 'posterchange', this.handleTechPosterChange_);
-    this.on(this.tech_, 'textdata', this.handleTechTextData_);
-    this.on(this.tech_, 'ratechange', this.handleTechRateChange_);
+    this.on(this.tech_, 'loadstart', function (e) {
+      return _this4.handleTechLoadStart_(e);
+    });
+    this.on(this.tech_, 'sourceset', function (e) {
+      return _this4.handleTechSourceset_(e);
+    });
+    this.on(this.tech_, 'waiting', function (e) {
+      return _this4.handleTechWaiting_(e);
+    });
+    this.on(this.tech_, 'ended', function (e) {
+      return _this4.handleTechEnded_(e);
+    });
+    this.on(this.tech_, 'seeking', function (e) {
+      return _this4.handleTechSeeking_(e);
+    });
+    this.on(this.tech_, 'play', function (e) {
+      return _this4.handleTechPlay_(e);
+    });
+    this.on(this.tech_, 'firstplay', function (e) {
+      return _this4.handleTechFirstPlay_(e);
+    });
+    this.on(this.tech_, 'pause', function (e) {
+      return _this4.handleTechPause_(e);
+    });
+    this.on(this.tech_, 'durationchange', function (e) {
+      return _this4.handleTechDurationChange_(e);
+    });
+    this.on(this.tech_, 'fullscreenchange', function (e) {
+      return _this4.handleTechFullscreenChange_(e);
+    });
+    this.on(this.tech_, 'fullscreenerror', function (e) {
+      return _this4.handleTechFullscreenError_(e);
+    });
+    this.on(this.tech_, 'enterpictureinpicture', function (e) {
+      return _this4.handleTechEnterPictureInPicture_(e);
+    });
+    this.on(this.tech_, 'leavepictureinpicture', function (e) {
+      return _this4.handleTechLeavePictureInPicture_(e);
+    });
+    this.on(this.tech_, 'error', function (e) {
+      return _this4.handleTechError_(e);
+    });
+    this.on(this.tech_, 'posterchange', function (e) {
+      return _this4.handleTechPosterChange_(e);
+    });
+    this.on(this.tech_, 'textdata', function (e) {
+      return _this4.handleTechTextData_(e);
+    });
+    this.on(this.tech_, 'ratechange', function (e) {
+      return _this4.handleTechRateChange_(e);
+    });
+    this.on(this.tech_, 'loadedmetadata', this.boundUpdateStyleEl_);
     this.usingNativeControls(this.techGet_('controls'));
 
     if (this.controls() && !this.usingNativeControls()) {
@@ -22368,17 +22923,17 @@ var Player = /*#__PURE__*/function (_Component) {
     // TODO: Is this needed for any techs other than Flash?
     // Any touch events are set to block the mousedown event from happening
 
-    this.on(this.tech_, 'mouseup', this.handleTechClick_);
-    this.on(this.tech_, 'dblclick', this.handleTechDoubleClick_); // If the controls were hidden we don't want that to change without a tap event
+    this.on(this.tech_, 'mouseup', this.boundHandleTechClick_);
+    this.on(this.tech_, 'dblclick', this.boundHandleTechDoubleClick_); // If the controls were hidden we don't want that to change without a tap event
     // so we'll check if the controls were already showing before reporting user
     // activity
 
-    this.on(this.tech_, 'touchstart', this.handleTechTouchStart_);
-    this.on(this.tech_, 'touchmove', this.handleTechTouchMove_);
-    this.on(this.tech_, 'touchend', this.handleTechTouchEnd_); // The tap listener needs to come after the touchend listener because the tap
+    this.on(this.tech_, 'touchstart', this.boundHandleTechTouchStart_);
+    this.on(this.tech_, 'touchmove', this.boundHandleTechTouchMove_);
+    this.on(this.tech_, 'touchend', this.boundHandleTechTouchEnd_); // The tap listener needs to come after the touchend listener because the tap
     // listener cancels out any reportedUserActivity when setting userActive(false)
 
-    this.on(this.tech_, 'tap', this.handleTechTap_);
+    this.on(this.tech_, 'tap', this.boundHandleTechTap_);
   }
   /**
    * Remove the listeners used for click and tap controls. This is needed for
@@ -22391,12 +22946,12 @@ var Player = /*#__PURE__*/function (_Component) {
   _proto.removeTechControlsListeners_ = function removeTechControlsListeners_() {
     // We don't want to just use `this.off()` because there might be other needed
     // listeners added by techs that extend this.
-    this.off(this.tech_, 'tap', this.handleTechTap_);
-    this.off(this.tech_, 'touchstart', this.handleTechTouchStart_);
-    this.off(this.tech_, 'touchmove', this.handleTechTouchMove_);
-    this.off(this.tech_, 'touchend', this.handleTechTouchEnd_);
-    this.off(this.tech_, 'mouseup', this.handleTechClick_);
-    this.off(this.tech_, 'dblclick', this.handleTechDoubleClick_);
+    this.off(this.tech_, 'tap', this.boundHandleTechTap_);
+    this.off(this.tech_, 'touchstart', this.boundHandleTechTouchStart_);
+    this.off(this.tech_, 'touchmove', this.boundHandleTechTouchMove_);
+    this.off(this.tech_, 'touchend', this.boundHandleTechTouchEnd_);
+    this.off(this.tech_, 'mouseup', this.boundHandleTechClick_);
+    this.off(this.tech_, 'dblclick', this.boundHandleTechDoubleClick_);
   }
   /**
    * Player waits for the tech to be ready
@@ -23597,8 +24152,8 @@ var Player = /*#__PURE__*/function (_Component) {
 
       if (!this.isReady_ || this.changingSrc_ || !this.tech_ || !this.tech_.isReady_) {
         this.cache_.initTime = seconds;
-        this.off('canplay', this.applyInitTime_);
-        this.one('canplay', this.applyInitTime_);
+        this.off('canplay', this.boundApplyInitTime_);
+        this.one('canplay', this.boundApplyInitTime_);
         return;
       }
 
@@ -24462,7 +25017,7 @@ var Player = /*#__PURE__*/function (_Component) {
     return foundSourceAndTech || false;
   }
   /**
-   * Get or set the video source.
+   * Executes source setting and getting logic
    *
    * @param {Tech~SourceObject|Tech~SourceObject[]|string} [source]
    *        A SourceObject, an array of SourceObjects, or a string referencing
@@ -24471,6 +25026,8 @@ var Player = /*#__PURE__*/function (_Component) {
    *        algorithms can take the `type` into account.
    *
    *        If not provided, this method acts as a getter.
+   * @param {boolean} isRetry
+   *        Indicates whether this is being called internally as a result of a retry
    *
    * @return {string|undefined}
    *         If the `source` argument is missing, returns the current source
@@ -24478,12 +25035,17 @@ var Player = /*#__PURE__*/function (_Component) {
    */
   ;
 
-  _proto.src = function src(source) {
+  _proto.handleSrc_ = function handleSrc_(source, isRetry) {
     var _this14 = this;
 
     // getter usage
     if (typeof source === 'undefined') {
       return this.cache_.src || '';
+    } // Reset retry behavior for new source
+
+
+    if (this.resetRetryOnError_) {
+      this.resetRetryOnError_();
     } // filter out invalid sources and turn our source into
     // an array of source objects
 
@@ -24503,15 +25065,22 @@ var Player = /*#__PURE__*/function (_Component) {
     } // initial sources
 
 
-    this.changingSrc_ = true;
-    this.cache_.sources = sources;
+    this.changingSrc_ = true; // Only update the cached source list if we are not retrying a new source after error,
+    // since in that case we want to include the failed source(s) in the cache
+
+    if (!isRetry) {
+      this.cache_.sources = sources;
+    }
+
     this.updateSourceCaches_(sources[0]); // middlewareSource is the source after it has been changed by middleware
 
     setSource(this, sources[0], function (middlewareSource, mws) {
       _this14.middleware_ = mws; // since sourceSet is async we have to update the cache again after we select a source since
       // the source that is selected could be out of order from the cache update above this callback.
 
-      _this14.cache_.sources = sources;
+      if (!isRetry) {
+        _this14.cache_.sources = sources;
+      }
 
       _this14.updateSourceCaches_(middlewareSource);
 
@@ -24519,7 +25088,7 @@ var Player = /*#__PURE__*/function (_Component) {
 
       if (err) {
         if (sources.length > 1) {
-          return _this14.src(sources.slice(1));
+          return _this14.handleSrc_(sources.slice(1));
         }
 
         _this14.changingSrc_ = false; // We need to wrap this in a timeout to give folks a chance to add error event handlers
@@ -24539,7 +25108,49 @@ var Player = /*#__PURE__*/function (_Component) {
       }
 
       setTech(mws, _this14.tech_);
-    });
+    }); // Try another available source if this one fails before playback.
+
+    if (this.options_.retryOnError && sources.length > 1) {
+      var retry = function retry() {
+        // Remove the error modal
+        _this14.error(null);
+
+        _this14.handleSrc_(sources.slice(1), true);
+      };
+
+      var stopListeningForErrors = function stopListeningForErrors() {
+        _this14.off('error', retry);
+      };
+
+      this.one('error', retry);
+      this.one('playing', stopListeningForErrors);
+
+      this.resetRetryOnError_ = function () {
+        _this14.off('error', retry);
+
+        _this14.off('playing', stopListeningForErrors);
+      };
+    }
+  }
+  /**
+   * Get or set the video source.
+   *
+   * @param {Tech~SourceObject|Tech~SourceObject[]|string} [source]
+   *        A SourceObject, an array of SourceObjects, or a string referencing
+   *        a URL to a media source. It is _highly recommended_ that an object
+   *        or array of objects is used here, so that source selection
+   *        algorithms can take the `type` into account.
+   *
+   *        If not provided, this method acts as a getter.
+   *
+   * @return {string|undefined}
+   *         If the `source` argument is missing, returns the current source
+   *         URL. Otherwise, returns nothing/undefined.
+   */
+  ;
+
+  _proto.src = function src(source) {
+    return this.handleSrc_(source, false);
   }
   /**
    * Set the source object on the tech, returns a boolean that indicates whether
@@ -25712,10 +26323,10 @@ var Player = /*#__PURE__*/function (_Component) {
     // player is now responsive.
 
     if (value) {
-      this.on('playerresize', this.updateCurrentBreakpoint_);
+      this.on('playerresize', this.boundUpdateCurrentBreakpoint_);
       this.updateCurrentBreakpoint_(); // Stop listening for breakpoints if the player is no longer responsive.
     } else {
-      this.off('playerresize', this.updateCurrentBreakpoint_);
+      this.off('playerresize', this.boundUpdateCurrentBreakpoint_);
       this.removeCurrentBreakpoint_();
     }
 
@@ -26479,7 +27090,7 @@ var Plugin = /*#__PURE__*/function () {
     markPluginAsActive(player, this.name); // Auto-bind the dispose method so we can use it as a listener and unbind
     // it later easily.
 
-    this.dispose = bind(this, this.dispose); // If the player is disposed, dispose the plugin.
+    this.dispose = this.dispose.bind(this); // If the player is disposed, dispose the plugin.
 
     player.on('dispose', this.dispose);
   }
@@ -27394,7 +28005,7 @@ videojs$1.dom = Dom;
 videojs$1.url = Url;
 videojs$1.defineLazyProperty = defineLazyProperty;
 
-/*! @name @videojs/http-streaming @version 2.6.4 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 2.7.1 @license Apache-2.0 */
 /**
  * @file resolve-url.js - Handling how URLs are resolved and manipulated
  */
@@ -27439,12 +28050,18 @@ var createPlaylistID = function createPlaylistID(index, uri) {
 /**
  * Parses a given m3u8 playlist
  *
+ * @param {Function} [onwarn]
+ *        a function to call when the parser triggers a warning event.
+ * @param {Function} [oninfo]
+ *        a function to call when the parser triggers an info event.
  * @param {string} manifestString
  *        The downloaded manifest string
  * @param {Object[]} [customTagParsers]
  *        An array of custom tag parsers for the m3u8-parser instance
  * @param {Object[]} [customTagMappers]
- *         An array of custom tag mappers for the m3u8-parser instance
+ *        An array of custom tag mappers for the m3u8-parser instance
+ * @param {boolean} [experimentalLLHLS=false]
+ *        Whether to keep ll-hls features in the manifest after parsing.
  * @return {Object}
  *         The manifest object
  */
@@ -27457,7 +28074,8 @@ var parseManifest = function parseManifest(_ref) {
       _ref$customTagParsers = _ref.customTagParsers,
       customTagParsers = _ref$customTagParsers === void 0 ? [] : _ref$customTagParsers,
       _ref$customTagMappers = _ref.customTagMappers,
-      customTagMappers = _ref$customTagMappers === void 0 ? [] : _ref$customTagMappers;
+      customTagMappers = _ref$customTagMappers === void 0 ? [] : _ref$customTagMappers,
+      experimentalLLHLS = _ref.experimentalLLHLS;
   var parser = new Parser();
 
   if (onwarn) {
@@ -27476,7 +28094,44 @@ var parseManifest = function parseManifest(_ref) {
   });
   parser.push(manifestString);
   parser.end();
-  return parser.manifest;
+  var manifest = parser.manifest; // remove llhls features from the parsed manifest
+  // if we don't want llhls support.
+
+  if (!experimentalLLHLS) {
+    ['preloadSegment', 'skip', 'serverControl', 'renditionReports', 'partInf', 'partTargetDuration'].forEach(function (k) {
+      if (manifest.hasOwnProperty(k)) {
+        delete manifest[k];
+      }
+    });
+
+    if (manifest.segments) {
+      manifest.segments.forEach(function (segment) {
+        ['parts', 'preloadHints'].forEach(function (k) {
+          if (segment.hasOwnProperty(k)) {
+            delete segment[k];
+          }
+        });
+      });
+    }
+  }
+
+  if (!manifest.targetDuration) {
+    var targetDuration = 10;
+
+    if (manifest.segments && manifest.segments.length) {
+      targetDuration = manifest.segments.reduce(function (acc, s) {
+        return Math.max(acc, s.duration);
+      }, 0);
+    }
+
+    if (onwarn) {
+      onwarn("manifest has no targetDuration defaulting to " + targetDuration);
+    }
+
+    manifest.targetDuration = targetDuration;
+  }
+
+  return manifest;
 };
 /**
  * Loops through all supported media groups in master and calls the provided
@@ -27666,38 +28321,75 @@ var addPropertiesToMaster = function addPropertiesToMaster(master, uri) {
   resolveMediaGroupUris(master);
 };
 
-var mergeOptions$1 = videojs$1.mergeOptions,
+var mergeOptions$2 = videojs$1.mergeOptions,
     EventTarget$1 = videojs$1.EventTarget;
 /**
-  * Returns a new array of segments that is the result of merging
-  * properties from an older list of segments onto an updated
-  * list. No properties on the updated playlist will be overridden.
-  *
-  * @param {Array} original the outdated list of segments
-  * @param {Array} update the updated list of segments
-  * @param {number=} offset the index of the first update
-  * segment in the original segment list. For non-live playlists,
-  * this should always be zero and does not need to be
-  * specified. For live playlists, it should be the difference
-  * between the media sequence numbers in the original and updated
-  * playlists.
-  * @return a list of merged segment objects
-  */
+ * Returns a new segment object with properties and
+ * the parts array merged.
+ *
+ * @param {Object} a the old segment
+ * @param {Object} b the new segment
+ *
+ * @return {Object} the merged segment
+ */
+
+var updateSegment = function updateSegment(a, b) {
+  if (!a) {
+    return b;
+  }
+
+  var result = mergeOptions$2(a, b); // if only the old segment has parts
+  // then the parts are no longer valid
+
+  if (a.parts && !b.parts) {
+    delete result.parts; // if both segments have parts
+    // copy part propeties from the old segment
+    // to the new one.
+  } else if (a.parts && b.parts) {
+    for (var i = 0; i < b.parts.length; i++) {
+      if (a.parts && a.parts[i]) {
+        result.parts[i] = mergeOptions$2(a.parts[i], b.parts[i]);
+      }
+    }
+  }
+
+  return result;
+};
+/**
+ * Returns a new array of segments that is the result of merging
+ * properties from an older list of segments onto an updated
+ * list. No properties on the updated playlist will be ovewritten.
+ *
+ * @param {Array} original the outdated list of segments
+ * @param {Array} update the updated list of segments
+ * @param {number=} offset the index of the first update
+ * segment in the original segment list. For non-live playlists,
+ * this should always be zero and does not need to be
+ * specified. For live playlists, it should be the difference
+ * between the media sequence numbers in the original and updated
+ * playlists.
+ * @return {Array} a list of merged segment objects
+ */
+
 
 var updateSegments = function updateSegments(original, update, offset) {
+  var oldSegments = original.slice();
   var result = update.slice();
   offset = offset || 0;
   var length = Math.min(original.length, update.length + offset);
 
   for (var i = offset; i < length; i++) {
-    result[i - offset] = mergeOptions$1(original[i], result[i - offset]);
+    var newIndex = i - offset;
+    result[newIndex] = updateSegment(oldSegments[i], result[newIndex]);
   }
 
   return result;
 };
 
 var resolveSegmentUris = function resolveSegmentUris(segment, baseUri) {
-  if (!segment.resolvedUri) {
+  // preloadSegment will not have a uri at all
+  // as the segment isn't actually in the manifest yet, only parts
+  if (!segment.resolvedUri && segment.uri) {
     segment.resolvedUri = resolveUrl(baseUri, segment.uri);
   }
 
@@ -27708,6 +28400,38 @@ var resolveSegmentUris = function resolveSegmentUris(segment, baseUri) {
   if (segment.map && !segment.map.resolvedUri) {
     segment.map.resolvedUri = resolveUrl(baseUri, segment.map.uri);
   }
+
+  if (segment.parts && segment.parts.length) {
+    segment.parts.forEach(function (p) {
+      if (p.resolvedUri) {
+        return;
+      }
+
+      p.resolvedUri = resolveUrl(baseUri, p.uri);
+    });
+  }
+
+  if (segment.preloadHints && segment.preloadHints.length) {
+    segment.preloadHints.forEach(function (p) {
+      if (p.resolvedUri) {
+        return;
+      }
+
+      p.resolvedUri = resolveUrl(baseUri, p.uri);
+    });
+  }
+};
+
+var getAllSegments = function getAllSegments(media) {
+  var segments = media.segments || []; // a preloadSegment with only preloadHints is not currently
+  // a usable segment, only include a preloadSegment that has
+  // parts.
+
+  if (media.preloadSegment && media.preloadSegment.parts) {
+    segments.push(media.preloadSegment);
+  }
+
+  return segments;
 }; // consider the playlist unchanged if the playlist object is the same or
 // the number of segments is equal, the media sequence number is unchanged,
 // and this playlist hasn't become the end of the playlist
@@ -27730,12 +28454,12 @@ var isPlaylistUnchanged = function isPlaylistUnchanged(a, b) {
   */
 
 
-var updateMaster = function updateMaster(master, media, unchangedCheck) {
+var updateMaster$1 = function updateMaster(master, media, unchangedCheck) {
   if (unchangedCheck === void 0) {
     unchangedCheck = isPlaylistUnchanged;
   }
 
-  var result = mergeOptions$1(master, {});
+  var result = mergeOptions$2(master, {});
   var playlist = result.playlists[media.id];
 
   if (!playlist) {
@@ -27746,7 +28470,8 @@ var updateMaster = function updateMaster(master, media, unchangedCheck) {
     return null;
   }
 
-  var mergedPlaylist = mergeOptions$1(playlist, media); // if the update could overlap existing segment information, merge the two segment lists
+  var mergedPlaylist = mergeOptions$2(playlist, media);
+  media.segments = getAllSegments(media); // if the update could overlap existing segment information, merge the two segment lists
 
   if (playlist.segments) {
     mergedPlaylist.segments = updateSegments(playlist.segments, media.segments, media.mediaSequence - playlist.mediaSequence);
@@ -27784,17 +28509,16 @@ var updateMaster = function updateMaster(master, media, unchangedCheck) {
 
 var refreshDelay = function refreshDelay(media, update) {
   var lastSegment = media.segments[media.segments.length - 1];
-  var delay;
+  var lastPart = lastSegment && lastSegment.parts && lastSegment.parts[lastSegment.parts.length - 1];
+  var lastDuration = lastPart && lastPart.duration || lastSegment && lastSegment.duration;
 
-  if (update && lastSegment && lastSegment.duration) {
-    delay = lastSegment.duration * 1000;
-  } else {
-    // if the playlist is unchanged since the last reload or last segment duration
-    // cannot be determined, try again after half the target duration
-    delay = (media.targetDuration || 10) * 500;
-  }
+  if (update && lastDuration) {
+    return lastDuration * 1000;
+  } // if the playlist is unchanged since the last reload or last segment duration
+  // cannot be determined, try again after half the target duration
 
-  return delay;
+
+  return (media.partTargetDuration || media.targetDuration || 10) * 500;
 };
 /**
  * Load a playlist from a remote location
@@ -27835,7 +28559,8 @@ var PlaylistLoader = /*#__PURE__*/function (_EventTarget) {
     _this.handleManifestRedirects = handleManifestRedirects;
     var vhsOptions = vhs.options_;
     _this.customTagParsers = vhsOptions && vhsOptions.customTagParsers || [];
-    _this.customTagMappers = vhsOptions && vhsOptions.customTagMappers || []; // initialize the loader state
+    _this.customTagMappers = vhsOptions && vhsOptions.customTagMappers || [];
+    _this.experimentalLLHLS = vhsOptions && vhsOptions.experimentalLLHLS || false; // initialize the loader state
 
     _this.state = 'HAVE_NOTHING'; // live playlist staleness timeout
 
@@ -27926,7 +28651,8 @@ var PlaylistLoader = /*#__PURE__*/function (_EventTarget) {
       },
       manifestString: playlistString,
       customTagParsers: this.customTagParsers,
-      customTagMappers: this.customTagMappers
+      customTagMappers: this.customTagMappers,
+      experimentalLLHLS: this.experimentalLLHLS
     });
     playlist.lastRequest = Date.now();
     setupMediaPlaylist({
@@ -27935,8 +28661,8 @@ var PlaylistLoader = /*#__PURE__*/function (_EventTarget) {
       id: id
     }); // merge this playlist into the master
 
-    var update = updateMaster(this.master, playlist);
-    this.targetDuration = playlist.targetDuration;
+    var update = updateMaster$1(this.master, playlist);
+    this.targetDuration = playlist.partTargetDuration || playlist.targetDuration;
 
     if (update) {
       this.master = update;
@@ -28018,7 +28744,7 @@ var PlaylistLoader = /*#__PURE__*/function (_EventTarget) {
     window.clearTimeout(this.finalRenditionTimeout);
 
     if (shouldDelay) {
-      var delay = playlist.targetDuration / 2 * 1000 || 5 * 1000;
+      var delay = (playlist.partTargetDuration || playlist.targetDuration) / 2 * 1000 || 5 * 1000;
       this.finalRenditionTimeout = window.setTimeout(this.media.bind(this, playlist, false), delay);
       return;
     }
@@ -28152,7 +28878,7 @@ var PlaylistLoader = /*#__PURE__*/function (_EventTarget) {
     var media = this.media();
 
     if (shouldDelay) {
-      var delay = media ? media.targetDuration / 2 * 1000 : 5 * 1000;
+      var delay = media ? (media.partTargetDuration || media.targetDuration) / 2 * 1000 : 5 * 1000;
       this.mediaUpdateTimeout = window.setTimeout(function () {
         return _this4.load();
       }, delay);
@@ -28238,7 +28964,8 @@ var PlaylistLoader = /*#__PURE__*/function (_EventTarget) {
       var manifest = parseManifest({
         manifestString: req.responseText,
         customTagParsers: _this5.customTagParsers,
-        customTagMappers: _this5.customTagMappers
+        customTagMappers: _this5.customTagMappers,
+        experimentalLLHLS: _this5.experimentalLLHLS
       });
 
       _this5.setupInitialPlaylist(manifest);
@@ -28278,11 +29005,10 @@ var PlaylistLoader = /*#__PURE__*/function (_EventTarget) {
       // which may not happen if the playlist is resolved.
 
       manifest.playlists.forEach(function (playlist) {
-        if (playlist.segments) {
-          playlist.segments.forEach(function (segment) {
-            resolveSegmentUris(segment, playlist.resolvedUri);
-          });
-        }
+        playlist.segments = getAllSegments(playlist);
+        playlist.segments.forEach(function (segment) {
+          resolveSegmentUris(segment, playlist.resolvedUri);
+        });
       });
       this.trigger('loadedplaylist');
 
@@ -28589,12 +29315,78 @@ var isRangeDifferent = function isRangeDifferent(a, b) {
 
 var createTimeRange = videojs$1.createTimeRange;
 /**
+ * A function to get a combined list of parts and segments with durations
+ * and indexes.
+ *
+ * @param {Playlist} playlist the playlist to get the list for.
+ *
+ * @return {Array} The part/segment list.
+ */
+
+var getPartsAndSegments = function getPartsAndSegments(playlist) {
+  return (playlist.segments || []).reduce(function (acc, segment, si) {
+    if (segment.parts) {
+      segment.parts.forEach(function (part, pi) {
+        acc.push({
+          duration: part.duration,
+          segmentIndex: si,
+          partIndex: pi
+        });
+      });
+    } else {
+      acc.push({
+        duration: segment.duration,
+        segmentIndex: si,
+        partIndex: null
+      });
+    }
+
+    return acc;
+  }, []);
+};
+/**
+ * Get the number of seconds to delay from the end of a
+ * live playlist.
+ *
+ * @param {Playlist} master the master playlist
+ * @param {Playlist} media the media playlist
+ * @return {number} the hold back in seconds.
+ */
+
+
+var liveEdgeDelay = function liveEdgeDelay(master, media) {
+  if (media.endList) {
+    return 0;
+  } // dash suggestedPresentationDelay trumps everything
+
+
+  if (master && master.suggestedPresentationDelay) {
+    return master.suggestedPresentationDelay;
+  }
+
+  var lastSegment = media.segments && media.segments.length && media.segments[media.segments.length - 1];
+  var hasParts = lastSegment && lastSegment.parts && lastSegment.parts.length; // look for "part" delays from ll-hls first
+
+  if (hasParts && media.serverControl && media.serverControl.partHoldBack) {
+    return media.serverControl.partHoldBack;
+  } else if (hasParts && media.partTargetDuration) {
+    return media.partTargetDuration * 3; // finally look for full segment delays
+  } else if (media.serverControl && media.serverControl.holdBack) {
+    return media.serverControl.holdBack;
+  } else if (media.targetDuration) {
+    return media.targetDuration * 3;
+  }
+
+  return 0;
+};
+/**
  * walk backward until we find a duration we can use
  * or return a failure
  *
  * @param {Playlist} playlist the playlist to walk through
  * @param {Number} endSequence the mediaSequence to stop walking on
  */
+
 
 var backwardDuration = function backwardDuration(playlist, endSequence) {
   var result = 0;
@@ -28813,52 +29605,6 @@ var sumDurations = function sumDurations(playlist, startIndex, endIndex) {
   return durations;
 };
 /**
- * Determines the media index of the segment corresponding to the safe edge of the live
- * window which is the duration of the last segment plus 2 target durations from the end
- * of the playlist.
- *
- * A liveEdgePadding can be provided which will be used instead of calculating the safe live edge.
- * This corresponds to suggestedPresentationDelay in DASH manifests.
- *
- * @param {Object} playlist
- *        a media playlist object
- * @param {number} [liveEdgePadding]
- *        A number in seconds indicating how far from the end we want to be.
- *        If provided, this value is used instead of calculating the safe live index from the target durations.
- *        Corresponds to suggestedPresentationDelay in DASH manifests.
- * @return {number}
- *         The media index of the segment at the safe live point. 0 if there is no "safe"
- *         point.
- * @function safeLiveIndex
- */
-
-
-var safeLiveIndex = function safeLiveIndex(playlist, liveEdgePadding) {
-  if (!playlist.segments.length) {
-    return 0;
-  }
-
-  var i = playlist.segments.length;
-  var lastSegmentDuration = playlist.segments[i - 1].duration || playlist.targetDuration;
-  var safeDistance = typeof liveEdgePadding === 'number' ? liveEdgePadding : lastSegmentDuration + playlist.targetDuration * 2;
-
-  if (safeDistance === 0) {
-    return i;
-  }
-
-  var distanceFromEnd = 0;
-
-  while (i--) {
-    distanceFromEnd += playlist.segments[i].duration;
-
-    if (distanceFromEnd >= safeDistance) {
-      break;
-    }
-  }
-
-  return Math.max(0, i);
-};
-/**
  * Calculates the playlist end time
  *
  * @param {Object} playlist a media playlist object
@@ -28893,8 +29639,15 @@ var playlistEnd = function playlistEnd(playlist, expired, useSafeLiveEnd, liveEd
   }
 
   expired = expired || 0;
-  var endSequence = useSafeLiveEnd ? safeLiveIndex(playlist, liveEdgePadding) : playlist.segments.length;
-  return intervalDuration(playlist, playlist.mediaSequence + endSequence, expired);
+  var lastSegmentTime = intervalDuration(playlist, playlist.mediaSequence + playlist.segments.length, expired);
+
+  if (useSafeLiveEnd) {
+    liveEdgePadding = typeof liveEdgePadding === 'number' ? liveEdgePadding : liveEdgeDelay(null, playlist);
+    lastSegmentTime -= liveEdgePadding;
+  } // don't return a time less than zero
+
+
+  return Math.max(0, lastSegmentTime);
 };
 /**
   * Calculates the interval of time that is currently seekable in a
@@ -28940,23 +29693,22 @@ var seekable = function seekable(playlist, expired, liveEdgePadding) {
 
 
 var getMediaInfoForTime = function getMediaInfoForTime(playlist, currentTime, startIndex, startTime) {
-  var i;
-  var segment;
-  var numSegments = playlist.segments.length;
+  var partsAndSegments = getPartsAndSegments(playlist);
   var time = currentTime - startTime;
 
   if (time < 0) {
     // Walk backward from startIndex in the playlist, adding durations
     // until we find a segment that contains `time` and return it
     if (startIndex > 0) {
-      for (i = startIndex - 1; i >= 0; i--) {
-        segment = playlist.segments[i];
+      for (var i = startIndex - 1; i >= 0; i--) {
+        var segment = partsAndSegments[i];
         time += segment.duration + TIME_FUDGE_FACTOR;
 
         if (time > 0) {
           return {
-            mediaIndex: i,
-            startTime: startTime - sumDurations(playlist, startIndex, i)
+            mediaIndex: segment.segmentIndex,
+            startTime: startTime - sumDurations(playlist, startIndex, segment.segmentIndex),
+            partIndex: segment.partIndex
           };
         }
       }
@@ -28965,7 +29717,8 @@ var getMediaInfoForTime = function getMediaInfoForTime(playlist, currentTime, st
 
 
     return {
-      mediaIndex: 0,
+      mediaIndex: partsAndSegments[0] && partsAndSegments[0].segmentIndex || 0,
+      partIndex: partsAndSegments[0] && partsAndSegments[0].partIndex || null,
       startTime: currentTime
     };
   } // When startIndex is negative, we first walk forward to first segment
@@ -28974,12 +29727,12 @@ var getMediaInfoForTime = function getMediaInfoForTime(playlist, currentTime, st
 
 
   if (startIndex < 0) {
-    for (i = startIndex; i < 0; i++) {
+    for (var _i2 = startIndex; _i2 < 0; _i2++) {
       time -= playlist.targetDuration;
 
       if (time < 0) {
         return {
-          mediaIndex: 0,
+          mediaIndex: partsAndSegments[0].segmentIndex,
           startTime: currentTime
         };
       }
@@ -28990,21 +29743,23 @@ var getMediaInfoForTime = function getMediaInfoForTime(playlist, currentTime, st
   // until we find a segment that contains `time` and return it
 
 
-  for (i = startIndex; i < numSegments; i++) {
-    segment = playlist.segments[i];
-    time -= segment.duration + TIME_FUDGE_FACTOR;
+  for (var _i3 = startIndex; _i3 < partsAndSegments.length; _i3++) {
+    var partSegment = partsAndSegments[_i3];
+    time -= partSegment.duration + TIME_FUDGE_FACTOR;
 
     if (time < 0) {
       return {
-        mediaIndex: i,
-        startTime: startTime + sumDurations(playlist, startIndex, i)
+        mediaIndex: partSegment.segmentIndex,
+        startTime: startTime + sumDurations(playlist, startIndex, partSegment.segmentIndex),
+        partIndex: partSegment.partIndex
       };
     }
   } // We are out of possible candidates so load the last one...
 
 
   return {
-    mediaIndex: numSegments - 1,
+    mediaIndex: partsAndSegments[partsAndSegments.length - 1].segmentIndex,
+    partIndex: partsAndSegments[partsAndSegments.length - 1].partIndex,
     startTime: currentTime
   };
 };
@@ -29140,13 +29895,119 @@ var isLowestEnabledRendition = function isLowestEnabledRendition(master, media) 
 
     return (playlist.attributes.BANDWIDTH || 0) < currentBandwidth;
   }).length === 0;
+};
+
+var playlistMatch = function playlistMatch(a, b) {
+  // both playlits are null
+  // or only one playlist is non-null
+  // no match
+  if (!a && !b || !a && b || a && !b) {
+    return false;
+  } // playlist objects are the same, match
+
+
+  if (a === b) {
+    return true;
+  } // first try to use id as it should be the most
+  // accurate
+
+
+  if (a.id && b.id && a.id === b.id) {
+    return true;
+  } // next try to use reslovedUri as it should be the
+  // second most accurate.
+
+
+  if (a.resolvedUri && b.resolvedUri && a.resolvedUri === b.resolvedUri) {
+    return true;
+  } // finally try to use uri as it should be accurate
+  // but might miss a few cases for relative uris
+
+
+  if (a.uri && b.uri && a.uri === b.uri) {
+    return true;
+  }
+
+  return false;
+};
+
+var someAudioVariant = function someAudioVariant(master, callback) {
+  var AUDIO = master && master.mediaGroups && master.mediaGroups.AUDIO || {};
+  var found = false;
+
+  for (var groupName in AUDIO) {
+    for (var label in AUDIO[groupName]) {
+      found = callback(AUDIO[groupName][label]);
+
+      if (found) {
+        break;
+      }
+    }
+
+    if (found) {
+      break;
+    }
+  }
+
+  return !!found;
+};
+
+var isAudioOnly = function isAudioOnly(master) {
+  // we are audio only if we have no main playlists but do
+  // have media group playlists.
+  if (!master || !master.playlists || !master.playlists.length) {
+    // without audio variants or playlists this
+    // is not an audio only master.
+    var found = someAudioVariant(master, function (variant) {
+      return variant.playlists && variant.playlists.length || variant.uri;
+    });
+    return found;
+  } // if every playlist has only an audio codec it is audio only
+
+
+  var _loop = function _loop(i) {
+    var playlist = master.playlists[i];
+    var CODECS = playlist.attributes && playlist.attributes.CODECS; // all codecs are audio, this is an audio playlist.
+
+    if (CODECS && CODECS.split(',').every(function (c) {
+      return isAudioCodec(c);
+    })) {
+      return "continue";
+    } // playlist is in an audio group it is audio only
+
+
+    var found = someAudioVariant(master, function (variant) {
+      return playlistMatch(playlist, variant);
+    });
+
+    if (found) {
+      return "continue";
+    } // if we make it here this playlist isn't audio and we
+    // are not audio only
+
+
+    return {
+      v: false
+    };
+  };
+
+  for (var i = 0; i < master.playlists.length; i++) {
+    var _ret = _loop(i);
+
+    if (_ret === "continue") continue;
+    if (typeof _ret === "object") return _ret.v;
+  } // if we make it past every playlist without returning, then
+  // this is an audio only playlist.
+
+
+  return true;
 }; // exports
 
 
 var Playlist = {
+  liveEdgeDelay: liveEdgeDelay,
   duration: duration,
   seekable: seekable,
-  safeLiveIndex: safeLiveIndex,
   getMediaInfoForTime: getMediaInfoForTime,
   isEnabled: isEnabled,
   isDisabled: isDisabled,
@@ -29156,14 +30017,16 @@ var Playlist = {
   isAes: isAes,
   hasAttribute: hasAttribute,
   estimateSegmentRequestTime: estimateSegmentRequestTime,
-  isLowestEnabledRendition: isLowestEnabledRendition
+  isLowestEnabledRendition: isLowestEnabledRendition,
+  isAudioOnly: isAudioOnly,
+  playlistMatch: playlistMatch
 };
 /**
  * @file xhr.js
  */
 
 var videojsXHR = videojs$1.xhr,
-    mergeOptions$1$1 = videojs$1.mergeOptions;
+    mergeOptions$1 = videojs$1.mergeOptions;
 
 var callbackWrapper = function callbackWrapper(request, error, response, callback) {
   var reqResponse = request.responseType === 'arraybuffer' ? request.response : request.responseText;
@@ -29202,7 +30065,7 @@ var callbackWrapper = function callbackWrapper(request, error, response, callbac
 var xhrFactory = function xhrFactory() {
   var xhr = function XhrFunction(options, callback) {
     // Add a default timeout
-    options = mergeOptions$1$1({
+    options = mergeOptions$1({
       timeout: 45e3
     }, options); // Allow an optional user-specified function to modify the option
     // object before we construct the xhr request
@@ -29861,8 +30724,8 @@ var containerRequest = function containerRequest(uri, xhr, cb) {
       // this forces the browser to pass the bytes to us unprocessed
       request.overrideMimeType('text/plain; charset=x-user-defined');
       request.addEventListener('progress', function (_ref) {
-        var total = _ref.total,
-            loaded = _ref.loaded;
+        _ref.total;
+        _ref.loaded;
         return callbackWrapper(request, null, {
           statusCode: request.status
         }, progressListener);
@@ -29875,8 +30738,8 @@ var containerRequest = function containerRequest(uri, xhr, cb) {
   return request;
 };
 
-var EventTarget$1$1 = videojs$1.EventTarget,
-    mergeOptions$2 = videojs$1.mergeOptions;
+var EventTarget$2 = videojs$1.EventTarget,
+    mergeOptions$3 = videojs$1.mergeOptions;
 
 var dashPlaylistUnchanged = function dashPlaylistUnchanged(a, b) {
   if (!isPlaylistUnchanged(a, b)) {
@@ -29967,12 +30830,6 @@ var parseMasterXml = function parseMasterXml(_ref) {
   addPropertiesToMaster(master, srcUrl);
   return master;
 };
-
-var generateSidxKey = function generateSidxKey(sidxInfo) {
-  // should be non-inclusive
-  var sidxByteRangeEnd = sidxInfo.byterange.offset + sidxInfo.byterange.length - 1;
-  return sidxInfo.uri + '-' + sidxInfo.byterange.offset + '-' + sidxByteRangeEnd;
-};
 /**
  * Returns a new master manifest that is the result of merging an updated master manifest
  * into the original version.
@@ -29987,9 +30844,9 @@ var generateSidxKey = function generateSidxKey(sidxInfo) {
  */
 
 
-var updateMaster$1 = function updateMaster$1(oldMaster, newMaster, sidxMapping) {
+var updateMaster = function updateMaster(oldMaster, newMaster, sidxMapping) {
   var noChanges = true;
-  var update = mergeOptions$2(oldMaster, {
+  var update = mergeOptions$3(oldMaster, {
     // These are top level properties that can be updated
     duration: newMaster.duration,
     minimumUpdatePeriod: newMaster.minimumUpdatePeriod
@@ -30006,7 +30863,7 @@ var updateMaster$1 = function updateMaster$1(oldMaster, newMaster, sidxMapping) 
       }
     }
 
-    var playlistUpdate = updateMaster(update, playlist, dashPlaylistUnchanged);
+    var playlistUpdate = updateMaster$1(update, playlist, dashPlaylistUnchanged);
 
     if (playlistUpdate) {
       update = playlistUpdate;
@@ -30019,7 +30876,7 @@ var updateMaster$1 = function updateMaster$1(oldMaster, newMaster, sidxMapping) 
     if (properties.playlists && properties.playlists.length) {
       var id = properties.playlists[0].id;
 
-      var _playlistUpdate = updateMaster(update, properties.playlists[0], dashPlaylistUnchanged);
+      var _playlistUpdate = updateMaster$1(update, properties.playlists[0], dashPlaylistUnchanged);
 
       if (_playlistUpdate) {
         update = _playlistUpdate; // update the playlist reference within media groups
@@ -30092,7 +30949,7 @@ var filterChangedSidxMappings = function filterChangedSidxMappings(master, oldSi
   forEachMediaGroup(master, function (properties, mediaType, groupKey, labelKey) {
     if (properties.playlists && properties.playlists.length) {
       var playlists = properties.playlists;
-      mediaGroupSidx = mergeOptions$2(mediaGroupSidx, compareSidxEntry(playlists, oldSidxMapping));
+      mediaGroupSidx = mergeOptions$3(mediaGroupSidx, compareSidxEntry(playlists, oldSidxMapping));
     }
   });
   return mediaGroupSidx;
@@ -30209,18 +31066,28 @@ var DashPlaylistLoader = /*#__PURE__*/function (_EventTarget) {
 
 
     var uri = resolveManifestRedirect(this.handleManifestRedirects, playlist.sidx.resolvedUri);
-    var sidxMapping = this.masterPlaylistLoader_.sidxMapping_;
-    sidxMapping[sidxKey] = {
-      sidxInfo: playlist.sidx
-    };
 
     var fin = function fin(err, request) {
       if (_this2.requestErrored_(err, request, startingState)) {
         return;
       }
 
-      var sidx = parseSidx(toUint8(request.response).subarray(8));
-      sidxMapping[sidxKey].sidx = sidx;
+      var sidxMapping = _this2.masterPlaylistLoader_.sidxMapping_;
+      var sidx;
+
+      try {
+        sidx = parseSidx(toUint8(request.response).subarray(8));
+      } catch (e) {
+        // sidx parsing failed.
+        _this2.requestErrored_(e, request, startingState);
+
+        return;
+      }
+
+      sidxMapping[sidxKey] = {
+        sidxInfo: playlist.sidx,
+        sidx: sidx
+      };
       addSidxSegmentsToPlaylist(playlist, sidx, playlist.sidx.resolvedUri);
       return cb(true);
     };
@@ -30572,7 +31439,7 @@ var DashPlaylistLoader = /*#__PURE__*/function (_EventTarget) {
     var oldMaster = this.masterPlaylistLoader_.master; // if we have an old master to compare the new master against
 
     if (oldMaster) {
-      newMaster = updateMaster$1(oldMaster, newMaster, this.masterPlaylistLoader_.sidxMapping_);
+      newMaster = updateMaster(oldMaster, newMaster, this.masterPlaylistLoader_.sidxMapping_);
     } // only update master if we have a new master
 
 
@@ -30719,7 +31586,7 @@ var DashPlaylistLoader = /*#__PURE__*/function (_EventTarget) {
   };
 
   return DashPlaylistLoader;
-}(EventTarget$1$1);
+}(EventTarget$2);
 
 var Config = {
   GOAL_BUFFER_LENGTH: 30,
@@ -30801,7 +31668,7 @@ var getWorkerString = function getWorkerString(fn) {
 /* rollup-plugin-worker-factory start for worker!/Users/gkatsevman/p/http-streaming-release/src/transmuxer-worker.js */
 
 
-var workerCode = transform(getWorkerString(function () {
+var workerCode$1 = transform(getWorkerString(function () {
   /**
    * mux.js
    *
@@ -30964,7 +31831,7 @@ var workerCode = transform(getWorkerString(function () {
    */
 
   var UINT32_MAX = Math.pow(2, 32) - 1;
-  var box, dinf, esds, ftyp, mdat, mfhd, minf, moof, moov, mvex, mvhd, trak, tkhd, mdia, mdhd, hdlr, sdtp, stbl, stsd, traf, trex, trun, types, MAJOR_BRAND, MINOR_VERSION, AVC1_BRAND, VIDEO_HDLR, AUDIO_HDLR, HDLR_TYPES, VMHD, SMHD, DREF, STCO, STSC, STSZ, STTS; // pre-calculate constants
+  var box, dinf, esds, ftyp, mdat, mfhd, minf, moof, moov, mvex, mvhd, trak, tkhd, mdia, mdhd, hdlr, sdtp, stbl, stsd, traf, trex, trun$1, types, MAJOR_BRAND, MINOR_VERSION, AVC1_BRAND, VIDEO_HDLR, AUDIO_HDLR, HDLR_TYPES, VMHD, SMHD, DREF, STCO, STSC, STSZ, STTS; // pre-calculate constants
 
   (function () {
     var i;
@@ -31398,7 +32265,7 @@ var workerCode = transform(getWorkerString(function () {
     // audio tracks require less metadata
 
     if (track.type === 'audio') {
-      trackFragmentRun = trun(track, dataOffset);
+      trackFragmentRun = trun$1(track, dataOffset);
       return box(types.traf, trackFragmentHeader, trackFragmentDecodeTime, trackFragmentRun);
     } // video tracks should contain an independent and disposable samples
     // box (sdtp)
@@ -31406,7 +32273,7 @@ var workerCode = transform(getWorkerString(function () {
 
 
     sampleDependencyTable = sdtp(track);
-    trackFragmentRun = trun(track, sampleDependencyTable.length + dataOffset);
+    trackFragmentRun = trun$1(track, sampleDependencyTable.length + dataOffset);
     return box(types.traf, trackFragmentHeader, trackFragmentDecodeTime, trackFragmentRun, sampleDependencyTable);
   };
   /**
@@ -31538,7 +32405,7 @@ var workerCode = transform(getWorkerString(function () {
       return box(types.trun, bytes);
     };
 
-    trun = function trun(track, offset) {
+    trun$1 = function trun(track, offset) {
       if (track.type === 'audio') {
         return audioTrun(track, offset);
       }
@@ -31767,7 +32634,7 @@ var workerCode = transform(getWorkerString(function () {
   }; // generate the track's sample table from an array of gops
 
 
-  var generateSampleTable = function generateSampleTable(gops, baseDataOffset) {
+  var generateSampleTable$1 = function generateSampleTable(gops, baseDataOffset) {
     var h,
         i,
         sample,
@@ -31860,7 +32727,7 @@ var workerCode = transform(getWorkerString(function () {
     groupNalsIntoFrames: groupNalsIntoFrames,
     groupFramesIntoGops: groupFramesIntoGops,
     extendFirstKeyFrame: extendFirstKeyFrame,
-    generateSampleTable: generateSampleTable,
+    generateSampleTable: generateSampleTable$1,
     concatenateNalData: concatenateNalData,
     generateSampleTableForFrame: generateSampleTableForFrame,
     concatenateNalDataForFrame: concatenateNalDataForFrame
@@ -31925,7 +32792,7 @@ var workerCode = transform(getWorkerString(function () {
    */
 
 
-  var ONE_SECOND_IN_TS = 90000,
+  var ONE_SECOND_IN_TS$4 = 90000,
       // 90kHz clock
   secondsToVideoTs,
       secondsToAudioTs,
@@ -31936,7 +32803,7 @@ var workerCode = transform(getWorkerString(function () {
       metadataTsToSeconds;
 
   secondsToVideoTs = function secondsToVideoTs(seconds) {
-    return seconds * ONE_SECOND_IN_TS;
+    return seconds * ONE_SECOND_IN_TS$4;
   };
 
   secondsToAudioTs = function secondsToAudioTs(seconds, sampleRate) {
@@ -31944,7 +32811,7 @@ var workerCode = transform(getWorkerString(function () {
   };
 
   videoTsToSeconds = function videoTsToSeconds(timestamp) {
-    return timestamp / ONE_SECOND_IN_TS;
+    return timestamp / ONE_SECOND_IN_TS$4;
   };
 
   audioTsToSeconds = function audioTsToSeconds(timestamp, sampleRate) {
@@ -31969,7 +32836,7 @@ var workerCode = transform(getWorkerString(function () {
   };
 
   var clock = {
-    ONE_SECOND_IN_TS: ONE_SECOND_IN_TS,
+    ONE_SECOND_IN_TS: ONE_SECOND_IN_TS$4,
     secondsToVideoTs: secondsToVideoTs,
     secondsToAudioTs: secondsToAudioTs,
     videoTsToSeconds: videoTsToSeconds,
@@ -32082,7 +32949,7 @@ var workerCode = transform(getWorkerString(function () {
   }; // generate the track's raw mdat data from an array of frames
 
 
-  var generateSampleTable$1 = function generateSampleTable(frames) {
+  var generateSampleTable = function generateSampleTable(frames) {
     var i,
         currentFrame,
         samples = [];
@@ -32118,7 +32985,7 @@ var workerCode = transform(getWorkerString(function () {
   var audioFrameUtils = {
     prefixWithSilence: prefixWithSilence,
     trimAdtsFramesByEarliestDts: trimAdtsFramesByEarliestDts,
-    generateSampleTable: generateSampleTable$1,
+    generateSampleTable: generateSampleTable,
     concatenateFrameData: concatenateFrameData
   };
   /**
@@ -32128,7 +32995,7 @@ var workerCode = transform(getWorkerString(function () {
    * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
    */
 
-  var ONE_SECOND_IN_TS$1 = clock.ONE_SECOND_IN_TS;
+  var ONE_SECOND_IN_TS$3 = clock.ONE_SECOND_IN_TS;
   /**
    * Store information about the start and end of the track and the
    * duration for each frame/sample we process in order to calculate
@@ -32214,7 +33081,7 @@ var workerCode = transform(getWorkerString(function () {
     if (track.type === 'audio') {
       // Audio has a different clock equal to the sampling_rate so we need to
       // scale the PTS values into the clock rate of the track
-      scale = track.samplerate / ONE_SECOND_IN_TS$1;
+      scale = track.samplerate / ONE_SECOND_IN_TS$3;
       baseMediaDecodeTime *= scale;
       baseMediaDecodeTime = Math.floor(baseMediaDecodeTime);
     }
@@ -32366,7 +33233,7 @@ var workerCode = transform(getWorkerString(function () {
     return results;
   };
 
-  var discardEmulationPreventionBytes = function discardEmulationPreventionBytes(data) {
+  var discardEmulationPreventionBytes$1 = function discardEmulationPreventionBytes(data) {
     var length = data.byteLength,
         emulationPreventionBytesPositions = [],
         i = 1,
@@ -32412,12 +33279,12 @@ var workerCode = transform(getWorkerString(function () {
     parseSei: parseSei,
     parseUserData: parseUserData,
     parseCaptionPackets: parseCaptionPackets,
-    discardEmulationPreventionBytes: discardEmulationPreventionBytes,
+    discardEmulationPreventionBytes: discardEmulationPreventionBytes$1,
     USER_DATA_REGISTERED_ITU_T_T35: USER_DATA_REGISTERED_ITU_T_T35
   }; // Link To Transport
   // -----------------
 
-  var CaptionStream = function CaptionStream(options) {
+  var CaptionStream$1 = function CaptionStream(options) {
     options = options || {};
     CaptionStream.prototype.init.call(this); // parse708captions flag, default to true
 
@@ -32448,9 +33315,9 @@ var workerCode = transform(getWorkerString(function () {
     }
   };
 
-  CaptionStream.prototype = new stream();
+  CaptionStream$1.prototype = new stream();
 
-  CaptionStream.prototype.push = function (event) {
+  CaptionStream$1.prototype.push = function (event) {
     var sei, userData, newCaptionPackets; // only examine SEI NALs
 
     if (event.nalUnitType !== 'sei_rbsp') {
@@ -32511,13 +33378,13 @@ var workerCode = transform(getWorkerString(function () {
     this.latestDts_ = event.dts;
   };
 
-  CaptionStream.prototype.flushCCStreams = function (flushType) {
+  CaptionStream$1.prototype.flushCCStreams = function (flushType) {
     this.ccStreams_.forEach(function (cc) {
       return flushType === 'flush' ? cc.flush() : cc.partialFlush();
     }, this);
   };
 
-  CaptionStream.prototype.flushStream = function (flushType) {
+  CaptionStream$1.prototype.flushStream = function (flushType) {
     // make sure we actually parsed captions before proceeding
     if (!this.captionPackets_.length) {
       this.flushCCStreams(flushType);
@@ -32550,16 +33417,16 @@ var workerCode = transform(getWorkerString(function () {
     this.flushCCStreams(flushType);
   };
 
-  CaptionStream.prototype.flush = function () {
+  CaptionStream$1.prototype.flush = function () {
     return this.flushStream('flush');
   }; // Only called if handling partial data
 
 
-  CaptionStream.prototype.partialFlush = function () {
+  CaptionStream$1.prototype.partialFlush = function () {
     return this.flushStream('partialFlush');
   };
 
-  CaptionStream.prototype.reset = function () {
+  CaptionStream$1.prototype.reset = function () {
     this.latestDts_ = null;
     this.ignoreNextEqualDts_ = false;
     this.numSameDts_ = 0;
@@ -32581,7 +33448,7 @@ var workerCode = transform(getWorkerString(function () {
   // subsequent closed-captioning control code.
 
 
-  CaptionStream.prototype.dispatchCea608Packet = function (packet) {
+  CaptionStream$1.prototype.dispatchCea608Packet = function (packet) {
     // NOTE: packet.type is the CEA608 field
     if (this.setsTextOrXDSActive(packet)) {
       this.activeCea608Channel_[packet.type] = null;
@@ -32601,19 +33468,19 @@ var workerCode = transform(getWorkerString(function () {
     this.ccStreams_[(packet.type << 1) + this.activeCea608Channel_[packet.type]].push(packet);
   };
 
-  CaptionStream.prototype.setsChannel1Active = function (packet) {
+  CaptionStream$1.prototype.setsChannel1Active = function (packet) {
     return (packet.ccData & 0x7800) === 0x1000;
   };
 
-  CaptionStream.prototype.setsChannel2Active = function (packet) {
+  CaptionStream$1.prototype.setsChannel2Active = function (packet) {
     return (packet.ccData & 0x7800) === 0x1800;
   };
 
-  CaptionStream.prototype.setsTextOrXDSActive = function (packet) {
+  CaptionStream$1.prototype.setsTextOrXDSActive = function (packet) {
     return (packet.ccData & 0x7100) === 0x0100 || (packet.ccData & 0x78fe) === 0x102a || (packet.ccData & 0x78fe) === 0x182a;
   };
 
-  CaptionStream.prototype.dispatchCea708Packet = function (packet) {
+  CaptionStream$1.prototype.dispatchCea708Packet = function (packet) {
     if (this.parse708captions_) {
       this.cc708Stream_.push(packet);
     }
@@ -34181,7 +35048,7 @@ var workerCode = transform(getWorkerString(function () {
 
 
   var captionStream = {
-    CaptionStream: CaptionStream,
+    CaptionStream: CaptionStream$1,
     Cea608Stream: Cea608Stream,
     Cea708Stream: Cea708Stream
   };
@@ -34224,7 +35091,7 @@ var workerCode = transform(getWorkerString(function () {
     return value;
   };
 
-  var TimestampRolloverStream = function TimestampRolloverStream(type) {
+  var TimestampRolloverStream$1 = function TimestampRolloverStream(type) {
     var lastDTS, referenceDTS;
     TimestampRolloverStream.prototype.init.call(this); // The "shared" type is used in cases where a stream will contain muxed
     // video and audio. We could use `undefined` here, but having a string
@@ -34270,13 +35137,13 @@ var workerCode = transform(getWorkerString(function () {
     };
   };
 
-  TimestampRolloverStream.prototype = new stream();
+  TimestampRolloverStream$1.prototype = new stream();
   var timestampRolloverStream = {
-    TimestampRolloverStream: TimestampRolloverStream,
+    TimestampRolloverStream: TimestampRolloverStream$1,
     handleRollover: handleRollover
   };
 
-  var percentEncode = function percentEncode(bytes, start, end) {
+  var percentEncode$1 = function percentEncode(bytes, start, end) {
     var i,
         result = '';
 
@@ -34289,14 +35156,14 @@ var workerCode = transform(getWorkerString(function () {
       // return the string representation of the specified byte range,
   // interpreted as UTf-8.
   parseUtf8 = function parseUtf8(bytes, start, end) {
-    return decodeURIComponent(percentEncode(bytes, start, end));
+    return decodeURIComponent(percentEncode$1(bytes, start, end));
   },
       // return the string representation of the specified byte range,
   // interpreted as ISO-8859-1.
-  parseIso88591 = function parseIso88591(bytes, start, end) {
-    return unescape(percentEncode(bytes, start, end)); // jshint ignore:line
+  parseIso88591$1 = function parseIso88591(bytes, start, end) {
+    return unescape(percentEncode$1(bytes, start, end)); // jshint ignore:line
   },
-      parseSyncSafeInteger = function parseSyncSafeInteger(data) {
+      parseSyncSafeInteger$1 = function parseSyncSafeInteger(data) {
     return data[0] << 21 | data[1] << 14 | data[2] << 7 | data[3];
   },
       tagParsers = {
@@ -34343,7 +35210,7 @@ var workerCode = transform(getWorkerString(function () {
       for (i = 0; i < tag.data.length; i++) {
         if (tag.data[i] === 0) {
           // parse the description and URL fields
-          tag.owner = parseIso88591(tag.data, 0, i);
+          tag.owner = parseIso88591$1(tag.data, 0, i);
           break;
         }
       }
@@ -34416,7 +35283,7 @@ var workerCode = transform(getWorkerString(function () {
         // last four bytes of the ID3 header.
         // The most significant bit of each byte is dropped and the
         // results concatenated to recover the actual value.
-        tagSize = parseSyncSafeInteger(chunk.data.subarray(6, 10)); // ID3 reports the tag size excluding the header but it's more
+        tagSize = parseSyncSafeInteger$1(chunk.data.subarray(6, 10)); // ID3 reports the tag size excluding the header but it's more
         // convenient for our comparisons to include it
 
         tagSize += 10;
@@ -34449,16 +35316,16 @@ var workerCode = transform(getWorkerString(function () {
         // advance the frame start past the extended header
         frameStart += 4; // header size field
 
-        frameStart += parseSyncSafeInteger(tag.data.subarray(10, 14)); // clip any padding off the end
+        frameStart += parseSyncSafeInteger$1(tag.data.subarray(10, 14)); // clip any padding off the end
 
-        tagSize -= parseSyncSafeInteger(tag.data.subarray(16, 20));
+        tagSize -= parseSyncSafeInteger$1(tag.data.subarray(16, 20));
       } // parse one or more ID3 frames
       // http://id3.org/id3v2.3.0#ID3v2_frame_overview
 
 
       do {
         // determine the number of bytes in this frame
-        frameSize = parseSyncSafeInteger(tag.data.subarray(frameStart + 4, frameStart + 8));
+        frameSize = parseSyncSafeInteger$1(tag.data.subarray(frameStart + 4, frameStart + 8));
 
         if (frameSize < 1) {
           // eslint-disable-next-line no-console
@@ -34507,7 +35374,7 @@ var workerCode = transform(getWorkerString(function () {
 
   _MetadataStream.prototype = new stream();
   var metadataStream = _MetadataStream;
-  var TimestampRolloverStream$1 = timestampRolloverStream.TimestampRolloverStream; // object types
+  var TimestampRolloverStream = timestampRolloverStream.TimestampRolloverStream; // object types
 
   var _TransportPacketStream, _TransportParseStream, _ElementaryStream; // constants
 
@@ -35012,7 +35879,7 @@ var workerCode = transform(getWorkerString(function () {
     TransportPacketStream: _TransportPacketStream,
     TransportParseStream: _TransportParseStream,
     ElementaryStream: _ElementaryStream,
-    TimestampRolloverStream: TimestampRolloverStream$1,
+    TimestampRolloverStream: TimestampRolloverStream,
     CaptionStream: captionStream.CaptionStream,
     Cea608Stream: captionStream.Cea608Stream,
     Cea708Stream: captionStream.Cea708Stream,
@@ -35030,7 +35897,7 @@ var workerCode = transform(getWorkerString(function () {
 
   var _AdtsStream;
 
-  var ADTS_SAMPLING_FREQUENCIES = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
+  var ADTS_SAMPLING_FREQUENCIES$1 = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
   /*
    * Accepts a ElementaryStream and emits data events with parsed
    * AAC Audio Frames of the individual packets. Input audio in ADTS
@@ -35093,7 +35960,7 @@ var workerCode = transform(getWorkerString(function () {
 
         frameLength = (buffer[i + 3] & 0x03) << 11 | buffer[i + 4] << 3 | (buffer[i + 5] & 0xe0) >> 5;
         sampleCount = ((buffer[i + 6] & 0x03) + 1) * 1024;
-        adtsFrameDuration = sampleCount * ONE_SECOND_IN_TS$2 / ADTS_SAMPLING_FREQUENCIES[(buffer[i + 2] & 0x3c) >>> 2];
+        adtsFrameDuration = sampleCount * ONE_SECOND_IN_TS$2 / ADTS_SAMPLING_FREQUENCIES$1[(buffer[i + 2] & 0x3c) >>> 2];
         frameEnd = i + frameLength; // If we don't have enough data to actually finish this ADTS frame, return
         // and wait for more data
 
@@ -35108,7 +35975,7 @@ var workerCode = transform(getWorkerString(function () {
           sampleCount: sampleCount,
           audioobjecttype: (buffer[i + 2] >>> 6 & 0x03) + 1,
           channelcount: (buffer[i + 2] & 1) << 2 | (buffer[i + 3] & 0xc0) >>> 6,
-          samplerate: ADTS_SAMPLING_FREQUENCIES[(buffer[i + 2] & 0x3c) >>> 2],
+          samplerate: ADTS_SAMPLING_FREQUENCIES$1[(buffer[i + 2] & 0x3c) >>> 2],
           samplingfrequencyindex: (buffer[i + 2] & 0x3c) >>> 2,
           // assume ISO/IEC 14496-12 AudioSampleEntry default of 16
           samplesize: 16,
@@ -35859,7 +36726,7 @@ var workerCode = transform(getWorkerString(function () {
    * Utilities to detect basic properties and metadata about Aac data.
    */
 
-  var ADTS_SAMPLING_FREQUENCIES$1 = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
+  var ADTS_SAMPLING_FREQUENCIES = [96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350];
 
   var parseId3TagSize = function parseId3TagSize(header, byteIndex) {
     var returnSize = header[byteIndex + 6] << 21 | header[byteIndex + 7] << 14 | header[byteIndex + 8] << 7 | header[byteIndex + 9],
@@ -35885,20 +36752,20 @@ var workerCode = transform(getWorkerString(function () {
   }; // TODO: use vhs-utils
 
 
-  var isLikelyAacData = function isLikelyAacData(data) {
+  var isLikelyAacData$2 = function isLikelyAacData(data) {
     var offset = getId3Offset(data, 0);
     return data.length >= offset + 2 && (data[offset] & 0xFF) === 0xFF && (data[offset + 1] & 0xF0) === 0xF0 && // verify that the 2 layer bits are 0, aka this
     // is not mp3 data but aac data.
     (data[offset + 1] & 0x16) === 0x10;
   };
 
-  var parseSyncSafeInteger$1 = function parseSyncSafeInteger(data) {
+  var parseSyncSafeInteger = function parseSyncSafeInteger(data) {
     return data[0] << 21 | data[1] << 14 | data[2] << 7 | data[3];
   }; // return a percent-encoded representation of the specified byte range
   // @see http://en.wikipedia.org/wiki/Percent-encoding
 
 
-  var percentEncode$1 = function percentEncode(bytes, start, end) {
+  var percentEncode = function percentEncode(bytes, start, end) {
     var i,
         result = '';
 
@@ -35911,8 +36778,8 @@ var workerCode = transform(getWorkerString(function () {
   // interpreted as ISO-8859-1.
 
 
-  var parseIso88591$1 = function parseIso88591(bytes, start, end) {
-    return unescape(percentEncode$1(bytes, start, end)); // jshint ignore:line
+  var parseIso88591 = function parseIso88591(bytes, start, end) {
+    return unescape(percentEncode(bytes, start, end)); // jshint ignore:line
   };
 
   var parseAdtsSize = function parseAdtsSize(header, byteIndex) {
@@ -35922,7 +36789,7 @@ var workerCode = transform(getWorkerString(function () {
     return highTwo | middle | lowThree;
   };
 
-  var parseType = function parseType(header, byteIndex) {
+  var parseType$1 = function parseType(header, byteIndex) {
     if (header[byteIndex] === 'I'.charCodeAt(0) && header[byteIndex + 1] === 'D'.charCodeAt(0) && header[byteIndex + 2] === '3'.charCodeAt(0)) {
       return 'timed-metadata';
     } else if (header[byteIndex] & 0xff === 0xff && (header[byteIndex + 1] & 0xf0) === 0xf0) {
@@ -35943,7 +36810,7 @@ var workerCode = transform(getWorkerString(function () {
         continue;
       }
 
-      return ADTS_SAMPLING_FREQUENCIES$1[(packet[i + 2] & 0x3c) >>> 2];
+      return ADTS_SAMPLING_FREQUENCIES[(packet[i + 2] & 0x3c) >>> 2];
     }
 
     return null;
@@ -35958,14 +36825,14 @@ var workerCode = transform(getWorkerString(function () {
       // advance the frame start past the extended header
       frameStart += 4; // header size field
 
-      frameStart += parseSyncSafeInteger$1(packet.subarray(10, 14));
+      frameStart += parseSyncSafeInteger(packet.subarray(10, 14));
     } // parse one or more ID3 frames
     // http://id3.org/id3v2.3.0#ID3v2_frame_overview
 
 
     do {
       // determine the number of bytes in this frame
-      frameSize = parseSyncSafeInteger$1(packet.subarray(frameStart + 4, frameStart + 8));
+      frameSize = parseSyncSafeInteger(packet.subarray(frameStart + 4, frameStart + 8));
 
       if (frameSize < 1) {
         return null;
@@ -35978,7 +36845,7 @@ var workerCode = transform(getWorkerString(function () {
 
         for (var i = 0; i < frame.byteLength; i++) {
           if (frame[i] === 0) {
-            var owner = parseIso88591$1(frame, 0, i);
+            var owner = parseIso88591(frame, 0, i);
 
             if (owner === 'com.apple.streaming.transportStreamTimestamp') {
               var d = frame.subarray(i + 1);
@@ -36002,10 +36869,10 @@ var workerCode = transform(getWorkerString(function () {
   };
 
   var utils = {
-    isLikelyAacData: isLikelyAacData,
+    isLikelyAacData: isLikelyAacData$2,
     parseId3TagSize: parseId3TagSize,
     parseAdtsSize: parseAdtsSize,
-    parseType: parseType,
+    parseType: parseType$1,
     parseSampleRate: parseSampleRate,
     parseAacTimestamp: parseAacTimestamp
   };
@@ -36125,7 +36992,7 @@ var workerCode = transform(getWorkerString(function () {
   var videoProperties = VIDEO_PROPERTIES;
   var H264Stream = h264.H264Stream;
   var isLikelyAacData$1 = utils.isLikelyAacData;
-  var ONE_SECOND_IN_TS$3 = clock.ONE_SECOND_IN_TS; // object types
+  var ONE_SECOND_IN_TS$1 = clock.ONE_SECOND_IN_TS; // object types
 
   var _VideoSegmentStream, _AudioSegmentStream, _Transmuxer, _CoalesceStream;
   /**
@@ -36242,7 +37109,7 @@ var workerCode = transform(getWorkerString(function () {
       boxes.set(moof);
       boxes.set(mdat, moof.byteLength);
       trackDecodeInfo.clearDtsInfo(track);
-      frameDuration = Math.ceil(ONE_SECOND_IN_TS$3 * 1024 / track.samplerate); // TODO this check was added to maintain backwards compatibility (particularly with
+      frameDuration = Math.ceil(ONE_SECOND_IN_TS$1 * 1024 / track.samplerate); // TODO this check was added to maintain backwards compatibility (particularly with
       // tests) on adding the timingInfo event. However, it seems unlikely that there's a
       // valid use-case where an init segment/data should be triggered without associated
       // frames. Leaving for now, but should be looked into.
@@ -37154,7 +38021,7 @@ var workerCode = transform(getWorkerString(function () {
   };
 
   _Transmuxer.prototype = new stream();
-  var transmuxer = {
+  var transmuxer$1 = {
     Transmuxer: _Transmuxer,
     VideoSegmentStream: _VideoSegmentStream,
     AudioSegmentStream: _AudioSegmentStream,
@@ -37174,7 +38041,7 @@ var workerCode = transform(getWorkerString(function () {
     Adts: adts,
     h264: h264
   };
-  var ONE_SECOND_IN_TS$4 = clock.ONE_SECOND_IN_TS;
+  var ONE_SECOND_IN_TS = clock.ONE_SECOND_IN_TS;
   /**
    * Constructs a single-track, ISO BMFF media segment from AAC data
    * events. The output of this stream can be fed to a SourceBuffer
@@ -37255,7 +38122,7 @@ var workerCode = transform(getWorkerString(function () {
         segmentEndPts = segmentStartPts = frames[0].pts;
       }
 
-      segmentEndPts += frames.length * (ONE_SECOND_IN_TS$4 * 1024 / track.samplerate);
+      segmentEndPts += frames.length * (ONE_SECOND_IN_TS * 1024 / track.samplerate);
       timingInfo = {
         start: segmentStartPts
       };
@@ -37477,7 +38344,7 @@ var workerCode = transform(getWorkerString(function () {
 
   VideoSegmentStream.prototype = new stream();
   var videoSegmentStream = VideoSegmentStream;
-  var isLikelyAacData$2 = utils.isLikelyAacData;
+  var isLikelyAacData = utils.isLikelyAacData;
 
   var createPipeline = function createPipeline(object) {
     object.prototype = new stream();
@@ -37672,7 +38539,7 @@ var workerCode = transform(getWorkerString(function () {
 
     this.push = function (bytes) {
       if (hasFlushed) {
-        var isAac = isLikelyAacData$2(bytes);
+        var isAac = isLikelyAacData(bytes);
 
         if (isAac && (!pipeline || pipeline.type !== 'aac')) {
           pipeline = aacPipeline(options);
@@ -37780,7 +38647,7 @@ var workerCode = transform(getWorkerString(function () {
   };
 
   Transmuxer.prototype = new stream();
-  var transmuxer$1 = Transmuxer;
+  var transmuxer = Transmuxer;
   /**
    * mux.js
    *
@@ -37788,7 +38655,7 @@ var workerCode = transform(getWorkerString(function () {
    * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
    */
 
-  var toUnsigned = function toUnsigned(value) {
+  var toUnsigned$2 = function toUnsigned(value) {
     return value >>> 0;
   };
 
@@ -37797,11 +38664,11 @@ var workerCode = transform(getWorkerString(function () {
   };
 
   var bin = {
-    toUnsigned: toUnsigned,
+    toUnsigned: toUnsigned$2,
     toHexString: toHexString
   };
 
-  var parseType$1 = function parseType(buffer) {
+  var parseType = function parseType(buffer) {
     var result = '';
     result += String.fromCharCode(buffer[0]);
     result += String.fromCharCode(buffer[1]);
@@ -37810,7 +38677,7 @@ var workerCode = transform(getWorkerString(function () {
     return result;
   };
 
-  var parseType_1 = parseType$1;
+  var parseType_1 = parseType;
   var toUnsigned$1 = bin.toUnsigned;
 
   var findBox = function findBox(data, path) {
@@ -37854,18 +38721,18 @@ var workerCode = transform(getWorkerString(function () {
   };
 
   var findBox_1 = findBox;
-  var toUnsigned$2 = bin.toUnsigned;
+  var toUnsigned = bin.toUnsigned;
 
   var tfdt = function tfdt(data) {
     var result = {
       version: data[0],
       flags: new Uint8Array(data.subarray(1, 4)),
-      baseMediaDecodeTime: toUnsigned$2(data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7])
+      baseMediaDecodeTime: toUnsigned(data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7])
     };
 
     if (result.version === 1) {
       result.baseMediaDecodeTime *= Math.pow(2, 32);
-      result.baseMediaDecodeTime += toUnsigned$2(data[8] << 24 | data[9] << 16 | data[10] << 8 | data[11]);
+      result.baseMediaDecodeTime += toUnsigned(data[8] << 24 | data[9] << 16 | data[10] << 8 | data[11]);
     }
 
     return result;
@@ -37887,7 +38754,7 @@ var workerCode = transform(getWorkerString(function () {
 
   var parseSampleFlags_1 = parseSampleFlags;
 
-  var trun$1 = function trun(data) {
+  var trun = function trun(data) {
     var result = {
       version: data[0],
       flags: new Uint8Array(data.subarray(1, 4)),
@@ -37983,7 +38850,7 @@ var workerCode = transform(getWorkerString(function () {
     return result;
   };
 
-  var parseTrun = trun$1;
+  var parseTrun = trun;
 
   var tfhd = function tfhd(data) {
     var view = new DataView(data.buffer, data.byteOffset, data.byteLength),
@@ -38041,8 +38908,8 @@ var workerCode = transform(getWorkerString(function () {
   };
 
   var parseTfhd = tfhd;
-  var discardEmulationPreventionBytes$1 = captionPacketParser.discardEmulationPreventionBytes;
-  var CaptionStream$1 = captionStream.CaptionStream;
+  var discardEmulationPreventionBytes = captionPacketParser.discardEmulationPreventionBytes;
+  var CaptionStream = captionStream.CaptionStream;
   /**
     * Maps an offset in the mdat to a sample based on the the size of the samples.
     * Assumes that `parseSamples` has been called first.
@@ -38109,7 +38976,7 @@ var workerCode = transform(getWorkerString(function () {
             nalUnitType: 'sei_rbsp',
             size: length,
             data: data,
-            escapedRBSP: discardEmulationPreventionBytes$1(data),
+            escapedRBSP: discardEmulationPreventionBytes(data),
             trackId: trackId
           };
 
@@ -38301,7 +39168,7 @@ var workerCode = transform(getWorkerString(function () {
 
 
     this.init = function (options) {
-      captionStream = new CaptionStream$1();
+      captionStream = new CaptionStream();
       isInitialized = true;
       parsingPartial = options ? options.isPartial : false; // Collect dispatched captions
 
@@ -38744,7 +39611,7 @@ var workerCode = transform(getWorkerString(function () {
         this.transmuxer.dispose();
       }
 
-      this.transmuxer = this.options.handlePartialData ? new transmuxer$1(this.options) : new transmuxer.Transmuxer(this.options);
+      this.transmuxer = this.options.handlePartialData ? new transmuxer(this.options) : new transmuxer$1.Transmuxer(this.options);
 
       if (this.options.handlePartialData) {
         wirePartialTransmuxerEvents(this.self, this.transmuxer);
@@ -38890,7 +39757,7 @@ var workerCode = transform(getWorkerString(function () {
     }
   };
 }));
-var TransmuxWorker = factory(workerCode);
+var TransmuxWorker = factory(workerCode$1);
 /* rollup-plugin-worker-factory end for worker!/Users/gkatsevman/p/http-streaming-release/src/transmuxer-worker.js */
 
 var handleData_ = function handleData_(event, transmuxedData, callback) {
@@ -40177,7 +41044,7 @@ var mediaSegmentRequest = function mediaSegmentRequest(_ref9) {
   }
 
   var segmentRequestOptions = videojs$1.mergeOptions(xhrOptions, {
-    uri: segment.resolvedUri,
+    uri: segment.part && segment.part.resolvedUri || segment.resolvedUri,
     responseType: 'arraybuffer',
     headers: segmentXhrHeaders(segment)
   });
@@ -40234,7 +41101,7 @@ var mediaSegmentRequest = function mediaSegmentRequest(_ref9) {
  */
 
 
-var logFn = logger('CodecUtils');
+var logFn$1 = logger('CodecUtils');
 /**
  * Returns a set of codec strings parsed from the playlist or the default
  * codec strings if no codecs were specified in the playlist
@@ -40290,7 +41157,7 @@ var unwrapCodecList = function unwrapCodecList(codecList) {
   });
   Object.keys(codecs).forEach(function (mediaType) {
     if (codecs[mediaType].length > 1) {
-      logFn("multiple " + mediaType + " codecs found as attributes: " + codecs[mediaType].join(', ') + ". Setting playlist codecs to null so that we wait for mux.js to probe segments for real codecs.");
+      logFn$1("multiple " + mediaType + " codecs found as attributes: " + codecs[mediaType].join(', ') + ". Setting playlist codecs to null so that we wait for mux.js to probe segments for real codecs.");
       codecs[mediaType] = null;
       return;
     }
@@ -40348,7 +41215,7 @@ var codecsForPlaylist = function codecsForPlaylist(master, media) {
   return codecInfo;
 };
 
-var logFn$1 = logger('PlaylistSelector');
+var logFn = logger('PlaylistSelector');
 
 var representationToString = function representationToString(representation) {
   if (!representation || !representation.playlist) {
@@ -40488,13 +41355,15 @@ var comparePlaylistResolution = function comparePlaylistResolution(left, right) 
  *        Current height of the player element (should account for the device pixel ratio)
  * @param {boolean} limitRenditionByPlayerDimensions
  *        True if the player width and height should be used during the selection, false otherwise
+ * @param {Object} masterPlaylistController
+ *        the current masterPlaylistController object
  * @return {Playlist} the highest bitrate playlist less than the
  * currently detected bandwidth, accounting for some amount of
  * bandwidth variance
  */
 
 
-var simpleSelector = function simpleSelector(master, playerBandwidth, playerWidth, playerHeight, limitRenditionByPlayerDimensions) {
+var simpleSelector = function simpleSelector(master, playerBandwidth, playerWidth, playerHeight, limitRenditionByPlayerDimensions, masterPlaylistController) {
   // If we end up getting called before `master` is available, exit early
   if (!master) {
     return;
@@ -40505,13 +41374,22 @@ var simpleSelector = function simpleSelector(master, playerBandwidth, playerWidt
     width: playerWidth,
     height: playerHeight,
     limitRenditionByPlayerDimensions: limitRenditionByPlayerDimensions
-  }; // convert the playlists to an intermediary representation to make comparisons easier
+  };
+  var playlists = master.playlists; // if playlist is audio only, select between currently active audio group playlists.
 
-  var sortedPlaylistReps = master.playlists.map(function (playlist) {
+  if (Playlist.isAudioOnly(master)) {
+    playlists = masterPlaylistController.getAudioTrackPlaylists_(); // add audioOnly to options so that we log audioOnly: true
+    // at the buttom of this function for debugging.
+
+    options.audioOnly = true;
+  } // convert the playlists to an intermediary representation to make comparisons easier
+
+
+  var sortedPlaylistReps = playlists.map(function (playlist) {
     var bandwidth;
-    var width = playlist.attributes.RESOLUTION && playlist.attributes.RESOLUTION.width;
-    var height = playlist.attributes.RESOLUTION && playlist.attributes.RESOLUTION.height;
-    bandwidth = playlist.attributes.BANDWIDTH;
+    var width = playlist.attributes && playlist.attributes.RESOLUTION && playlist.attributes.RESOLUTION.width;
+    var height = playlist.attributes && playlist.attributes.RESOLUTION && playlist.attributes.RESOLUTION.height;
+    bandwidth = playlist.attributes && playlist.attributes.BANDWIDTH;
     bandwidth = bandwidth || window.Number.MAX_VALUE;
     return {
       bandwidth: bandwidth,
@@ -40569,11 +41447,11 @@ var simpleSelector = function simpleSelector(master, playerBandwidth, playerWidt
         type = 'enabledPlaylistReps';
       }
 
-      logFn$1("choosing " + representationToString(_chosenRep) + " using " + type + " with options", options);
+      logFn("choosing " + representationToString(_chosenRep) + " using " + type + " with options", options);
       return _chosenRep.playlist;
     }
 
-    logFn$1('could not choose a playlist with options', options);
+    logFn('could not choose a playlist with options', options);
     return null;
   } // filter out playlists without resolution information
 
@@ -40631,11 +41509,11 @@ var simpleSelector = function simpleSelector(master, playerBandwidth, playerWidt
       _type = 'enabledPlaylistReps';
     }
 
-    logFn$1("choosing " + representationToString(chosenRep) + " using " + _type + " with options", options);
+    logFn("choosing " + representationToString(chosenRep) + " using " + _type + " with options", options);
     return chosenRep.playlist;
   }
 
-  logFn$1('could not choose a playlist with options', options);
+  logFn('could not choose a playlist with options', options);
   return null;
 }; // Playlist Selectors
 
@@ -40653,7 +41531,7 @@ var simpleSelector = function simpleSelector(master, playerBandwidth, playerWidt
 
 var lastBandwidthSelector = function lastBandwidthSelector() {
   var pixelRatio = this.useDevicePixelRatio ? window.devicePixelRatio || 1 : 1;
-  return simpleSelector(this.playlists.master, this.systemBandwidth, parseInt(safeGetComputedStyle(this.tech_.el(), 'width'), 10) * pixelRatio, parseInt(safeGetComputedStyle(this.tech_.el(), 'height'), 10) * pixelRatio, this.limitRenditionByPlayerDimensions);
+  return simpleSelector(this.playlists.master, this.systemBandwidth, parseInt(safeGetComputedStyle(this.tech_.el(), 'width'), 10) * pixelRatio, parseInt(safeGetComputedStyle(this.tech_.el(), 'height'), 10) * pixelRatio, this.limitRenditionByPlayerDimensions, this.masterPlaylistController_);
 };
 /**
  * Chooses the appropriate media playlist based on an
@@ -40686,7 +41564,7 @@ var movingAverageBandwidthSelector = function movingAverageBandwidthSelector(dec
     }
 
     average = decay * this.systemBandwidth + (1 - decay) * average;
-    return simpleSelector(this.playlists.master, average, parseInt(safeGetComputedStyle(this.tech_.el(), 'width'), 10) * pixelRatio, parseInt(safeGetComputedStyle(this.tech_.el(), 'height'), 10) * pixelRatio, this.limitRenditionByPlayerDimensions);
+    return simpleSelector(this.playlists.master, average, parseInt(safeGetComputedStyle(this.tech_.el(), 'width'), 10) * pixelRatio, parseInt(safeGetComputedStyle(this.tech_.el(), 'height'), 10) * pixelRatio, this.limitRenditionByPlayerDimensions, this.masterPlaylistController_);
   };
 };
 /**
@@ -41318,14 +42196,17 @@ var segmentInfoString = function segmentInfoString(segmentInfo) {
   var _segmentInfo$segment = segmentInfo.segment,
       start = _segmentInfo$segment.start,
       end = _segmentInfo$segment.end,
+      parts = _segmentInfo$segment.parts,
       _segmentInfo$playlist = segmentInfo.playlist,
       seq = _segmentInfo$playlist.mediaSequence,
       id = _segmentInfo$playlist.id,
       _segmentInfo$playlist2 = _segmentInfo$playlist.segments,
       segments = _segmentInfo$playlist2 === void 0 ? [] : _segmentInfo$playlist2,
       index = segmentInfo.mediaIndex,
+      partIndex = segmentInfo.partIndex,
       timeline = segmentInfo.timeline;
-  return ["appending [" + index + "] of [" + seq + ", " + (seq + segments.length) + "] from playlist [" + id + "]", "[" + start + " => " + end + "] in timeline [" + timeline + "]"].join(' ');
+  var name = segmentInfo.segment.uri ? 'segment' : 'pre-segment';
+  return [name + " [" + index + "/" + (segments.length - 1) + "]", partIndex ? "part [" + partIndex + "/" + (parts.length - 1) + "]" : '', "mediaSequenceNumber [" + seq + "/" + (seq + segments.length - 1) + "]", "playlist [" + id + "]", "start/end [" + start + " => " + end + "]", "timeline [" + timeline + "]"].join(' ');
 };
 
 var timingInfoPropertyForMedia = function timingInfoPropertyForMedia(mediaType) {
@@ -41662,7 +42543,8 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
 
     _this.resetStats_();
 
-    _this.mediaIndex = null; // private settings
+    _this.mediaIndex = null;
+    _this.partIndex = null; // private settings
 
     _this.hasPlayed_ = settings.hasPlayed;
     _this.currentTime_ = settings.currentTime;
@@ -42212,19 +43094,50 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     // equal to the last appended mediaIndex
 
     if (this.mediaIndex !== null) {
-      this.mediaIndex -= mediaSequenceDiff;
+      this.mediaIndex -= mediaSequenceDiff; // this can happen if we are going to load the first segment, but get a playlist
+      // update during that. mediaIndex would go from 0 to -1 if mediaSequence in the
+      // new playlist was incremented by 1.
+
+      if (this.mediaIndex < 0) {
+        this.mediaIndex = null;
+        this.partIndex = null;
+      } else {
+        var segment = this.playlist_.segments[this.mediaIndex]; // partIndex should remain the same for the same segment
+        // unless parts fell off of the playlist for this segment.
+        // In that case we need to reset partIndex and resync
+
+        if (this.partIndex && (!segment.parts || !segment.parts.length || !segment.parts[this.partIndex])) {
+          var mediaIndex = this.mediaIndex;
+          this.logger_("currently processing part (index " + this.partIndex + ") no longer exists.");
+          this.resetLoader(); // We want to throw away the partIndex and the data associated with it,
+          // as the part was dropped from our current playlists segment.
+          // The mediaIndex will still be valid so keep that around.
+
+          this.mediaIndex = mediaIndex;
+        }
+      }
     } // update the mediaIndex on the SegmentInfo object
     // this is important because we will update this.mediaIndex with this value
     // in `handleAppendsDone_` after the segment has been successfully appended
 
 
     if (segmentInfo) {
-      segmentInfo.mediaIndex -= mediaSequenceDiff; // we need to update the referenced segment so that timing information is
-      // saved for the new playlist's segment, however, if the segment fell off the
-      // playlist, we can leave the old reference and just lose the timing info
+      segmentInfo.mediaIndex -= mediaSequenceDiff;
 
-      if (segmentInfo.mediaIndex >= 0) {
-        segmentInfo.segment = newPlaylist.segments[segmentInfo.mediaIndex];
+      if (segmentInfo.mediaIndex < 0) {
+        segmentInfo.mediaIndex = null;
+        segmentInfo.partIndex = null;
+      } else {
+        // we need to update the referenced segment so that timing information is
+        // saved for the new playlist's segment, however, if the segment fell off the
+        // playlist, we can leave the old reference and just lose the timing info
+        if (segmentInfo.mediaIndex >= 0) {
+          segmentInfo.segment = newPlaylist.segments[segmentInfo.mediaIndex];
+        }
+
+        if (segmentInfo.partIndex >= 0 && segmentInfo.segment.parts) {
+          segmentInfo.part = segmentInfo.segment.parts[segmentInfo.partIndex];
+        }
       }
     }
 
@@ -42305,6 +43218,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     }
 
     this.mediaIndex = null;
+    this.partIndex = null;
     this.syncPoint_ = null;
     this.isPendingTimestampOffset_ = false;
     this.callQueue_ = [];
@@ -42325,13 +43239,18 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
    * @param {number} start - the start time of the region to remove from the buffer
    * @param {number} end - the end time of the region to remove from the buffer
    * @param {Function} [done] - an optional callback to be executed when the remove
+   * @param {boolean} force - force all remove operations to happen
    * operation is complete
    */
   ;
 
-  _proto.remove = function remove(start, end, done) {
+  _proto.remove = function remove(start, end, done, force) {
     if (done === void 0) {
       done = function done() {};
+    }
+
+    if (force === void 0) {
+      force = false;
     } // clamp end to duration if we need to remove everything.
     // This is due to a browser bug that causes issues if we remove to Infinity.
     // videojs/videojs-contrib-hls#1225
@@ -42358,7 +43277,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       }
     };
 
-    if (!this.audioDisabled_) {
+    if (force || !this.audioDisabled_) {
       removesRemaining++;
       this.sourceUpdater_.removeAudio(start, end, removeFinished);
     } // While it would be better to only remove video if the main loader has video, this
@@ -42371,7 +43290,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     // what the new media will contain.
 
 
-    if (this.loaderType_ === 'main') {
+    if (force || this.loaderType_ === 'main') {
       this.gopBuffer_ = removeGopBuffer(this.gopBuffer_, start, end, this.timeMapping_);
       removesRemaining++;
       this.sourceUpdater_.removeVideo(start, end, removeFinished);
@@ -42443,7 +43362,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
 
     var buffered = this.buffered_(); // see if we need to begin loading immediately
 
-    var segmentInfo = this.checkBuffer_(buffered, this.playlist_, this.mediaIndex, this.hasPlayed_(), this.currentTime_(), this.syncPoint_);
+    var segmentInfo = this.checkBuffer_(buffered, this.playlist_, this.mediaIndex, this.hasPlayed_(), this.currentTime_(), this.syncPoint_, this.partIndex);
 
     if (!segmentInfo) {
       return;
@@ -42479,7 +43398,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
    */
   ;
 
-  _proto.isEndOfStream_ = function isEndOfStream_(mediaIndex, playlist) {
+  _proto.isEndOfStream_ = function isEndOfStream_(mediaIndex, playlist, partIndex) {
     if (mediaIndex === void 0) {
       mediaIndex = this.mediaIndex;
     }
@@ -42488,16 +43407,23 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       playlist = this.playlist_;
     }
 
+    if (partIndex === void 0) {
+      partIndex = this.partIndex;
+    }
+
     if (!playlist || !this.mediaSource_) {
       return false;
-    } // mediaIndex is zero based but length is 1 based
+    }
 
+    var segment = typeof mediaIndex === 'number' && playlist.segments[mediaIndex]; // mediaIndex is zero based but length is 1 based
 
-    var appendedLastSegment = mediaIndex + 1 === playlist.segments.length; // if we've buffered to the end of the video, we need to call endOfStream
+    var appendedLastSegment = mediaIndex + 1 === playlist.segments.length; // true if there are no parts, or this is the last part.
+
+    var appendedLastPart = !segment || !segment.parts || partIndex + 1 === segment.parts.length; // if we've buffered to the end of the video, we need to call endOfStream
     // so that MediaSources can trigger the `ended` event when it runs out of
     // buffered data instead of waiting for me
 
-    return playlist.endList && this.mediaSource_.readyState === 'open' && appendedLastSegment;
+    return playlist.endList && this.mediaSource_.readyState === 'open' && appendedLastSegment && appendedLastPart;
   }
   /**
    * Determines what segment request should be made, given current playback
@@ -42513,7 +43439,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
    */
   ;
 
-  _proto.checkBuffer_ = function checkBuffer_(buffered, playlist, currentMediaIndex, hasPlayed, currentTime, syncPoint) {
+  _proto.checkBuffer_ = function checkBuffer_(buffered, playlist, currentMediaIndex, hasPlayed, currentTime, syncPoint, currentPartIndex) {
     var lastBufferedEnd = 0;
 
     if (buffered.length) {
@@ -42538,6 +43464,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       return null;
     }
 
+    var nextPartIndex = null;
     var nextMediaIndex = null;
     var startOfSegment;
     var isSyncRequest = false; // When the syncPoint is null, there is no way of determining a good
@@ -42551,30 +43478,31 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     } else if (currentMediaIndex !== null) {
       // Under normal playback conditions fetching is a simple walk forward
       var segment = playlist.segments[currentMediaIndex];
+      var partIndex = typeof currentPartIndex === 'number' ? currentPartIndex : -1;
+      startOfSegment = segment.end ? segment.end : lastBufferedEnd;
 
-      if (segment && segment.end) {
-        startOfSegment = segment.end;
+      if (segment.parts && segment.parts[partIndex + 1]) {
+        nextMediaIndex = currentMediaIndex;
+        nextPartIndex = partIndex + 1;
       } else {
-        startOfSegment = lastBufferedEnd;
-      }
-
-      nextMediaIndex = currentMediaIndex + 1; // There is a sync-point but the lack of a mediaIndex indicates that
+        nextMediaIndex = currentMediaIndex + 1;
+      } // There is a sync-point but the lack of a mediaIndex indicates that
       // we need to make a good conservative guess about which segment to
       // fetch
-    } else if (this.fetchAtBuffer_) {
-      // Find the segment containing the end of the buffer
-      var mediaSourceInfo = Playlist.getMediaInfoForTime(playlist, lastBufferedEnd, syncPoint.segmentIndex, syncPoint.time);
+
+    } else {
+      // Find the segment containing the end of the buffer or current time.
+      var mediaSourceInfo = Playlist.getMediaInfoForTime(playlist, this.fetchAtBuffer_ ? lastBufferedEnd : currentTime, syncPoint.segmentIndex, syncPoint.time);
       nextMediaIndex = mediaSourceInfo.mediaIndex;
       startOfSegment = mediaSourceInfo.startTime;
-    } else {
-      // Find the segment containing currentTime
-      var _mediaSourceInfo = Playlist.getMediaInfoForTime(playlist, currentTime, syncPoint.segmentIndex, syncPoint.time);
-
-      nextMediaIndex = _mediaSourceInfo.mediaIndex;
-      startOfSegment = _mediaSourceInfo.startTime;
+      nextPartIndex = mediaSourceInfo.partIndex;
     }
 
-    var segmentInfo = this.generateSegmentInfo_(playlist, nextMediaIndex, startOfSegment, isSyncRequest);
+    if (typeof nextPartIndex !== 'number' && playlist.segments[nextMediaIndex] && playlist.segments[nextMediaIndex].parts) {
+      nextPartIndex = 0;
+    }
+
+    var segmentInfo = this.generateSegmentInfo_(playlist, nextMediaIndex, startOfSegment, isSyncRequest, nextPartIndex);
 
     if (!segmentInfo) {
       return;
@@ -42591,6 +43519,8 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       segmentInfo: segmentInfo,
       playlist: playlist,
       currentMediaIndex: currentMediaIndex,
+      currentPartIndex: currentPartIndex,
+      nextPartIndex: nextPartIndex,
       nextMediaIndex: nextMediaIndex,
       startOfSegment: startOfSegment,
       isSyncRequest: isSyncRequest
@@ -42631,12 +43561,18 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     return Math.max(playlist.segments.length - 1, 0);
   };
 
-  _proto.generateSegmentInfo_ = function generateSegmentInfo_(playlist, mediaIndex, startOfSegment, isSyncRequest) {
+  _proto.generateSegmentInfo_ = function generateSegmentInfo_(playlist, mediaIndex, startOfSegment, isSyncRequest, partIndex) {
     if (mediaIndex < 0 || mediaIndex >= playlist.segments.length) {
       return null;
     }
 
     var segment = playlist.segments[mediaIndex];
+
+    if (segment.parts && segment.parts.length && partIndex >= segment.parts.length) {
+      return null;
+    }
+
+    var part = segment.parts && segment.parts.length && segment.parts[partIndex];
     var audioBuffered = this.sourceUpdater_.audioBuffered();
     var videoBuffered = this.sourceUpdater_.videoBuffered();
     var audioAppendStart;
@@ -42657,9 +43593,10 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     return {
       requestId: 'segment-loader-' + Math.random(),
       // resolve the segment URL relative to the playlist
-      uri: segment.resolvedUri,
+      uri: part && part.resolvedUri || segment.resolvedUri,
       // the segment's mediaIndex at the time it was requested
       mediaIndex: mediaIndex,
+      partIndex: part ? partIndex : null,
       // whether or not to update the SegmentLoader's state with this
       // segment's mediaIndex
       isSyncRequest: isSyncRequest,
@@ -42679,6 +43616,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       duration: segment.duration,
       // retain the segment in case the playlist updates while doing an async process
       segment: segment,
+      part: part,
       byteLength: 0,
       transmuxer: this.transmuxer_,
       audioAppendStart: audioAppendStart,
@@ -42762,7 +43700,8 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     this.trigger('earlyabort');
   };
 
-  _proto.handleAbort_ = function handleAbort_() {
+  _proto.handleAbort_ = function handleAbort_(segmentInfo) {
+    this.logger_("Aborting " + segmentInfoString(segmentInfo));
     this.mediaRequestsAborted += 1;
   }
   /**
@@ -43300,25 +44239,21 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     // before retrying.
 
     var timeToRemoveUntil = currentTime - MIN_BACK_BUFFER;
-    this.logger_("On QUOTA_EXCEEDED_ERR, removing video from 0 to " + timeToRemoveUntil);
-    this.sourceUpdater_.removeVideo(0, timeToRemoveUntil, function () {
-      _this4.logger_("On QUOTA_EXCEEDED_ERR, removing audio from 0 to " + timeToRemoveUntil);
+    this.logger_("On QUOTA_EXCEEDED_ERR, removing audio/video from 0 to " + timeToRemoveUntil);
+    this.remove(0, timeToRemoveUntil, function () {
+      _this4.logger_("On QUOTA_EXCEEDED_ERR, retrying append in " + MIN_BACK_BUFFER + "s");
 
-      _this4.sourceUpdater_.removeAudio(0, timeToRemoveUntil, function () {
-        _this4.logger_("On QUOTA_EXCEEDED_ERR, retrying append in " + MIN_BACK_BUFFER + "s");
+      _this4.waitingOnRemove_ = false; // wait the length of time alotted in the back buffer to prevent wasted
+      // attempts (since we can't clear less than the minimum)
 
-        _this4.waitingOnRemove_ = false; // wait the length of time alotted in the back buffer to prevent wasted
-        // attempts (since we can't clear less than the minimum)
+      _this4.quotaExceededErrorRetryTimeout_ = window.setTimeout(function () {
+        _this4.logger_('On QUOTA_EXCEEDED_ERR, re-processing call queue');
 
-        _this4.quotaExceededErrorRetryTimeout_ = window.setTimeout(function () {
-          _this4.logger_('On QUOTA_EXCEEDED_ERR, re-processing call queue');
+        _this4.quotaExceededErrorRetryTimeout_ = null;
 
-          _this4.quotaExceededErrorRetryTimeout_ = null;
-
-          _this4.processCallQueue_();
-        }, MIN_BACK_BUFFER * 1000);
-      });
-    });
+        _this4.processCallQueue_();
+      }, MIN_BACK_BUFFER * 1000);
+    }, true);
   };
 
   _proto.handleAppendError_ = function handleAppendError_(_ref6, error) {
@@ -43524,19 +44459,20 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     }
 
     var simpleSegment = this.createSimplifiedSegmentObj_(segmentInfo);
-    var isEndOfStream = this.isEndOfStream_(segmentInfo.mediaIndex, segmentInfo.playlist);
+    var isEndOfStream = this.isEndOfStream_(segmentInfo.mediaIndex, segmentInfo.playlist, segmentInfo.partIndex);
     var isWalkingForward = this.mediaIndex !== null;
     var isDiscontinuity = segmentInfo.timeline !== this.currentTimeline_ && // currentTimeline starts at -1, so we shouldn't end the timeline switching to 0,
     // the first timeline
     segmentInfo.timeline > 0;
     var isEndOfTimeline = isEndOfStream || isWalkingForward && isDiscontinuity;
+    this.logger_("Requesting " + segmentInfoString(segmentInfo));
     segmentInfo.abortRequests = mediaSegmentRequest({
       xhr: this.vhs_.xhr,
       xhrOptions: this.xhrOptions_,
       decryptionWorker: this.decrypter_,
       segment: simpleSegment,
       handlePartialData: this.handlePartialData_,
-      abortFn: this.handleAbort_.bind(this),
+      abortFn: this.handleAbort_.bind(this, segmentInfo),
       progressFn: this.handleProgress_.bind(this),
       trackInfoFn: this.handleTrackInfo_.bind(this),
       timingInfoFn: this.handleTimingInfo_.bind(this),
@@ -43586,13 +44522,15 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
 
   _proto.createSimplifiedSegmentObj_ = function createSimplifiedSegmentObj_(segmentInfo) {
     var segment = segmentInfo.segment;
+    var part = segmentInfo.part;
     var simpleSegment = {
-      resolvedUri: segment.resolvedUri,
-      byterange: segment.byterange,
+      resolvedUri: part ? part.resolvedUri : segment.resolvedUri,
+      byterange: part ? part.byterange : segment.byterange,
       requestId: segmentInfo.requestId,
       transmuxer: segmentInfo.transmuxer,
       audioAppendStart: segmentInfo.audioAppendStart,
-      gopsToAlignWith: segmentInfo.gopsToAlignWith
+      gopsToAlignWith: segmentInfo.gopsToAlignWith,
+      part: segmentInfo.part
     };
     var previousSegment = segmentInfo.playlist.segments[segmentInfo.mediaIndex - 1];
 
@@ -44007,7 +44945,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       });
     }
 
-    this.logger_(segmentInfoString(segmentInfo));
+    this.logger_("Appended " + segmentInfoString(segmentInfo));
     var segmentDurationMessage = getTroublesomeSegmentDurationMessage(segmentInfo, this.sourceType_);
 
     if (segmentDurationMessage) {
@@ -44073,11 +45011,12 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     }
 
     this.trigger('progress');
-    this.mediaIndex = segmentInfo.mediaIndex; // any time an update finishes and the last segment is in the
+    this.mediaIndex = segmentInfo.mediaIndex;
+    this.partIndex = segmentInfo.partIndex; // any time an update finishes and the last segment is in the
     // buffer, end the stream. this ensures the "ended" event will
     // fire if playback reaches that point.
 
-    if (this.isEndOfStream_(segmentInfo.mediaIndex, segmentInfo.playlist)) {
+    if (this.isEndOfStream_(segmentInfo.mediaIndex, segmentInfo.playlist, segmentInfo.partIndex)) {
       this.endOfStream();
     } // used for testing
 
@@ -44329,7 +45268,12 @@ var actions = {
       }
 
       sourceUpdater.logger_("Removing " + start + " to " + end + " from " + type + "Buffer");
-      sourceBuffer.remove(start, end);
+
+      try {
+        sourceBuffer.remove(start, end);
+      } catch (e) {
+        sourceUpdater.logger_("Remove " + start + " to " + end + " from " + type + "Buffer failed");
+      }
     };
   },
   timestampOffset: function timestampOffset(offset) {
@@ -45683,6 +46627,15 @@ var updateAdCues = function updateAdCues(media, track, offset) {
   }
 };
 
+var getSegmentIndex = function getSegmentIndex(i, playlist, currentTime) {
+  if (currentTime === void 0) {
+    currentTime = 0;
+  }
+
+  var segments = playlist.segments;
+  return playlist.endList || currentTime === 0 ? i : segments.length - (i + 1);
+};
+
 var syncPointStrategies = [// Stategy "VOD": Handle the VOD-case where the sync-point is *always*
 //                the equivalence display-time 0 === segment-index 0
 {
@@ -45712,7 +46665,8 @@ var syncPointStrategies = [// Stategy "VOD": Handle the VOD-case where the sync-
     currentTime = currentTime || 0;
 
     for (var i = 0; i < segments.length; i++) {
-      var segment = segments[i];
+      var segmentIndex = getSegmentIndex(i, playlist, currentTime);
+      var segment = segments[segmentIndex];
       var datetimeMapping = syncController.timelineToDatetimeMappings[segment.timeline];
 
       if (!datetimeMapping) {
@@ -45732,7 +46686,7 @@ var syncPointStrategies = [// Stategy "VOD": Handle the VOD-case where the sync-
         lastDistance = distance;
         syncPoint = {
           time: segmentStart,
-          segmentIndex: i
+          segmentIndex: segmentIndex
         };
       }
     }
@@ -45750,7 +46704,8 @@ var syncPointStrategies = [// Stategy "VOD": Handle the VOD-case where the sync-
     currentTime = currentTime || 0;
 
     for (var i = 0; i < segments.length; i++) {
-      var segment = segments[i];
+      var segmentIndex = getSegmentIndex(i, playlist, currentTime);
+      var segment = segments[segmentIndex];
 
       if (segment.timeline === currentTimeline && typeof segment.start !== 'undefined') {
         var distance = Math.abs(currentTime - segment.start); // Once the distance begins to increase, we have passed
@@ -45764,7 +46719,7 @@ var syncPointStrategies = [// Stategy "VOD": Handle the VOD-case where the sync-
           lastDistance = distance;
           syncPoint = {
             time: segment.start,
-            segmentIndex: i
+            segmentIndex: segmentIndex
           };
         }
       }
@@ -46261,32 +47216,65 @@ var TimelineChangeController = /*#__PURE__*/function (_videojs$EventTarget) {
 /* rollup-plugin-worker-factory start for worker!/Users/gkatsevman/p/http-streaming-release/src/decrypter-worker.js */
 
 
-var workerCode$1 = transform(getWorkerString(function () {
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
+var workerCode = transform(getWorkerString(function () {
+  function createCommonjsModule(fn, basedir, module) {
+    return module = {
+      path: basedir,
+      exports: {},
+      require: function require(path, base) {
+        return commonjsRequire(path, base === undefined || base === null ? module.path : base);
+      }
+    }, fn(module, module.exports), module.exports;
+  }
+
+  function commonjsRequire() {
+    throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+  }
+
+  var createClass = createCommonjsModule(function (module) {
+    function _defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
     }
-  }
 
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
+    function _createClass(Constructor, protoProps, staticProps) {
+      if (protoProps) _defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) _defineProperties(Constructor, staticProps);
+      return Constructor;
+    }
 
-  var createClass = _createClass;
+    module.exports = _createClass;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
+  });
+  var setPrototypeOf = createCommonjsModule(function (module) {
+    function _setPrototypeOf(o, p) {
+      module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+        o.__proto__ = p;
+        return o;
+      };
 
-  function _inheritsLoose(subClass, superClass) {
-    subClass.prototype = Object.create(superClass.prototype);
-    subClass.prototype.constructor = subClass;
-    subClass.__proto__ = superClass;
-  }
+      module.exports["default"] = module.exports, module.exports.__esModule = true;
+      return _setPrototypeOf(o, p);
+    }
 
-  var inheritsLoose = _inheritsLoose;
+    module.exports = _setPrototypeOf;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
+  });
+  var inheritsLoose = createCommonjsModule(function (module) {
+    function _inheritsLoose(subClass, superClass) {
+      subClass.prototype = Object.create(superClass.prototype);
+      subClass.prototype.constructor = subClass;
+      setPrototypeOf(subClass, superClass);
+    }
+
+    module.exports = _inheritsLoose;
+    module.exports["default"] = module.exports, module.exports.__esModule = true;
+  });
   /**
    * @file stream.js
    */
@@ -46904,7 +47892,7 @@ var workerCode$1 = transform(getWorkerString(function () {
     /* eslint-enable */
   };
 }));
-var Decrypter = factory(workerCode$1);
+var Decrypter = factory(workerCode);
 /* rollup-plugin-worker-factory end for worker!/Users/gkatsevman/p/http-streaming-release/src/decrypter-worker.js */
 
 /**
@@ -46983,12 +47971,20 @@ var onGroupChanged = function onGroupChanged(type, settings) {
         mainSegmentLoader = _settings$segmentLoad.main,
         mediaType = settings.mediaTypes[type];
     var activeTrack = mediaType.activeTrack();
-    var activeGroup = mediaType.activeGroup(activeTrack);
+    var activeGroup = mediaType.getActiveGroup();
     var previousActiveLoader = mediaType.activePlaylistLoader;
+    var lastGroup = mediaType.lastGroup_; // the group did not change do nothing
+
+    if (activeGroup && lastGroup && activeGroup.id === lastGroup.id) {
+      return;
+    }
+
+    mediaType.lastGroup_ = activeGroup;
+    mediaType.lastTrack_ = activeTrack;
     stopLoaders(segmentLoader, mediaType);
 
-    if (!activeGroup) {
-      // there is no group active
+    if (!activeGroup || activeGroup.isMasterPlaylist) {
+      // there is no group active or active group is a main playlist and won't change
       return;
     }
 
@@ -47012,7 +48008,9 @@ var onGroupChanged = function onGroupChanged(type, settings) {
 
 var onGroupChanging = function onGroupChanging(type, settings) {
   return function () {
-    var segmentLoader = settings.segmentLoaders[type];
+    var segmentLoader = settings.segmentLoaders[type],
+        mediaType = settings.mediaTypes[type];
+    mediaType.lastGroup_ = null;
     segmentLoader.abort();
     segmentLoader.pause();
   };
@@ -47035,17 +48033,46 @@ var onGroupChanging = function onGroupChanging(type, settings) {
 
 var onTrackChanged = function onTrackChanged(type, settings) {
   return function () {
-    var _settings$segmentLoad2 = settings.segmentLoaders,
+    var masterPlaylistLoader = settings.masterPlaylistLoader,
+        _settings$segmentLoad2 = settings.segmentLoaders,
         segmentLoader = _settings$segmentLoad2[type],
         mainSegmentLoader = _settings$segmentLoad2.main,
         mediaType = settings.mediaTypes[type];
     var activeTrack = mediaType.activeTrack();
-    var activeGroup = mediaType.activeGroup(activeTrack);
+    var activeGroup = mediaType.getActiveGroup();
     var previousActiveLoader = mediaType.activePlaylistLoader;
+    var lastTrack = mediaType.lastTrack_; // track did not change, do nothing
+
+    if (lastTrack && activeTrack && lastTrack.id === activeTrack.id) {
+      return;
+    }
+
+    mediaType.lastGroup_ = activeGroup;
+    mediaType.lastTrack_ = activeTrack;
     stopLoaders(segmentLoader, mediaType);
 
     if (!activeGroup) {
       // there is no group active so we do not want to restart loaders
+      return;
+    }
+
+    if (activeGroup.isMasterPlaylist) {
+      // track did not change, do nothing
+      if (!activeTrack || !lastTrack || activeTrack.id === lastTrack.id) {
+        return;
+      }
+
+      var mpc = settings.vhs.masterPlaylistController_;
+      var newPlaylist = mpc.selectPlaylist(); // media will not change do nothing
+
+      if (mpc.media() === newPlaylist) {
+        return;
+      }
+
+      mediaType.logger_("track change. Switching master audio from " + lastTrack.id + " to " + activeTrack.id);
+      masterPlaylistLoader.pause();
+      mainSegmentLoader.resetEverything();
+      mpc.fastQualityChange_(newPlaylist);
       return;
     }
 
@@ -47253,13 +48280,13 @@ var initialize = {
         sourceType = settings.sourceType,
         segmentLoader = settings.segmentLoaders[type],
         requestOptions = settings.requestOptions,
-        _settings$master = settings.master,
-        mediaGroups = _settings$master.mediaGroups,
-        playlists = _settings$master.playlists,
+        mediaGroups = settings.master.mediaGroups,
         _settings$mediaTypes$ = settings.mediaTypes[type],
         groups = _settings$mediaTypes$.groups,
         tracks = _settings$mediaTypes$.tracks,
-        masterPlaylistLoader = settings.masterPlaylistLoader; // force a default if we have none
+        logger_ = _settings$mediaTypes$.logger_,
+        masterPlaylistLoader = settings.masterPlaylistLoader;
+    var audioOnlyMaster = isAudioOnly(masterPlaylistLoader.master); // force a default if we have none
 
     if (!mediaGroups[type] || Object.keys(mediaGroups[type]).length === 0) {
       mediaGroups[type] = {
@@ -47271,37 +48298,21 @@ var initialize = {
       };
     }
 
-    var _loop = function _loop(groupId) {
+    for (var groupId in mediaGroups[type]) {
       if (!groups[groupId]) {
         groups[groupId] = [];
-      } // List of playlists that have an AUDIO attribute value matching the current
-      // group ID
+      }
 
+      for (var variantLabel in mediaGroups[type][groupId]) {
+        var properties = mediaGroups[type][groupId][variantLabel];
+        var playlistLoader = void 0;
 
-      var groupPlaylists = playlists.filter(function (playlist) {
-        return playlist.attributes[type] === groupId;
-      });
-
-      var _loop2 = function _loop2(variantLabel) {
-        var properties = mediaGroups[type][groupId][variantLabel]; // List of playlists for the current group ID that do not have a matching uri
-        // with this alternate audio variant
-
-        var unmatchingPlaylists = groupPlaylists.filter(function (playlist) {
-          return playlist.resolvedUri !== properties.resolvedUri;
-        }); // If there are no playlists using this audio group other than ones
-        // that match it's uri, then the playlist is audio only. We delete the resolvedUri
-        // property here to prevent a playlist loader from being created so that we don't have
-        // both the main and audio segment loaders loading the same audio segments
-        // from the same playlist.
-
-        if (!unmatchingPlaylists.length && groupPlaylists.length) {
-          delete properties.resolvedUri;
-        }
-
-        var playlistLoader = void 0; // if vhs-json was provided as the source, and the media playlist was resolved,
-        // use the resolved media playlist object
-
-        if (sourceType === 'vhs-json' && properties.playlists) {
+        if (audioOnlyMaster) {
+          logger_("AUDIO group '" + groupId + "' label '" + variantLabel + "' is a master playlist");
+          properties.isMasterPlaylist = true;
+          playlistLoader = null; // if vhs-json was provided as the source, and the media playlist was resolved,
+          // use the resolved media playlist object
+        } else if (sourceType === 'vhs-json' && properties.playlists) {
           playlistLoader = new PlaylistLoader(properties.playlists[0], vhs, requestOptions);
         } else if (properties.resolvedUri) {
           playlistLoader = new PlaylistLoader(properties.resolvedUri, vhs, requestOptions);
@@ -47331,15 +48342,7 @@ var initialize = {
           });
           tracks[variantLabel] = track;
         }
-      };
-
-      for (var variantLabel in mediaGroups[type][groupId]) {
-        _loop2(variantLabel);
       }
-    };
-
-    for (var groupId in mediaGroups[type]) {
-      _loop(groupId);
     } // setup single error event handler for the segment loader
 
 
@@ -47504,19 +48507,28 @@ var activeGroup = function activeGroup(type, settings) {
       return null;
     }
 
-    var variants = null;
+    var variants = null; // set to variants to main media active group
 
     if (media.attributes[type]) {
       variants = groups[media.attributes[type]];
     }
 
-    variants = variants || groups.main;
+    var groupKeys = Object.keys(groups);
+
+    if (!variants) {
+      // use the main group if it exists
+      if (groups.main) {
+        variants = groups.main; // only one group, use that one
+      } else if (groupKeys.length === 1) {
+        variants = groups[groupKeys[0]];
+      }
+    }
 
     if (typeof track === 'undefined') {
       return variants;
     }
 
-    if (track === null) {
+    if (track === null || !variants) {
       // An active track was specified so a corresponding group is expected. track === null
       // means no track is currently active so there is no corresponding group
       return null;
@@ -47581,6 +48593,19 @@ var activeTrack = {
     };
   }
 };
+
+var getActiveGroup = function getActiveGroup(type, _ref) {
+  var mediaTypes = _ref.mediaTypes;
+  return function () {
+    var activeTrack_ = mediaTypes[type].activeTrack();
+
+    if (!activeTrack_) {
+      return null;
+    }
+
+    return mediaTypes[type].activeGroup(activeTrack_);
+  };
+};
 /**
  * Setup PlaylistLoaders and Tracks for media groups (Audio, Subtitles,
  * Closed-Captions) specified in the master manifest.
@@ -47604,6 +48629,7 @@ var activeTrack = {
  * @function setupMediaGroups
  */
 
+
 var setupMediaGroups = function setupMediaGroups(settings) {
   ['AUDIO', 'SUBTITLES', 'CLOSED-CAPTIONS'].forEach(function (type) {
     initialize[type](type, settings);
@@ -47619,6 +48645,7 @@ var setupMediaGroups = function setupMediaGroups(settings) {
     mediaTypes[type].onGroupChanged = onGroupChanged(type, settings);
     mediaTypes[type].onGroupChanging = onGroupChanging(type, settings);
     mediaTypes[type].onTrackChanged = onTrackChanged(type, settings);
+    mediaTypes[type].getActiveGroup = getActiveGroup(type, settings);
   }); // DO NOT enable the default subtitle or caption track.
   // DO enable the default audio track
 
@@ -47629,6 +48656,7 @@ var setupMediaGroups = function setupMediaGroups(settings) {
       return group["default"];
     })[0] || audioGroup[0]).id;
     mediaTypes.AUDIO.tracks[groupId].enabled = true;
+    mediaTypes.AUDIO.onGroupChanged();
     mediaTypes.AUDIO.onTrackChanged();
   }
 
@@ -47687,15 +48715,18 @@ var createMediaTypes = function createMediaTypes() {
       activePlaylistLoader: null,
       activeGroup: noop,
       activeTrack: noop,
+      getActiveGroup: noop,
       onGroupChanged: noop,
-      onTrackChanged: noop
+      onTrackChanged: noop,
+      lastTrack_: null,
+      logger_: logger("MediaGroups[" + type + "]")
     };
   });
   return mediaTypes;
 };
 
 var ABORT_EARLY_BLACKLIST_SECONDS = 60 * 2;
-var Vhs; // SegmentLoader stats that need to have each loader's
+var Vhs$1; // SegmentLoader stats that need to have each loader's
 // values summed to calculate the final value
 
 var loaderStats = ['mediaRequests', 'mediaRequestsAborted', 'mediaRequestsTimedout', 'mediaRequestsErrored', 'mediaTransferDuration', 'mediaBytesTransferred'];
@@ -47809,7 +48840,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
       throw new Error('A non-empty playlist URL or JSON manifest string is required');
     }
 
-    Vhs = externVhs;
+    Vhs$1 = externVhs;
     _this.experimentalBufferBasedABR = Boolean(experimentalBufferBasedABR);
     _this.withCredentials = withCredentials;
     _this.tech_ = tech;
@@ -47968,8 +48999,24 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
     var nextPlaylist = this.selectPlaylist();
 
     if (this.shouldSwitchToMedia_(nextPlaylist)) {
-      this.masterPlaylistLoader_.media(nextPlaylist);
+      this.switchMedia_(nextPlaylist, 'abr');
     }
+  };
+
+  _proto.switchMedia_ = function switchMedia_(playlist, cause, delay) {
+    var oldMedia = this.media();
+    var oldId = oldMedia && (oldMedia.id || oldMedia.uri);
+    var newId = playlist.id || playlist.uri;
+
+    if (oldId && oldId !== newId) {
+      this.logger_("switch media " + oldId + " -> " + newId + " from " + cause);
+      this.tech_.trigger({
+        type: 'usage',
+        name: "vhs-rendition-change-" + cause
+      });
+    }
+
+    this.masterPlaylistLoader_.media(playlist, delay);
   }
   /**
    * Start a timer that periodically calls checkABR_
@@ -48002,6 +49049,64 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
 
     window.clearInterval(this.abrTimer_);
     this.abrTimer_ = null;
+  }
+  /**
+   * Get a list of playlists for the currently selected audio playlist
+   *
+   * @return {Array} the array of audio playlists
+   */
+  ;
+
+  _proto.getAudioTrackPlaylists_ = function getAudioTrackPlaylists_() {
+    var master = this.master(); // if we don't have any audio groups then we can only
+    // assume that the audio tracks are contained in masters
+    // playlist array, use that or an empty array.
+
+    if (!master || !master.mediaGroups || !master.mediaGroups.AUDIO) {
+      return master && master.playlists || [];
+    }
+
+    var AUDIO = master.mediaGroups.AUDIO;
+    var groupKeys = Object.keys(AUDIO);
+    var track; // get the current active track
+
+    if (Object.keys(this.mediaTypes_.AUDIO.groups).length) {
+      track = this.mediaTypes_.AUDIO.activeTrack(); // or get the default track from master if mediaTypes_ isn't setup yet
+    } else {
+      // default group is `main` or just the first group.
+      var defaultGroup = AUDIO.main || groupKeys.length && AUDIO[groupKeys[0]];
+
+      for (var label in defaultGroup) {
+        if (defaultGroup[label]["default"]) {
+          track = {
+            label: label
+          };
+          break;
+        }
+      }
+    } // no active track no playlists.
+
+
+    if (!track) {
+      return [];
+    }
+
+    var playlists = []; // get all of the playlists that are possible for the
+    // active track.
+
+    for (var group in AUDIO) {
+      if (AUDIO[group][track.label]) {
+        var properties = AUDIO[group][track.label];
+
+        if (properties.playlists) {
+          playlists.push.apply(playlists, properties.playlists);
+        } else {
+          playlists.push(properties);
+        }
+      }
+    }
+
+    return playlists;
   }
   /**
    * Register event handlers on the master playlist loader. A helper
@@ -48093,7 +49198,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
 
         _this3.initialMedia_ = selectedMedia;
 
-        _this3.masterPlaylistLoader_.media(_this3.initialMedia_); // Under the standard case where a source URL is provided, loadedplaylist will
+        _this3.switchMedia_(_this3.initialMedia_, 'initial'); // Under the standard case where a source URL is provided, loadedplaylist will
         // fire again since the playlist will be requested. In the case of vhs-json
         // (where the manifest object is provided as the source), when the media
         // playlist's `segments` list is already available, a media playlist won't be
@@ -48271,7 +49376,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
       });
     }
 
-    if (Vhs.Playlist.isAes(media)) {
+    if (Vhs$1.Playlist.isAes(media)) {
       this.tech_.trigger({
         type: 'usage',
         name: 'vhs-aes'
@@ -48338,7 +49443,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
         var nextPlaylist = _this4.selectPlaylist();
 
         if (_this4.shouldSwitchToMedia_(nextPlaylist)) {
-          _this4.masterPlaylistLoader_.media(nextPlaylist);
+          _this4.switchMedia_(nextPlaylist, 'bandwidthupdate');
         }
 
         _this4.tech_.trigger('bandwidthupdate');
@@ -48487,7 +49592,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
       return;
     }
 
-    this.masterPlaylistLoader_.media(media);
+    this.switchMedia_(media, 'smooth-quality');
     this.mainSegmentLoader_.resetLoader(); // don't need to reset audio as it is reset when media changes
   }
   /**
@@ -48512,7 +49617,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
       return;
     }
 
-    this.masterPlaylistLoader_.media(media); // Delete all buffered data to allow an immediate quality switch, then seek to give
+    this.switchMedia_(media, 'fast-quality'); // Delete all buffered data to allow an immediate quality switch, then seek to give
     // the browser a kick to remove any cached frames from the previous rendtion (.04 seconds
     // ahead is roughly the minimum that will accomplish this across a variety of content
     // in IE and Edge, but seeking in place is sufficient on all other browsers)
@@ -48723,7 +49828,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
     // don't want to say we are stuck while there is still content
 
 
-    var absolutePlaylistEnd = Vhs.Playlist.playlistEnd(playlist, expired);
+    var absolutePlaylistEnd = Vhs$1.Playlist.playlistEnd(playlist, expired);
     var currentTime = this.tech_.currentTime();
     var buffered = this.tech_.buffered();
 
@@ -48861,7 +49966,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
     var delayDuration = nextPlaylist.targetDuration / 2 * 1000 || 5 * 1000;
     var shouldDelay = typeof nextPlaylist.lastRequest === 'number' && Date.now() - nextPlaylist.lastRequest <= delayDuration; // delay if it's a final rendition or if the last refresh is sooner than half targetDuration
 
-    return this.masterPlaylistLoader_.media(nextPlaylist, isFinalRendition || shouldDelay);
+    return this.switchMedia_(nextPlaylist, 'exclude', isFinalRendition || shouldDelay);
   }
   /**
    * Pause all segment/playlist loaders
@@ -49015,7 +50120,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
       return this.mediaSource.duration;
     }
 
-    return Vhs.Playlist.duration(media);
+    return Vhs$1.Playlist.duration(media);
   }
   /**
    * check the seekable range
@@ -49048,8 +50153,8 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
       return;
     }
 
-    var suggestedPresentationDelay = this.masterPlaylistLoader_.master.suggestedPresentationDelay;
-    var mainSeekable = Vhs.Playlist.seekable(media, expired, suggestedPresentationDelay);
+    var master = this.masterPlaylistLoader_.master;
+    var mainSeekable = Vhs$1.Playlist.seekable(media, expired, Vhs$1.Playlist.liveEdgeDelay(master, media));
 
     if (mainSeekable.length === 0) {
       return;
@@ -49063,7 +50168,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
         return;
       }
 
-      audioSeekable = Vhs.Playlist.seekable(media, expired, suggestedPresentationDelay);
+      audioSeekable = Vhs$1.Playlist.seekable(media, expired, Vhs$1.Playlist.liveEdgeDelay(master, media));
 
       if (audioSeekable.length === 0) {
         return;
@@ -49154,7 +50259,7 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
     }
 
     var buffered = this.tech_.buffered();
-    var duration = Vhs.Playlist.duration(this.masterPlaylistLoader_.media());
+    var duration = Vhs$1.Playlist.duration(this.masterPlaylistLoader_.media());
 
     if (buffered.length > 0) {
       duration = Math.max(duration, buffered.end(buffered.length - 1));
@@ -49606,13 +50711,13 @@ var Representation = function Representation(vhsHandler, playlist, id) {
   var changeType = smoothQualityChange ? 'smooth' : 'fast';
   var qualityChangeFunction = mpc[changeType + "QualityChange_"].bind(mpc); // some playlist attributes are optional
 
-  if (playlist.attributes.RESOLUTION) {
+  if (playlist.attributes) {
     var resolution = playlist.attributes.RESOLUTION;
-    this.width = resolution.width;
-    this.height = resolution.height;
+    this.width = resolution && resolution.width;
+    this.height = resolution && resolution.height;
+    this.bandwidth = playlist.attributes.BANDWIDTH;
   }
 
-  this.bandwidth = playlist.attributes.BANDWIDTH;
   this.codecs = codecsForPlaylist(mpc.master(), playlist);
   this.playlist = playlist; // The id is simply the ordinality of the media playlist
   // within the master playlist
@@ -49632,14 +50737,16 @@ var Representation = function Representation(vhsHandler, playlist, id) {
 
 
 var renditionSelectionMixin = function renditionSelectionMixin(vhsHandler) {
-  var playlists = vhsHandler.playlists; // Add a single API-specific function to the VhsHandler instance
-
+  // Add a single API-specific function to the VhsHandler instance
   vhsHandler.representations = function () {
-    if (!playlists || !playlists.master || !playlists.master.playlists) {
+    var master = vhsHandler.masterPlaylistController_.master();
+    var playlists = isAudioOnly(master) ? vhsHandler.masterPlaylistController_.getAudioTrackPlaylists_() : master.playlists;
+
+    if (!playlists) {
       return [];
     }
 
-    return playlists.master.playlists.filter(function (media) {
+    return playlists.filter(function (media) {
       return !isIncompatible(media);
     }).map(function (e, i) {
       return new Representation(vhsHandler, e, e.id);
@@ -50441,12 +51548,12 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$1 = "2.6.4";
-var version$1$1 = "5.10.0";
-var version$2 = "0.15.4";
-var version$3 = "4.5.2";
-var version$4 = "3.1.2";
-var Vhs$1 = {
+var version$4 = "2.7.1";
+var version$3 = "5.11.0";
+var version$2 = "0.16.0";
+var version$1 = "4.6.0";
+var version$5 = "3.1.2";
+var Vhs = {
   PlaylistLoader: PlaylistLoader,
   Playlist: Playlist,
   utils: utils,
@@ -50460,7 +51567,7 @@ var Vhs$1 = {
 }; // Define getter/setters for config properties
 
 Object.keys(Config).forEach(function (prop) {
-  Object.defineProperty(Vhs$1, prop, {
+  Object.defineProperty(Vhs, prop, {
     get: function get() {
       videojs$1.log.warn("using Vhs." + prop + " is UNSAFE be sure you know what you are doing");
       return Config[prop];
@@ -50521,50 +51628,49 @@ var handleVhsLoadedMetadata = function handleVhsLoadedMetadata(qualityLevels, vh
 // as one do not cause exceptions.
 
 
-Vhs$1.canPlaySource = function () {
+Vhs.canPlaySource = function () {
   return videojs$1.log.warn('HLS is no longer a tech. Please remove it from ' + 'your player\'s techOrder.');
 };
 
-var emeKeySystems = function emeKeySystems(keySystemOptions, videoPlaylist, audioPlaylist) {
+var emeKeySystems = function emeKeySystems(keySystemOptions, mainPlaylist, audioPlaylist) {
   if (!keySystemOptions) {
     return keySystemOptions;
   }
 
-  var codecs = {
-    video: videoPlaylist && videoPlaylist.attributes && videoPlaylist.attributes.CODECS,
-    audio: audioPlaylist && audioPlaylist.attributes && audioPlaylist.attributes.CODECS
-  };
+  var codecs = {};
 
-  if (!codecs.audio && codecs.video && codecs.video.split(',').length > 1) {
-    codecs.video.split(',').forEach(function (codec) {
-      codec = codec.trim();
-
-      if (isAudioCodec(codec)) {
-        codecs.audio = codec;
-      } else if (isVideoCodec(codec)) {
-        codecs.video = codec;
-      }
-    });
+  if (mainPlaylist && mainPlaylist.attributes && mainPlaylist.attributes.CODECS) {
+    codecs = unwrapCodecList(parseCodecs(mainPlaylist.attributes.CODECS));
   }
 
-  var videoContentType = codecs.video ? "video/mp4;codecs=\"" + codecs.video + "\"" : null;
-  var audioContentType = codecs.audio ? "audio/mp4;codecs=\"" + codecs.audio + "\"" : null; // upsert the content types based on the selected playlist
+  if (audioPlaylist && audioPlaylist.attributes && audioPlaylist.attributes.CODECS) {
+    codecs.audio = audioPlaylist.attributes.CODECS;
+  }
+
+  var videoContentType = getMimeForCodec(codecs.video);
+  var audioContentType = getMimeForCodec(codecs.audio); // upsert the content types based on the selected playlist
 
   var keySystemContentTypes = {};
 
   for (var keySystem in keySystemOptions) {
-    keySystemContentTypes[keySystem] = {
-      audioContentType: audioContentType,
-      videoContentType: videoContentType
-    }; // Default to using the video playlist's PSSH even though they may be different, as
+    keySystemContentTypes[keySystem] = {};
+
+    if (audioContentType) {
+      keySystemContentTypes[keySystem].audioContentType = audioContentType;
+    }
+
+    if (videoContentType) {
+      keySystemContentTypes[keySystem].videoContentType = videoContentType;
+    } // Default to using the video playlist's PSSH even though they may be different, as
     // videojs-contrib-eme will only accept one in the options.
     //
     // This shouldn't be an issue for most cases as early intialization will handle all
     // unique PSSH values, and if they aren't, then encrypted events should have the
     // specific information needed for the unique license.
 
-    if (videoPlaylist.contentProtection && videoPlaylist.contentProtection[keySystem] && videoPlaylist.contentProtection[keySystem].pssh) {
-      keySystemContentTypes[keySystem].pssh = videoPlaylist.contentProtection[keySystem].pssh;
+
+    if (mainPlaylist.contentProtection && mainPlaylist.contentProtection[keySystem] && mainPlaylist.contentProtection[keySystem].pssh) {
+      keySystemContentTypes[keySystem].pssh = mainPlaylist.contentProtection[keySystem].pssh;
     } // videojs-contrib-eme accepts the option of specifying: 'com.some.cdm': 'url'
     // so we need to prevent overwriting the URL entirely
 
@@ -50815,7 +51921,7 @@ var expandDataUri = function expandDataUri(dataUri) {
  */
 
 
-Vhs$1.supportsNativeHls = function () {
+Vhs.supportsNativeHls = function () {
   if (!document || !document.createElement) {
     return false;
   }
@@ -50838,7 +51944,7 @@ Vhs$1.supportsNativeHls = function () {
   });
 }();
 
-Vhs$1.supportsNativeDash = function () {
+Vhs.supportsNativeDash = function () {
   if (!document || !document.createElement || !videojs$1.getTech('Html5').isSupported()) {
     return false;
   }
@@ -50846,13 +51952,13 @@ Vhs$1.supportsNativeDash = function () {
   return /maybe|probably/i.test(document.createElement('video').canPlayType('application/dash+xml'));
 }();
 
-Vhs$1.supportsTypeNatively = function (type) {
+Vhs.supportsTypeNatively = function (type) {
   if (type === 'hls') {
-    return Vhs$1.supportsNativeHls;
+    return Vhs.supportsNativeHls;
   }
 
   if (type === 'dash') {
-    return Vhs$1.supportsNativeDash;
+    return Vhs.supportsNativeDash;
   }
 
   return false;
@@ -50863,7 +51969,7 @@ Vhs$1.supportsTypeNatively = function (type) {
  */
 
 
-Vhs$1.isSupported = function () {
+Vhs.isSupported = function () {
   return videojs$1.log.warn('HLS is no longer a tech. Please remove it from ' + 'your player\'s techOrder.');
 };
 
@@ -51047,7 +52153,7 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
 
     this.options_.enableLowInitialPlaylist = this.options_.enableLowInitialPlaylist && this.options_.bandwidth === Config.INITIAL_BANDWIDTH; // grab options passed to player.src
 
-    ['withCredentials', 'useDevicePixelRatio', 'limitRenditionByPlayerDimensions', 'bandwidth', 'smoothQualityChange', 'customTagParsers', 'customTagMappers', 'handleManifestRedirects', 'cacheEncryptionKeys', 'handlePartialData', 'playlistSelector', 'initialPlaylistSelector', 'experimentalBufferBasedABR', 'liveRangeSafeTimeDelta'].forEach(function (option) {
+    ['withCredentials', 'useDevicePixelRatio', 'limitRenditionByPlayerDimensions', 'bandwidth', 'smoothQualityChange', 'customTagParsers', 'customTagMappers', 'handleManifestRedirects', 'cacheEncryptionKeys', 'handlePartialData', 'playlistSelector', 'initialPlaylistSelector', 'experimentalBufferBasedABR', 'liveRangeSafeTimeDelta', 'experimentalLLHLS'].forEach(function (option) {
       if (typeof _this2.source_[option] !== 'undefined') {
         _this2.options_[option] = _this2.source_[option];
       }
@@ -51074,7 +52180,7 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
 
     this.options_.src = expandDataUri(this.source_.src);
     this.options_.tech = this.tech_;
-    this.options_.externVhs = Vhs$1;
+    this.options_.externVhs = Vhs;
     this.options_.sourceType = simpleTypeFromSourceType(type); // Whenever we seek internally, we should update the tech
 
     this.options_.seekTo = function (time) {
@@ -51109,11 +52215,11 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
 
       player.error(error);
     });
-    var defaultSelector = this.options_.experimentalBufferBasedABR ? Vhs$1.movingAverageBandwidthSelector(0.55) : Vhs$1.STANDARD_PLAYLIST_SELECTOR; // `this` in selectPlaylist should be the VhsHandler for backwards
+    var defaultSelector = this.options_.experimentalBufferBasedABR ? Vhs.movingAverageBandwidthSelector(0.55) : Vhs.STANDARD_PLAYLIST_SELECTOR; // `this` in selectPlaylist should be the VhsHandler for backwards
     // compatibility with < v2
 
     this.masterPlaylistController_.selectPlaylist = this.selectPlaylist ? this.selectPlaylist.bind(this) : defaultSelector.bind(this);
-    this.masterPlaylistController_.selectInitialPlaylist = Vhs$1.INITIAL_PLAYLIST_SELECTOR.bind(this); // re-expose some internal objects for backwards compatibility with < v2
+    this.masterPlaylistController_.selectInitialPlaylist = Vhs.INITIAL_PLAYLIST_SELECTOR.bind(this); // re-expose some internal objects for backwards compatibility with < v2
 
     this.playlists = this.masterPlaylistController_.masterPlaylistLoader_;
     this.mediaSource = this.masterPlaylistController_.mediaSource; // Proxy assignment of some properties to the master playlist
@@ -51417,13 +52523,13 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
    */
   ;
 
-  VhsHandler.version = function version$5() {
+  VhsHandler.version = function version$5$1() {
     return {
-      '@videojs/http-streaming': version$1,
-      'mux.js': version$1$1,
+      '@videojs/http-streaming': version$4,
+      'mux.js': version$3,
       'mpd-parser': version$2,
-      'm3u8-parser': version$3,
-      'aes-decrypter': version$4
+      'm3u8-parser': version$1,
+      'aes-decrypter': version$5
     };
   }
   /**
@@ -51553,7 +52659,7 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
 
 var VhsSourceHandler = {
   name: 'videojs-http-streaming',
-  VERSION: version$1,
+  VERSION: version$4,
   canHandleSource: function canHandleSource(srcObj, options) {
     if (options === void 0) {
       options = {};
@@ -51594,7 +52700,7 @@ var VhsSourceHandler = {
         overrideNative = _videojs$mergeOptions2 === void 0 ? !videojs$1.browser.IS_ANY_SAFARI : _videojs$mergeOptions2;
 
     var supportedType = simpleTypeFromSourceType(type);
-    var canUseMsePlayback = supportedType && (!Vhs$1.supportsTypeNatively(supportedType) || overrideNative);
+    var canUseMsePlayback = supportedType && (!Vhs.supportsTypeNatively(supportedType) || overrideNative);
     return canUseMsePlayback ? 'maybe' : '';
   }
 };
@@ -51630,18 +52736,18 @@ Object.defineProperty(videojs$1, 'HlsSourceHandler', {
   },
   configurable: true
 });
-videojs$1.Vhs = Vhs$1;
+videojs$1.Vhs = Vhs;
 Object.defineProperty(videojs$1, 'Hls', {
   get: function get() {
     videojs$1.log.warn('videojs.Hls is deprecated. Use videojs.Vhs instead.');
-    return Vhs$1;
+    return Vhs;
   },
   configurable: true
 });
 
 if (!videojs$1.use) {
-  videojs$1.registerComponent('Hls', Vhs$1);
-  videojs$1.registerComponent('Vhs', Vhs$1);
+  videojs$1.registerComponent('Hls', Vhs);
+  videojs$1.registerComponent('Vhs', Vhs);
 }
 
 videojs$1.options.vhs = videojs$1.options.vhs || {};
