@@ -447,7 +447,7 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.168.0",
+            "version": "v0.169.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
@@ -482,7 +482,7 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.168.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.169.0"
             },
             "time": "2021-03-22T11:26:04+00:00"
         },
@@ -2490,16 +2490,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v2.2.0",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "5fa56b4074d1ae755beb55617ddafe6f5d78f665"
+                "reference": "5f38c8804a9e97d23e0c8d63341088cd8a22d627"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/5fa56b4074d1ae755beb55617ddafe6f5d78f665",
-                "reference": "5fa56b4074d1ae755beb55617ddafe6f5d78f665",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/5f38c8804a9e97d23e0c8d63341088cd8a22d627",
+                "reference": "5f38c8804a9e97d23e0c8d63341088cd8a22d627",
                 "shasum": ""
             },
             "require": {
@@ -2508,7 +2508,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.2-dev"
+                    "dev-main": "2.4-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -2537,7 +2537,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/master"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v2.4.0"
             },
             "funding": [
                 {
@@ -2553,7 +2553,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-09-07T11:33:47+00:00"
+            "time": "2021-03-23T23:28:01+00:00"
         },
         {
             "name": "symfony/http-client",
@@ -2643,16 +2643,16 @@
         },
         {
             "name": "symfony/http-client-contracts",
-            "version": "v2.3.1",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client-contracts.git",
-                "reference": "41db680a15018f9c1d4b23516059633ce280ca33"
+                "reference": "7e82f6084d7cae521a75ef2cb5c9457bbda785f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/41db680a15018f9c1d4b23516059633ce280ca33",
-                "reference": "41db680a15018f9c1d4b23516059633ce280ca33",
+                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/7e82f6084d7cae521a75ef2cb5c9457bbda785f4",
+                "reference": "7e82f6084d7cae521a75ef2cb5c9457bbda785f4",
                 "shasum": ""
             },
             "require": {
@@ -2663,9 +2663,8 @@
             },
             "type": "library",
             "extra": {
-                "branch-version": "2.3",
                 "branch-alias": {
-                    "dev-main": "2.3-dev"
+                    "dev-main": "2.4-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -2702,7 +2701,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client-contracts/tree/v2.3.1"
+                "source": "https://github.com/symfony/http-client-contracts/tree/v2.4.0"
             },
             "funding": [
                 {
@@ -2718,7 +2717,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-14T17:08:19+00:00"
+            "time": "2021-04-11T23:07:08+00:00"
         },
         {
             "name": "symfony/options-resolver",
@@ -2953,21 +2952,21 @@
         },
         {
             "name": "symfony/service-contracts",
-            "version": "v2.2.0",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/service-contracts.git",
-                "reference": "d15da7ba4957ffb8f1747218be9e1a121fd298a1"
+                "reference": "f040a30e04b57fbcc9c6cbcf4dbaa96bd318b9bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/d15da7ba4957ffb8f1747218be9e1a121fd298a1",
-                "reference": "d15da7ba4957ffb8f1747218be9e1a121fd298a1",
+                "url": "https://api.github.com/repos/symfony/service-contracts/zipball/f040a30e04b57fbcc9c6cbcf4dbaa96bd318b9bb",
+                "reference": "f040a30e04b57fbcc9c6cbcf4dbaa96bd318b9bb",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.2.5",
-                "psr/container": "^1.0"
+                "psr/container": "^1.1"
             },
             "suggest": {
                 "symfony/service-implementation": ""
@@ -2975,7 +2974,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.2-dev"
+                    "dev-main": "2.4-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -3012,7 +3011,7 @@
                 "standards"
             ],
             "support": {
-                "source": "https://github.com/symfony/service-contracts/tree/master"
+                "source": "https://github.com/symfony/service-contracts/tree/v2.4.0"
             },
             "funding": [
                 {
@@ -3028,7 +3027,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-09-07T11:33:47+00:00"
+            "time": "2021-04-01T10:43:52+00:00"
         },
         {
             "name": "vierbergenlars/php-semver",
