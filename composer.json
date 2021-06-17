@@ -19,7 +19,7 @@
         "clue/graph": "^0.9",
         "google/apiclient": "^2",
         "guzzlehttp/guzzle": "7.*",
-        "php-http/guzzle7-adapter": "0.*",
+        "php-http/guzzle7-adapter": "1.*",
         "http-interop/http-factory-guzzle": "1.*",
         "cache/filesystem-adapter": "1.*",
         "knplabs/github-api": "3.*",
