@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.13.1 <http://videojs.com/>
+ * Video.js 7.14.0 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -32,7 +32,7 @@ import { detectContainerForBytes, isLikelyFmp4MediaSegment } from '@videojs/vhs-
 import { concatTypedArrays, stringToBytes, toUint8 } from '@videojs/vhs-utils/es/byte-helpers';
 import { ONE_SECOND_IN_TS } from 'mux.js/lib/utils/clock';
 
-var version$5 = "7.13.1";
+var version$5 = "7.14.0";
 
 /**
  * @file fullscreen-api.js
@@ -2028,7 +2028,7 @@ function fixEvent(event) {
   // with the Javascript Ninja code. So we're just overriding all events now.
 
 
-  if (!event || !event.isPropagationStopped) {
+  if (!event || !event.isPropagationStopped || !event.isImmediatePropagationStopped) {
     var old = event || window.event;
     event = {}; // Clone the old object so that we can modify the values event = {};
     // IE8 Doesn't like when you mess with native event properties
@@ -9950,7 +9950,8 @@ var allowedGetters = {
   played: 1,
   paused: 1,
   seekable: 1,
-  volume: 1
+  volume: 1,
+  ended: 1
 };
 /**
  * Enumeration of allowed setters where the keys are method names.
@@ -23092,9 +23093,11 @@ var Player = /*#__PURE__*/function (_Component) {
 
     if (!this.tech_ || typeof type !== 'string') {
       return;
-    }
+    } // Save original muted() value, set muted to true, and attempt to play().
+    // On promise rejection, restore muted from saved value
 
-    var muted = function muted() {
+
+    var resolveMuted = function resolveMuted() {
       var previouslyMuted = _this6.muted();
 
       _this6.muted(true);
@@ -23112,20 +23115,23 @@ var Player = /*#__PURE__*/function (_Component) {
         return;
       }
 
-      return mutedPromise["catch"](restoreMuted);
+      return mutedPromise["catch"](function (err) {
+        restoreMuted();
+        throw new Error("Rejection at manualAutoplay. Restoring muted value. " + (err ? err : ''));
+      });
     };
 
     var promise; // if muted defaults to true
     // the only thing we can do is call play
 
-    if (type === 'any' && this.muted() !== true) {
+    if (type === 'any' && !this.muted()) {
       promise = this.play();
 
       if (isPromise(promise)) {
-        promise = promise["catch"](muted);
+        promise = promise["catch"](resolveMuted);
       }
-    } else if (type === 'muted' && this.muted() !== true) {
-      promise = muted();
+    } else if (type === 'muted' && !this.muted()) {
+      promise = resolveMuted();
     } else {
       promise = this.play();
     }
@@ -23139,7 +23145,7 @@ var Player = /*#__PURE__*/function (_Component) {
         type: 'autoplay-success',
         autoplay: type
       });
-    })["catch"](function (e) {
+    })["catch"](function () {
       _this6.trigger({
         type: 'autoplay-failure',
         autoplay: type
@@ -28120,7 +28126,7 @@ videojs.addLanguage('en', {
   'Non-Fullscreen': 'Exit Fullscreen'
 });
 
-/*! @name @videojs/http-streaming @version 2.9.0 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 2.9.1 @license Apache-2.0 */
 /**
  * @file resolve-url.js - Handling how URLs are resolved and manipulated
  */
@@ -39747,23 +39753,16 @@ var workerCode$1 = transform(getWorkerString(function () {
 
         switch (type) {
           case 'pat':
-            if (!pmt.pid) {
-              pmt.pid = probe.ts.parsePat(packet);
-            }
-
+            pmt.pid = probe.ts.parsePat(packet);
             break;
 
           case 'pmt':
-            if (!pmt.table) {
-              pmt.table = probe.ts.parsePmt(packet);
-            }
-
+            var table = probe.ts.parsePmt(packet);
+            pmt.table = pmt.table || {};
+            Object.keys(table).forEach(function (key) {
+              pmt.table[key] = table[key];
+            });
             break;
-        } // Found the pat and pmt, we can stop walking the segment
-
-
-        if (pmt.pid && pmt.table) {
-          return;
         }
 
         startIndex += MP2T_PACKET_LENGTH;
@@ -42367,8 +42366,7 @@ var simpleSelector = function simpleSelector(master, playerBandwidth, playerWidt
 
   logFn('could not choose a playlist with options', options);
   return null;
-}; // Playlist Selectors
-
+};
 /**
  * Chooses the appropriate media playlist based on the most recent
  * bandwidth estimate and the player size.
@@ -42403,6 +42401,7 @@ var lastBandwidthSelector = function lastBandwidthSelector() {
 
 var movingAverageBandwidthSelector = function movingAverageBandwidthSelector(decay) {
   var average = -1;
+  var lastSystemBandwidth = -1;
 
   if (decay < 0 || decay > 1) {
     throw new Error('Moving average bandwidth decay must be between 0 and 1.');
@@ -42413,9 +42412,19 @@ var movingAverageBandwidthSelector = function movingAverageBandwidthSelector(dec
 
     if (average < 0) {
       average = this.systemBandwidth;
+      lastSystemBandwidth = this.systemBandwidth;
+    } // stop the average value from decaying for every 250ms
+    // when the systemBandwidth is constant
+    // and
+    // stop average from setting to a very low value when the
+    // systemBandwidth becomes 0 in case of chunk cancellation
+
+
+    if (this.systemBandwidth > 0 && this.systemBandwidth !== lastSystemBandwidth) {
+      average = decay * this.systemBandwidth + (1 - decay) * average;
+      lastSystemBandwidth = this.systemBandwidth;
     }
 
-    average = decay * this.systemBandwidth + (1 - decay) * average;
     return simpleSelector(this.playlists.master, average, parseInt(safeGetComputedStyle(this.tech_.el(), 'width'), 10) * pixelRatio, parseInt(safeGetComputedStyle(this.tech_.el(), 'height'), 10) * pixelRatio, this.limitRenditionByPlayerDimensions, this.masterPlaylistController_);
   };
 };
@@ -49862,7 +49871,6 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
         bandwidth = options.bandwidth,
         externVhs = options.externVhs,
         useCueTags = options.useCueTags,
-        maxPlaylistRetries = options.maxPlaylistRetries,
         blacklistDuration = options.blacklistDuration,
         enableLowInitialPlaylist = options.enableLowInitialPlaylist,
         sourceType = options.sourceType,
@@ -49871,6 +49879,12 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
 
     if (!src) {
       throw new Error('A non-empty playlist URL or JSON manifest string is required');
+    }
+
+    var maxPlaylistRetries = options.maxPlaylistRetries;
+
+    if (maxPlaylistRetries === null || typeof maxPlaylistRetries === 'undefined') {
+      maxPlaylistRetries = Infinity;
     }
 
     Vhs$1 = externVhs;
@@ -52626,8 +52640,8 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$4 = "2.9.0";
-var version$3 = "5.11.0";
+var version$4 = "2.9.1";
+var version$3 = "5.11.1";
 var version$2 = "0.17.0";
 var version$1 = "4.7.0";
 var version = "3.1.2";
