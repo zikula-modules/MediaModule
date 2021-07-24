@@ -784,16 +784,16 @@
         },
         {
             "name": "http-interop/http-factory-guzzle",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/http-interop/http-factory-guzzle.git",
-                "reference": "f69b581de4a224b534484c5b777a73cad3412074"
+                "reference": "6e1efa1e020bf1c47cf0f13654e8ef9efb1463b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/http-interop/http-factory-guzzle/zipball/f69b581de4a224b534484c5b777a73cad3412074",
-                "reference": "f69b581de4a224b534484c5b777a73cad3412074",
+                "url": "https://api.github.com/repos/http-interop/http-factory-guzzle/zipball/6e1efa1e020bf1c47cf0f13654e8ef9efb1463b3",
+                "reference": "6e1efa1e020bf1c47cf0f13654e8ef9efb1463b3",
                 "shasum": ""
             },
             "require": {
@@ -832,9 +832,9 @@
             ],
             "support": {
                 "issues": "https://github.com/http-interop/http-factory-guzzle/issues",
-                "source": "https://github.com/http-interop/http-factory-guzzle/tree/1.1.0"
+                "source": "https://github.com/http-interop/http-factory-guzzle/tree/1.1.1"
             },
-            "time": "2021-07-19T15:00:13+00:00"
+            "time": "2021-07-23T15:14:50+00:00"
         },
         {
             "name": "j7mbo/twitter-api-php",
