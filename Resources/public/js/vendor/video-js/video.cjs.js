@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.14.0 <http://videojs.com/>
+ * Video.js 7.14.3 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -50,7 +50,7 @@ var _inherits__default = /*#__PURE__*/_interopDefaultLegacy(_inherits);
 var _resolveUrl__default = /*#__PURE__*/_interopDefaultLegacy(_resolveUrl);
 var parseSidx__default = /*#__PURE__*/_interopDefaultLegacy(parseSidx);
 
-var version$5 = "7.14.0";
+var version$5 = "7.14.3";
 
 /**
  * @file fullscreen-api.js
@@ -1089,6 +1089,12 @@ function addClass(element, classToAdd) {
  */
 
 function removeClass(element, classToRemove) {
+  // Protect in case the player gets disposed
+  if (!element) {
+    log$1.warn("removeClass was called with an element that doesn't exist");
+    return null;
+  }
+
   if (element.classList) {
     element.classList.remove(classToRemove);
   } else {
@@ -7374,33 +7380,19 @@ var Track = /*#__PURE__*/function (_EventTarget) {
  */
 
 var parseUrl = function parseUrl(url) {
+  // This entire method can be replace with URL once we are able to drop IE11
   var props = ['protocol', 'hostname', 'port', 'pathname', 'search', 'hash', 'host']; // add the url to an anchor and let the browser parse the URL
 
   var a = document__default['default'].createElement('a');
-  a.href = url; // IE8 (and 9?) Fix
-  // ie8 doesn't parse the URL correctly until the anchor is actually
-  // added to the body, and an innerHTML is needed to trigger the parsing
-
-  var addToBody = a.host === '' && a.protocol !== 'file:';
-  var div;
-
-  if (addToBody) {
-    div = document__default['default'].createElement('div');
-    div.innerHTML = "<a href=\"" + url + "\"></a>";
-    a = div.firstChild; // prevent the div from affecting layout
-
-    div.setAttribute('style', 'display:none; position:absolute;');
-    document__default['default'].body.appendChild(div);
-  } // Copy the specific URL properties to a new object
-  // This is also needed for IE8 because the anchor loses its
+  a.href = url; // Copy the specific URL properties to a new object
+  // This is also needed for IE because the anchor loses its
   // properties when it's removed from the dom
-
 
   var details = {};
 
   for (var i = 0; i < props.length; i++) {
     details[props[i]] = a[props[i]];
-  } // IE9 adds the port to the host property unlike everyone else. If
+  } // IE adds the port to the host property unlike everyone else. If
   // a port identifier is added for standard ports, strip it.
 
 
@@ -7415,9 +7407,11 @@ var parseUrl = function parseUrl(url) {
   if (!details.protocol) {
     details.protocol = window__default['default'].location.protocol;
   }
+  /* istanbul ignore if */
 
-  if (addToBody) {
-    document__default['default'].body.removeChild(div);
+
+  if (!details.host) {
+    details.host = window__default['default'].location.host;
   }
 
   return details;
@@ -7439,9 +7433,10 @@ var getAbsoluteURL = function getAbsoluteURL(url) {
   // Check if absolute URL
   if (!url.match(/^https?:\/\//)) {
     // Convert to absolute URL. Flash hosted off-site needs an absolute URL.
-    var div = document__default['default'].createElement('div');
-    div.innerHTML = "<a href=\"" + url + "\">x</a>";
-    url = div.firstChild.href;
+    // add the url to an anchor and let the browser parse the URL
+    var a = document__default['default'].createElement('a');
+    a.href = url;
+    url = a.href;
   }
 
   return url;
@@ -23622,6 +23617,7 @@ var Player = /*#__PURE__*/function (_Component) {
 
   _proto.handleTechEnded_ = function handleTechEnded_() {
     this.addClass('vjs-ended');
+    this.removeClass('vjs-waiting');
 
     if (this.options_.loop) {
       this.currentTime(0);
@@ -24611,7 +24607,7 @@ var Player = /*#__PURE__*/function (_Component) {
 
         if (promise) {
           promise.then(offHandler, offHandler);
-          return promise;
+          promise.then(resolve, reject);
         }
       });
     }
@@ -24695,8 +24691,9 @@ var Player = /*#__PURE__*/function (_Component) {
         var promise = self.exitFullscreenHelper_();
 
         if (promise) {
-          promise.then(offHandler, offHandler);
-          return promise;
+          promise.then(offHandler, offHandler); // map the promise to our resolve/reject methods
+
+          promise.then(resolve, reject);
         }
       });
     }
@@ -24711,9 +24708,11 @@ var Player = /*#__PURE__*/function (_Component) {
       var promise = document__default['default'][this.fsApi_.exitFullscreen]();
 
       if (promise) {
-        promise.then(function () {
+        // we're splitting the promise here, so, we want to catch the
+        // potential error so that this chain doesn't have unhandled errors
+        silencePromise(promise.then(function () {
           return _this12.isFullscreen(false);
-        });
+        }));
       }
 
       return promise;
@@ -28144,7 +28143,7 @@ videojs.addLanguage('en', {
   'Non-Fullscreen': 'Exit Fullscreen'
 });
 
-/*! @name @videojs/http-streaming @version 2.9.1 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 2.9.2 @license Apache-2.0 */
 /**
  * @file resolve-url.js - Handling how URLs are resolved and manipulated
  */
@@ -32089,7 +32088,7 @@ var transform = function transform(code) {
 var getWorkerString = function getWorkerString(fn) {
   return fn.toString().replace(/^function.+?{/, '').slice(0, -1);
 };
-/* rollup-plugin-worker-factory start for worker!/Users/gkatsevman/p/http-streaming-release/src/transmuxer-worker.js */
+/* rollup-plugin-worker-factory start for worker!/Users/bcasey/Projects/videojs-http-streaming/src/transmuxer-worker.js */
 
 
 var workerCode$1 = transform(getWorkerString(function () {
@@ -35167,18 +35166,20 @@ var workerCode$1 = transform(getWorkerString(function () {
 
   Cea608Stream.prototype.flushDisplayed = function (pts) {
     var content = this.displayed_ // remove spaces from the start and end of the string
-    .map(function (row) {
+    .map(function (row, index) {
       try {
         return row.trim();
       } catch (e) {
         // Ordinarily, this shouldn't happen. However, caption
         // parsing errors should not throw exceptions and
         // break playback.
-        // eslint-disable-next-line no-console
-        console.error('Skipping malformed caption.');
+        this.trigger('log', {
+          level: 'warn',
+          message: 'Skipping a malformed 608 caption at index ' + index + '.'
+        });
         return '';
       }
-    }) // combine all text rows to display in one cue
+    }, this) // combine all text rows to display in one cue
     .join('\n') // and remove blank rows from the start and end, but not the middle
     .replace(/^\n+|\n+$/g, '');
 
@@ -35647,7 +35648,6 @@ var workerCode$1 = transform(getWorkerString(function () {
 
   _MetadataStream = function MetadataStream(options) {
     var settings = {
-      debug: !!(options && options.debug),
       // the bytes of the program-level descriptor field in MP2T
       // see ISO/IEC 13818-1:2013 (E), section 2.6 "Program and
       // program element descriptors"
@@ -35690,11 +35690,10 @@ var workerCode$1 = transform(getWorkerString(function () {
 
 
       if (buffer.length === 0 && (chunk.data.length < 10 || chunk.data[0] !== 'I'.charCodeAt(0) || chunk.data[1] !== 'D'.charCodeAt(0) || chunk.data[2] !== '3'.charCodeAt(0))) {
-        if (settings.debug) {
-          // eslint-disable-next-line no-console
-          console.log('Skipping unrecognized metadata packet');
-        }
-
+        this.trigger('log', {
+          level: 'warn',
+          message: 'Skipping unrecognized metadata packet'
+        });
         return;
       } // add this chunk to the data we've collected so far
 
@@ -35752,8 +35751,11 @@ var workerCode$1 = transform(getWorkerString(function () {
         frameSize = parseSyncSafeInteger$1(tag.data.subarray(frameStart + 4, frameStart + 8));
 
         if (frameSize < 1) {
-          // eslint-disable-next-line no-console
-          return console.log('Malformed ID3 frame encountered. Skipping metadata parsing.');
+          this.trigger('log', {
+            level: 'warn',
+            message: 'Malformed ID3 frame encountered. Skipping metadata parsing.'
+          });
+          return;
         }
 
         frameHeader = String.fromCharCode(tag.data[frameStart], tag.data[frameStart + 1], tag.data[frameStart + 2], tag.data[frameStart + 3]);
@@ -36072,6 +36074,7 @@ var workerCode$1 = transform(getWorkerString(function () {
 
   _ElementaryStream = function ElementaryStream() {
     var self = this,
+        segmentHadPmt = false,
         // PES packet fragments
     video = {
       data: [],
@@ -36259,6 +36262,7 @@ var workerCode$1 = transform(getWorkerString(function () {
             });
           }
 
+          segmentHadPmt = true;
           self.trigger('data', event);
         }
       })[data.type]();
@@ -36291,6 +36295,41 @@ var workerCode$1 = transform(getWorkerString(function () {
     };
 
     this.flush = function () {
+      // if on flush we haven't had a pmt emitted
+      // and we have a pmt to emit. emit the pmt
+      // so that we trigger a trackinfo downstream.
+      if (!segmentHadPmt && programMapTable) {
+        var pmt = {
+          type: 'metadata',
+          tracks: []
+        }; // translate audio and video streams to tracks
+
+        if (programMapTable.video !== null) {
+          pmt.tracks.push({
+            timelineStartInfo: {
+              baseMediaDecodeTime: 0
+            },
+            id: +programMapTable.video,
+            codec: 'avc',
+            type: 'video'
+          });
+        }
+
+        if (programMapTable.audio !== null) {
+          pmt.tracks.push({
+            timelineStartInfo: {
+              baseMediaDecodeTime: 0
+            },
+            id: +programMapTable.audio,
+            codec: 'adts',
+            type: 'audio'
+          });
+        }
+
+        self.trigger('data', pmt);
+      }
+
+      segmentHadPmt = false;
       this.flushStreams_();
       this.trigger('done');
     };
@@ -36337,11 +36376,17 @@ var workerCode$1 = transform(getWorkerString(function () {
 
     _AdtsStream.prototype.init.call(this);
 
+    this.skipWarn_ = function (start, end) {
+      this.trigger('log', {
+        level: 'warn',
+        message: "adts skiping bytes " + start + " to " + end + " in frame " + frameNum + " outside syncword"
+      });
+    };
+
     this.push = function (packet) {
       var i = 0,
           frameLength,
           protectionSkipBytes,
-          frameEnd,
           oldBuffer,
           sampleCount,
           adtsFrameDuration;
@@ -36357,7 +36402,7 @@ var workerCode$1 = transform(getWorkerString(function () {
       // aac frames the cross a PES packet boundary
 
 
-      if (buffer) {
+      if (buffer && buffer.length) {
         oldBuffer = buffer;
         buffer = new Uint8Array(oldBuffer.byteLength + packet.data.byteLength);
         buffer.set(oldBuffer);
@@ -36368,28 +36413,40 @@ var workerCode$1 = transform(getWorkerString(function () {
       // for details on the ADTS header, see http://wiki.multimedia.cx/index.php?title=ADTS
 
 
-      while (i + 5 < buffer.length) {
+      var skip; // We use i + 7 here because we want to be able to parse the entire header.
+      // If we don't have enough bytes to do that, then we definitely won't have a full frame.
+
+      while (i + 7 < buffer.length) {
         // Look for the start of an ADTS header..
         if (buffer[i] !== 0xFF || (buffer[i + 1] & 0xF6) !== 0xF0) {
-          // If a valid header was not found,  jump one forward and attempt to
+          if (typeof skip !== 'number') {
+            skip = i;
+          } // If a valid header was not found,  jump one forward and attempt to
           // find a valid ADTS header starting at the next byte
+
+
           i++;
           continue;
+        }
+
+        if (typeof skip === 'number') {
+          this.skipWarn_(skip, i);
+          skip = null;
         } // The protection skip bit tells us if we have 2 bytes of CRC data at the
         // end of the ADTS header
 
 
         protectionSkipBytes = (~buffer[i + 1] & 0x01) * 2; // Frame length is a 13 bit integer starting 16 bits from the
         // end of the sync sequence
+        // NOTE: frame length includes the size of the header
 
         frameLength = (buffer[i + 3] & 0x03) << 11 | buffer[i + 4] << 3 | (buffer[i + 5] & 0xe0) >> 5;
         sampleCount = ((buffer[i + 6] & 0x03) + 1) * 1024;
-        adtsFrameDuration = sampleCount * ONE_SECOND_IN_TS$2 / ADTS_SAMPLING_FREQUENCIES$1[(buffer[i + 2] & 0x3c) >>> 2];
-        frameEnd = i + frameLength; // If we don't have enough data to actually finish this ADTS frame, return
-        // and wait for more data
+        adtsFrameDuration = sampleCount * ONE_SECOND_IN_TS$2 / ADTS_SAMPLING_FREQUENCIES$1[(buffer[i + 2] & 0x3c) >>> 2]; // If we don't have enough data to actually finish this ADTS frame,
+        // then we have to wait for more data
 
-        if (buffer.byteLength < frameEnd) {
-          return;
+        if (buffer.byteLength - i < frameLength) {
+          break;
         } // Otherwise, deliver the complete AAC frame
 
 
@@ -36403,18 +36460,20 @@ var workerCode$1 = transform(getWorkerString(function () {
           samplingfrequencyindex: (buffer[i + 2] & 0x3c) >>> 2,
           // assume ISO/IEC 14496-12 AudioSampleEntry default of 16
           samplesize: 16,
-          data: buffer.subarray(i + 7 + protectionSkipBytes, frameEnd)
+          // data is the frame without it's header
+          data: buffer.subarray(i + 7 + protectionSkipBytes, i + frameLength)
         });
-        frameNum++; // If the buffer is empty, clear it and return
-
-        if (buffer.byteLength === frameEnd) {
-          buffer = undefined;
-          return;
-        } // Remove the finished frame from the buffer and start the process again
-
-
-        buffer = buffer.subarray(frameEnd);
+        frameNum++;
+        i += frameLength;
       }
+
+      if (typeof skip === 'number') {
+        this.skipWarn_(skip, i);
+        skip = null;
+      } // remove processed bytes from the buffer.
+
+
+      buffer = buffer.subarray(i);
     };
 
     this.flush = function () {
@@ -36734,6 +36793,8 @@ var workerCode$1 = transform(getWorkerString(function () {
     86: true,
     118: true,
     128: true,
+    // TODO: the three profiles below don't
+    // appear to have sps data in the specificiation anymore?
     138: true,
     139: true,
     134: true
@@ -36793,10 +36854,11 @@ var workerCode$1 = transform(getWorkerString(function () {
         trackId: trackId,
         pts: currentPts,
         dts: currentDts,
-        data: data
+        data: data,
+        nalUnitTypeCode: data[0] & 0x1f
       };
 
-      switch (data[0] & 0x1f) {
+      switch (event.nalUnitTypeCode) {
         case 0x05:
           event.nalUnitType = 'slice_layer_without_partitioning_rbsp_idr';
           break;
@@ -36944,7 +37006,6 @@ var workerCode$1 = transform(getWorkerString(function () {
           frameCropRightOffset = 0,
           frameCropTopOffset = 0,
           frameCropBottomOffset = 0,
-          sarScale = 1,
           expGolombDecoder,
           profileIdc,
           levelIdc,
@@ -36956,7 +37017,7 @@ var workerCode$1 = transform(getWorkerString(function () {
           picHeightInMapUnitsMinus1,
           frameMbsOnlyFlag,
           scalingListCount,
-          sarRatio,
+          sarRatio = [1, 1],
           aspectRatioIdc,
           i;
       expGolombDecoder = new expGolomb(data);
@@ -37120,7 +37181,7 @@ var workerCode$1 = transform(getWorkerString(function () {
           }
 
           if (sarRatio) {
-            sarScale = sarRatio[0] / sarRatio[1];
+            sarRatio[0] / sarRatio[1];
           }
         }
       }
@@ -37129,8 +37190,9 @@ var workerCode$1 = transform(getWorkerString(function () {
         profileIdc: profileIdc,
         levelIdc: levelIdc,
         profileCompatibility: profileCompatibility,
-        width: Math.ceil(((picWidthInMbsMinus1 + 1) * 16 - frameCropLeftOffset * 2 - frameCropRightOffset * 2) * sarScale),
+        width: (picWidthInMbsMinus1 + 1) * 16 - frameCropLeftOffset * 2 - frameCropRightOffset * 2,
         height: (2 - frameMbsOnlyFlag) * (picHeightInMapUnitsMinus1 + 1) * 16 - frameCropTopOffset * 2 - frameCropBottomOffset * 2,
+        // sar is sample aspect ratio
         sarRatio: sarRatio
       };
     };
@@ -38234,6 +38296,7 @@ var workerCode$1 = transform(getWorkerString(function () {
 
         pipeline.coalesceStream.numberOfTracks++;
         pipeline.audioSegmentStream = new _AudioSegmentStream(audioTrack, options);
+        pipeline.audioSegmentStream.on('log', self.getLogTrigger_('audioSegmentStream'));
         pipeline.audioSegmentStream.on('timingInfo', self.trigger.bind(self, 'audioTimingInfo')); // Set up the final part of the audio pipeline
 
         pipeline.adtsStream.pipe(pipeline.audioSegmentStream).pipe(pipeline.coalesceStream); // emit pmt info
@@ -38293,6 +38356,7 @@ var workerCode$1 = transform(getWorkerString(function () {
           if (videoTrack && !pipeline.videoSegmentStream) {
             pipeline.coalesceStream.numberOfTracks++;
             pipeline.videoSegmentStream = new _VideoSegmentStream(videoTrack, options);
+            pipeline.videoSegmentStream.on('log', self.getLogTrigger_('videoSegmentStream'));
             pipeline.videoSegmentStream.on('timelineStartInfo', function (timelineStartInfo) {
               // When video emits timelineStartInfo data after a flush, we forward that
               // info to the AudioSegmentStream, if it exists, because video timeline
@@ -38323,6 +38387,7 @@ var workerCode$1 = transform(getWorkerString(function () {
             // hook up the audio segment stream to the first track with aac data
             pipeline.coalesceStream.numberOfTracks++;
             pipeline.audioSegmentStream = new _AudioSegmentStream(audioTrack, options);
+            pipeline.audioSegmentStream.on('log', self.getLogTrigger_('audioSegmentStream'));
             pipeline.audioSegmentStream.on('timingInfo', self.trigger.bind(self, 'audioTimingInfo'));
             pipeline.audioSegmentStream.on('segmentTimingInfo', self.trigger.bind(self, 'audioSegmentTimingInfo')); // Set up the final part of the audio pipeline
 
@@ -38400,6 +38465,14 @@ var workerCode$1 = transform(getWorkerString(function () {
       if (videoTrack && this.transmuxPipeline_.videoSegmentStream) {
         this.transmuxPipeline_.videoSegmentStream.alignGopsWith(gopsToAlignWith);
       }
+    };
+
+    this.getLogTrigger_ = function (key) {
+      var self = this;
+      return function (event) {
+        event.stream = key;
+        self.trigger('log', event);
+      };
     }; // feed incoming data to the front of the parsing pipeline
 
 
@@ -38411,6 +38484,21 @@ var workerCode$1 = transform(getWorkerString(function () {
           this.setupAacPipeline();
         } else if (!isAac && this.transmuxPipeline_.type !== 'ts') {
           this.setupTsPipeline();
+        }
+
+        if (this.transmuxPipeline_) {
+          var keys = Object.keys(this.transmuxPipeline_);
+
+          for (var i = 0; i < keys.length; i++) {
+            var key = keys[i]; // skip non-stream keys and headOfPipeline
+            // which is just a duplicate
+
+            if (key === 'headOfPipeline' || !this.transmuxPipeline_[key].on) {
+              continue;
+            }
+
+            this.transmuxPipeline_[key].on('log', this.getLogTrigger_(key));
+          }
         }
 
         hasFlushed = false;
@@ -38760,7 +38848,10 @@ var workerCode$1 = transform(getWorkerString(function () {
 
   var findSeiNals = function findSeiNals(avcStream, samples, trackId) {
     var avcView = new DataView(avcStream.buffer, avcStream.byteOffset, avcStream.byteLength),
-        result = [],
+        result = {
+      logs: [],
+      seiNals: []
+    },
         seiNal,
         i,
         length,
@@ -38796,12 +38887,14 @@ var workerCode$1 = transform(getWorkerString(function () {
             seiNal.pts = lastMatchedSample.pts;
             seiNal.dts = lastMatchedSample.dts;
           } else {
-            // eslint-disable-next-line no-console
-            console.log("We've encountered a nal unit without data. See mux.js#233.");
+            result.logs.push({
+              level: 'warn',
+              message: 'We\'ve encountered a nal unit without data at ' + i + ' for trackId ' + trackId + '. See mux.js#223.'
+            });
             break;
           }
 
-          result.push(seiNal);
+          result.seiNals.push(seiNal);
           break;
       }
     }
@@ -38895,17 +38988,21 @@ var workerCode$1 = transform(getWorkerString(function () {
       var baseMediaDecodeTime = tfdt.length > 0 ? parseTfdt(tfdt[0]).baseMediaDecodeTime : 0;
       var truns = findBox_1(traf, ['trun']);
       var samples;
-      var seiNals; // Only parse video data for the chosen video track
+      var result; // Only parse video data for the chosen video track
 
       if (videoTrackId === trackId && truns.length > 0) {
         samples = parseSamples(truns, baseMediaDecodeTime, headerInfo);
-        seiNals = findSeiNals(mdat, samples, trackId);
+        result = findSeiNals(mdat, samples, trackId);
 
         if (!captionNals[trackId]) {
-          captionNals[trackId] = [];
+          captionNals[trackId] = {
+            seiNals: [],
+            logs: []
+          };
         }
 
-        captionNals[trackId] = captionNals[trackId].concat(seiNals);
+        captionNals[trackId].seiNals = captionNals[trackId].seiNals.concat(result.seiNals);
+        captionNals[trackId].logs = captionNals[trackId].logs.concat(result.logs);
       }
     });
     return captionNals;
@@ -38929,15 +39026,17 @@ var workerCode$1 = transform(getWorkerString(function () {
 
 
   var parseEmbeddedCaptions = function parseEmbeddedCaptions(segment, trackId, timescale) {
-    var seiNals; // the ISO-BMFF spec says that trackId can't be zero, but there's some broken content out there
+    var captionNals; // the ISO-BMFF spec says that trackId can't be zero, but there's some broken content out there
 
     if (trackId === null) {
       return null;
     }
 
-    seiNals = parseCaptionNals(segment, trackId);
+    captionNals = parseCaptionNals(segment, trackId);
+    var trackNals = captionNals[trackId] || {};
     return {
-      seiNals: seiNals[trackId],
+      seiNals: trackNals.seiNals,
+      logs: trackNals.logs,
       timescale: timescale
     };
   };
@@ -38984,6 +39083,9 @@ var workerCode$1 = transform(getWorkerString(function () {
         event.endTime = event.endPts / timescale;
         parsedCaptions.captions.push(event);
         parsedCaptions.captionStreams[event.stream] = true;
+      });
+      captionStream.on('log', function (log) {
+        parsedCaptions.logs.push(log);
       });
     };
     /**
@@ -39039,7 +39141,19 @@ var workerCode$1 = transform(getWorkerString(function () {
 
       parsedData = parseEmbeddedCaptions(segment, trackId, timescale);
 
+      if (parsedData && parsedData.logs) {
+        parsedCaptions.logs = parsedCaptions.logs.concat(parsedData.logs);
+      }
+
       if (parsedData === null || !parsedData.seiNals) {
+        if (parsedCaptions.logs.length) {
+          return {
+            logs: parsedCaptions.logs,
+            captions: [],
+            captionStreams: []
+          };
+        }
+
         return null;
       }
 
@@ -39090,6 +39204,7 @@ var workerCode$1 = transform(getWorkerString(function () {
     this.clearParsedCaptions = function () {
       parsedCaptions.captions = [];
       parsedCaptions.captionStreams = {};
+      parsedCaptions.logs = [];
     };
     /**
       * Resets underlying CaptionStream
@@ -39129,7 +39244,8 @@ var workerCode$1 = transform(getWorkerString(function () {
         parsedCaptions = {
           captions: [],
           // CC1, CC2, CC3, CC4
-          captionStreams: {}
+          captionStreams: {},
+          logs: []
         };
       } else {
         this.clearParsedCaptions();
@@ -40389,6 +40505,12 @@ var workerCode$1 = transform(getWorkerString(function () {
         }
       });
     });
+    transmuxer.on('log', function (log) {
+      self.postMessage({
+        action: 'log',
+        log: log
+      });
+    });
   };
   /**
    * All incoming messages route through this hash. If no function exists
@@ -40432,6 +40554,7 @@ var workerCode$1 = transform(getWorkerString(function () {
       this.self.postMessage({
         action: 'mp4Captions',
         captions: parsed && parsed.captions || [],
+        logs: parsed && parsed.logs || [],
         data: segment.buffer
       }, [segment.buffer]);
     };
@@ -40615,7 +40738,7 @@ var workerCode$1 = transform(getWorkerString(function () {
   };
 }));
 var TransmuxWorker = factory(workerCode$1);
-/* rollup-plugin-worker-factory end for worker!/Users/gkatsevman/p/http-streaming-release/src/transmuxer-worker.js */
+/* rollup-plugin-worker-factory end for worker!/Users/bcasey/Projects/videojs-http-streaming/src/transmuxer-worker.js */
 
 var handleData_ = function handleData_(event, transmuxedData, callback) {
   var _event$data$segment = event.data.segment,
@@ -40683,6 +40806,7 @@ var processTransmux = function processTransmux(options) {
       onCaptions = options.onCaptions,
       onDone = options.onDone,
       onEndedTimeline = options.onEndedTimeline,
+      onTransmuxerLog = options.onTransmuxerLog,
       isEndOfTimeline = options.isEndOfTimeline;
   var transmuxedData = {
     buffer: []
@@ -40734,6 +40858,10 @@ var processTransmux = function processTransmux(options) {
     if (event.data.action === 'endedtimeline') {
       waitForEndedTimelineEvent = false;
       onEndedTimeline();
+    }
+
+    if (event.data.action === 'log') {
+      onTransmuxerLog(event.data.log);
     } // wait for the transmuxed event since we may have audio and video
 
 
@@ -41205,7 +41333,8 @@ var transmuxAndNotify = function transmuxAndNotify(_ref4) {
       isEndOfTimeline = _ref4.isEndOfTimeline,
       endedTimelineFn = _ref4.endedTimelineFn,
       dataFn = _ref4.dataFn,
-      doneFn = _ref4.doneFn;
+      doneFn = _ref4.doneFn,
+      onTransmuxerLog = _ref4.onTransmuxerLog;
   var fmp4Tracks = segment.map && segment.map.tracks || {};
   var isMuxed = Boolean(fmp4Tracks.audio && fmp4Tracks.video); // Keep references to each function so we can null them out after we're done with them.
   // One reason for this is that in the case of full segments, we want to trust start
@@ -41276,6 +41405,7 @@ var transmuxAndNotify = function transmuxAndNotify(_ref4) {
       onEndedTimeline: function onEndedTimeline() {
         endedTimelineFn();
       },
+      onTransmuxerLog: onTransmuxerLog,
       onDone: function onDone(result) {
         if (!doneFn) {
           return;
@@ -41336,7 +41466,8 @@ var handleSegmentBytes = function handleSegmentBytes(_ref5) {
       isEndOfTimeline = _ref5.isEndOfTimeline,
       endedTimelineFn = _ref5.endedTimelineFn,
       dataFn = _ref5.dataFn,
-      doneFn = _ref5.doneFn;
+      doneFn = _ref5.doneFn,
+      onTransmuxerLog = _ref5.onTransmuxerLog;
   var bytesAsUint8Array = new Uint8Array(bytes); // TODO:
   // We should have a handler that fetches the number of bytes required
   // to check if something is fmp4. This will allow us to save bandwidth
@@ -41431,6 +41562,11 @@ var handleSegmentBytes = function handleSegmentBytes(_ref5) {
             // transfer bytes back to us
             bytes = message.data.buffer;
             segment.bytes = bytesAsUint8Array = message.data;
+            message.logs.forEach(function (log) {
+              onTransmuxerLog(videojs.mergeOptions(log, {
+                stream: 'mp4CaptionParser'
+              }));
+            });
             finishLoading(message.captions);
           }
         });
@@ -41471,7 +41607,8 @@ var handleSegmentBytes = function handleSegmentBytes(_ref5) {
     isEndOfTimeline: isEndOfTimeline,
     endedTimelineFn: endedTimelineFn,
     dataFn: dataFn,
-    doneFn: doneFn
+    doneFn: doneFn,
+    onTransmuxerLog: onTransmuxerLog
   });
 };
 
@@ -41544,7 +41681,8 @@ var decryptSegment = function decryptSegment(_ref8) {
       isEndOfTimeline = _ref8.isEndOfTimeline,
       endedTimelineFn = _ref8.endedTimelineFn,
       dataFn = _ref8.dataFn,
-      doneFn = _ref8.doneFn;
+      doneFn = _ref8.doneFn,
+      onTransmuxerLog = _ref8.onTransmuxerLog;
   decrypt({
     id: segment.requestId,
     key: segment.key,
@@ -41564,7 +41702,8 @@ var decryptSegment = function decryptSegment(_ref8) {
       isEndOfTimeline: isEndOfTimeline,
       endedTimelineFn: endedTimelineFn,
       dataFn: dataFn,
-      doneFn: doneFn
+      doneFn: doneFn,
+      onTransmuxerLog: onTransmuxerLog
     });
   });
 };
@@ -41611,7 +41750,8 @@ var waitForCompletion = function waitForCompletion(_ref9) {
       isEndOfTimeline = _ref9.isEndOfTimeline,
       endedTimelineFn = _ref9.endedTimelineFn,
       dataFn = _ref9.dataFn,
-      doneFn = _ref9.doneFn;
+      doneFn = _ref9.doneFn,
+      onTransmuxerLog = _ref9.onTransmuxerLog;
   var count = 0;
   var didError = false;
   return function (error, segment) {
@@ -41654,7 +41794,8 @@ var waitForCompletion = function waitForCompletion(_ref9) {
             isEndOfTimeline: isEndOfTimeline,
             endedTimelineFn: endedTimelineFn,
             dataFn: dataFn,
-            doneFn: doneFn
+            doneFn: doneFn,
+            onTransmuxerLog: onTransmuxerLog
           });
         } // Otherwise, everything is ready just continue
 
@@ -41671,7 +41812,8 @@ var waitForCompletion = function waitForCompletion(_ref9) {
           isEndOfTimeline: isEndOfTimeline,
           endedTimelineFn: endedTimelineFn,
           dataFn: dataFn,
-          doneFn: doneFn
+          doneFn: doneFn,
+          onTransmuxerLog: onTransmuxerLog
         });
       }; // Keep track of when *all* of the requests have completed
 
@@ -41866,7 +42008,8 @@ var mediaSegmentRequest = function mediaSegmentRequest(_ref12) {
       isEndOfTimeline = _ref12.isEndOfTimeline,
       endedTimelineFn = _ref12.endedTimelineFn,
       dataFn = _ref12.dataFn,
-      doneFn = _ref12.doneFn;
+      doneFn = _ref12.doneFn,
+      onTransmuxerLog = _ref12.onTransmuxerLog;
   var activeXhrs = [];
   var finishProcessingFn = waitForCompletion({
     activeXhrs: activeXhrs,
@@ -41880,7 +42023,8 @@ var mediaSegmentRequest = function mediaSegmentRequest(_ref12) {
     isEndOfTimeline: isEndOfTimeline,
     endedTimelineFn: endedTimelineFn,
     dataFn: dataFn,
-    doneFn: doneFn
+    doneFn: doneFn,
+    onTransmuxerLog: onTransmuxerLog
   }); // optionally, request the decryption key
 
   if (segment.key && !segment.key.bytes) {
@@ -43825,15 +43969,16 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
   ;
 
   _proto.buffered_ = function buffered_() {
-    if (!this.sourceUpdater_ || !this.startingMediaInfo_) {
+    var trackInfo = this.getMediaInfo_();
+
+    if (!this.sourceUpdater_ || !trackInfo) {
       return videojs.createTimeRanges();
     }
 
     if (this.loaderType_ === 'main') {
-      var _this$startingMediaIn = this.startingMediaInfo_,
-          hasAudio = _this$startingMediaIn.hasAudio,
-          hasVideo = _this$startingMediaIn.hasVideo,
-          isMuxed = _this$startingMediaIn.isMuxed;
+      var hasAudio = trackInfo.hasAudio,
+          hasVideo = trackInfo.hasVideo,
+          isMuxed = trackInfo.isMuxed;
 
       if (hasVideo && hasAudio && !this.audioDisabled_ && !isMuxed) {
         return this.sourceUpdater_.buffered();
@@ -44240,7 +44385,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       return;
     }
 
-    if (!this.sourceUpdater_ || !this.startingMediaInfo_) {
+    if (!this.sourceUpdater_ || !this.getMediaInfo_()) {
       this.logger_('skipping remove because no source updater or starting media info'); // nothing to remove if we haven't processed any media
 
       return;
@@ -44871,7 +45016,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     // uses processed (transmuxed or parsed) media to determine the types required.
 
 
-    if (!this.currentMediaInfo_) {
+    if (!this.getCurrentMediaInfo_()) {
       return true;
     }
 
@@ -44903,6 +45048,22 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     return true;
   };
 
+  _proto.getCurrentMediaInfo_ = function getCurrentMediaInfo_(segmentInfo) {
+    if (segmentInfo === void 0) {
+      segmentInfo = this.pendingSegment_;
+    }
+
+    return segmentInfo && segmentInfo.trackInfo || this.currentMediaInfo_;
+  };
+
+  _proto.getMediaInfo_ = function getMediaInfo_(segmentInfo) {
+    if (segmentInfo === void 0) {
+      segmentInfo = this.pendingSegment_;
+    }
+
+    return this.getCurrentMediaInfo_(segmentInfo) || this.startingMediaInfo_;
+  };
+
   _proto.hasEnoughInfoToAppend_ = function hasEnoughInfoToAppend_() {
     if (!this.sourceUpdater_.ready()) {
       return false;
@@ -44914,18 +45075,18 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       return false;
     }
 
-    var segmentInfo = this.pendingSegment_; // no segment to append any data for or
+    var segmentInfo = this.pendingSegment_;
+    var trackInfo = this.getCurrentMediaInfo_(); // no segment to append any data for or
     // we do not have information on this specific
     // segment yet
 
-    if (!segmentInfo || !segmentInfo.trackInfo) {
+    if (!segmentInfo || !trackInfo) {
       return false;
     }
 
-    var _this$currentMediaInf = this.currentMediaInfo_,
-        hasAudio = _this$currentMediaInf.hasAudio,
-        hasVideo = _this$currentMediaInf.hasVideo,
-        isMuxed = _this$currentMediaInf.isMuxed;
+    var hasAudio = trackInfo.hasAudio,
+        hasVideo = trackInfo.hasVideo,
+        isMuxed = trackInfo.isMuxed;
 
     if (hasVideo && !segmentInfo.videoTimingInfo) {
       return false;
@@ -44997,7 +45158,8 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       this.trigger('fmp4');
       segmentInfo.timingInfo.start = segmentInfo[timingInfoPropertyForMedia(result.type)].start;
     } else {
-      var useVideoTimingInfo = this.loaderType_ === 'main' && this.currentMediaInfo_.hasVideo;
+      var trackInfo = this.getCurrentMediaInfo_();
+      var useVideoTimingInfo = this.loaderType_ === 'main' && trackInfo && trackInfo.hasVideo;
       var firstVideoFrameTimeForData;
 
       if (useVideoTimingInfo) {
@@ -45421,7 +45583,14 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
       },
       id3Fn: this.handleId3_.bind(this),
       dataFn: this.handleData_.bind(this),
-      doneFn: this.segmentRequestFinished_.bind(this)
+      doneFn: this.segmentRequestFinished_.bind(this),
+      onTransmuxerLog: function onTransmuxerLog(_ref8) {
+        var message = _ref8.message,
+            level = _ref8.level,
+            stream = _ref8.stream;
+
+        _this5.logger_(segmentInfoString(segmentInfo) + " logged from transmuxer stream " + stream + " as a " + level + ": " + message);
+      }
     });
   }
   /**
@@ -45645,15 +45814,15 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     return false;
   };
 
-  _proto.trueSegmentStart_ = function trueSegmentStart_(_ref8) {
-    var currentStart = _ref8.currentStart,
-        playlist = _ref8.playlist,
-        mediaIndex = _ref8.mediaIndex,
-        firstVideoFrameTimeForData = _ref8.firstVideoFrameTimeForData,
-        currentVideoTimestampOffset = _ref8.currentVideoTimestampOffset,
-        useVideoTimingInfo = _ref8.useVideoTimingInfo,
-        videoTimingInfo = _ref8.videoTimingInfo,
-        audioTimingInfo = _ref8.audioTimingInfo;
+  _proto.trueSegmentStart_ = function trueSegmentStart_(_ref9) {
+    var currentStart = _ref9.currentStart,
+        playlist = _ref9.playlist,
+        mediaIndex = _ref9.mediaIndex,
+        firstVideoFrameTimeForData = _ref9.firstVideoFrameTimeForData,
+        currentVideoTimestampOffset = _ref9.currentVideoTimestampOffset,
+        useVideoTimingInfo = _ref9.useVideoTimingInfo,
+        videoTimingInfo = _ref9.videoTimingInfo,
+        audioTimingInfo = _ref9.audioTimingInfo;
 
     if (typeof currentStart !== 'undefined') {
       // if start was set once, keep using it
@@ -45678,7 +45847,9 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
   };
 
   _proto.waitForAppendsToComplete_ = function waitForAppendsToComplete_(segmentInfo) {
-    if (!this.currentMediaInfo_) {
+    var trackInfo = this.getCurrentMediaInfo_(segmentInfo);
+
+    if (!trackInfo) {
       this.error({
         message: 'No starting media returned, likely due to an unsupported media format.',
         blacklistDuration: Infinity
@@ -45690,10 +45861,9 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
     // complete.
 
 
-    var _this$currentMediaInf2 = this.currentMediaInfo_,
-        hasAudio = _this$currentMediaInf2.hasAudio,
-        hasVideo = _this$currentMediaInf2.hasVideo,
-        isMuxed = _this$currentMediaInf2.isMuxed;
+    var hasAudio = trackInfo.hasAudio,
+        hasVideo = trackInfo.hasVideo,
+        isMuxed = trackInfo.isMuxed;
     var waitForVideo = this.loaderType_ === 'main' && hasVideo;
     var waitForAudio = !this.audioDisabled_ && hasAudio && !isMuxed;
     segmentInfo.waitingOnAppends = 0; // segments with no data
@@ -45761,7 +45931,7 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
   };
 
   _proto.checkForIllegalMediaSwitch = function checkForIllegalMediaSwitch(trackInfo) {
-    var illegalMediaSwitchError = illegalMediaSwitch(this.loaderType_, this.currentMediaInfo_, trackInfo);
+    var illegalMediaSwitchError = illegalMediaSwitch(this.loaderType_, this.getCurrentMediaInfo_(), trackInfo);
 
     if (illegalMediaSwitchError) {
       this.error({
@@ -45812,7 +45982,8 @@ var SegmentLoader = /*#__PURE__*/function (_videojs$EventTarget) {
 
   _proto.updateTimingInfoEnd_ = function updateTimingInfoEnd_(segmentInfo) {
     segmentInfo.timingInfo = segmentInfo.timingInfo || {};
-    var useVideoTimingInfo = this.loaderType_ === 'main' && this.currentMediaInfo_.hasVideo;
+    var trackInfo = this.getMediaInfo_();
+    var useVideoTimingInfo = this.loaderType_ === 'main' && trackInfo && trackInfo.hasVideo;
     var prioritizedTimingInfo = useVideoTimingInfo && segmentInfo.videoTimingInfo ? segmentInfo.videoTimingInfo : segmentInfo.audioTimingInfo;
 
     if (!prioritizedTimingInfo) {
@@ -48215,7 +48386,7 @@ var TimelineChangeController = /*#__PURE__*/function (_videojs$EventTarget) {
 
   return TimelineChangeController;
 }(videojs.EventTarget);
-/* rollup-plugin-worker-factory start for worker!/Users/gkatsevman/p/http-streaming-release/src/decrypter-worker.js */
+/* rollup-plugin-worker-factory start for worker!/Users/bcasey/Projects/videojs-http-streaming/src/decrypter-worker.js */
 
 
 var workerCode = transform(getWorkerString(function () {
@@ -48895,7 +49066,7 @@ var workerCode = transform(getWorkerString(function () {
   };
 }));
 var Decrypter = factory(workerCode);
-/* rollup-plugin-worker-factory end for worker!/Users/gkatsevman/p/http-streaming-release/src/decrypter-worker.js */
+/* rollup-plugin-worker-factory end for worker!/Users/bcasey/Projects/videojs-http-streaming/src/decrypter-worker.js */
 
 /**
  * Convert the properties of an HLS track into an audioTrackKind.
@@ -49298,6 +49469,10 @@ var initialize = {
           }
         }
       };
+
+      if (audioOnlyMaster) {
+        mediaGroups[type].main["default"].playlists = masterPlaylistLoader.master.playlists;
+      }
     }
 
     for (var groupId in mediaGroups[type]) {
@@ -50886,8 +51061,9 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
     var isEndOfStream = this.mainSegmentLoader_.ended_;
 
     if (this.mediaTypes_.AUDIO.activePlaylistLoader) {
-      // if the audio playlist loader exists, then alternate audio is active
-      if (!this.mainSegmentLoader_.currentMediaInfo_ || this.mainSegmentLoader_.currentMediaInfo_.hasVideo) {
+      var mainMediaInfo = this.mainSegmentLoader_.getCurrentMediaInfo_(); // if the audio playlist loader exists, then alternate audio is active
+
+      if (!mainMediaInfo || mainMediaInfo.hasVideo) {
         // if we do not know if the main segment loader contains video yet or if we
         // definitively know the main segment loader contains video, then we need to wait
         // for both main and audio segment loaders to call endOfStream
@@ -51447,9 +51623,13 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
   };
 
   _proto.areMediaTypesKnown_ = function areMediaTypesKnown_() {
-    var usingAudioLoader = !!this.mediaTypes_.AUDIO.activePlaylistLoader; // one or both loaders has not loaded sufficently to get codecs
+    var usingAudioLoader = !!this.mediaTypes_.AUDIO.activePlaylistLoader;
+    var hasMainMediaInfo = !!this.mainSegmentLoader_.getCurrentMediaInfo_(); // if we are not using an audio loader, then we have audio media info
+    // otherwise check on the segment loader.
 
-    if (!this.mainSegmentLoader_.currentMediaInfo_ || usingAudioLoader && !this.audioSegmentLoader_.currentMediaInfo_) {
+    var hasAudioMediaInfo = !usingAudioLoader ? true : !!this.audioSegmentLoader_.getCurrentMediaInfo_(); // one or both loaders has not loaded sufficently to get codecs
+
+    if (!hasMainMediaInfo || !hasAudioMediaInfo) {
       return false;
     }
 
@@ -51460,8 +51640,8 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
     var _this9 = this;
 
     var media = {
-      main: this.mainSegmentLoader_.currentMediaInfo_ || {},
-      audio: this.audioSegmentLoader_.currentMediaInfo_ || {}
+      main: this.mainSegmentLoader_.getCurrentMediaInfo_() || {},
+      audio: this.audioSegmentLoader_.getCurrentMediaInfo_() || {}
     }; // set "main" media equal to video
 
     media.video = media.main;
@@ -52658,8 +52838,8 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$4 = "2.9.1";
-var version$3 = "5.11.1";
+var version$4 = "2.9.2";
+var version$3 = "5.12.2";
 var version$2 = "0.17.0";
 var version$1 = "4.7.0";
 var version = "3.1.2";
