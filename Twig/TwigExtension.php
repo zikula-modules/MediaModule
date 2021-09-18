@@ -202,7 +202,7 @@ class TwigExtension extends AbstractExtension
             case 'raw':
                 return $description;
             case 'text':
-                return nl2br(htmlentities($description));
+                return nl2br(htmlspecialchars($description));
             case 'markdown':
                 return $this->markdownExtra->transform($description);
             default:
