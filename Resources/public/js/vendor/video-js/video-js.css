@@ -1600,7 +1600,7 @@ video::-webkit-media-text-track-display {
 .video-js.vjs-layout-tiny .vjs-subtitles-button,
 .video-js.vjs-layout-tiny .vjs-audio-button,
 .video-js.vjs-layout-tiny .vjs-volume-control {
-  display: none !important;
+  display: none;
 }
 .video-js.vjs-layout-small .vjs-volume-panel.vjs-volume-panel-horizontal:hover,
 .video-js.vjs-layout-small .vjs-volume-panel.vjs-volume-panel-horizontal:active,
