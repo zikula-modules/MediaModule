@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.17.0 <http://videojs.com/>
+ * Video.js 7.17.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -16,7 +16,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.videojs = factory());
 }(this, (function () { 'use strict';
 
-  var version$5 = "7.17.0";
+  var version$5 = "7.17.1";
 
   /**
    * An Object that contains lifecycle hooks as keys which point to an array
@@ -15320,7 +15320,7 @@
       this.on(doc, 'mouseup', this.handleMouseUp_);
       this.on(doc, 'touchmove', this.handleMouseMove_);
       this.on(doc, 'touchend', this.handleMouseUp_);
-      this.handleMouseMove(event);
+      this.handleMouseMove(event, true);
     }
     /**
      * Handle the `mousemove`, `touchmove`, and `mousedown` events on this `Slider`.
@@ -15331,6 +15331,7 @@
      * @param {EventTarget~Event} event
      *        `mousedown`, `mousemove`, `touchstart`, or `touchmove` event that triggered
      *        this function
+     * @param {boolean} mouseDown this is a flag that should be set to true if `handleMouseMove` is called directly. It allows us to skip things that should not happen if coming from mouse down but should happen on regular mouse move handler. Defaults to false.
      *
      * @listens mousemove
      * @listens touchmove
@@ -16233,7 +16234,6 @@
 
 
       event.stopPropagation();
-      this.player_.scrubbing(true);
       this.videoWasPlaying = !this.player_.paused();
       this.player_.pause();
 
@@ -16244,14 +16244,23 @@
      *
      * @param {EventTarget~Event} event
      *        The `mousemove` event that caused this to run.
+     * @param {boolean} mouseDown this is a flag that should be set to true if `handleMouseMove` is called directly. It allows us to skip things that should not happen if coming from mouse down but should happen on regular mouse move handler. Defaults to false
      *
      * @listens mousemove
      */
     ;
 
-    _proto.handleMouseMove = function handleMouseMove(event) {
+    _proto.handleMouseMove = function handleMouseMove(event, mouseDown) {
+      if (mouseDown === void 0) {
+        mouseDown = false;
+      }
+
       if (!isSingleLeftClick(event)) {
         return;
+      }
+
+      if (!mouseDown && !this.player_.scrubbing()) {
+        this.player_.scrubbing(true);
       }
 
       var newTime;
@@ -20215,7 +20224,21 @@
       // off for us.
 
 
-      this.track.enabled = true;
+      this.track.enabled = true; // when native audio tracks are used, we want to make sure that other tracks are turned off
+
+      if (this.player_.tech_.featuresNativeAudioTracks) {
+        var tracks = this.player_.audioTracks();
+
+        for (var i = 0; i < tracks.length; i++) {
+          var track = tracks[i]; // skip the current track since we enabled it above
+
+          if (track === this.track) {
+            continue;
+          }
+
+          track.enabled = track === this.track;
+        }
+      }
     }
     /**
      * Handle any {@link AudioTrack} change.
@@ -21587,7 +21610,7 @@
       // may not have the proper values for things like seekableEnd until then
 
 
-      _this.one(_this.player_, 'canplay', function () {
+      _this.on(_this.player_, 'canplay', function () {
         return _this.toggleTracking();
       }); // we don't need to track live playback if the document is hidden,
       // also, tracking when the document is hidden can
@@ -23340,7 +23363,19 @@
     try {
       var volume = Html5.TEST_VID.volume;
       Html5.TEST_VID.volume = volume / 2 + 0.1;
-      return volume !== Html5.TEST_VID.volume;
+      var canControl = volume !== Html5.TEST_VID.volume; // With the introduction of iOS 15, there are cases where the volume is read as
+      // changed but reverts back to its original state at the start of the next tick.
+      // To determine whether volume can be controlled on iOS,
+      // a timeout is set and the volume is checked asynchronously.
+      // Since `features` doesn't currently work asynchronously, the value is manually set.
+
+      if (canControl && IS_IOS) {
+        window.setTimeout(function () {
+          Html5.prototype.featuresVolumeControl = volume !== Html5.TEST_VID.volume;
+        });
+      }
+
+      return canControl;
     } catch (e) {
       return false;
     }
