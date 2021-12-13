@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.17.1 <http://videojs.com/>
+ * Video.js 7.17.3 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -12,7 +12,7 @@
 
 'use strict';
 
-var window = require('global/window');
+var window$1 = require('global/window');
 var document = require('global/document');
 var _extends = require('@babel/runtime/helpers/extends');
 var _assertThisInitialized = require('@babel/runtime/helpers/assertThisInitialized');
@@ -36,7 +36,7 @@ var clock = require('mux.js/lib/utils/clock');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var window__default = /*#__PURE__*/_interopDefaultLegacy(window);
+var window__default = /*#__PURE__*/_interopDefaultLegacy(window$1);
 var document__default = /*#__PURE__*/_interopDefaultLegacy(document);
 var _extends__default = /*#__PURE__*/_interopDefaultLegacy(_extends);
 var _assertThisInitialized__default = /*#__PURE__*/_interopDefaultLegacy(_assertThisInitialized);
@@ -50,7 +50,7 @@ var _inherits__default = /*#__PURE__*/_interopDefaultLegacy(_inherits);
 var _resolveUrl__default = /*#__PURE__*/_interopDefaultLegacy(_resolveUrl);
 var parseSidx__default = /*#__PURE__*/_interopDefaultLegacy(parseSidx);
 
-var version$5 = "7.17.1";
+var version$5 = "7.17.3";
 
 /**
  * An Object that contains lifecycle hooks as keys which point to an array
@@ -17714,20 +17714,20 @@ var AudioTrackMenuItem = /*#__PURE__*/function (_MenuItem) {
 
   var _proto = AudioTrackMenuItem.prototype;
 
-  _proto.createEl = function createEl(type, props, attrs) {
+  _proto.createEl = function createEl$1(type, props, attrs) {
     var el = _MenuItem.prototype.createEl.call(this, type, props, attrs);
 
     var parentSpan = el.querySelector('.vjs-menu-item-text');
 
     if (this.options_.track.kind === 'main-desc') {
-      parentSpan.appendChild(_MenuItem.prototype.createEl.call(this, 'span', {
+      parentSpan.appendChild(createEl('span', {
         className: 'vjs-icon-placeholder'
       }, {
         'aria-hidden': true
       }));
-      parentSpan.appendChild(_MenuItem.prototype.createEl.call(this, 'span', {
+      parentSpan.appendChild(createEl('span', {
         className: 'vjs-control-text',
-        textContent: this.localize('Descriptions')
+        textContent: ' ' + this.localize('Descriptions')
       }));
     }
 
@@ -20898,8 +20898,12 @@ Html5.canControlVolume = function () {
 
     if (canControl && IS_IOS) {
       window__default['default'].setTimeout(function () {
-        Html5.prototype.featuresVolumeControl = volume !== Html5.TEST_VID.volume;
-      });
+        if (Html5 && Html5.prototype) {
+          Html5.prototype.featuresVolumeControl = volume !== Html5.TEST_VID.volume;
+        }
+      }); // default iOS to false, which will be updated in the timeout above.
+
+      return false;
     }
 
     return canControl;
@@ -21096,13 +21100,14 @@ Html5.Events = ['loadstart', 'suspend', 'abort', 'error', 'emptied', 'stalled', 
  * @default {@link Html5.supportsNativeAudioTracks}
  */
 
-[['featuresVolumeControl', 'canControlVolume'], ['featuresMuteControl', 'canMuteVolume'], ['featuresPlaybackRate', 'canControlPlaybackRate'], ['featuresSourceset', 'canOverrideAttributes'], ['featuresNativeTextTracks', 'supportsNativeTextTracks'], ['featuresNativeVideoTracks', 'supportsNativeVideoTracks'], ['featuresNativeAudioTracks', 'supportsNativeAudioTracks']].forEach(function (_ref) {
+[['featuresMuteControl', 'canMuteVolume'], ['featuresPlaybackRate', 'canControlPlaybackRate'], ['featuresSourceset', 'canOverrideAttributes'], ['featuresNativeTextTracks', 'supportsNativeTextTracks'], ['featuresNativeVideoTracks', 'supportsNativeVideoTracks'], ['featuresNativeAudioTracks', 'supportsNativeAudioTracks']].forEach(function (_ref) {
   var key = _ref[0],
       fn = _ref[1];
   defineLazyProperty(Html5.prototype, key, function () {
     return Html5[fn]();
   }, true);
 });
+Html5.prototype.featuresVolumeControl = Html5.canControlVolume();
 /**
  * Boolean indicating whether the `HTML5` tech currently supports the media element
  * moving in the DOM. iOS breaks if you move the media element, so this is set this to
@@ -28270,7 +28275,7 @@ videojs.addLanguage('en', {
   'Non-Fullscreen': 'Exit Fullscreen'
 });
 
-/*! @name @videojs/http-streaming @version 2.12.0 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 2.12.1 @license Apache-2.0 */
 /**
  * @file resolve-url.js - Handling how URLs are resolved and manipulated
  */
@@ -30805,8 +30810,15 @@ var xhrFactory = function xhrFactory() {
 var byterangeStr = function byterangeStr(byterange) {
   // `byterangeEnd` is one less than `offset + length` because the HTTP range
   // header uses inclusive ranges
-  var byterangeEnd = byterange.offset + byterange.length - 1;
+  var byterangeEnd;
   var byterangeStart = byterange.offset;
+
+  if (typeof byterange.offset === 'bigint' || typeof byterange.length === 'bigint') {
+    byterangeEnd = window__default['default'].BigInt(byterange.offset) + window__default['default'].BigInt(byterange.length) - window__default['default'].BigInt(1);
+  } else {
+    byterangeEnd = byterange.offset + byterange.length - 1;
+  }
+
   return 'bytes=' + byterangeStart + '-' + byterangeEnd;
 };
 /**
@@ -32525,17 +32537,30 @@ var workerCode$1 = transform(getWorkerString(function () {
   };
 
   var stream = Stream;
-  /**
-   * mux.js
-   *
-   * Copyright (c) Brightcove
-   * Licensed Apache-2.0 https://github.com/videojs/mux.js/blob/master/LICENSE
-   *
-   * Functions that generate fragmented MP4s suitable for use with Media
-   * Source Extensions.
-   */
+  var MAX_UINT32$1 = Math.pow(2, 32);
 
-  var UINT32_MAX = Math.pow(2, 32) - 1;
+  var getUint64$2 = function getUint64(uint8) {
+    var dv = new DataView(uint8.buffer, uint8.byteOffset, uint8.byteLength);
+    var value;
+
+    if (dv.getBigUint64) {
+      value = dv.getBigUint64(0);
+
+      if (value < Number.MAX_SAFE_INTEGER) {
+        return Number(value);
+      }
+
+      return value;
+    }
+
+    return dv.getUint32(0) * MAX_UINT32$1 + dv.getUint32(4);
+  };
+
+  var numbers = {
+    getUint64: getUint64$2,
+    MAX_UINT32: MAX_UINT32$1
+  };
+  var MAX_UINT32 = numbers.MAX_UINT32;
   var box, dinf, esds, ftyp, mdat, mfhd, minf, moof, moov, mvex, mvhd, trak, tkhd, mdia, mdhd, hdlr, sdtp, stbl, stsd, traf, trex, trun$1, types, MAJOR_BRAND, MINOR_VERSION, AVC1_BRAND, VIDEO_HDLR, AUDIO_HDLR, HDLR_TYPES, VMHD, SMHD, DREF, STCO, STSC, STSZ, STTS; // pre-calculate constants
 
   (function () {
@@ -32952,8 +32977,8 @@ var workerCode$1 = transform(getWorkerString(function () {
     0x00, 0x00, 0x00, 0x00, // default_sample_size
     0x00, 0x00, 0x00, 0x00 // default_sample_flags
     ]));
-    upperWordBaseMediaDecodeTime = Math.floor(track.baseMediaDecodeTime / (UINT32_MAX + 1));
-    lowerWordBaseMediaDecodeTime = Math.floor(track.baseMediaDecodeTime % (UINT32_MAX + 1));
+    upperWordBaseMediaDecodeTime = Math.floor(track.baseMediaDecodeTime / MAX_UINT32);
+    lowerWordBaseMediaDecodeTime = Math.floor(track.baseMediaDecodeTime % MAX_UINT32);
     trackFragmentDecodeTime = box(types.tfdt, new Uint8Array([0x01, // version 1
     0x00, 0x00, 0x00, // flags
     // baseMediaDecodeTime
@@ -39000,17 +39025,18 @@ var workerCode$1 = transform(getWorkerString(function () {
 
   var findBox_1 = findBox;
   var toUnsigned$1 = bin.toUnsigned;
+  var getUint64$1 = numbers.getUint64;
 
   var tfdt = function tfdt(data) {
     var result = {
       version: data[0],
-      flags: new Uint8Array(data.subarray(1, 4)),
-      baseMediaDecodeTime: toUnsigned$1(data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7])
+      flags: new Uint8Array(data.subarray(1, 4))
     };
 
     if (result.version === 1) {
-      result.baseMediaDecodeTime *= Math.pow(2, 32);
-      result.baseMediaDecodeTime += toUnsigned$1(data[8] << 24 | data[9] << 16 | data[10] << 8 | data[11]);
+      result.baseMediaDecodeTime = getUint64$1(data.subarray(4));
+    } else {
+      result.baseMediaDecodeTime = toUnsigned$1(data[4] << 24 | data[5] << 16 | data[6] << 8 | data[7]);
     }
 
     return result;
@@ -39186,6 +39212,20 @@ var workerCode$1 = transform(getWorkerString(function () {
   };
 
   var parseTfhd = tfhd;
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+  var win;
+
+  if (typeof window !== "undefined") {
+    win = window;
+  } else if (typeof commonjsGlobal !== "undefined") {
+    win = commonjsGlobal;
+  } else if (typeof self !== "undefined") {
+    win = self;
+  } else {
+    win = {};
+  }
+
+  var window_1 = win;
   var discardEmulationPreventionBytes = captionPacketParser.discardEmulationPreventionBytes;
   var CaptionStream = captionStream.CaptionStream;
   /**
@@ -39290,7 +39330,7 @@ var workerCode$1 = transform(getWorkerString(function () {
     * the absolute presentation and decode timestamps of each sample.
     *
     * @param {Array<Uint8Array>} truns - The Trun Run boxes to be parsed
-    * @param {Number} baseMediaDecodeTime - base media decode time from tfdt
+    * @param {Number|BigInt} baseMediaDecodeTime - base media decode time from tfdt
         @see ISO-BMFF-12/2015, Section 8.8.12
     * @param {Object} tfhd - The parsed Track Fragment Header
     *   @see inspect.parseTfhd
@@ -39328,8 +39368,13 @@ var workerCode$1 = transform(getWorkerString(function () {
           sample.compositionTimeOffset = 0;
         }
 
-        sample.pts = currentDts + sample.compositionTimeOffset;
-        currentDts += sample.duration;
+        if (typeof currentDts === 'bigint') {
+          sample.pts = currentDts + window_1.BigInt(sample.compositionTimeOffset);
+          currentDts += window_1.BigInt(sample.duration);
+        } else {
+          sample.pts = currentDts + sample.compositionTimeOffset;
+          currentDts += sample.duration;
+        }
       });
       allSamples = allSamples.concat(samples);
     });
@@ -39644,6 +39689,7 @@ var workerCode$1 = transform(getWorkerString(function () {
   var captionParser = CaptionParser;
   var toUnsigned = bin.toUnsigned;
   var toHexString = bin.toHexString;
+  var getUint64 = numbers.getUint64;
   var timescale, startTime, compositionStartTime, getVideoTrackIds, getTracks, getTimescaleFromMediaHeader;
   /**
    * Parses an MP4 initialization segment and extracts the timescale
@@ -39710,38 +39756,47 @@ var workerCode$1 = transform(getWorkerString(function () {
 
 
   startTime = function startTime(timescale, fragment) {
-    var trafs, baseTimes, result; // we need info from two childrend of each track fragment box
+    var trafs; // we need info from two childrend of each track fragment box
 
     trafs = findBox_1(fragment, ['moof', 'traf']); // determine the start times for each track
 
-    baseTimes = [].concat.apply([], trafs.map(function (traf) {
-      return findBox_1(traf, ['tfhd']).map(function (tfhd) {
-        var id, scale, baseTime; // get the track id from the tfhd
+    var lowestTime = trafs.reduce(function (acc, traf) {
+      var tfhd = findBox_1(traf, ['tfhd'])[0]; // get the track id from the tfhd
 
-        id = toUnsigned(tfhd[4] << 24 | tfhd[5] << 16 | tfhd[6] << 8 | tfhd[7]); // assume a 90kHz clock if no timescale was specified
+      var id = toUnsigned(tfhd[4] << 24 | tfhd[5] << 16 | tfhd[6] << 8 | tfhd[7]); // assume a 90kHz clock if no timescale was specified
 
-        scale = timescale[id] || 90e3; // get the base media decode time from the tfdt
+      var scale = timescale[id] || 90e3; // get the base media decode time from the tfdt
 
-        baseTime = findBox_1(traf, ['tfdt']).map(function (tfdt) {
-          var version, result;
-          version = tfdt[0];
-          result = toUnsigned(tfdt[4] << 24 | tfdt[5] << 16 | tfdt[6] << 8 | tfdt[7]);
+      var tfdt = findBox_1(traf, ['tfdt'])[0];
+      var dv = new DataView(tfdt.buffer, tfdt.byteOffset, tfdt.byteLength);
+      var baseTime; // version 1 is 64 bit
 
-          if (version === 1) {
-            result *= Math.pow(2, 32);
-            result += toUnsigned(tfdt[8] << 24 | tfdt[9] << 16 | tfdt[10] << 8 | tfdt[11]);
-          }
+      if (tfdt[0] === 1) {
+        baseTime = getUint64(tfdt.subarray(4, 12));
+      } else {
+        baseTime = dv.getUint32(4);
+      } // convert base time to seconds if it is a valid number.
 
-          return result;
-        })[0];
-        baseTime = typeof baseTime === 'number' && !isNaN(baseTime) ? baseTime : Infinity; // convert base time to seconds
 
-        return baseTime / scale;
-      });
-    })); // return the minimum
+      var seconds;
 
-    result = Math.min.apply(null, baseTimes);
-    return isFinite(result) ? result : 0;
+      if (typeof baseTime === 'bigint') {
+        seconds = baseTime / window_1.BigInt(scale);
+      } else if (typeof baseTime === 'number' && !isNaN(baseTime)) {
+        seconds = baseTime / scale;
+      }
+
+      if (seconds < Number.MAX_SAFE_INTEGER) {
+        seconds = Number(seconds);
+      }
+
+      if (seconds < acc) {
+        acc = seconds;
+      }
+
+      return acc;
+    }, Infinity);
+    return typeof lowestTime === 'bigint' || isFinite(lowestTime) ? lowestTime : 0;
   };
   /**
    * Determine the composition start, in seconds, for an MP4
@@ -39801,7 +39856,18 @@ var workerCode$1 = transform(getWorkerString(function () {
 
     var timescale = timescales[trackId] || 90e3; // return the composition start time, in seconds
 
-    return (baseMediaDecodeTime + compositionTimeOffset) / timescale;
+    if (typeof baseMediaDecodeTime === 'bigint') {
+      compositionTimeOffset = window_1.BigInt(compositionTimeOffset);
+      timescale = window_1.BigInt(timescale);
+    }
+
+    var result = (baseMediaDecodeTime + compositionTimeOffset) / timescale;
+
+    if (typeof result === 'bigint' && result < Number.MAX_SAFE_INTEGER) {
+      result = Number(result);
+    }
+
+    return result;
   };
   /**
     * Find the trackIds of the video tracks in this source.
@@ -43971,10 +44037,36 @@ var shouldWaitForTimelineChange = function shouldWaitForTimelineChange(_ref2) {
   return false;
 };
 
-var mediaDuration = function mediaDuration(audioTimingInfo, videoTimingInfo) {
-  var audioDuration = audioTimingInfo && typeof audioTimingInfo.start === 'number' && typeof audioTimingInfo.end === 'number' ? audioTimingInfo.end - audioTimingInfo.start : 0;
-  var videoDuration = videoTimingInfo && typeof videoTimingInfo.start === 'number' && typeof videoTimingInfo.end === 'number' ? videoTimingInfo.end - videoTimingInfo.start : 0;
-  return Math.max(audioDuration, videoDuration);
+var mediaDuration = function mediaDuration(timingInfos) {
+  var maxDuration = 0;
+  ['video', 'audio'].forEach(function (type) {
+    var typeTimingInfo = timingInfos[type + "TimingInfo"];
+
+    if (!typeTimingInfo) {
+      return;
+    }
+
+    var start = typeTimingInfo.start,
+        end = typeTimingInfo.end;
+    var duration;
+
+    if (typeof start === 'bigint' || typeof end === 'bigint') {
+      duration = window__default['default'].BigInt(end) - window__default['default'].BigInt(start);
+    } else if (typeof start === 'number' && typeof end === 'number') {
+      duration = end - start;
+    }
+
+    if (typeof duration !== 'undefined' && duration > maxDuration) {
+      maxDuration = duration;
+    }
+  }); // convert back to a number if it is lower than MAX_SAFE_INTEGER
+  // as we only need BigInt when we are above that.
+
+  if (typeof maxDuration === 'bigint' && maxDuration < Number.MAX_SAFE_INTEGER) {
+    maxDuration = Number(maxDuration);
+  }
+
+  return maxDuration;
 };
 
 var segmentTooLong = function segmentTooLong(_ref3) {
@@ -44007,7 +44099,10 @@ var getTroublesomeSegmentDurationMessage = function getTroublesomeSegmentDuratio
     return null;
   }
 
-  var segmentDuration = mediaDuration(segmentInfo.audioTimingInfo, segmentInfo.videoTimingInfo); // Don't report if we lack information.
+  var segmentDuration = mediaDuration({
+    audioTimingInfo: segmentInfo.audioTimingInfo,
+    videoTimingInfo: segmentInfo.videoTimingInfo
+  }); // Don't report if we lack information.
   //
   // If the segment has a duration of 0 it is either a lack of information or a
   // metadata only segment and shouldn't be reported here.
@@ -51926,10 +52021,27 @@ var MasterPlaylistController = /*#__PURE__*/function (_videojs$EventTarget) {
   };
 
   _proto.onSyncInfoUpdate_ = function onSyncInfoUpdate_() {
-    var audioSeekable; // If we have two source buffers and only one is created then the seekable range will be incorrect.
-    // We should wait until all source buffers are created.
+    var audioSeekable; // TODO check for creation of both source buffers before updating seekable
+    //
+    // A fix was made to this function where a check for
+    // this.sourceUpdater_.hasCreatedSourceBuffers
+    // was added to ensure that both source buffers were created before seekable was
+    // updated. However, it originally had a bug where it was checking for a true and
+    // returning early instead of checking for false. Setting it to check for false to
+    // return early though created other issues. A call to play() would check for seekable
+    // end without verifying that a seekable range was present. In addition, even checking
+    // for that didn't solve some issues, as handleFirstPlay is sometimes worked around
+    // due to a media update calling load on the segment loaders, skipping a seek to live,
+    // thereby starting live streams at the beginning of the stream rather than at the end.
+    //
+    // This conditional should be fixed to wait for the creation of two source buffers at
+    // the same time as the other sections of code are fixed to properly seek to live and
+    // not throw an error due to checking for a seekable end when no seekable range exists.
+    //
+    // For now, fall back to the older behavior, with the understanding that the seekable
+    // range may not be completely correct, leading to a suboptimal initial live point.
 
-    if (!this.masterPlaylistLoader_ || this.sourceUpdater_.hasCreatedSourceBuffers()) {
+    if (!this.masterPlaylistLoader_) {
       return;
     }
 
@@ -53351,9 +53463,9 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$4 = "2.12.0";
-var version$3 = "5.14.1";
-var version$2 = "0.19.2";
+var version$4 = "2.12.1";
+var version$3 = "6.0.0";
+var version$2 = "0.20.0";
 var version$1 = "4.7.0";
 var version = "3.1.2";
 var Vhs = {
@@ -54571,11 +54683,17 @@ var VhsSourceHandler = {
     }
 
     var _videojs$mergeOptions = videojs.mergeOptions(videojs.options, options),
-        _videojs$mergeOptions2 = _videojs$mergeOptions.vhs.overrideNative,
-        overrideNative = _videojs$mergeOptions2 === void 0 ? !videojs.browser.IS_ANY_SAFARI : _videojs$mergeOptions2;
+        _videojs$mergeOptions2 = _videojs$mergeOptions.vhs;
 
+    _videojs$mergeOptions2 = _videojs$mergeOptions2 === void 0 ? {} : _videojs$mergeOptions2;
+    var _videojs$mergeOptions3 = _videojs$mergeOptions2.overrideNative,
+        overrideNative = _videojs$mergeOptions3 === void 0 ? !videojs.browser.IS_ANY_SAFARI : _videojs$mergeOptions3,
+        _videojs$mergeOptions4 = _videojs$mergeOptions.hls;
+    _videojs$mergeOptions4 = _videojs$mergeOptions4 === void 0 ? {} : _videojs$mergeOptions4;
+    var _videojs$mergeOptions5 = _videojs$mergeOptions4.overrideNative,
+        legacyOverrideNative = _videojs$mergeOptions5 === void 0 ? false : _videojs$mergeOptions5;
     var supportedType = mediaTypes_js.simpleTypeFromSourceType(type);
-    var canUseMsePlayback = supportedType && (!Vhs.supportsTypeNatively(supportedType) || overrideNative);
+    var canUseMsePlayback = supportedType && (!Vhs.supportsTypeNatively(supportedType) || legacyOverrideNative || overrideNative);
     return canUseMsePlayback ? 'maybe' : '';
   }
 };
