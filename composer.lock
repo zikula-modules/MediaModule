@@ -203,16 +203,16 @@
         },
         {
             "name": "clue/graph",
-            "version": "v0.9.2",
+            "version": "v0.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/graphp/graph.git",
-                "reference": "187902e158dead96fc5da3ae368ea1080abf267d"
+                "reference": "d1661c0a0e011a8550fa60ae5354f230d1555909"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/graphp/graph/zipball/187902e158dead96fc5da3ae368ea1080abf267d",
-                "reference": "187902e158dead96fc5da3ae368ea1080abf267d",
+                "url": "https://api.github.com/repos/graphp/graph/zipball/d1661c0a0e011a8550fa60ae5354f230d1555909",
+                "reference": "d1661c0a0e011a8550fa60ae5354f230d1555909",
                 "shasum": ""
             },
             "require": {
@@ -252,9 +252,19 @@
             ],
             "support": {
                 "issues": "https://github.com/graphp/graph/issues",
-                "source": "https://github.com/graphp/graph/tree/v0.9.2"
+                "source": "https://github.com/graphp/graph/tree/v0.9.3"
             },
-            "time": "2020-12-03T18:55:21+00:00"
+            "funding": [
+                {
+                    "url": "https://clue.engineering/support",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/clue",
+                    "type": "github"
+                }
+            ],
+            "time": "2021-12-30T09:22:01+00:00"
         },
         {
             "name": "clue/stream-filter",
