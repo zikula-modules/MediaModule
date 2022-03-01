@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.17.3 <http://videojs.com/>
+ * Video.js 7.18.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -15,10 +15,10 @@
 var window$1 = require('global/window');
 var document = require('global/document');
 var _extends = require('@babel/runtime/helpers/extends');
+var keycode = require('keycode');
 var _assertThisInitialized = require('@babel/runtime/helpers/assertThisInitialized');
 var _inheritsLoose = require('@babel/runtime/helpers/inheritsLoose');
 var safeParseTuple = require('safe-json-parse/tuple');
-var keycode = require('keycode');
 var XHR = require('@videojs/xhr');
 var vtt = require('videojs-vtt.js');
 var _construct = require('@babel/runtime/helpers/construct');
@@ -39,10 +39,10 @@ function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'defau
 var window__default = /*#__PURE__*/_interopDefaultLegacy(window$1);
 var document__default = /*#__PURE__*/_interopDefaultLegacy(document);
 var _extends__default = /*#__PURE__*/_interopDefaultLegacy(_extends);
+var keycode__default = /*#__PURE__*/_interopDefaultLegacy(keycode);
 var _assertThisInitialized__default = /*#__PURE__*/_interopDefaultLegacy(_assertThisInitialized);
 var _inheritsLoose__default = /*#__PURE__*/_interopDefaultLegacy(_inheritsLoose);
 var safeParseTuple__default = /*#__PURE__*/_interopDefaultLegacy(safeParseTuple);
-var keycode__default = /*#__PURE__*/_interopDefaultLegacy(keycode);
 var XHR__default = /*#__PURE__*/_interopDefaultLegacy(XHR);
 var vtt__default = /*#__PURE__*/_interopDefaultLegacy(vtt);
 var _construct__default = /*#__PURE__*/_interopDefaultLegacy(_construct);
@@ -50,7 +50,7 @@ var _inherits__default = /*#__PURE__*/_interopDefaultLegacy(_inherits);
 var _resolveUrl__default = /*#__PURE__*/_interopDefaultLegacy(_resolveUrl);
 var parseSidx__default = /*#__PURE__*/_interopDefaultLegacy(parseSidx);
 
-var version$5 = "7.17.3";
+var version$5 = "7.18.1";
 
 /**
  * An Object that contains lifecycle hooks as keys which point to an array
@@ -4944,8 +4944,11 @@ var Component$1 = /*#__PURE__*/function () {
   _proto.handleKeyDown = function handleKeyDown(event) {
     if (this.player_) {
       // We only stop propagation here because we want unhandled events to fall
-      // back to the browser.
-      event.stopPropagation();
+      // back to the browser. Exclude Tab for focus trapping.
+      if (!keycode__default['default'].isEventKey(event, 'Tab')) {
+        event.stopPropagation();
+      }
+
       this.player_.handleKeyDown(event);
     }
   }
@@ -12368,9 +12371,12 @@ var RemainingTimeDisplay = /*#__PURE__*/function (_TimeDisplay) {
   _proto.createEl = function createEl$1() {
     var el = _TimeDisplay.prototype.createEl.call(this);
 
-    el.insertBefore(createEl('span', {}, {
-      'aria-hidden': true
-    }, '-'), this.contentEl_);
+    if (this.options_.displayNegative !== false) {
+      el.insertBefore(createEl('span', {}, {
+        'aria-hidden': true
+      }, '-'), this.contentEl_);
+    }
+
     return el;
   }
   /**
@@ -18090,18 +18096,11 @@ var PlaybackRateMenuButton = /*#__PURE__*/function (_MenuButton) {
   _proto.handleClick = function handleClick(event) {
     // select next rate option
     var currentRate = this.player().playbackRate();
-    var rates = this.playbackRates(); // this will select first one if the last one currently selected
+    var rates = this.playbackRates();
+    var currentIndex = rates.indexOf(currentRate); // this get the next rate and it will select first one if the last one currently selected
 
-    var newRate = rates[0];
-
-    for (var i = 0; i < rates.length; i++) {
-      if (rates[i] > currentRate) {
-        newRate = rates[i];
-        break;
-      }
-    }
-
-    this.player().playbackRate(newRate);
+    var newIndex = (currentIndex + 1) % rates.length;
+    this.player().playbackRate(rates[newIndex]);
   }
   /**
    * On playbackrateschange, update the menu to account for the new items.
@@ -20480,7 +20479,11 @@ var Html5 = /*#__PURE__*/function (_Tech) {
     var endFn = function endFn() {
       this.trigger('fullscreenchange', {
         isFullscreen: false
-      });
+      }); // Safari will sometimes set contols on the videoelement when existing fullscreen.
+
+      if (this.el_.controls && !this.options_.nativeControlsForTouch && this.controls()) {
+        this.el_.controls = false;
+      }
     };
 
     var beginFn = function beginFn() {
@@ -24030,9 +24033,14 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.handleTechFullscreenChange_ = function handleTechFullscreenChange_(event, data) {
+    var _this9 = this;
+
     if (data) {
       if (data.nativeIOSFullscreen) {
-        this.toggleClass('vjs-ios-native-fs');
+        this.addClass('vjs-ios-native-fs');
+        this.tech_.one('webkitendfullscreen', function () {
+          _this9.removeClass('vjs-ios-native-fs');
+        });
       }
 
       this.isFullscreen(data.isFullscreen);
@@ -24254,13 +24262,13 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.play = function play() {
-    var _this9 = this;
+    var _this10 = this;
 
     var PromiseClass = this.options_.Promise || window__default['default'].Promise;
 
     if (PromiseClass) {
       return new PromiseClass(function (resolve) {
-        _this9.play_(resolve);
+        _this10.play_(resolve);
       });
     }
 
@@ -24278,7 +24286,7 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.play_ = function play_(callback) {
-    var _this10 = this;
+    var _this11 = this;
 
     if (callback === void 0) {
       callback = silencePromise;
@@ -24296,7 +24304,7 @@ var Player = /*#__PURE__*/function (_Component) {
 
     if (!this.isReady_ || !isSrcReady) {
       this.waitToPlay_ = function (e) {
-        _this10.play_();
+        _this11.play_();
       };
 
       this.one(['ready', 'loadstart'], this.waitToPlay_); // if we are in Safari, there is a high chance that loadstart will trigger after the gesture timeperiod
@@ -24813,7 +24821,7 @@ var Player = /*#__PURE__*/function (_Component) {
   };
 
   _proto.requestFullscreenHelper_ = function requestFullscreenHelper_(fullscreenOptions) {
-    var _this11 = this;
+    var _this12 = this;
 
     var fsOptions; // Only pass fullscreen options to requestFullscreen in spec-compliant browsers.
     // Use defaults or player configured option unless passed directly to this method.
@@ -24838,9 +24846,9 @@ var Player = /*#__PURE__*/function (_Component) {
 
       if (promise) {
         promise.then(function () {
-          return _this11.isFullscreen(true);
+          return _this12.isFullscreen(true);
         }, function () {
-          return _this11.isFullscreen(false);
+          return _this12.isFullscreen(false);
         });
       }
 
@@ -24899,7 +24907,7 @@ var Player = /*#__PURE__*/function (_Component) {
   };
 
   _proto.exitFullscreenHelper_ = function exitFullscreenHelper_() {
-    var _this12 = this;
+    var _this13 = this;
 
     if (this.fsApi_.requestFullscreen) {
       var promise = document__default['default'][this.fsApi_.exitFullscreen]();
@@ -24908,7 +24916,7 @@ var Player = /*#__PURE__*/function (_Component) {
         // we're splitting the promise here, so, we want to catch the
         // potential error so that this chain doesn't have unhandled errors
         silencePromise(promise.then(function () {
-          return _this12.isFullscreen(false);
+          return _this13.isFullscreen(false);
         }));
       }
 
@@ -25236,7 +25244,7 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.selectSource = function selectSource(sources) {
-    var _this13 = this;
+    var _this14 = this;
 
     // Get only the techs specified in `techOrder` that exist and are supported by the
     // current platform
@@ -25284,7 +25292,7 @@ var Player = /*#__PURE__*/function (_Component) {
       var techName = _ref2[0],
           tech = _ref2[1];
 
-      if (tech.canPlaySource(source, _this13.options_[techName.toLowerCase()])) {
+      if (tech.canPlaySource(source, _this14.options_[techName.toLowerCase()])) {
         return {
           source: source,
           tech: techName
@@ -25324,7 +25332,7 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.handleSrc_ = function handleSrc_(source, isRetry) {
-    var _this14 = this;
+    var _this15 = this;
 
     // getter usage
     if (typeof source === 'undefined') {
@@ -25363,25 +25371,25 @@ var Player = /*#__PURE__*/function (_Component) {
     this.updateSourceCaches_(sources[0]); // middlewareSource is the source after it has been changed by middleware
 
     setSource(this, sources[0], function (middlewareSource, mws) {
-      _this14.middleware_ = mws; // since sourceSet is async we have to update the cache again after we select a source since
+      _this15.middleware_ = mws; // since sourceSet is async we have to update the cache again after we select a source since
       // the source that is selected could be out of order from the cache update above this callback.
 
       if (!isRetry) {
-        _this14.cache_.sources = sources;
+        _this15.cache_.sources = sources;
       }
 
-      _this14.updateSourceCaches_(middlewareSource);
+      _this15.updateSourceCaches_(middlewareSource);
 
-      var err = _this14.src_(middlewareSource);
+      var err = _this15.src_(middlewareSource);
 
       if (err) {
         if (sources.length > 1) {
-          return _this14.handleSrc_(sources.slice(1));
+          return _this15.handleSrc_(sources.slice(1));
         }
 
-        _this14.changingSrc_ = false; // We need to wrap this in a timeout to give folks a chance to add error event handlers
+        _this15.changingSrc_ = false; // We need to wrap this in a timeout to give folks a chance to add error event handlers
 
-        _this14.setTimeout(function () {
+        _this15.setTimeout(function () {
           this.error({
             code: 4,
             message: this.localize(this.options_.notSupportedMessage)
@@ -25390,33 +25398,33 @@ var Player = /*#__PURE__*/function (_Component) {
         // this needs a better comment about why this is needed
 
 
-        _this14.triggerReady();
+        _this15.triggerReady();
 
         return;
       }
 
-      setTech(mws, _this14.tech_);
+      setTech(mws, _this15.tech_);
     }); // Try another available source if this one fails before playback.
 
     if (this.options_.retryOnError && sources.length > 1) {
       var retry = function retry() {
         // Remove the error modal
-        _this14.error(null);
+        _this15.error(null);
 
-        _this14.handleSrc_(sources.slice(1), true);
+        _this15.handleSrc_(sources.slice(1), true);
       };
 
       var stopListeningForErrors = function stopListeningForErrors() {
-        _this14.off('error', retry);
+        _this15.off('error', retry);
       };
 
       this.one('error', retry);
       this.one('playing', stopListeningForErrors);
 
       this.resetRetryOnError_ = function () {
-        _this14.off('error', retry);
+        _this15.off('error', retry);
 
-        _this14.off('playing', stopListeningForErrors);
+        _this15.off('playing', stopListeningForErrors);
       };
     }
   }
@@ -25456,7 +25464,7 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.src_ = function src_(source) {
-    var _this15 = this;
+    var _this16 = this;
 
     var sourceTech = this.selectSource([source]);
 
@@ -25469,7 +25477,7 @@ var Player = /*#__PURE__*/function (_Component) {
 
       this.loadTech_(sourceTech.tech, sourceTech.source);
       this.tech_.ready(function () {
-        _this15.changingSrc_ = false;
+        _this16.changingSrc_ = false;
       });
       return false;
     } // wait until the tech is ready to set the source
@@ -25507,7 +25515,7 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.reset = function reset() {
-    var _this16 = this;
+    var _this17 = this;
 
     var PromiseClass = this.options_.Promise || window__default['default'].Promise;
 
@@ -25516,7 +25524,7 @@ var Player = /*#__PURE__*/function (_Component) {
     } else {
       var playPromise = this.play();
       silencePromise(playPromise.then(function () {
-        return _this16.doReset_();
+        return _this17.doReset_();
       }));
     }
   };
@@ -25950,7 +25958,7 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.error = function error(err) {
-    var _this17 = this;
+    var _this18 = this;
 
     if (err === undefined) {
       return this.error_ || null;
@@ -25958,10 +25966,10 @@ var Player = /*#__PURE__*/function (_Component) {
 
 
     hooks('beforeerror').forEach(function (hookFunction) {
-      var newErr = hookFunction(_this17, err);
+      var newErr = hookFunction(_this18, err);
 
       if (!(isObject(newErr) && !Array.isArray(newErr) || typeof newErr === 'string' || typeof newErr === 'number' || newErr === null)) {
-        _this17.log.error('please return a value that MediaError expects in beforeerror hooks');
+        _this18.log.error('please return a value that MediaError expects in beforeerror hooks');
 
         return;
       }
@@ -26009,7 +26017,7 @@ var Player = /*#__PURE__*/function (_Component) {
     this.trigger('error'); // notify hooks of the per player error
 
     hooks('error').forEach(function (hookFunction) {
-      return hookFunction(_this17, _this17.error_);
+      return hookFunction(_this18, _this18.error_);
     });
     return;
   }
@@ -26485,14 +26493,14 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.createModal = function createModal(content, options) {
-    var _this18 = this;
+    var _this19 = this;
 
     options = options || {};
     options.content = content || '';
     var modal = new ModalDialog(this, options);
     this.addChild(modal);
     modal.on('dispose', function () {
-      _this18.removeChild(modal);
+      _this19.removeChild(modal);
     });
     modal.open();
     return modal;
@@ -26723,7 +26731,7 @@ var Player = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.loadMedia = function loadMedia(media, ready) {
-    var _this19 = this;
+    var _this20 = this;
 
     if (!media || typeof media !== 'object') {
       return;
@@ -26755,7 +26763,7 @@ var Player = /*#__PURE__*/function (_Component) {
 
     if (Array.isArray(textTracks)) {
       textTracks.forEach(function (tt) {
-        return _this19.addRemoteTextTrack(tt, false);
+        return _this20.addRemoteTextTrack(tt, false);
       });
     }
 
@@ -28275,7 +28283,7 @@ videojs.addLanguage('en', {
   'Non-Fullscreen': 'Exit Fullscreen'
 });
 
-/*! @name @videojs/http-streaming @version 2.12.1 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 2.13.1 @license Apache-2.0 */
 /**
  * @file resolve-url.js - Handling how URLs are resolved and manipulated
  */
@@ -31525,14 +31533,16 @@ var parseMasterXml = function parseMasterXml(_ref) {
   var masterXml = _ref.masterXml,
       srcUrl = _ref.srcUrl,
       clientOffset = _ref.clientOffset,
-      sidxMapping = _ref.sidxMapping;
-  var master = mpdParser.parse(masterXml, {
+      sidxMapping = _ref.sidxMapping,
+      previousManifest = _ref.previousManifest;
+  var manifest = mpdParser.parse(masterXml, {
     manifestUri: srcUrl,
     clientOffset: clientOffset,
-    sidxMapping: sidxMapping
+    sidxMapping: sidxMapping,
+    previousManifest: previousManifest
   });
-  addPropertiesToMaster(master, srcUrl);
-  return master;
+  addPropertiesToMaster(manifest, srcUrl);
+  return manifest;
 };
 /**
  * Returns a new master manifest that is the result of merging an updated master manifest
@@ -31553,7 +31563,8 @@ var updateMaster = function updateMaster(oldMaster, newMaster, sidxMapping) {
   var update = mergeOptions(oldMaster, {
     // These are top level properties that can be updated
     duration: newMaster.duration,
-    minimumUpdatePeriod: newMaster.minimumUpdatePeriod
+    minimumUpdatePeriod: newMaster.minimumUpdatePeriod,
+    timelineStarts: newMaster.timelineStarts
   }); // First update the playlists in playlist list
 
   for (var i = 0; i < newMaster.playlists.length; i++) {
@@ -32147,13 +32158,14 @@ var DashPlaylistLoader = /*#__PURE__*/function (_EventTarget) {
   _proto.handleMaster_ = function handleMaster_() {
     // clear media request
     this.mediaRequest_ = null;
+    var oldMaster = this.masterPlaylistLoader_.master;
     var newMaster = parseMasterXml({
       masterXml: this.masterPlaylistLoader_.masterXml_,
       srcUrl: this.masterPlaylistLoader_.srcUrl,
       clientOffset: this.masterPlaylistLoader_.clientOffset_,
-      sidxMapping: this.masterPlaylistLoader_.sidxMapping_
-    });
-    var oldMaster = this.masterPlaylistLoader_.master; // if we have an old master to compare the new master against
+      sidxMapping: this.masterPlaylistLoader_.sidxMapping_,
+      previousManifest: oldMaster
+    }); // if we have an old master to compare the new master against
 
     if (oldMaster) {
       newMaster = updateMaster(oldMaster, newMaster, this.masterPlaylistLoader_.sidxMapping_);
@@ -32382,7 +32394,7 @@ var transform = function transform(code) {
 var getWorkerString = function getWorkerString(fn) {
   return fn.toString().replace(/^function.+?{/, '').slice(0, -1);
 };
-/* rollup-plugin-worker-factory start for worker!/Users/gkatsevman/p/http-streaming-release/src/transmuxer-worker.js */
+/* rollup-plugin-worker-factory start for worker!/Users/gsinger/repos/clean/http-streaming/src/transmuxer-worker.js */
 
 
 var workerCode$1 = transform(getWorkerString(function () {
@@ -41188,7 +41200,7 @@ var workerCode$1 = transform(getWorkerString(function () {
   };
 }));
 var TransmuxWorker = factory(workerCode$1);
-/* rollup-plugin-worker-factory end for worker!/Users/gkatsevman/p/http-streaming-release/src/transmuxer-worker.js */
+/* rollup-plugin-worker-factory end for worker!/Users/gsinger/repos/clean/http-streaming/src/transmuxer-worker.js */
 
 var handleData_ = function handleData_(event, transmuxedData, callback) {
   var _event$data$segment = event.data.segment,
@@ -48948,7 +48960,7 @@ var TimelineChangeController = /*#__PURE__*/function (_videojs$EventTarget) {
 
   return TimelineChangeController;
 }(videojs.EventTarget);
-/* rollup-plugin-worker-factory start for worker!/Users/gkatsevman/p/http-streaming-release/src/decrypter-worker.js */
+/* rollup-plugin-worker-factory start for worker!/Users/gsinger/repos/clean/http-streaming/src/decrypter-worker.js */
 
 
 var workerCode = transform(getWorkerString(function () {
@@ -49628,7 +49640,7 @@ var workerCode = transform(getWorkerString(function () {
   };
 }));
 var Decrypter = factory(workerCode);
-/* rollup-plugin-worker-factory end for worker!/Users/gkatsevman/p/http-streaming-release/src/decrypter-worker.js */
+/* rollup-plugin-worker-factory end for worker!/Users/gsinger/repos/clean/http-streaming/src/decrypter-worker.js */
 
 /**
  * Convert the properties of an HLS track into an audioTrackKind.
@@ -53463,9 +53475,9 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$4 = "2.12.1";
-var version$3 = "6.0.0";
-var version$2 = "0.20.0";
+var version$4 = "2.13.1";
+var version$3 = "6.0.1";
+var version$2 = "0.21.0";
 var version$1 = "4.7.0";
 var version = "3.1.2";
 var Vhs = {
@@ -54422,44 +54434,12 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
 
     this.mediaSourceUrl_ = window__default['default'].URL.createObjectURL(this.masterPlaylistController_.mediaSource);
     this.tech_.src(this.mediaSourceUrl_);
-  }
-  /**
-   * If necessary and EME is available, sets up EME options and waits for key session
-   * creation.
-   *
-   * This function also updates the source updater so taht it can be used, as for some
-   * browsers, EME must be configured before content is appended (if appending unencrypted
-   * content before encrypted content).
-   */
-  ;
+  };
 
-  _proto.setupEme_ = function setupEme_() {
+  _proto.createKeySessions_ = function createKeySessions_() {
     var _this4 = this;
 
     var audioPlaylistLoader = this.masterPlaylistController_.mediaTypes_.AUDIO.activePlaylistLoader;
-    var didSetupEmeOptions = setupEmeOptions({
-      player: this.player_,
-      sourceKeySystems: this.source_.keySystems,
-      media: this.playlists.media(),
-      audioMedia: audioPlaylistLoader && audioPlaylistLoader.media()
-    });
-    this.player_.tech_.on('keystatuschange', function (e) {
-      if (e.status === 'output-restricted') {
-        _this4.masterPlaylistController_.blacklistCurrentPlaylist({
-          playlist: _this4.masterPlaylistController_.media(),
-          message: "DRM keystatus changed to " + e.status + ". Playlist will fail to play. Check for HDCP content.",
-          blacklistDuration: Infinity
-        });
-      }
-    }); // In IE11 this is too early to initialize media keys, and IE11 does not support
-    // promises.
-
-    if (videojs.browser.IE_VERSION === 11 || !didSetupEmeOptions) {
-      // If EME options were not set up, we've done all we could to initialize EME.
-      this.masterPlaylistController_.sourceUpdater_.initializedEme();
-      return;
-    }
-
     this.logger_('waiting for EME key session creation');
     waitForKeySessionCreation({
       player: this.player_,
@@ -54478,6 +54458,60 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
         code: 3
       });
     });
+  };
+
+  _proto.handleWaitingForKey_ = function handleWaitingForKey_() {
+    // If waitingforkey is fired, it's possible that the data that's necessary to retrieve
+    // the key is in the manifest. While this should've happened on initial source load, it
+    // may happen again in live streams where the keys change, and the manifest info
+    // reflects the update.
+    //
+    // Because videojs-contrib-eme compares the PSSH data we send to that of PSSH data it's
+    // already requested keys for, we don't have to worry about this generating extraneous
+    // requests.
+    this.logger_('waitingforkey fired, attempting to create any new key sessions');
+    this.createKeySessions_();
+  }
+  /**
+   * If necessary and EME is available, sets up EME options and waits for key session
+   * creation.
+   *
+   * This function also updates the source updater so taht it can be used, as for some
+   * browsers, EME must be configured before content is appended (if appending unencrypted
+   * content before encrypted content).
+   */
+  ;
+
+  _proto.setupEme_ = function setupEme_() {
+    var _this5 = this;
+
+    var audioPlaylistLoader = this.masterPlaylistController_.mediaTypes_.AUDIO.activePlaylistLoader;
+    var didSetupEmeOptions = setupEmeOptions({
+      player: this.player_,
+      sourceKeySystems: this.source_.keySystems,
+      media: this.playlists.media(),
+      audioMedia: audioPlaylistLoader && audioPlaylistLoader.media()
+    });
+    this.player_.tech_.on('keystatuschange', function (e) {
+      if (e.status === 'output-restricted') {
+        _this5.masterPlaylistController_.blacklistCurrentPlaylist({
+          playlist: _this5.masterPlaylistController_.media(),
+          message: "DRM keystatus changed to " + e.status + ". Playlist will fail to play. Check for HDCP content.",
+          blacklistDuration: Infinity
+        });
+      }
+    });
+    this.handleWaitingForKey_ = this.handleWaitingForKey_.bind(this);
+    this.player_.tech_.on('waitingforkey', this.handleWaitingForKey_); // In IE11 this is too early to initialize media keys, and IE11 does not support
+    // promises.
+
+    if (videojs.browser.IE_VERSION === 11 || !didSetupEmeOptions) {
+      // If EME options were not set up, we've done all we could to initialize EME.
+      this.masterPlaylistController_.sourceUpdater_.initializedEme();
+      return;
+    }
+
+    this.createKeySessions_();
   }
   /**
    * Initializes the quality levels and sets listeners to update them.
@@ -54488,7 +54522,7 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
   ;
 
   _proto.setupQualityLevels_ = function setupQualityLevels_() {
-    var _this5 = this;
+    var _this6 = this;
 
     var player = videojs.players[this.tech_.options_.playerId]; // if there isn't a player or there isn't a qualityLevels plugin
     // or qualityLevels_ listeners have already been setup, do nothing.
@@ -54499,10 +54533,10 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
 
     this.qualityLevels_ = player.qualityLevels();
     this.masterPlaylistController_.on('selectedinitialmedia', function () {
-      handleVhsLoadedMetadata(_this5.qualityLevels_, _this5);
+      handleVhsLoadedMetadata(_this6.qualityLevels_, _this6);
     });
     this.playlists.on('mediachange', function () {
-      handleVhsMediaChange(_this5.qualityLevels_, _this5.playlists);
+      handleVhsMediaChange(_this6.qualityLevels_, _this6.playlists);
     });
   }
   /**
@@ -54599,6 +54633,10 @@ var VhsHandler = /*#__PURE__*/function (_Component) {
     if (this.mediaSourceUrl_ && window__default['default'].URL.revokeObjectURL) {
       window__default['default'].URL.revokeObjectURL(this.mediaSourceUrl_);
       this.mediaSourceUrl_ = null;
+    }
+
+    if (this.tech_) {
+      this.tech_.off('waitingforkey', this.handleWaitingForKey_);
     }
 
     _Component.prototype.dispose.call(this);
