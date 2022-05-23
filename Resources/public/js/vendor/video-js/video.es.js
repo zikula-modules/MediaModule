@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.19.1 <http://videojs.com/>
+ * Video.js 7.20.0 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -25,14 +25,14 @@ import _resolveUrl from '@videojs/vhs-utils/es/resolve-url.js';
 import { Parser } from 'm3u8-parser';
 import { browserSupportsCodec, DEFAULT_VIDEO_CODEC, DEFAULT_AUDIO_CODEC, muxerSupportsCodec, parseCodecs, translateLegacyCodec, codecsFromDefault, getMimeForCodec, isAudioCodec } from '@videojs/vhs-utils/es/codecs.js';
 import { simpleTypeFromSourceType } from '@videojs/vhs-utils/es/media-types.js';
+import { isArrayBufferView, concatTypedArrays, stringToBytes, toUint8 } from '@videojs/vhs-utils/es/byte-helpers';
 import { generateSidxKey, parseUTCTiming, parse, addSidxSegmentsToPlaylist } from 'mpd-parser';
 import parseSidx from 'mux.js/lib/tools/parse-sidx';
 import { getId3Offset } from '@videojs/vhs-utils/es/id3-helpers';
 import { detectContainerForBytes, isLikelyFmp4MediaSegment } from '@videojs/vhs-utils/es/containers';
-import { concatTypedArrays, stringToBytes, toUint8 } from '@videojs/vhs-utils/es/byte-helpers';
 import { ONE_SECOND_IN_TS } from 'mux.js/lib/utils/clock';
 
-var version$5 = "7.19.1";
+var version$5 = "7.20.0";
 
 /**
  * An Object that contains lifecycle hooks as keys which point to an array
@@ -3853,12 +3853,19 @@ var Component$1 = /*#__PURE__*/function () {
    * Dispose of the `Component` and all child components.
    *
    * @fires Component#dispose
+   *
+   * @param {Object} options
+   * @param {Element} options.originalEl element with which to replace player element
    */
 
 
   var _proto = Component.prototype;
 
-  _proto.dispose = function dispose() {
+  _proto.dispose = function dispose(options) {
+    if (options === void 0) {
+      options = {};
+    }
+
     // Bail out if the component has already been disposed.
     if (this.isDisposed_) {
       return;
@@ -3902,7 +3909,11 @@ var Component$1 = /*#__PURE__*/function () {
     if (this.el_) {
       // Remove element from DOM
       if (this.el_.parentNode) {
-        this.el_.parentNode.removeChild(this.el_);
+        if (options.restoreEl) {
+          this.el_.parentNode.replaceChild(options.restoreEl, this.el_);
+        } else {
+          this.el_.parentNode.removeChild(this.el_);
+        }
       }
 
       this.el_ = null;
@@ -19094,7 +19105,8 @@ var ResizeManager = /*#__PURE__*/function (_Component) {
   _proto.createEl = function createEl() {
     return _Component.prototype.createEl.call(this, 'iframe', {
       className: 'vjs-resize-manager',
-      tabIndex: -1
+      tabIndex: -1,
+      title: this.localize('No content')
     }, {
       'aria-hidden': 'true'
     });
@@ -22660,9 +22672,11 @@ var Player = /*#__PURE__*/function (_Component) {
       if (list && list.off) {
         list.off();
       }
-    }); // the actual .el_ is removed here
+    }); // the actual .el_ is removed here, or replaced if
 
-    _Component.prototype.dispose.call(this);
+    _Component.prototype.dispose.call(this, {
+      restoreEl: this.options_.restoreEl
+    });
   }
   /**
    * Create the `Player`'s DOM element.
@@ -25712,9 +25726,10 @@ var Player = /*#__PURE__*/function (_Component) {
 
   _proto.resetProgressBar_ = function resetProgressBar_() {
     this.currentTime(0);
-    var _this$controlBar = this.controlBar,
-        durationDisplay = _this$controlBar.durationDisplay,
-        remainingTimeDisplay = _this$controlBar.remainingTimeDisplay;
+
+    var _ref3 = this.controlBar || {},
+        durationDisplay = _ref3.durationDisplay,
+        remainingTimeDisplay = _ref3.remainingTimeDisplay;
 
     if (durationDisplay) {
       durationDisplay.updateContent();
@@ -28296,7 +28311,13 @@ function videojs(id, options, ready) {
     log$1.warn('The element supplied is not included in the DOM');
   }
 
-  options = options || {};
+  options = options || {}; // Store a copy of the el before modification, if it is to be restored in destroy()
+  // If div ingest, store the parent div
+
+  if (options.restoreEl === true) {
+    options.restoreEl = (el.parentNode && el.parentNode.hasAttribute('data-vjs-player') ? el.parentNode : el).cloneNode(true);
+  }
+
   hooks('beforesetup').forEach(function (hookFunction) {
     var opts = hookFunction(el, mergeOptions$3(options));
 
@@ -28611,7 +28632,7 @@ videojs.addLanguage('en', {
   'Non-Fullscreen': 'Exit Fullscreen'
 });
 
-/*! @name @videojs/http-streaming @version 2.14.0 @license Apache-2.0 */
+/*! @name @videojs/http-streaming @version 2.14.2 @license Apache-2.0 */
 /**
  * @file resolve-url.js - Handling how URLs are resolved and manipulated
  */
@@ -30445,7 +30466,7 @@ var updateMaster$1 = function updateMaster(master, newMedia, unchangedCheck) {
 
     for (var _i2 = 0; _i2 < properties.playlists.length; _i2++) {
       if (newMedia.id === properties.playlists[_i2].id) {
-        properties.playlists[_i2] = newMedia;
+        properties.playlists[_i2] = mergedPlaylist;
       }
     }
   });
@@ -31228,7 +31249,7 @@ var createTransferableMessage = function createTransferableMessage(message) {
   Object.keys(message).forEach(function (key) {
     var value = message[key];
 
-    if (ArrayBuffer.isView(value)) {
+    if (isArrayBufferView(value)) {
       transferable[key] = {
         bytes: value.buffer,
         byteOffset: value.byteOffset,
@@ -32722,7 +32743,7 @@ var transform = function transform(code) {
 var getWorkerString = function getWorkerString(fn) {
   return fn.toString().replace(/^function.+?{/, '').slice(0, -1);
 };
-/* rollup-plugin-worker-factory start for worker!/Users/poneill/dev/http-streaming/src/transmuxer-worker.js */
+/* rollup-plugin-worker-factory start for worker!/Users/bclifford/Code/vhs-release-test/src/transmuxer-worker.js */
 
 
 var workerCode$1 = transform(getWorkerString(function () {
@@ -41528,7 +41549,7 @@ var workerCode$1 = transform(getWorkerString(function () {
   };
 }));
 var TransmuxWorker = factory(workerCode$1);
-/* rollup-plugin-worker-factory end for worker!/Users/poneill/dev/http-streaming/src/transmuxer-worker.js */
+/* rollup-plugin-worker-factory end for worker!/Users/bclifford/Code/vhs-release-test/src/transmuxer-worker.js */
 
 var handleData_ = function handleData_(event, transmuxedData, callback) {
   var _event$data$segment = event.data.segment,
@@ -49315,10 +49336,12 @@ var TimelineChangeController = /*#__PURE__*/function (_videojs$EventTarget) {
 
   return TimelineChangeController;
 }(videojs.EventTarget);
-/* rollup-plugin-worker-factory start for worker!/Users/poneill/dev/http-streaming/src/decrypter-worker.js */
+/* rollup-plugin-worker-factory start for worker!/Users/bclifford/Code/vhs-release-test/src/decrypter-worker.js */
 
 
 var workerCode = transform(getWorkerString(function () {
+  var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
   function createCommonjsModule(fn, basedir, module) {
     return module = {
       path: basedir,
@@ -49511,7 +49534,7 @@ var workerCode = transform(getWorkerString(function () {
   function unpad(padded) {
     return padded.subarray(0, padded.byteLength - padded[padded.byteLength - 1]);
   }
-  /*! @name aes-decrypter @version 3.1.2 @license Apache-2.0 */
+  /*! @name aes-decrypter @version 3.1.3 @license Apache-2.0 */
 
   /**
    * @file aes.js
@@ -49936,10 +49959,31 @@ var workerCode = transform(getWorkerString(function () {
     }]);
     return Decrypter;
   }();
-  /**
-   * @file bin-utils.js
-   */
 
+  var win;
+
+  if (typeof window !== "undefined") {
+    win = window;
+  } else if (typeof commonjsGlobal !== "undefined") {
+    win = commonjsGlobal;
+  } else if (typeof self !== "undefined") {
+    win = self;
+  } else {
+    win = {};
+  }
+
+  var window_1 = win;
+
+  var isArrayBufferView = function isArrayBufferView(obj) {
+    if (ArrayBuffer.isView === 'function') {
+      return ArrayBuffer.isView(obj);
+    }
+
+    return obj && obj.buffer instanceof ArrayBuffer;
+  };
+
+  var BigInt = window_1.BigInt || Number;
+  [BigInt('0x1'), BigInt('0x100'), BigInt('0x10000'), BigInt('0x1000000'), BigInt('0x100000000'), BigInt('0x10000000000'), BigInt('0x1000000000000'), BigInt('0x100000000000000'), BigInt('0x10000000000000000')];
   /**
    * Creates an object for sending to a web worker modifying properties that are TypedArrays
    * into a new object with seperated properties for the buffer, byteOffset, and byteLength.
@@ -49957,7 +50001,7 @@ var workerCode = transform(getWorkerString(function () {
     Object.keys(message).forEach(function (key) {
       var value = message[key];
 
-      if (ArrayBuffer.isView(value)) {
+      if (isArrayBufferView(value)) {
         transferable[key] = {
           bytes: value.buffer,
           byteOffset: value.byteOffset,
@@ -49995,7 +50039,7 @@ var workerCode = transform(getWorkerString(function () {
   };
 }));
 var Decrypter = factory(workerCode);
-/* rollup-plugin-worker-factory end for worker!/Users/poneill/dev/http-streaming/src/decrypter-worker.js */
+/* rollup-plugin-worker-factory end for worker!/Users/bclifford/Code/vhs-release-test/src/decrypter-worker.js */
 
 /**
  * Convert the properties of an HLS track into an audioTrackKind.
@@ -53831,11 +53875,11 @@ var reloadSourceOnError = function reloadSourceOnError(options) {
   initPlugin(this, options);
 };
 
-var version$4 = "2.14.0";
+var version$4 = "2.14.2";
 var version$3 = "6.0.1";
-var version$2 = "0.21.0";
-var version$1 = "4.7.0";
-var version = "3.1.2";
+var version$2 = "0.21.1";
+var version$1 = "4.7.1";
+var version = "3.1.3";
 var Vhs = {
   PlaylistLoader: PlaylistLoader,
   Playlist: Playlist,
