@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.20.0 <http://videojs.com/>
+ * Video.js 7.20.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -32,7 +32,7 @@ import { getId3Offset } from '@videojs/vhs-utils/es/id3-helpers';
 import { detectContainerForBytes, isLikelyFmp4MediaSegment } from '@videojs/vhs-utils/es/containers';
 import { ONE_SECOND_IN_TS } from 'mux.js/lib/utils/clock';
 
-var version$5 = "7.20.0";
+var version$5 = "7.20.1";
 
 /**
  * An Object that contains lifecycle hooks as keys which point to an array
@@ -2136,7 +2136,8 @@ function fixEvent(event) {
       // Safari 6.0.3 warns you if you try to copy deprecated layerX/Y
       // Chrome warns you if you try to copy deprecated keyboardEvent.keyLocation
       // and webkitMovementX/Y
-      if (key !== 'layerX' && key !== 'layerY' && key !== 'keyLocation' && key !== 'webkitMovementX' && key !== 'webkitMovementY') {
+      // Lighthouse complains if Event.path is copied
+      if (key !== 'layerX' && key !== 'layerY' && key !== 'keyLocation' && key !== 'webkitMovementX' && key !== 'webkitMovementY' && key !== 'path') {
         // Chrome 32+ warns if you try to copy deprecated returnValue, but
         // we still want to if preventDefault isn't supported (IE8).
         if (!(key === 'returnValue' && old.preventDefault)) {
@@ -20044,6 +20045,8 @@ var Html5 = /*#__PURE__*/function (_Tech) {
 
     _this.proxyWebkitFullscreen_();
 
+    _this.featuresVideoFrameCallback = _this.featuresVideoFrameCallback && _this.el_.tagName === 'VIDEO';
+
     _this.triggerReady();
 
     return _this;
@@ -25518,7 +25521,7 @@ var Player = /*#__PURE__*/function (_Component) {
       this.setTimeout(function () {
         this.error({
           code: 4,
-          message: this.localize(this.options_.notSupportedMessage)
+          message: this.options_.notSupportedMessage
         });
       }, 0);
       return;
@@ -25556,7 +25559,7 @@ var Player = /*#__PURE__*/function (_Component) {
         _this15.setTimeout(function () {
           this.error({
             code: 4,
-            message: this.localize(this.options_.notSupportedMessage)
+            message: this.options_.notSupportedMessage
           });
         }, 0); // we could not find an appropriate tech, but let's still notify the delegate that this is it
         // this needs a better comment about why this is needed

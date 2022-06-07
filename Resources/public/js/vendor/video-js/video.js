@@ -1,6 +1,6 @@
 /**
  * @license
- * Video.js 7.20.0 <http://videojs.com/>
+ * Video.js 7.20.1 <http://videojs.com/>
  * Copyright Brightcove, Inc. <https://www.brightcove.com/>
  * Available under Apache License Version 2.0
  * <https://github.com/videojs/video.js/blob/main/LICENSE>
@@ -16,7 +16,7 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.videojs = factory());
 }(this, (function () { 'use strict';
 
-  var version$5 = "7.20.0";
+  var version$5 = "7.20.1";
 
   /**
    * An Object that contains lifecycle hooks as keys which point to an array
@@ -2148,7 +2148,8 @@
         // Safari 6.0.3 warns you if you try to copy deprecated layerX/Y
         // Chrome warns you if you try to copy deprecated keyboardEvent.keyLocation
         // and webkitMovementX/Y
-        if (key !== 'layerX' && key !== 'layerY' && key !== 'keyLocation' && key !== 'webkitMovementX' && key !== 'webkitMovementY') {
+        // Lighthouse complains if Event.path is copied
+        if (key !== 'layerX' && key !== 'layerY' && key !== 'keyLocation' && key !== 'webkitMovementX' && key !== 'webkitMovementY' && key !== 'path') {
           // Chrome 32+ warns if you try to copy deprecated returnValue, but
           // we still want to if preventDefault isn't supported (IE8).
           if (!(key === 'returnValue' && old.preventDefault)) {
@@ -22535,6 +22536,8 @@
 
       _this.proxyWebkitFullscreen_();
 
+      _this.featuresVideoFrameCallback = _this.featuresVideoFrameCallback && _this.el_.tagName === 'VIDEO';
+
       _this.triggerReady();
 
       return _this;
@@ -28009,7 +28012,7 @@
         this.setTimeout(function () {
           this.error({
             code: 4,
-            message: this.localize(this.options_.notSupportedMessage)
+            message: this.options_.notSupportedMessage
           });
         }, 0);
         return;
@@ -28047,7 +28050,7 @@
           _this15.setTimeout(function () {
             this.error({
               code: 4,
-              message: this.localize(this.options_.notSupportedMessage)
+              message: this.options_.notSupportedMessage
             });
           }, 0); // we could not find an appropriate tech, but let's still notify the delegate that this is it
           // this needs a better comment about why this is needed
