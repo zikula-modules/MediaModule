@@ -1,5 +1,8 @@
-Zikula 2.0.11+ media module
-===========================
+# Deprecated
+
+This module has been deprecated as part of [Zikula 4 slimming diet](https://github.com/zikula/core/blob/main/ZIKULA-4.0.md).
+
+# Zikula 2.0.11+ media module
 
 [![StyleCI](https://styleci.io/repos/43518681/shield)](https://styleci.io/repos/43518681) 
 [![Build Status](https://travis-ci.org/zikula-modules/MediaModule.svg?branch=main)](https://travis-ci.org/zikula-modules/MediaModule) 
